@@ -1,0 +1,29 @@
+{
+  "name": "webcrypto-remote",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "2key-ratchet": "git+https://github.com/PeculiarVentures/2key-ratchet",
+    "tslib": "^1.5.0",
+    "webcrypto-core": "^0.1.13",
+    "websocket": "^1.0.24"
+  },
+  "devDependencies": {
+    "@types/websocket": "^0.0.33",
+    "idb": "^2.0.0",
+    "node-webcrypto-ossl": "^1.0.20",
+    "rollup": "^0.41.4",
+    "rollup-plugin-node-builtins": "^2.1.0",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-plugin-typescript": "^0.8.1",
+    "tsprotobuf": "^1.0.4",
+    "typescript": "^2.1.5"
+  }
+}

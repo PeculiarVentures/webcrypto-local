@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="http://cdn.rawgit.com/dcodeIO/protobuf.js/6.6.0/dist/protobuf.js"></script>
+    <script src="https://cdn.rawgit.com/jakearchibald/idb/97e4e878/lib/idb.js"></script>
+    <script src="./webcrypto-socket.js"></script>
+    <script>
+        var ws = new WebcryptoSocket.SocketCrypto();
+        ws.connect("127.0.0.1:8080")
+            .on("error", (e) => {
+                console.error(e.error);
+            })
+            .on("listening", (e) => {
+                console.info(e.address);
+                Test6();
+            })
+            .on("close", (e) => {
+                console.info("close");
+            });
+
+        function Test() {
+            // var alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 1024 }
+            // var alg = { name: "RSA-PSS", hash: "SHA-256", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 1024, saltLength: 32 }
+            var alg = { name: "ECDSA", hash: "SHA-256", namedCurve: "P-256" }
+            ws.subtle.generateKey(
+                alg,
+                true,
+                ["sign", "verify"]
+            )
+                .then((keys) => {
+                    window.keys = keys;
+                    console.log(keys.publicKey.algorithm.name);
+                    return ws.subtle.exportKey("jwk", keys.privateKey);
+                })
+                .then((jwk) => {
+                    console.log(jwk);
+                    return ws.subtle.sign(alg, keys.privateKey, new Uint8Array([1, 2, 3, 4, 5]));
+                })
+                .then((signature) => {
+                    console.log("Signature:", new Uint8Array(signature));
+                    return ws.subtle.verify(alg, keys.publicKey, signature, new Uint8Array([1, 2, 3, 4, 5]));
+                })
+                .then((trusted) => {
+                    console.log("Verification:", trusted);
+                })
+                .catch(e => {
+                    console.error(e);
+                })
+        }
+
+        function Test2() {
+            const alg = { name: "AES-CBC", length: 256, iv: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6]) };
+            ws.subtle.generateKey(alg, false, ["encrypt", "decrypt"])
+                .then((key) => {
+                    window.key = key;
+                    console.info("Algorithm", key.algorithm.name);
+                    return ws.subtle.encrypt(alg, key, new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]));
+                })
+                .then((data) => {
+                    return ws.subtle.decrypt(alg, key, data);
+                })
+                .then((data) => {
+                    console.log(new Uint8Array(data));
+                })
+                .catch((e) => {
+                    console.error(e);
+                })
+        }
+
+        function Test3() {
+            console.log("DERIVE BITS")
+            const alg = { name: "ECDH", namedCurve: "P-256" };
+            ws.subtle.generateKey(alg, false, ["deriveBits"])
+                .then((keys) => {
+                    window.keys = keys;
+                    console.info("Algorithm", keys.privateKey.algorithm.name);
+                    return ws.subtle.deriveBits({ name: "ECDH", public: keys.publicKey }, keys.privateKey, 128);
+                })
+                .then((data) => {
+                    console.log(new Uint8Array(data));
+                })
+                .catch((e) => {
+                    console.error(e);
+                })
+        }
+
+        function Test4() {
+            console.log("DERIVE KEY")
+            const alg = { name: "ECDH", namedCurve: "P-256" };
+            ws.subtle.generateKey(alg, false, ["deriveKey"])
+                .then((keys) => {
+                    window.keys = keys;
+                    console.info("Algorithm", keys.privateKey.algorithm.name);
+                    return ws.subtle.deriveKey({ name: "ECDH", public: keys.publicKey }, keys.privateKey, { name: "AES-CBC", length: 256 }, false, ["encrypt"]);
+                })
+                .then((key) => {
+                    console.log(key);
+                })
+                .catch((e) => {
+                    console.error(e);
+                })
+        }
+
+        function Test5() {
+            var rsaKeys, aesKey;
+            var aesAlg = { name: "AES-CBC", length: 256 };
+
+            ws.subtle.generateKey({ name: "RSA-OAEP", hash: "SHA-256", modulusLength: 1024, publicExponent: new Uint8Array([1, 0, 1]) }, false, ["encrypt", "decrypt", "wrapKey", "unwrapKey"])
+                .then((keys) => {
+                    rsaKeys = keys;
+                    return ws.subtle.generateKey(aesAlg, true, ["encrypt"]);
+                })
+                .then((key) => {
+                    aesKey = key;
+                    return ws.subtle.wrapKey("raw", aesKey, rsaKeys.publicKey, { name: "RSA-OAEP" });
+                })
+                .then((data) => {
+                    console.log(new Uint8Array(data));
+
+                    return ws.subtle.unwrapKey("raw", data, rsaKeys.privateKey, { name: "RSA-OAEP" }, aesAlg, false, ["encrypt"]);
+                })
+                .then((key) => {
+                    console.log(key);
+                })
+                .catch((e) => {
+                    console.error(e);
+                })
+
+        }
+
+        function Test6() {
+            console.log("EXPORT/IMPORT")
+            const alg = { name: "ECDH", namedCurve: "P-256" };
+            ws.subtle.generateKey(alg, true, ["deriveBits"])
+                .then((keys) => {
+                    window.keys = keys;
+                    console.info("Algorithm", keys.privateKey.algorithm.name);
+                    return ws.subtle.exportKey("pkcs8", keys.privateKey);
+                })
+                .then((data) => {
+                    return ws.subtle.importKey("pkcs8", data, alg, false, ["deriveBits"]);
+                })
+                .then((key) => {
+                    console.log(key);
+                })
+                .catch((e) => {
+                    console.error(e);
+                })
+        }
+    </script>
+</body>
+
+</html>
