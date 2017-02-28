@@ -35,3 +35,8 @@ Open `test/index.html`
 ### Example
 
 Open `dist/index.html`
+
+## Related
+- [2key-ratchet](https://github.com/PeculiarVentures/2key-ratchet)
+- [pvpkcs11](https://github.com/PeculiarVentures/pvpkcs11)
+- [node-webcrypto-p11](https://github.com/PeculiarVentures/node-webcrypto-p11)
