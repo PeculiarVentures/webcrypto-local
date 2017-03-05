@@ -157,17 +157,17 @@ export class Server extends EventEmitter {
 
         this.socketServer = new WebSocket.server({
             httpServer: this.httpServer,
-            // You should not use autoAcceptConnections for production 
-            // applications, as it defeats all standard cross-origin protection 
-            // facilities built into the protocol and the browser.  You should 
-            // *always* verify the connection"s origin and decide whether or not 
-            // to accept it. 
+            // You should not use autoAcceptConnections for production
+            // applications, as it defeats all standard cross-origin protection
+            // facilities built into the protocol and the browser.  You should
+            // *always* verify the connection"s origin and decide whether or not
+            // to accept it.
             autoAcceptConnections: false,
         });
 
         this.socketServer.on("request", (request) => {
             // if (!originIsAllowed(request.origin)) {
-            //     // Make sure we only accept requests from an allowed origin 
+            //     // Make sure we only accept requests from an allowed origin
             //     request.reject();
             //     console.log((new Date()) + " Connection from origin " + request.origin + " rejected.");
             //     return;
@@ -239,7 +239,7 @@ export class Server extends EventEmitter {
                                 })();
                             });
                     })().catch((e) => {
-                        this.emit("error", new ServerErrorEvent(this, e))
+                        this.emit("error", new ServerErrorEvent(this, e));
                     });
                 }
             });

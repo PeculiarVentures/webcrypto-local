@@ -27,47 +27,6 @@ export class OpenSSLStorage {
         // some
     }
 
-    protected ecKeyToBase64(key: CryptoKey) {
-        return new Promise((resolve, reject) => {
-            const k: any = key;
-            if (key.type === "public") {
-                // public key
-                k.native_.exportSpki((err: Error, data: Buffer) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(data.toString("base64"));
-                    }
-                });
-            } else {
-                // private key
-                k.native_.exportPkcs8((err: Error, data: Buffer) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(data.toString("base64"));
-                    }
-                });
-            }
-        })
-    }
-
-    protected ecKeyToCryptoKey(base64: string, type: string, alg: string) {
-        if (type === "public") {
-            // public key
-            return crypto.subtle.importKey("spki", new Buffer(base64, "base64"), {
-                name: alg,
-                namedCurve: "P-256",
-            }, true, alg === "ECDSA" ? ["verify"] : []);
-        } else {
-            // private key
-            return crypto.subtle.importKey("pkcs8", new Buffer(base64, "base64"), {
-                name: alg,
-                namedCurve: "P-256",
-            }, false, alg === "ECDSA" ? ["sign"] : ["deriveBits", "deriveKey"]);
-        }
-    }
-
     public async loadIdentity(): Promise<Identity> {
         const identityPath = OpenSSLStorage.STORAGE_NAME + "/identity.json";
         if (fs.existsSync(identityPath)) {
@@ -80,14 +39,12 @@ export class OpenSSLStorage {
             json.exchangeKey.privateKey = await this.ecKeyToCryptoKey(json.exchangeKey.privateKey, "private", "ECDH");
             json.exchangeKey.publicKey = await this.ecKeyToCryptoKey(json.exchangeKey.publicKey, "public", "ECDH");
             // onetime pre key
-            for (let i = 0; i < json.preKeys.length; i++) {
-                const preKey: any = json.preKeys[i];
+            for (const preKey of json.preKeys) {
                 preKey.privateKey = await this.ecKeyToCryptoKey(preKey.privateKey, "private", "ECDH");
                 preKey.publicKey = await this.ecKeyToCryptoKey(preKey.publicKey, "public", "ECDH");
             }
             // pre key
-            for (let i = 0; i < json.signedPreKeys.length; i++) {
-                const preKey: any = json.signedPreKeys[i];
+            for (const preKey of json.signedPreKeys) {
                 preKey.privateKey = await this.ecKeyToCryptoKey(preKey.privateKey, "private", "ECDH");
                 preKey.publicKey = await this.ecKeyToCryptoKey(preKey.publicKey, "public", "ECDH");
             }
@@ -95,7 +52,6 @@ export class OpenSSLStorage {
         }
         return this.identity || null;
     }
-
 
     public async saveIdentity(value: Identity) {
         const json = await value.toJSON();
@@ -107,16 +63,14 @@ export class OpenSSLStorage {
         res.exchangeKey.privateKey = await this.ecKeyToBase64(json.exchangeKey.privateKey);
         res.exchangeKey.publicKey = await this.ecKeyToBase64(json.exchangeKey.publicKey);
         // onetime pre keys
-        for (let i = 0; i < json.preKeys.length; i++) {
-            const preKey: any = json.preKeys[i];
-            preKey.privateKey = await this.ecKeyToBase64(preKey.privateKey);
-            preKey.publicKey = await this.ecKeyToBase64(preKey.publicKey);
+        for (const preKey of json.preKeys) {
+            (preKey as any).privateKey = await this.ecKeyToBase64(preKey.privateKey);
+            (preKey as any).publicKey = await this.ecKeyToBase64(preKey.publicKey);
         }
         // pre keys
-        for (let i = 0; i < json.signedPreKeys.length; i++) {
-            const preKey: any = json.signedPreKeys[i];
-            preKey.privateKey = await this.ecKeyToBase64(preKey.privateKey);
-            preKey.publicKey = await this.ecKeyToBase64(preKey.publicKey);
+        for (const preKey of json.signedPreKeys) {
+            (preKey as any).privateKey = await this.ecKeyToBase64(preKey.privateKey);
+            (preKey as any).publicKey = await this.ecKeyToBase64(preKey.publicKey);
         }
 
         fs.writeFileSync(OpenSSLStorage.STORAGE_NAME + "/identity.json", JSON.stringify(res, null, "  "), {
@@ -150,6 +104,47 @@ export class OpenSSLStorage {
             }
         }
         return false;
+    }
+
+    protected ecKeyToBase64(key: CryptoKey) {
+        return new Promise((resolve, reject) => {
+            const k: any = key;
+            if (key.type === "public") {
+                // public key
+                k.native_.exportSpki((err: Error, data: Buffer) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(data.toString("base64"));
+                    }
+                });
+            } else {
+                // private key
+                k.native_.exportPkcs8((err: Error, data: Buffer) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(data.toString("base64"));
+                    }
+                });
+            }
+        });
+    }
+
+    protected ecKeyToCryptoKey(base64: string, type: string, alg: string) {
+        if (type === "public") {
+            // public key
+            return crypto.subtle.importKey("spki", new Buffer(base64, "base64"), {
+                name: alg,
+                namedCurve: "P-256",
+            }, true, alg === "ECDSA" ? ["verify"] : []);
+        } else {
+            // private key
+            return crypto.subtle.importKey("pkcs8", new Buffer(base64, "base64"), {
+                name: alg,
+                namedCurve: "P-256",
+            }, false, alg === "ECDSA" ? ["sign"] : ["deriveBits", "deriveKey"]);
+        }
     }
 
 }
