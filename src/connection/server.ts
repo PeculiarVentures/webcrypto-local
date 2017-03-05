@@ -146,6 +146,7 @@ export class Server extends EventEmitter {
                     this.identity = await this.storage.loadIdentity();
                     if (!this.identity) {
                         this.identity = await this.generateIdentity();
+                        await this.storage.saveIdentity(this.identity);
                     }
                     this.emit("listening", new ServerListeningEvent(this, address));
                 })();
