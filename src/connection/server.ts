@@ -196,7 +196,12 @@ export class Server extends EventEmitter {
                                 const preKeyProto = await PreKeyMessageProtocol.importProto(buffer);
                                 messageProto = preKeyProto.signedMessage;
                                 session.cipher = await AsymmetricRatchet.create(this.identity, preKeyProto);
-                                await this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
+                                // check remote identity
+                                const ok = await this.storage.isTrusted(session.cipher.remoteIdentity);
+                                if (!ok) {
+                                    console.log("Remote identity is not trusted");
+                                    await this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
+                                }
                                 await this.storage.saveSession(session.cipher.remoteIdentity.signingKey.id, session.cipher);
                             } catch (err) {
                                 throw err;

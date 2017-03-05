@@ -87,6 +87,18 @@ export class OpenSSLStorage {
         this.remoteIdentities[key] = value;
     }
 
+    public async isTrusted(remoteIdentity: RemoteIdentity) {
+        const ok = await remoteIdentity.verify();
+        if (!ok) {
+            return false;
+        }
+        const trustedIdentity = await this.loadRemoteIdentity(remoteIdentity.signingKey.id);
+        if (!trustedIdentity) {
+            return false;
+        }
+        return true;
+    }
+
     public async loadSession(key: string) {
         const res = this.sessions[key];
         return res || null;

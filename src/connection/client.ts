@@ -120,15 +120,15 @@ export class Client extends EventEmitter {
                             await storage.saveIdentity(identity);
                         }
                         const remoteIdentityId = "0";
-                        const remoteIdentity = await storage.loadRemoteIdentity(remoteIdentityId);
+                        // const remoteIdentity = await storage.loadRemoteIdentity(remoteIdentityId);
                         const bundle = await PreKeyBundleProtocol.importProto(Convert.FromBase64(info.preKey));
-                        if (remoteIdentity && await remoteIdentity.signingKey.isEqual(bundle.identity.signingKey)) {
-                            this.cipher = await storage.loadSession(remoteIdentityId);
-                        } else {
-                            this.cipher = await AsymmetricRatchet.create(identity, bundle);
-                            // save new remote identity
-                            await storage.saveRemoteIdentity(remoteIdentityId, this.cipher.remoteIdentity);
-                        }
+                        // if (remoteIdentity && await remoteIdentity.signingKey.isEqual(bundle.identity.signingKey)) {
+                        // this.cipher = await storage.loadSession(remoteIdentityId);
+                        // } else {
+                        this.cipher = await AsymmetricRatchet.create(identity, bundle);
+                        // save new remote identity
+                        await storage.saveRemoteIdentity(remoteIdentityId, this.cipher.remoteIdentity);
+                        // }
                         this.cipher.on("update", () => {
                             this.cipher.toJSON()
                                 .then((json) => {
@@ -190,7 +190,7 @@ export class Client extends EventEmitter {
     }
 
     /**
-     * Sends and receives 
+     * Sends and receives
      */
     public send(event: string, data?: ActionProto): Promise<ArrayBuffer> {
         return new Promise((resolve, reject) => {
