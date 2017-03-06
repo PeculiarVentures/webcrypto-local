@@ -6,7 +6,7 @@ import { NotificationCenter } from "node-notifier";
 import { assign, Convert } from "pvtsutils";
 import * as url from "url";
 import * as WebSocket from "websocket";
-import { ActionProto, Event, PinConfirmProto, ResultProto, PinRequestProto } from "../core";
+import { ActionProto, Event, PinConfirmProto, PinRequestProto, ResultProto } from "../core";
 import { SERVER_WELL_KNOWN } from "./const";
 import { OpenSSLStorage } from "./storages/ossl";
 

@@ -172,6 +172,7 @@ export class OpenSSLStorage {
                 id: identity.id,
                 thumbprint: identity.thumbprint,
                 signature: new Buffer(identity.signature).toString("base64"),
+                createdAt: identity.createdAt,
             };
         }
 
@@ -192,6 +193,7 @@ export class OpenSSLStorage {
                 identity.signingKey = await this.ecKeyToCryptoKey(identity.signingKey, "public", "ECDSA");
                 identity.exchangeKey = await this.ecKeyToCryptoKey(identity.exchangeKey, "public", "ECDH");
                 identity.signature = Convert.FromBase64(identity.signature);
+                identity.createdAt = new Date(identity.createdAt);
                 this.remoteIdentities[key] = await RemoteIdentity.fromJSON(identity);
             }
         }
