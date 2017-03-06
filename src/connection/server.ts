@@ -249,20 +249,23 @@ export class Server extends EventEmitter {
 
                         return new Promise((resolve, reject) => {
                             if (actionProto.action === PinRequestProto.ACTION) {
-                                session.pin = generateCode();
-                                notifier.notify({
-                                    title: "webcrypto-local",
-                                    message: `Is it correct PIN ${session.pin}?`,
-                                    // wait: false,
-                                    actions: "Yes",
-                                    closeLabel: "No",
-                                    timeout: 30,
-                                } as any, (error, response) => {
-                                    console.log(response);
-                                    if (response === "activate") {
-                                        session.authorized = true;
-                                    }
-                                });
+                                if (!session.authorized) {
+                                    session.pin = generateCode();
+                                    notifier.notify({
+                                        title: "webcrypto-local",
+                                        message: `Is it correct PIN ${session.pin}?`,
+                                        // wait: false,
+                                        actions: "Yes",
+                                        closeLabel: "No",
+                                        timeout: 30,
+                                    } as any, (error, response) => {
+                                        console.log("Notifier response:", response);
+                                        if (response === "activate") {
+                                            this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
+                                            session.authorized = true;
+                                        }
+                                    });
+                                }
                                 // result
                                 const resultProto = new ResultProto(actionProto);
                                 resultProto.data = Convert.FromString(session.pin);

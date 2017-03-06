@@ -4,6 +4,7 @@ import { AsymmetricRatchet } from "2key-ratchet";
 const WebCrypto = require("node-webcrypto-ossl");
 const crypto: Crypto = new WebCrypto();
 import * as fs from "fs";
+import { Convert } from "pvtsutils";
 
 export class OpenSSLStorage {
 
@@ -80,11 +81,13 @@ export class OpenSSLStorage {
     }
 
     public async loadRemoteIdentity(key: string) {
+        await this.loadRemote();
         return this.remoteIdentities[key];
     }
 
     public async saveRemoteIdentity(key: string, value: RemoteIdentity) {
         this.remoteIdentities[key] = value;
+        await this.saveRemote();
     }
 
     public async isTrusted(remoteIdentity: RemoteIdentity) {
@@ -156,6 +159,41 @@ export class OpenSSLStorage {
                 name: alg,
                 namedCurve: "P-256",
             }, false, alg === "ECDSA" ? ["sign"] : ["deriveBits", "deriveKey"]);
+        }
+    }
+
+    protected async saveRemote() {
+        const json: any = {};
+        for (const key in this.remoteIdentities) {
+            const identity = await this.remoteIdentities[key].toJSON();
+            json[key] = {
+                signingKey: await this.ecKeyToBase64(identity.signingKey),
+                exchangeKey: await this.ecKeyToBase64(identity.exchangeKey),
+                id: identity.id,
+                thumbprint: identity.thumbprint,
+                signature: new Buffer(identity.signature).toString("base64"),
+            };
+        }
+
+        fs.writeFileSync(OpenSSLStorage.STORAGE_NAME + "/remote.json", JSON.stringify(json, null, "  "), {
+            encoding: "utf8",
+            flag: "w+",
+        });
+    }
+
+    protected async loadRemote() {
+        const file = OpenSSLStorage.STORAGE_NAME + "/remote.json";
+        this.remoteIdentities = {};
+        if (fs.existsSync(file)) {
+            const data = fs.readFileSync(file);
+            const json = JSON.parse(data.toString());
+            for (const key in json) {
+                const identity = json[key];
+                identity.signingKey = await this.ecKeyToCryptoKey(identity.signingKey, "public", "ECDSA");
+                identity.exchangeKey = await this.ecKeyToCryptoKey(identity.exchangeKey, "public", "ECDH");
+                identity.signature = Convert.FromBase64(identity.signature);
+                this.remoteIdentities[key] = await RemoteIdentity.fromJSON(identity);
+            }
         }
     }
 
