@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "2key-ratchet": "git+ssh@github.com:PeculiarVentures/2key-ratchet",
+    "node-notify": "^1.0.0",
     "tslib": "^1.5.0",
     "webcrypto-core": "^0.1.13",
     "websocket": "^1.0.24"
@@ -23,6 +24,7 @@
     "rollup-plugin-node-builtins": "^2.1.0",
     "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-typescript": "^0.8.1",
+    "rollup-watch": "^3.2.2",
     "tsprotobuf": "^1.0.4",
     "typescript": "^2.1.5"
   }

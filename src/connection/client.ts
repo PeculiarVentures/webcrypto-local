@@ -2,7 +2,7 @@ import { AsymmetricRatchet, Identity, MessageSignedProtocol, PreKeyBundleProtoco
 import { EventEmitter } from "events";
 import { Convert } from "pvtsutils";
 import { ActionProto, Event, ServerInfo } from "../core";
-import { ResultProto } from "../core";
+import { PinConfirmProto, PinRequestProto, ResultProto } from "../core";
 import { SERVER_WELL_KNOWN } from "./const";
 import { BrowserStorage } from "./storages/browser";
 
@@ -138,7 +138,32 @@ export class Client extends EventEmitter {
                                     console.error(error);
                                 });
                         });
-                        this.emit("listening", new ClientListeningEvent(this, address));
+
+                        // authenticate
+                        this.send(PinRequestProto.ACTION, new PinRequestProto())
+                            .then(() => {
+                                const that = this;
+                                async function login() {
+                                    const pin = prompt("Enter PIN code:");
+                                    if (pin === null) {
+                                        return false;
+                                    }
+                                    try {
+                                        const proto = new PinConfirmProto(pin);
+                                        await that.send(PinConfirmProto.ACTION, proto);
+                                        that.emit("listening", new ClientListeningEvent(this, address));
+                                        return false;
+                                    } catch (e) {
+                                        console.log(e);
+                                        return true;
+                                    }
+                                }
+                                (async () => {
+                                    while (await login()) {
+                                        console.log("Login");
+                                    }
+                                })();
+                            });
                     })().catch((error) => this.emit("error", new ClientErrorEvent(this, error)));
                 };
                 this.socket.onclose = (e) => {
@@ -193,6 +218,7 @@ export class Client extends EventEmitter {
      * Sends and receives
      */
     public send(event: string, data?: ActionProto): Promise<ArrayBuffer> {
+        console.log("Send message:", data.action);
         return new Promise((resolve, reject) => {
             this.checkSocketState();
             if (!data) {

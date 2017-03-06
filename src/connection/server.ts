@@ -5,13 +5,13 @@ import * as http from "http";
 import { assign, Convert } from "pvtsutils";
 import * as url from "url";
 import * as WebSocket from "websocket";
-import { ActionProto, Event, ResultProto } from "../core";
+import { ActionProto, Event, PinConfirmProto, ResultProto, PinRequestProto } from "../core";
 import { SERVER_WELL_KNOWN } from "./const";
 import { OpenSSLStorage } from "./storages/ossl";
 
 const D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
 
-type AlgorithmUsageType = "generateKey" | "importKey" | "exportKey" | "sign" | "verify" | "deriveKey" | "deriveBits" | "encrypt" | "decrypt" | "wrapKey" | "unwrapKey";
+type AlgorithmUsageType = "generateKey" | "importKey" | "exportKey" | "sign" | "verify" | "deriveKey" | "deriveBits" | "encrypt" | "decrypt" | "wrapKey" | "unwrapKey" | "digest";
 
 interface WebCryptoProviderAlgorithm {
     name: string;
@@ -20,7 +20,7 @@ interface WebCryptoProviderAlgorithm {
 
 interface WebCryptoProvider {
     name: string;
-    algorithms: WebCryptoProviderAlgorithm;
+    algorithms: WebCryptoProviderAlgorithm[];
 }
 
 type Base64String = string;
@@ -36,6 +36,8 @@ export interface ServerInfo {
 export interface Session {
     connection: WebSocket.connection;
     cipher: AsymmetricRatchet;
+    authorized: boolean;
+    pin: string;
 }
 
 export class ServerEvent extends Event<Server> { }
@@ -96,6 +98,26 @@ export class Server extends EventEmitter {
         version: "1.0.0",
         name: "webcrypto-socket",
         preKey: "",
+        providers: [
+            {
+                algorithms: [
+                    { name: "RSASSA-PKCS1-v1_5", usages: ["generateKey", "exportKey", "importKey", "sign", "verify"] },
+                    { name: "RSA-OAEP", usages: ["generateKey", "exportKey", "importKey", "encrypt", "decrypt", "wrapKey", "unwrapKey"] },
+                    { name: "RSA-PSS", usages: ["generateKey", "exportKey", "importKey", "sign", "verify"] },
+                    { name: "ECDSA", usages: ["generateKey", "exportKey", "importKey", "sign", "verify"] },
+                    { name: "ECDH", usages: ["generateKey", "exportKey", "importKey", "deriveKey", "deriveBits"] },
+                    { name: "AES-CBC", usages: ["generateKey", "exportKey", "importKey", "encrypt", "decrypt", "wrapKey", "unwrapKey"] },
+                    { name: "AES-GCM", usages: ["generateKey", "exportKey", "importKey", "encrypt", "decrypt", "wrapKey", "unwrapKey"] },
+                    { name: "AES-KW", usages: ["generateKey", "exportKey", "importKey", "wrapKey", "unwrapKey"] },
+                    { name: "SHA-1", usages: ["digest"] },
+                    { name: "SHA-256", usages: ["digest"] },
+                    { name: "SHA-384", usages: ["digest"] },
+                    { name: "SHA-512", usages: ["digest"] },
+                    { name: "PBKDF2", usages: ["generateKey", "importKey", "deriveKey", "deriveBits"] },
+                ],
+                name: "OpenSSL",
+            },
+        ],
     };
 
     protected httpServer: http.Server;
@@ -176,6 +198,8 @@ export class Server extends EventEmitter {
             const session: Session = {
                 connection,
                 cipher: null,
+                authorized: false,
+                pin: "",
             };
             connection.on("message", (message) => {
                 if (message.type === "utf8") {
@@ -200,15 +224,19 @@ export class Server extends EventEmitter {
                                 const ok = await this.storage.isTrusted(session.cipher.remoteIdentity);
                                 if (!ok) {
                                     console.log("Remote identity is not trusted");
-                                    await this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
+                                    session.authorized = false;
+                                    // await this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
+                                } else {
+                                    session.authorized = true;
                                 }
+                                console.log("Save session");
                                 await this.storage.saveSession(session.cipher.remoteIdentity.signingKey.id, session.cipher);
                             } catch (err) {
                                 throw err;
                             }
                         }
-
                         if (!session.cipher) {
+                            console.log("load session");
                             session.cipher = await this.storage.loadSession(messageProto.senderKey.id);
                         }
 
@@ -217,8 +245,38 @@ export class Server extends EventEmitter {
                         const actionProto = await ActionProto.importProto(decryptedMessage);
 
                         return new Promise((resolve, reject) => {
-                            const emit = this.emit("message", new ServerMessageEvent(this, session, actionProto, resolve, reject));
-                            console.log("Emit message:", emit);
+                            if (actionProto.action === PinRequestProto.ACTION) {
+                                session.pin = generateCode();
+                                resolve(new ResultProto(actionProto));
+                            } else if (actionProto.action === PinConfirmProto.ACTION) {
+                                return actionProto.exportProto()
+                                    .then((raw) => {
+                                        return PinConfirmProto.importProto(raw);
+                                    })
+                                    .then((pinConfirmProto) => {
+                                        console.log(pinConfirmProto);
+                                        console.log("PIN:", pinConfirmProto.pin);
+                                        if (pinConfirmProto.pin === session.pin) {
+                                            console.log("resolve");
+                                            this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity)
+                                                .then(() => {
+                                                    resolve(new ResultProto(actionProto));
+                                                }, reject);
+                                        } else {
+                                            console.log("reject");
+                                            session.pin = generateCode();
+                                            reject(new Error("401: Wrong PIN code"));
+                                        }
+                                    });
+                            } else {
+                                if (!session.authorized) {
+                                    session.pin = generateCode();
+                                    console.log("Code:", session.pin);
+                                    throw new Error("404: Not authorized");
+                                }
+                                const emit = this.emit("message", new ServerMessageEvent(this, session, actionProto, resolve, reject));
+                                console.log("Emit message:", emit);
+                            }
                         })
                             .then((answer: ResultProto) => {
                                 (async () => {
@@ -284,4 +342,13 @@ export class Server extends EventEmitter {
  */
 function getRandomInt(min: number, max: number) {
     return Math.floor(Math.random() * (max + 1 - min)) + min;
+}
+
+function generateCode(size = 6) {
+    const res: number[] = [];
+    while (size--) {
+        res.push(Math.floor(Math.random() * 10));
+    }
+    console.log("Code:", res.join(""));
+    return res.join("");
 }

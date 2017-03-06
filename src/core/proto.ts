@@ -19,6 +19,7 @@ export class BaseProto extends ObjectProto {
 export class ActionProto extends BaseProto {
 
     public static INDEX = BaseProto.INDEX;
+    public static ACTION = "action";
     /**
      * name of the action
      */
@@ -29,6 +30,11 @@ export class ActionProto extends BaseProto {
      */
     @ProtobufProperty({ id: ActionProto.INDEX++, type: "string", required: true })
     public actionId: string;
+
+    constructor() {
+        super();
+        this.action = (this.constructor as any).ACTION;
+    }
 
 }
 
@@ -355,6 +361,34 @@ export class ResultProto extends ActionProto {
         if (proto) {
             this.actionId = proto.actionId;
             this.action = proto.action;
+        }
+    }
+
+}
+
+// PIN
+
+@ProtobufElement({ name: "PinRequest" })
+export class PinRequestProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "requestPIN";
+
+}
+
+@ProtobufElement({ name: "PinConfirm" })
+export class PinConfirmProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "login";
+
+    @ProtobufProperty({ id: PinConfirmProto.INDEX++, type: "string", required: true })
+    public pin: string;
+
+    public constructor(pin?: string) {
+        super();
+        if (pin) {
+            this.pin = pin;
         }
     }
 
