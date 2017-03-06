@@ -258,7 +258,7 @@ export class Server extends EventEmitter {
                                         actions: "Yes",
                                         closeLabel: "No",
                                         timeout: 30,
-                                    } as any, (error, response) => {
+                                    } as any, (error: Error, response: string) => {
                                         console.log("Notifier response:", response);
                                         if (response === "activate") {
                                             this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
