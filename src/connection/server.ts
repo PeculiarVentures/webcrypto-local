@@ -2,6 +2,7 @@ import { AsymmetricRatchet, Identity, PreKeyBundleProtocol } from "2key-ratchet"
 import { MessageSignedProtocol, PreKeyMessageProtocol } from "2key-ratchet";
 import { EventEmitter } from "events";
 import * as http from "http";
+import { NotificationCenter } from "node-notifier";
 import { assign, Convert } from "pvtsutils";
 import * as url from "url";
 import * as WebSocket from "websocket";
@@ -10,6 +11,8 @@ import { SERVER_WELL_KNOWN } from "./const";
 import { OpenSSLStorage } from "./storages/ossl";
 
 const D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
+
+const notifier = new NotificationCenter();
 
 type AlgorithmUsageType = "generateKey" | "importKey" | "exportKey" | "sign" | "verify" | "deriveKey" | "deriveBits" | "encrypt" | "decrypt" | "wrapKey" | "unwrapKey" | "digest";
 
@@ -247,7 +250,23 @@ export class Server extends EventEmitter {
                         return new Promise((resolve, reject) => {
                             if (actionProto.action === PinRequestProto.ACTION) {
                                 session.pin = generateCode();
-                                resolve(new ResultProto(actionProto));
+                                notifier.notify({
+                                    title: "webcrypto-local",
+                                    message: `Is it correct PIN ${session.pin}?`,
+                                    // wait: false,
+                                    actions: "Yes",
+                                    closeLabel: "No",
+                                    timeout: 30,
+                                } as any, (error, response) => {
+                                    console.log(response);
+                                    if (response === "activate") {
+                                        session.authorized = true;
+                                    }
+                                });
+                                // result
+                                const resultProto = new ResultProto(actionProto);
+                                resultProto.data = Convert.FromString(session.pin);
+                                resolve(resultProto);
                             } else if (actionProto.action === PinConfirmProto.ACTION) {
                                 return actionProto.exportProto()
                                     .then((raw) => {

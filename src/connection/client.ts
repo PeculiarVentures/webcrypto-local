@@ -141,28 +141,9 @@ export class Client extends EventEmitter {
 
                         // authenticate
                         this.send(PinRequestProto.ACTION, new PinRequestProto())
-                            .then(() => {
-                                const that = this;
-                                async function login() {
-                                    const pin = prompt("Enter PIN code:");
-                                    if (pin === null) {
-                                        return false;
-                                    }
-                                    try {
-                                        const proto = new PinConfirmProto(pin);
-                                        await that.send(PinConfirmProto.ACTION, proto);
-                                        that.emit("listening", new ClientListeningEvent(this, address));
-                                        return false;
-                                    } catch (e) {
-                                        console.log(e);
-                                        return true;
-                                    }
-                                }
-                                (async () => {
-                                    while (await login()) {
-                                        console.log("Login");
-                                    }
-                                })();
+                            .then((data) => {
+                                alert(`PIN: ${Convert.ToString(data)}`);
+                                this.emit("listening", new ClientListeningEvent(this, address));
                             });
                     })().catch((error) => this.emit("error", new ClientErrorEvent(this, error)));
                 };
