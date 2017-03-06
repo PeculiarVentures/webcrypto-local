@@ -12,7 +12,7 @@ import { OpenSSLStorage } from "./storages/ossl";
 
 const D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
 
-const notifier = new NotificationCenter();
+const notifier = new (NotificationCenter as any)();
 
 type AlgorithmUsageType = "generateKey" | "importKey" | "exportKey" | "sign" | "verify" | "deriveKey" | "deriveBits" | "encrypt" | "decrypt" | "wrapKey" | "unwrapKey" | "digest";
 
