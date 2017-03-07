@@ -222,7 +222,8 @@ export class Client extends EventEmitter {
                     // console.log(Convert.ToBinary(raw));
                     this.stack[data.actionId] = { resolve, reject };
                     this.socket.send(raw);
-                });
+                })
+                .catch(reject);
         });
     }
 
