@@ -7,9 +7,9 @@ import { assign, Convert } from "pvtsutils";
 import * as url from "url";
 import * as WebSocket from "websocket";
 import { ActionProto, AuthRequestProto, Event, ResultProto } from "../core";
+import { challenge } from "./challenge";
 import { SERVER_WELL_KNOWN } from "./const";
 import { OpenSSLStorage } from "./storages/ossl";
-import { generateOTP } from "./otp";
 
 const D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
 
@@ -253,7 +253,7 @@ export class Server extends EventEmitter {
                                     if (!session.authorized) {
                                         // Session is not authorized
                                         // generate OTP
-                                        const pin = await generateOTP(this.identity.signingKey.publicKey, session.cipher.remoteIdentity.signingKey);
+                                        const pin = await challenge(this.identity.signingKey.publicKey, session.cipher.remoteIdentity.signingKey);
                                         // Show notice
                                         notifier.notify({
                                             title: "webcrypto-local",
