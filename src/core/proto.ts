@@ -366,30 +366,12 @@ export class ResultProto extends ActionProto {
 
 }
 
-// PIN
+// Auth
 
-@ProtobufElement({ name: "PinRequest" })
-export class PinRequestProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-    public static ACTION = "requestPIN";
-
-}
-
-@ProtobufElement({ name: "PinConfirm" })
-export class PinConfirmProto extends ActionProto {
+@ProtobufElement({ name: "AuthRequest" })
+export class AuthRequestProto extends ActionProto {
 
     public static INDEX = ActionProto.INDEX;
-    public static ACTION = "login";
-
-    @ProtobufProperty({ id: PinConfirmProto.INDEX++, type: "string", required: true })
-    public pin: string;
-
-    public constructor(pin?: string) {
-        super();
-        if (pin) {
-            this.pin = pin;
-        }
-    }
+    public static ACTION = "auth";
 
 }

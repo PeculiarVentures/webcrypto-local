@@ -6,9 +6,10 @@ import { NotificationCenter } from "node-notifier";
 import { assign, Convert } from "pvtsutils";
 import * as url from "url";
 import * as WebSocket from "websocket";
-import { ActionProto, Event, PinConfirmProto, PinRequestProto, ResultProto } from "../core";
+import { ActionProto, AuthRequestProto, Event, ResultProto } from "../core";
 import { SERVER_WELL_KNOWN } from "./const";
 import { OpenSSLStorage } from "./storages/ossl";
+import { generateOTP } from "./otp";
 
 const D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
 
@@ -40,7 +41,6 @@ export interface Session {
     connection: WebSocket.connection;
     cipher: AsymmetricRatchet;
     authorized: boolean;
-    pin: string;
 }
 
 export class ServerEvent extends Event<Server> { }
@@ -202,7 +202,6 @@ export class Server extends EventEmitter {
                 connection,
                 cipher: null,
                 authorized: false,
-                pin: "",
             };
             connection.on("message", (message) => {
                 if (message.type === "utf8") {
@@ -248,52 +247,36 @@ export class Server extends EventEmitter {
                         const actionProto = await ActionProto.importProto(decryptedMessage);
 
                         return new Promise((resolve, reject) => {
-                            if (actionProto.action === PinRequestProto.ACTION) {
-                                if (!session.authorized) {
-                                    session.pin = generateCode();
-                                    notifier.notify({
-                                        title: "webcrypto-local",
-                                        message: `Is it correct PIN ${session.pin}?`,
-                                        // wait: false,
-                                        actions: "Yes",
-                                        closeLabel: "No",
-                                        timeout: 30,
-                                    } as any, (error: Error, response: string) => {
-                                        console.log("Notifier response:", response);
-                                        if (response === "activate") {
-                                            this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
-                                            session.authorized = true;
-                                        }
-                                    });
-                                }
-                                // result
-                                const resultProto = new ResultProto(actionProto);
-                                resultProto.data = Convert.FromString(session.pin);
-                                resolve(resultProto);
-                            } else if (actionProto.action === PinConfirmProto.ACTION) {
-                                return actionProto.exportProto()
-                                    .then((raw) => {
-                                        return PinConfirmProto.importProto(raw);
-                                    })
-                                    .then((pinConfirmProto) => {
-                                        console.log(pinConfirmProto);
-                                        console.log("PIN:", pinConfirmProto.pin);
-                                        if (pinConfirmProto.pin === session.pin) {
-                                            console.log("resolve");
-                                            this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity)
-                                                .then(() => {
-                                                    resolve(new ResultProto(actionProto));
-                                                }, reject);
-                                        } else {
-                                            console.log("reject");
-                                            session.pin = generateCode();
-                                            reject(new Error("401: Wrong PIN code"));
-                                        }
-                                    });
+                            if (actionProto.action === AuthRequestProto.ACTION) {
+                                (async () => {
+                                    const resultProto = new ResultProto(actionProto);
+                                    if (!session.authorized) {
+                                        // Session is not authorized
+                                        // generate OTP
+                                        const pin = await generateOTP(this.identity.signingKey.publicKey, session.cipher.remoteIdentity.signingKey);
+                                        // Show notice
+                                        notifier.notify({
+                                            title: "webcrypto-local",
+                                            message: `Is it correct PIN ${pin}?`,
+                                            wait: true,
+                                            actions: "Yes",
+                                            closeLabel: "No",
+                                            // timeout: 30,
+                                        } as any, (error: Error, response: string) => {
+                                            console.log("Notifier response:", response);
+                                            if (response === "activate") {
+                                                this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
+                                                session.authorized = true;
+                                            }
+                                        });
+                                    }
+                                    // result
+                                    resultProto.data = new Uint8Array([session.authorized ? 1 : 0]).buffer;
+                                    resolve(resultProto);
+                                })().catch(reject);
                             } else {
+                                // If session is not authorized throw error
                                 if (!session.authorized) {
-                                    session.pin = generateCode();
-                                    console.log("Code:", session.pin);
                                     throw new Error("404: Not authorized");
                                 }
                                 const emit = this.emit("message", new ServerMessageEvent(this, session, actionProto, resolve, reject));
@@ -364,13 +347,4 @@ export class Server extends EventEmitter {
  */
 function getRandomInt(min: number, max: number) {
     return Math.floor(Math.random() * (max + 1 - min)) + min;
-}
-
-function generateCode(size = 6) {
-    const res: number[] = [];
-    while (size--) {
-        res.push(Math.floor(Math.random() * 10));
-    }
-    console.log("Code:", res.join(""));
-    return res.join("");
 }

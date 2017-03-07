@@ -2,9 +2,10 @@ import { AsymmetricRatchet, Identity, MessageSignedProtocol, PreKeyBundleProtoco
 import { EventEmitter } from "events";
 import { Convert } from "pvtsutils";
 import { ActionProto, Event, ServerInfo } from "../core";
-import { PinRequestProto, ResultProto } from "../core";
+import { AuthRequestProto, ResultProto } from "../core";
 import { SERVER_WELL_KNOWN } from "./const";
 import { BrowserStorage } from "./storages/browser";
+import { generateOTP } from "./otp";
 
 export class ClientEvent extends Event<Client> {
 }
@@ -140,12 +141,14 @@ export class Client extends EventEmitter {
                         });
 
                         // authenticate
-                        this.send(PinRequestProto.ACTION, new PinRequestProto())
+                        this.send(AuthRequestProto.ACTION, new AuthRequestProto())
                             .then((data) => {
-                                if (data && data.byteLength) {
-                                    alert(`PIN: ${Convert.ToString(data)}`);
-                                }
-                                this.emit("listening", new ClientListeningEvent(this, address));
+                                return (async () => {
+                                    if (data && !(new Uint8Array(data)[0])) {
+                                        alert(`PIN: ${await generateOTP(this.cipher.remoteIdentity.signingKey, identity.signingKey.publicKey)}`);
+                                    }
+                                    this.emit("listening", new ClientListeningEvent(this, address));
+                                })();
                             });
                     })().catch((error) => this.emit("error", new ClientErrorEvent(this, error)));
                 };
