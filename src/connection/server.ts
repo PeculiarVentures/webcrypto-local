@@ -85,6 +85,7 @@ export class ServerMessageEvent extends ServerEvent {
     constructor(target: Server, session: Session, message: ActionProto, resolve?: () => void, reject?: (error: Error) => void) {
         super(target, "message");
         this.message = message;
+        this.session = session;
         this.resolve = resolve;
         this.reject = reject;
     }

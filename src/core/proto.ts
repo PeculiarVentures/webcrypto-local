@@ -375,3 +375,49 @@ export class AuthRequestProto extends ActionProto {
     public static ACTION = "auth";
 
 }
+
+// Key storage
+
+@ProtobufElement({ name: "KeyStorageSetItem" })
+export class KeyStorageSetItemProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "keyStorageSetItem";
+
+    @ProtobufProperty({ id: KeyStorageSetItemProto.INDEX++, required: true, type: "string" })
+    public key: string;
+
+    @ProtobufProperty({ id: KeyStorageSetItemProto.INDEX++, required: true, parser: CryptoKeyProto })
+    public item: CryptoKeyProto;
+
+}
+
+@ProtobufElement({ name: "KeyStorageGetItem" })
+export class KeyStorageGetItemProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "keyStorageGetItem";
+
+    @ProtobufProperty({ id: KeyStorageGetItemProto.INDEX++, required: true, type: "string" })
+    public key: string;
+
+}
+
+@ProtobufElement({ name: "KeyStorageKeys" })
+export class KeyStorageKeysProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "keyStorageKeys";
+
+}
+
+@ProtobufElement({ name: "KeyStorageRemoveItem" })
+export class KeyStorageRemoveItemProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "keyStorageRemoveItem";
+
+    @ProtobufProperty({ id: KeyStorageRemoveItemProto.INDEX++, required: true, type: "string" })
+    public key: string;
+
+}

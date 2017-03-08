@@ -4,5 +4,6 @@ dist/*.js
 out
 
 .webcrypto
+.keystorage
 .DS_Store
 *.log
