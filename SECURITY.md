@@ -58,6 +58,9 @@ The design mitigates this risk in a few ways:
 1. By leveraging strong authenticated encryption with forwarding secrecy,
 2. By locating the server port on a high-level port that, on most systems, would require 'root' or 'administrative' permissions.
 
+Unmitigated risks include:
+!!To Be Clarified!!
+
 ### Cryptographic Weaknesses
 In a system where weak cryptographic primitives were in use or flawed cryptographic implementations were in use an attacker could potentially undue the cryptographic protections.
 
@@ -89,5 +92,6 @@ The design mitigates this risk in a few ways:
 - Leverages a well-reviewed protocol for encryption, integrity and session management,
 - Utilizes `ProtoBufs` to ensure normalized and robust packet parsing.
 
+Unmitigated risks include:
 !!Add note about how 2key-ratchet is slightly different!!
 
