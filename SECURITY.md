@@ -1,9 +1,7 @@
 # Security 
----
 `webcrypto-local` enables browser-based applications to enroll, sign, verify and encrypt utilizing smart cards as well as platform or user agent cryptographic and certificate store implementations.
 
 ## Overview
----
 `webcrypto-local` consists of several components, the first of which is a polyfill for WebCrypto that shares the same name. This Webcrypto implementation communicates with a locally installed server called `webcrypto-remote` with a protocol called `webcrypto-socket`. `webcrypto-remote` is built on top of a set of `PKCS#11` implementations that provide access to various cryptographic implementations and certificate stores.
 
 ### Discovery
@@ -42,7 +40,6 @@ The `webcrypto-server` relies on the operating system provided notification mech
 
 
 ## Goals
----
 - The browsers `same origin policy` is honored,
 - The solution works cross-browser, and cross-platform,
 - Only approved websites can perform cryptographic or certificate related operations,
@@ -54,7 +51,6 @@ The `webcrypto-server` relies on the operating system provided notification mech
  
 
 ## Risks and Mitigations
----
 ### Man-In-The-Middle
 In a system where the peers were not authenticated, a session not encrypted, or the session was poorly encrypted an attacker could potentially observe, modify, impersonate, or perform actions without the user's consent.
 
