@@ -6,6 +6,8 @@ type IJsonOpenSSLKeyStorage = { [key: string]: IJsonOpenSSLKey };
 
 interface IJsonOpenSSLKey extends CryptoKey {
     raw: string;
+    createdAt: string;
+    lastUsed: string;
 }
 
 export class OpenSSLKeyStorage implements IKeyStorage {
@@ -90,6 +92,8 @@ export class OpenSSLKeyStorage implements IKeyStorage {
                     type: key.type,
                     usages: key.usages || [],
                     raw: raw.toString("base64"),
+                    createdAt: new Date().toISOString(),
+                    lastUsed: new Date().toISOString(),
                 };
                 return json;
             });
