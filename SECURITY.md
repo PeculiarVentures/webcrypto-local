@@ -10,7 +10,7 @@
 The `webcrypto-local` client needs to discover the existence of a `webcrypto-remote` server to operate. The `webcrypto-remote` server is installed as a listener on a high-order, well-known port. The existence and capabilities of the server are discovered via by requesting `http://localhost:{port}/.well-known/webcrypto-socket`.
 
 ### Sessions
-`webcrypto-local` talks to `webcrypto-remote` utilizing a session managed by `2key-ratchet`. This package implements an implementation of a `Double Ratchet` and `X3DH` based solution for session establishment and protection over `websockets`.
+`webcrypto-local` talks to `webcrypto-remote` utilizing a session managed by `2key-ratchet`. This package provides an implementation of a `Double Ratchet` and `X3DH` based solution for session establishment and protection over `websockets`.
 
 This approach provides integrity and encryption with forward-secrecy by ensuring each message is encrypted with a new cryptographic key.
 
