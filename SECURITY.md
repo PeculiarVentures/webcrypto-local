@@ -85,6 +85,9 @@ Unmitigated risks include:
 - Not all browsers protect stored WebCrypto keys at rest, as such an attacker with local privileges may be able to steal the associated keys.
 - The server keys are stored in the clear.
 
+## Unapproved key use
+!!To Be Clarified!!
+
 ## Protocol Weakness
 In a system using poorly designed set of protocols, an attacker could use logic problems in the protocol to expose a vulnerability in the remote implementation.
 
