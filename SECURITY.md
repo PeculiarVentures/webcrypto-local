@@ -13,10 +13,10 @@ The `webcrypto-local` client needs to discover the existence of a `webcrypto-rem
 This approach provides integrity and encryption with forward-secrecy by ensuring each message is encrypted with a new cryptographic key.
 
 ### Key Management
-<To Be clarified>
+!!To Be clarified!!
 
 ### Pinning
-<To Be clarified>
+!!To Be clarified!!
 
 ### Protocol
 Once a session is established with `2key-socket` the `webcrypto-socket` protocol takes over. This protocol is defined as a set of `ProtoBuf` messages. The server implementation of the protocol does not allow clients to continue until they have been successfully authenticated by the user.
