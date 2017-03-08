@@ -33,10 +33,10 @@ This `Password Authenticated Key Exchange (PAKE)` approach helps ensure a middle
 The `webcrypto-server` relies on the operating system provided notification mechanisms to display and confirm that the pin presented by the client was correct.
 
 ### Authorization
-<To Be Clarified>
+!!To Be Clarified!!
 
 ### Rate limiting
-<To Be Clarified>
+!!To Be Clarified!!
 
 
 ## Goals
@@ -89,4 +89,5 @@ The design mitigates this risk in a few ways:
 - Leverages a well-reviewed protocol for encryption, integrity and session management,
 - Utilizes `ProtoBufs` to ensure normalized and robust packet parsing.
 
-<Add note about how 2key-ratchet is slightly different>
+!!Add note about how 2key-ratchet is slightly different!!
+
