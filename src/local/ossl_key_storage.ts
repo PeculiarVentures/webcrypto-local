@@ -32,7 +32,9 @@ export class OpenSSLKeyStorage implements IKeyStorage {
     public async getItem(key: string) {
         const keys = this.readFile();
         const keyJson = keys[key];
-        return this.keyFromJson(keyJson);
+        const res = this.keyFromJson(keyJson);
+        this.writeFile(keys);
+        return res;
     }
 
     public async removeItem(key: string) {
@@ -114,6 +116,7 @@ export class OpenSSLKeyStorage implements IKeyStorage {
             default:
                 throw new Error(`Unsupported type of CryptoKey '${obj.type}'`);
         }
+        obj.lastUsed = new Date().toISOString();
         return crypto.subtle.importKey(format, new Buffer(obj.raw, "base64"), obj.algorithm as any, obj.extractable, obj.usages);
     }
 
