@@ -97,6 +97,10 @@ Unmitigated risks include:
 !!ex: sign exchange keys and walk off with them !!
 !!ex: sign documents keys and walk off with them !!
 
+### Privacy
+!!To Be Clarified!!
+!!ex: creating keys and tracking them !!
+!!ex: storing values and tracking them !!
 
 ### Protocol Weakness
 In a system using poorly designed set of protocols, an attacker could use logic problems in the protocol to expose a vulnerability in the remote implementation.
