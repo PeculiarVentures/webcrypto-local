@@ -25,7 +25,7 @@ export class SocketCryptoKey implements CryptoKey {
         this.id = key.id;
         this.algorithm = key.algorithm;
         this.extractable = key.extractable;
-        this.usages = key.usage;
+        this.usages = key.usages;
         this.type = key.type;
     }
 
@@ -34,7 +34,7 @@ export class SocketCryptoKey implements CryptoKey {
         proto.id = this.id;
         proto.extractable = this.extractable;
         proto.algorithm.fromAlgorithm(this.algorithm);
-        proto.usage = this.usages;
+        proto.usages = this.usages;
         proto.type = this.type;
         return proto;
     }

@@ -17,7 +17,7 @@ export class ServiceCryptoKey {
         proto.algorithm.fromAlgorithm(this.key.algorithm);
         proto.extractable = this.key.extractable;
         proto.type = this.key.type;
-        proto.usage = this.key.usages;
+        proto.usages = this.key.usages;
         return proto;
     }
 

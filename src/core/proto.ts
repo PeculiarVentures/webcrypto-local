@@ -141,7 +141,7 @@ export class AlgorithmProto extends BaseAlgorithmProto {
 }
 
 @ProtobufElement({ name: "CryptoKey" })
-export class CryptoKeyProto extends BaseProto {
+export class CryptoKeyProto extends BaseProto implements CryptoKey {
 
     public static INDEX = BaseProto.INDEX;
 
@@ -158,7 +158,7 @@ export class CryptoKeyProto extends BaseProto {
     public extractable: boolean;
 
     @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bytes", converter: ArrayStringConverter })
-    public usage: string[];
+    public usages: string[];
 
 }
 
@@ -419,5 +419,116 @@ export class KeyStorageRemoveItemProto extends ActionProto {
 
     @ProtobufProperty({ id: KeyStorageRemoveItemProto.INDEX++, required: true, type: "string" })
     public key: string;
+
+}
+
+// Certificate storage
+
+@ProtobufElement({ name: "CertificateItem" })
+export class CertificateItemProto extends BaseProto {
+
+    public static INDEX = BaseProto.INDEX;
+
+    @ProtobufProperty({ id: CertificateItemProto.INDEX++, required: true, converter: HexStringConverter })
+    public id: string;
+
+    @ProtobufProperty({ id: CertificateItemProto.INDEX++, required: true, parser: CryptoKeyProto })
+    public publicKey: CryptoKeyProto;
+
+    @ProtobufProperty({ id: CertificateItemProto.INDEX++, required: true, type: "string" })
+    public type: string;
+
+    @ProtobufProperty({ id: CertificateItemProto.INDEX++, required: true, converter: ArrayBufferConverter })
+    public value: ArrayBuffer;
+
+}
+
+@ProtobufElement({ name: "X509Certificate" })
+export class X509CertificateProto extends CertificateItemProto implements IX509Certificate {
+
+    public static INDEX = CertificateItemProto.INDEX;
+
+    @ProtobufProperty({ id: X509CertificateProto.INDEX++, required: true, converter: HexStringConverter })
+    public serialNumber: string;
+
+    @ProtobufProperty({ id: X509CertificateProto.INDEX++, required: true, type: "string" })
+    public issuerName: string;
+
+    @ProtobufProperty({ id: X509CertificateProto.INDEX++, required: true, type: "string" })
+    public subjectName: string;
+
+}
+
+@ProtobufElement({ name: "X509Request" })
+export class X509RequestProto extends CertificateItemProto implements IX509Request {
+
+    public static INDEX = CertificateItemProto.INDEX;
+
+    @ProtobufProperty({ id: X509CertificateProto.INDEX++, required: true, type: "string" })
+    public subjectName: string;
+
+}
+
+@ProtobufElement({ name: "CertificateStorageSetItem" })
+export class CertificateStorageSetItemProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "certificateStorage/setItem";
+
+    @ProtobufProperty({ id: CertificateStorageSetItemProto.INDEX++, required: true, type: "string" })
+    public key: string;
+
+    @ProtobufProperty({ id: CertificateStorageSetItemProto.INDEX++, required: true, parser: CertificateItemProto })
+    public item: CertificateItemProto;
+
+}
+
+@ProtobufElement({ name: "CertificateStorageGetItem" })
+export class CertificateStorageGetItemProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "certificateStorage/getItem";
+
+    @ProtobufProperty({ id: CertificateStorageGetItemProto.INDEX++, required: true, type: "string" })
+    public key: string;
+
+}
+
+@ProtobufElement({ name: "CertificateStorageKeys" })
+export class CertificateStorageKeysProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "certificateStorage/keys";
+
+}
+
+@ProtobufElement({ name: "CertificateStorageRemoveItem" })
+export class CertificateStorageRemoveItemProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "certificateStorage/removeItem";
+
+    @ProtobufProperty({ id: CertificateStorageRemoveItemProto.INDEX++, required: true, type: "string" })
+    public key: string;
+
+}
+
+@ProtobufElement({ name: "CertificateStorageImport" })
+export class CertificateStorageImportProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "certificateStorage/import";
+
+    @ProtobufProperty({ id: CertificateStorageImportProto.INDEX++, required: true, type: "string" })
+    public type: string;
+
+    @ProtobufProperty({ id: CertificateStorageImportProto.INDEX++, required: true, converter: ArrayBufferConverter })
+    public data: ArrayBuffer;
+
+    @ProtobufProperty({ id: CertificateStorageImportProto.INDEX++, required: true, parser: AlgorithmProto })
+    public algorithm: AlgorithmProto;
+
+    @ProtobufProperty({ id: CertificateStorageImportProto.INDEX++, required: true, converter: ArrayStringConverter })
+    public keyUsages: string[];
 
 }
