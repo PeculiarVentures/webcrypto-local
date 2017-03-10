@@ -15,6 +15,9 @@ This approach provides integrity and encryption with forward-secrecy by ensuring
 ### Key Management
 !!To Be clarified!!
 
+## Certificate Management
+!!To Be clarified!!
+
 ### Pinning
 !!To Be clarified!!
 
