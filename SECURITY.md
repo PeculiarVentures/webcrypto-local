@@ -41,7 +41,7 @@ The `webcrypto-server` relies on the operating system provided notification mech
 ### Rate limiting
 !!To Be Clarified!!
 
-## Warning Fatigue
+### Warning Fatigue
 !!To Be clarified!!
 
 
