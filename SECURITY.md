@@ -88,8 +88,9 @@ Unmitigated risks include:
 - Not all browsers protect stored WebCrypto keys at rest, as such an attacker with local privileges may be able to steal the associated keys.
 - The server keys are stored in the clear.
 
-### Filling up key or certificate storage
+### Denial of Service
 !!To Be clarified!!
+!!ex:  Filling up key or certificate storage!!
 
 ### Unapproved key use
 !!To Be Clarified!!
