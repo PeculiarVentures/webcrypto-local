@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import { Convert } from "pvtsutils";
 import { X509Certificate } from "../pki/x509";
+import { X509Request } from "../pki/request";
 
 const crypto: Crypto = new (require("node-webcrypto-ossl"))();
 
@@ -39,6 +40,19 @@ export class OpenSSLCertificateStorage implements ICertificateStorage {
                     value: data,
                 };
                 res = resX509;
+                break;
+            }
+            case "request": {
+                const request = X509Request.importRaw(data);
+                const id = await request.thumbprint(crypto, "SHA-256");
+                const resRequest: IX509Request = {
+                    id: Convert.ToHex(id),
+                    subjectName: request.subjectName,
+                    publicKey: await request.exportKey(crypto, algorithm, keyUsages),
+                    type,
+                    value: data,
+                };
+                res = resRequest;
                 break;
             }
             default:

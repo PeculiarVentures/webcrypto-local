@@ -9,7 +9,10 @@ import { ActionProto, BaseProto, ResultProto } from "../core";
 import { UnwrapKeyProto, WrapKeyProto } from "../core";
 import { KeyStorageGetItemProto, KeyStorageKeysProto, KeyStorageRemoveItemProto, KeyStorageSetItemProto } from "../core";
 import { DeriveBitsProto, DeriveKeyProto } from "../core";
-import { CertificateStorageGetItemProto, CertificateStorageKeysProto, CertificateStorageRemoveItemProto, CertificateStorageSetItemProto, CertificateItemProto, X509CertificateProto, CertificateStorageImportProto } from "../core";
+import {
+    CertificateItemProto, CertificateStorageGetItemProto, CertificateStorageImportProto, CertificateStorageKeysProto,
+    CertificateStorageRemoveItemProto, CertificateStorageSetItemProto, X509CertificateProto, X509RequestProto,
+} from "../core";
 import { ServiceCryptoKey } from "./key";
 import { OpenSSLCertificateStorage } from "./ossl_cert_storage";
 import { OpenSSLKeyStorage } from "./ossl_key_storage";
@@ -402,6 +405,10 @@ export class LocalServer extends EventEmitter {
                         certItem = await X509CertificateProto.importProto(await proto.item.exportProto());
                         break;
                     }
+                    case "request": {
+                        certItem = await X509RequestProto.importProto(await proto.item.exportProto());
+                        break;
+                    }
                     default:
                         throw new Error(`Unsupported CertificateItem type '${proto.item.type}'`);
                 }
@@ -492,6 +499,17 @@ async function certItemToProto(item: ICertificateStorageItem, publicKey: Service
             x509Proto.id = x509.id;
             x509Proto.serialNumber = x509.serialNumber;
             x509Proto.issuerName = x509.issuerName;
+            x509Proto.subjectName = x509.subjectName;
+            x509Proto.publicKey = await publicKey.toProto();
+            x509Proto.type = item.type;
+            x509Proto.value = item.value;
+            certProto = x509Proto;
+            break;
+        }
+        case "request": {
+            const x509Proto = new X509RequestProto();
+            const x509 = item as IX509Request;
+            x509Proto.id = x509.id;
             x509Proto.subjectName = x509.subjectName;
             x509Proto.publicKey = await publicKey.toProto();
             x509Proto.type = item.type;

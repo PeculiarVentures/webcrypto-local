@@ -1,12 +1,12 @@
 import * as Asn1Js from "asn1js";
-import { Convert } from "pvtsutils";
 import { nameToString } from "./x500_name";
 
-const { Certificate, setEngine } = require("pkijs");
+const { CertificationRequest } = require("pkijs");
 
 export declare type DigestAlgorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
 
-export class X509Certificate {
+
+export class X509Request {
 
     public static importRaw(rawData: BufferSource) {
         const res = new this();
@@ -23,20 +23,6 @@ export class X509Certificate {
             this.importRaw(buf);
             this.raw = buf;
         }
-    }
-
-    /**
-     * Gets a serial number of the certificate in HEX format
-     */
-    public get serialNumber(): string {
-        return Convert.ToHex(new Uint8Array(this.asn1.serialNumber.valueBlock.valueHex));
-    }
-
-    /**
-     * Gets a issuer name of the certificate
-     */
-    public get issuerName(): string {
-        return nameToString(this.asn1.issuer);
     }
 
     /**
@@ -74,7 +60,7 @@ export class X509Certificate {
         }
         this.raw = new Uint8Array(rawData as ArrayBuffer);
         const asn1 = Asn1Js.fromBER(this.raw.buffer);
-        this.asn1 = new Certificate({ schema: asn1.result });
+        this.asn1 = new CertificationRequest({ schema: asn1.result });
     }
 
     /**
@@ -85,19 +71,10 @@ export class X509Certificate {
     public exportKey(provider: Crypto, algorithm: Algorithm, usages: string[]): PromiseLike<CryptoKey> {
         return Promise.resolve()
             .then(() => {
-                setEngine("unknown", provider, provider.subtle);
-                const alg = {
-                    algorithm,
-                    usages,
-                };
-                if (alg.algorithm.name.toUpperCase() === "ECDSA") {
-                    // Set named curve
-                    (alg.algorithm as any).namedCurve = this.asn1.subjectPublicKeyInfo.toJSON().crv;
-                }
-                return this.asn1.getPublicKey({ algorithm: alg })
-                    .then((key: CryptoKey) => {
-                        return key;
-                    });
+                const publicKeyInfoSchema = this.asn1.subjectPublicKeyInfo.toSchema();
+                const publicKeyInfoBuffer = publicKeyInfoSchema.toBER(false);
+
+                return provider.subtle.importKey("spki", publicKeyInfoBuffer, algorithm, true, usages);
             });
     }
 

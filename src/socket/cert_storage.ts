@@ -1,7 +1,7 @@
 import { Convert } from "pvtsutils";
-import { CertificateItemProto, CertificateStorageGetItemProto, CertificateStorageImportProto, CertificateStorageKeysProto, CertificateStorageRemoveItemProto, CertificateStorageSetItemProto, X509CertificateProto } from "../core/proto";
-import { SocketCrypto } from "./client";
 import { PrepareAlgorithm } from "webcrypto-core";
+import { CertificateItemProto, CertificateStorageGetItemProto, CertificateStorageImportProto, CertificateStorageKeysProto, CertificateStorageRemoveItemProto, CertificateStorageSetItemProto, X509CertificateProto, X509RequestProto } from "../core/proto";
+import { SocketCrypto } from "./client";
 
 export class CertificateStorage implements ICertificateStorage {
 
@@ -70,6 +70,9 @@ async function prepareCertItem(item: CertificateItemProto) {
     switch (item.type) {
         case "x509": {
             return await X509CertificateProto.importProto(raw);
+        }
+        case "request": {
+            return await X509RequestProto.importProto(raw);
         }
         default:
             throw new Error(`Unsupported CertificateItem type '${item.type}'`);
