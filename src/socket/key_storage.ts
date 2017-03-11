@@ -1,7 +1,6 @@
 import { Convert } from "pvtsutils";
 import { CryptoKeyProto, KeyStorageGetItemProto, KeyStorageKeysProto, KeyStorageRemoveItemProto, KeyStorageSetItemProto } from "../core/proto";
 import { SocketCrypto } from "./client";
-import { SocketCryptoKey } from "./key";
 
 export class KeyStorage implements IKeyStorage {
 
@@ -27,20 +26,19 @@ export class KeyStorage implements IKeyStorage {
         const result = await this.service.client.send(KeyStorageGetItemProto.ACTION, proto);
 
         // prepare result
-        let socketKey: SocketCryptoKey | null = null;
+        let socketKey: CryptoKeyProto | null = null;
         if (result && result.byteLength) {
             const keyProto = await CryptoKeyProto.importProto(result);
-            socketKey = new SocketCryptoKey(keyProto);
+            socketKey = keyProto;
         }
         return socketKey;
     }
 
-    public async setItem(key: string, value: SocketCryptoKey) {
+    public async setItem(key: string, value: CryptoKeyProto) {
         // prepare request
         const proto = new KeyStorageSetItemProto();
         proto.key = key;
-        const keyProto = value.toProto();
-        proto.item = keyProto;
+        proto.item = value;
 
         // send and receive result
         await this.service.client.send(KeyStorageSetItemProto.ACTION, proto);

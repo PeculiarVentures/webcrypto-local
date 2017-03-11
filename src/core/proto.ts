@@ -163,7 +163,7 @@ export class CryptoKeyProto extends BaseProto implements CryptoKey {
 }
 
 @ProtobufElement({ name: "CryptoKeyPair" })
-export class CryptoKeyPairProto extends BaseProto {
+export class CryptoKeyPairProto extends BaseProto implements CryptoKeyPair {
 
     public static INDEX = BaseProto.INDEX;
 

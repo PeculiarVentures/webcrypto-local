@@ -384,7 +384,7 @@ export class LocalServer extends EventEmitter {
                 // add key to memory storage
                 const thumbprint = await this.getThumbprint(item.publicKey);
                 const cryptoKey = new ServiceCryptoKey(thumbprint, item.publicKey);
-                this.memoryStorage.push({ type: item.type, session, data: cryptoKey, id: thumbprint });
+                this.memoryStorage.push({ type: item.publicKey.type, session, data: cryptoKey, id: thumbprint });
 
                 // prepare and send data
                 const resultProto = new ResultProto(message);
@@ -438,7 +438,7 @@ export class LocalServer extends EventEmitter {
                 // add key to memory storage
                 const thumbprint = await this.getThumbprint(item.publicKey);
                 const cryptoKey = new ServiceCryptoKey(thumbprint, item.publicKey);
-                this.memoryStorage.push({ type: item.type, session, data: cryptoKey, id: thumbprint });
+                this.memoryStorage.push({ type: item.publicKey.type, session, data: cryptoKey, id: thumbprint });
                 // convert cert item to proto
                 const certProto = await certItemToProto(item, cryptoKey);
                 // result
