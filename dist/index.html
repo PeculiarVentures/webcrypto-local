@@ -9,6 +9,9 @@
 <body>
     <script src="http://cdn.rawgit.com/dcodeIO/protobuf.js/6.6.0/dist/protobuf.js"></script>
     <script src="https://cdn.rawgit.com/jakearchibald/idb/97e4e878/lib/idb.js"></script>
+    <script src="https://peculiarventures.github.io/pv-webcrypto-tests/src/webcrypto-liner.min.js"></script>
+    <script src="https://peculiarventures.github.io/pv-webcrypto-tests/src/asmcrypto.js"></script>
+    <script src="https://peculiarventures.github.io/pv-webcrypto-tests/src/elliptic.js"></script>
     <script src="./webcrypto-socket.js"></script>
     <script>
         var ws = new WebcryptoSocket.SocketCrypto();
@@ -18,7 +21,7 @@
             })
             .on("listening", (e) => {
                 console.info(e.address);
-                Test6();
+                Test7();
             })
             .on("close", (e) => {
                 console.info("close");
@@ -150,6 +153,46 @@
                     console.log(key);
                 })
                 .catch((e) => {
+                    console.error(e);
+                })
+        }
+
+        function Test7() {
+            var alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 1024 }
+            // var alg = { name: "RSA-PSS", hash: "SHA-256", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 1024, saltLength: 32 }
+            // var alg = { name: "ECDSA", hash: "SHA-256", namedCurve: "P-256" }
+            var keys;
+            var data = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]);
+            ws.subtle.generateKey(
+                alg,
+                false,
+                ["sign", "verify"]
+            )
+                .then((k) => {
+                    keys = k;
+                    // Save keys to remote storage
+                    return ws.keyStorage.setItem("rsa-pkey", k.privateKey)
+                        .then(() => {
+                            return ws.keyStorage.setItem("rsa-pubkey", k.publicKey);
+                        })
+                })
+                .then(() => {
+                    // Get list of names of remote keys
+                    return ws.keyStorage.keys()
+                        .then((keys) => {
+                            console.log("KeyStorage keys:", keys);
+                        });
+                })
+                .then(() => {
+                    return ws.keyStorage.getItem("rsa-pkey")
+                        .then((key) => {
+                            return ws.subtle.sign(alg, key, data);
+                        });
+                })
+                .then((signature) => {
+                    console.log("Signature:", new Uint8Array(signature));
+                })
+                .catch(e => {
                     console.error(e);
                 })
         }

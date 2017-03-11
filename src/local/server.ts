@@ -1,13 +1,16 @@
 import { EventEmitter } from "events";
+import * as fs from "fs";
 import { Convert } from "pvtsutils";
 import { Server, Session } from "../connection/server";
-import { ActionProto, BaseProto, ResultProto } from "../core";
 import { CryptoKeyPairProto, CryptoKeyProto } from "../core";
 import { Event } from "../core";
 import { EncryptProto, ExportProto, GenerateKeyProto, ImportProto, SignProto, VerifyProto } from "../core";
-import { DeriveBitsProto, DeriveKeyProto } from "../core";
+import { ActionProto, BaseProto, ResultProto } from "../core";
 import { UnwrapKeyProto, WrapKeyProto } from "../core";
+import { KeyStorageGetItemProto, KeyStorageKeysProto, KeyStorageRemoveItemProto, KeyStorageSetItemProto } from "../core";
+import { DeriveBitsProto, DeriveKeyProto } from "../core";
 import { ServiceCryptoKey } from "./key";
+import { OpenSSLKeyStorage } from "./ossl_key_storage";
 
 const WebCryptoOSSL = require("node-webcrypto-ossl");
 
@@ -63,6 +66,11 @@ export class LocalServer extends EventEmitter {
     constructor() {
         super();
         this.crypto = new WebCryptoOSSL();
+
+        // create folder for OSSL key storage
+        if (!fs.existsSync(".keystorage")) {
+            fs.mkdirSync(".keystorage");
+        }
     }
 
     public on(event: "listening", listener: (e: LocalServerListeningEvent) => void): this;
@@ -301,6 +309,57 @@ export class LocalServer extends EventEmitter {
                 const resultProto = new ResultProto(message);
                 resultProto.data = data;
 
+                return resultProto;
+            }
+            case KeyStorageGetItemProto.ACTION.toLowerCase(): {
+                // prepare incoming data
+                const proto = await KeyStorageGetItemProto.importProto(await message.exportProto());
+                // load key storage
+                const keyStorage = new OpenSSLKeyStorage(`.keystorage/${session.cipher.identity.signingKey.publicKey.id}`);
+                // do operation
+                const key = await keyStorage.getItem(proto.key);
+
+                // add keys to memory storage
+                const thumbprint = this.getIdentity();
+                const cryptoKey = new ServiceCryptoKey(thumbprint, key);
+                this.memoryStorage.push({ type: key.type, session, data: cryptoKey, id: thumbprint });
+
+                // prepare and send data
+                const resultProto = new ResultProto(message);
+                resultProto.data = await cryptoKey.toProto().exportProto();
+                return resultProto;
+            }
+            case KeyStorageSetItemProto.ACTION.toLowerCase(): {
+                // prepare incoming data
+                const proto = await KeyStorageSetItemProto.importProto(await message.exportProto());
+                const key = this.getKeyFromStorage(proto.item);
+                // load key storage
+                const keyStorage = new OpenSSLKeyStorage(`.keystorage/${session.cipher.identity.signingKey.publicKey.id}`);
+                // do operation
+                await keyStorage.setItem(proto.key, key.key);
+                // result
+                const resultProto = new ResultProto(message);
+                return resultProto;
+            }
+            case KeyStorageRemoveItemProto.ACTION.toLowerCase(): {
+                // prepare incoming data
+                const proto = await KeyStorageRemoveItemProto.importProto(await message.exportProto());
+                // load key storage
+                const keyStorage = new OpenSSLKeyStorage(`.keystorage/${session.cipher.identity.signingKey.publicKey.id}`);
+                // do operation
+                await keyStorage.removeItem(proto.key);
+                // result
+                const resultProto = new ResultProto(message);
+                return resultProto;
+            }
+            case KeyStorageKeysProto.ACTION.toLowerCase(): {
+                // load key storage
+                const keyStorage = new OpenSSLKeyStorage(`.keystorage/${session.cipher.identity.signingKey.publicKey.id}`);
+                // do operation
+                const keys = await keyStorage.keys();
+                // result
+                const resultProto = new ResultProto(message);
+                resultProto.data = Convert.FromUtf8String(keys.join(";"));
                 return resultProto;
             }
             default:

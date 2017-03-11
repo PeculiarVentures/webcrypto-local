@@ -2,7 +2,8 @@ import { AsymmetricRatchet, Identity, MessageSignedProtocol, PreKeyBundleProtoco
 import { EventEmitter } from "events";
 import { Convert } from "pvtsutils";
 import { ActionProto, Event, ServerInfo } from "../core";
-import { ResultProto } from "../core";
+import { AuthRequestProto, ResultProto } from "../core";
+import { challenge } from "./challenge";
 import { SERVER_WELL_KNOWN } from "./const";
 import { BrowserStorage } from "./storages/browser";
 
@@ -120,15 +121,15 @@ export class Client extends EventEmitter {
                             await storage.saveIdentity(identity);
                         }
                         const remoteIdentityId = "0";
-                        const remoteIdentity = await storage.loadRemoteIdentity(remoteIdentityId);
+                        // const remoteIdentity = await storage.loadRemoteIdentity(remoteIdentityId);
                         const bundle = await PreKeyBundleProtocol.importProto(Convert.FromBase64(info.preKey));
-                        if (remoteIdentity && await remoteIdentity.signingKey.isEqual(bundle.identity.signingKey)) {
-                            this.cipher = await storage.loadSession(remoteIdentityId);
-                        } else {
-                            this.cipher = await AsymmetricRatchet.create(identity, bundle);
-                            // save new remote identity
-                            await storage.saveRemoteIdentity(remoteIdentityId, this.cipher.remoteIdentity);
-                        }
+                        // if (remoteIdentity && await remoteIdentity.signingKey.isEqual(bundle.identity.signingKey)) {
+                        // this.cipher = await storage.loadSession(remoteIdentityId);
+                        // } else {
+                        this.cipher = await AsymmetricRatchet.create(identity, bundle);
+                        // save new remote identity
+                        await storage.saveRemoteIdentity(remoteIdentityId, this.cipher.remoteIdentity);
+                        // }
                         this.cipher.on("update", () => {
                             this.cipher.toJSON()
                                 .then((json) => {
@@ -138,7 +139,17 @@ export class Client extends EventEmitter {
                                     console.error(error);
                                 });
                         });
-                        this.emit("listening", new ClientListeningEvent(this, address));
+
+                        // authenticate
+                        this.send(AuthRequestProto.ACTION, new AuthRequestProto())
+                            .then((data) => {
+                                return (async () => {
+                                    if (data && !(new Uint8Array(data)[0])) {
+                                        alert(`PIN: ${await challenge(this.cipher.remoteIdentity.signingKey, identity.signingKey.publicKey)}`);
+                                    }
+                                    this.emit("listening", new ClientListeningEvent(this, address));
+                                })();
+                            });
                     })().catch((error) => this.emit("error", new ClientErrorEvent(this, error)));
                 };
                 this.socket.onclose = (e) => {
@@ -190,9 +201,10 @@ export class Client extends EventEmitter {
     }
 
     /**
-     * Sends and receives 
+     * Sends and receives
      */
     public send(event: string, data?: ActionProto): Promise<ArrayBuffer> {
+        console.log("Send message:", data.action);
         return new Promise((resolve, reject) => {
             this.checkSocketState();
             if (!data) {
@@ -210,7 +222,8 @@ export class Client extends EventEmitter {
                     // console.log(Convert.ToBinary(raw));
                     this.stack[data.actionId] = { resolve, reject };
                     this.socket.send(raw);
-                });
+                })
+                .catch(reject);
         });
     }
 
