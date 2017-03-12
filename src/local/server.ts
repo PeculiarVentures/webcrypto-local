@@ -9,7 +9,12 @@ import { ActionProto, BaseProto, ResultProto } from "../core";
 import { UnwrapKeyProto, WrapKeyProto } from "../core";
 import { KeyStorageGetItemProto, KeyStorageKeysProto, KeyStorageRemoveItemProto, KeyStorageSetItemProto } from "../core";
 import { DeriveBitsProto, DeriveKeyProto } from "../core";
+import {
+    CertificateItemProto, CertificateStorageGetItemProto, CertificateStorageImportProto, CertificateStorageKeysProto,
+    CertificateStorageRemoveItemProto, CertificateStorageSetItemProto, X509CertificateProto, X509RequestProto,
+} from "../core";
 import { ServiceCryptoKey } from "./key";
+import { OpenSSLCertificateStorage } from "./ossl_cert_storage";
 import { OpenSSLKeyStorage } from "./ossl_key_storage";
 
 const WebCryptoOSSL = require("node-webcrypto-ossl");
@@ -70,6 +75,10 @@ export class LocalServer extends EventEmitter {
         // create folder for OSSL key storage
         if (!fs.existsSync(".keystorage")) {
             fs.mkdirSync(".keystorage");
+        }
+        // create folder for OSSL cert storage
+        if (!fs.existsSync(".certstorage")) {
+            fs.mkdirSync(".certstorage");
         }
     }
 
@@ -311,6 +320,7 @@ export class LocalServer extends EventEmitter {
 
                 return resultProto;
             }
+            // Key storage
             case KeyStorageGetItemProto.ACTION.toLowerCase(): {
                 // prepare incoming data
                 const proto = await KeyStorageGetItemProto.importProto(await message.exportProto());
@@ -362,6 +372,90 @@ export class LocalServer extends EventEmitter {
                 resultProto.data = Convert.FromUtf8String(keys.join(";"));
                 return resultProto;
             }
+            // Certificate storage
+            case CertificateStorageGetItemProto.ACTION.toLowerCase(): {
+                // prepare incoming data
+                const proto = await CertificateStorageGetItemProto.importProto(await message.exportProto());
+                // load cert storage
+                const certStorage = new OpenSSLCertificateStorage(`.certstorage/${session.cipher.identity.signingKey.publicKey.id}`);
+                // do operation
+                const item = await certStorage.getItem(proto.key);
+
+                // add key to memory storage
+                const thumbprint = await this.getThumbprint(item.publicKey);
+                const cryptoKey = new ServiceCryptoKey(thumbprint, item.publicKey);
+                this.memoryStorage.push({ type: item.publicKey.type, session, data: cryptoKey, id: thumbprint });
+
+                // prepare and send data
+                const resultProto = new ResultProto(message);
+                // create Cert proto
+                const certProto = await certItemToProto(item, cryptoKey);
+                resultProto.data = await certProto.exportProto();
+                return resultProto;
+            }
+            case CertificateStorageSetItemProto.ACTION.toLowerCase(): {
+                // prepare incoming data
+                const proto = await CertificateStorageSetItemProto.importProto(await message.exportProto());
+                // load cert storage
+                const certStorage = new OpenSSLCertificateStorage(`.certstorage/${session.cipher.identity.signingKey.publicKey.id}`);
+                // do operation
+                let certItem: ICertificateStorageItem;
+                switch (proto.item.type) {
+                    case "x509": {
+                        certItem = await X509CertificateProto.importProto(await proto.item.exportProto());
+                        break;
+                    }
+                    case "request": {
+                        certItem = await X509RequestProto.importProto(await proto.item.exportProto());
+                        break;
+                    }
+                    default:
+                        throw new Error(`Unsupported CertificateItem type '${proto.item.type}'`);
+                }
+                await certStorage.setItem(proto.key, certItem);
+                // result
+                const resultProto = new ResultProto(message);
+                return resultProto;
+            }
+            case CertificateStorageRemoveItemProto.ACTION.toLowerCase(): {
+                // prepare incoming data
+                const proto = await CertificateStorageRemoveItemProto.importProto(await message.exportProto());
+                // load cert storage
+                const certStorage = new OpenSSLCertificateStorage(`.certstorage/${session.cipher.identity.signingKey.publicKey.id}`);
+                // do operation
+                await certStorage.removeItem(proto.key);
+                // result
+                const resultProto = new ResultProto(message);
+                return resultProto;
+            }
+            case CertificateStorageImportProto.ACTION.toLowerCase(): {
+                // prepare incoming data
+                const proto = await CertificateStorageImportProto.importProto(await message.exportProto());
+                // load cert storage
+                const certStorage = new OpenSSLCertificateStorage(`.certstorage/${session.cipher.identity.signingKey.publicKey.id}`);
+                // do operation
+                const item = await certStorage.importCert(proto.type, proto.data, proto.algorithm, proto.keyUsages);
+                // add key to memory storage
+                const thumbprint = await this.getThumbprint(item.publicKey);
+                const cryptoKey = new ServiceCryptoKey(thumbprint, item.publicKey);
+                this.memoryStorage.push({ type: item.publicKey.type, session, data: cryptoKey, id: thumbprint });
+                // convert cert item to proto
+                const certProto = await certItemToProto(item, cryptoKey);
+                // result
+                const resultProto = new ResultProto(message);
+                resultProto.data = await certProto.exportProto();
+                return resultProto;
+            }
+            case CertificateStorageKeysProto.ACTION.toLowerCase(): {
+                // load cert storage
+                const certStorage = new OpenSSLCertificateStorage(`.certstorage/${session.cipher.identity.signingKey.publicKey.id}`);
+                // do operation
+                const keys = await certStorage.keys();
+                // result
+                const resultProto = new ResultProto(message);
+                resultProto.data = Convert.FromUtf8String(keys.join(";"));
+                return resultProto;
+            }
             default:
                 throw new Error(`Unknown action '${message.action}'`);
         }
@@ -394,4 +488,37 @@ export class LocalServer extends EventEmitter {
         return Convert.ToHex(this.crypto.getRandomValues(new Uint8Array(20)).buffer);
     }
 
+}
+
+async function certItemToProto(item: ICertificateStorageItem, publicKey: ServiceCryptoKey) {
+    let certProto: CertificateItemProto;
+    switch (item.type) {
+        case "x509": {
+            const x509Proto = new X509CertificateProto();
+            const x509 = item as IX509Certificate;
+            x509Proto.id = x509.id;
+            x509Proto.serialNumber = x509.serialNumber;
+            x509Proto.issuerName = x509.issuerName;
+            x509Proto.subjectName = x509.subjectName;
+            x509Proto.publicKey = await publicKey.toProto();
+            x509Proto.type = item.type;
+            x509Proto.value = item.value;
+            certProto = x509Proto;
+            break;
+        }
+        case "request": {
+            const x509Proto = new X509RequestProto();
+            const x509 = item as IX509Request;
+            x509Proto.id = x509.id;
+            x509Proto.subjectName = x509.subjectName;
+            x509Proto.publicKey = await publicKey.toProto();
+            x509Proto.type = item.type;
+            x509Proto.value = item.value;
+            certProto = x509Proto;
+            break;
+        }
+        default:
+            throw new Error(`Unsupported CertificateItem type '${item.type}'`);
+    }
+    return certProto;
 }
