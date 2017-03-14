@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "install": "npm run build",
-    "build": "npm run build:client && . npm run build:server && npm run build:app",
+    "build": "npm run build:client && npm run build:server && npm run build:app",
     "build:client": "rollup -c",
     "build:server": "tsc",
     "build:app": "webpack",
