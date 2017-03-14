@@ -8,3 +8,5 @@ out
 .certstorage
 .DS_Store
 *.log
+
+index.d.ts

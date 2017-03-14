@@ -5,7 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && rollup -c"
+    "install": "npm run build",
+    "build": "npm run build:client && . npm run build:server && npm run build:app",
+    "build:client": "rollup -c",
+    "build:server": "tsc",
+    "build:app": "webpack",
+    "start:server": "node out/test/local",
+    "start:app": "static dist"
   },
   "keywords": [],
   "author": "",
@@ -21,15 +27,25 @@
   },
   "devDependencies": {
     "@types/asn1js": "0.0.1",
+    "@types/material-ui": "^0.16.57",
     "@types/node-notifier": "0.0.28",
+    "@types/react": "^15.0.16",
+    "@types/react-dom": "^0.14.23",
+    "@types/react-router": "^3.0.8",
     "@types/websocket": "^0.0.33",
     "idb": "^2.0.0",
+    "material-ui": "^0.17.1",
     "node-webcrypto-ossl": "^1.0.20",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-router": "^2.8.1",
+    "react-tap-event-plugin": "^2.0.1",
     "rollup": "^0.41.4",
     "rollup-plugin-node-builtins": "^2.1.0",
     "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-watch": "^3.2.2",
+    "ts-loader": "^2.0.1",
     "tsprotobuf": "^1.0.4",
     "typescript": "^2.1.5"
   }

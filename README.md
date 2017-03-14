@@ -9,22 +9,46 @@
 ## Build
 
 ```
-tsc
+npm run build
+```
+
+> __NOTE:__ Project is auto compiled after `npm install` command
+
+### Server (webcrypto-local)
+
+```
+npm run build:server
+```
+
+### Client (webcrypto-socket)
+
+```
+npm run build:client
+```
+
+### Application
+
+```
+npm run build:app
 ```
 
 ## Run
 
+### Server (webcrypto-local)
+
+Starts local server `localhost:8081`
 ```
-node out/test/local
+npm run start:server
 ```
 
-# webcrypto-socket
+### Application
 
-## Build
+Starts static server `localhost:8080`
+```
+npm run start:app
+```
 
-```
-rollup -c
-```
+> __NOTE:__ Uses `node-static` for HTTP static server. To install `node-static` globally use command `sudo npm install node-static -g`
 
 ## Run
 
@@ -34,7 +58,7 @@ Open `test/index.html`
 
 ### Example
 
-Open `dist/index.html`
+Open `dist/test.html`
 
 ## Related
 - [2key-ratchet](https://github.com/PeculiarVentures/2key-ratchet)
