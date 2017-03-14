@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
 import { Client } from "../connection/client";
-import {  Event } from "../core";
+import { Event } from "../core";
 import { CertificateStorage } from "./cert_storage";
 import { KeyStorage } from "./key_storage";
 import { SocketSubtleCrypto } from "./subtle";
@@ -40,13 +40,16 @@ export class SocketCryptoErrorEvent extends SocketCryptoEvent {
  * - Symmetric cryptography uses native implementation
  * - Asymmetric cryptography uses calls to Server
  */
-export class SocketCrypto extends EventEmitter {
+export class SocketCrypto extends EventEmitter implements Crypto {
 
     public readonly subtle: SocketSubtleCrypto;
     public readonly keyStorage: KeyStorage;
     public readonly certStorage: CertificateStorage;
-
     public client = new Client();
+
+    public get state() {
+        return this.client.state;
+    }
 
     constructor() {
         super();

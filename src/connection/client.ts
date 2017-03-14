@@ -81,7 +81,11 @@ export class Client extends EventEmitter {
     public stack: { [key: string]: PromiseStackItem } = {};
 
     public get state(): SocketCryptoState {
-        return this.socket.readyState;
+        if (this.socket) {
+            return this.socket.readyState;
+        } else {
+            return SocketCryptoState.closed;
+        }
     }
 
     /**
