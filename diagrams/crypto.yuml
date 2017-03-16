@@ -1,0 +1,23 @@
+// {type:class}
+// {direction:topDown}
+[Crypto|name:string;subtle:SubtleCrypto;keyStorage:KeyStorage;certStorage:CertificateStorage|getRandomValues()]
+[SubtleCrypto|digest();sign();verify();encrypt();decrypt();wrapKey();unwrapKey();deriveKey();deriveBits();importKey();exportKey();]
+[Algorithm|name:string]
+[CryptoKey|type:string;algorithm:Algorithm;extractable:boolean;usages:string*]
+[CryptoKey]-[Algorithm]
+[Certificate|type:string;publicKey:CryptoKey]
+[X509Certificate|serialNummber:string;subjectName:string;issuerName:string;]
+[Certificate]^[X509Certificate]
+[X509Request|subjectName:string;publicKey:CryptoKey]
+[Certificate]^[X509Request]
+[Crypto]-[SubtleCrypto]
+
+[KeyStorage|getItem();setItem();keys();removeItem();]
+[KeyStorage]1-*[CryptoKey]
+[CertificateStorage|getItem();setItem();keys();removeItem();importCert();]
+[CertificateStorage]1-*[Certificate]
+[Crypto]-[KeyStorage]
+[Crypto]-[CertificateStorage]
+
+[Provider|config;crypto:Crypto*|getCrypto()|open();stop();|on(listening);on(error);on(close);on(token);]
+[Provider]1-*[Crypto]
