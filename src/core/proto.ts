@@ -157,7 +157,7 @@ export class CryptoKeyProto extends BaseProto implements CryptoKey {
     @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bool" })
     public extractable: boolean;
 
-    @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bytes", converter: ArrayStringConverter })
+    @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "string", repeated: true })
     public usages: string[];
 
 }
@@ -186,7 +186,7 @@ export class GenerateKeyProto extends ActionProto {
     @ProtobufProperty({ id: GenerateKeyProto.INDEX++, type: "bool" })
     public extractable: boolean;
 
-    @ProtobufProperty({ id: GenerateKeyProto.INDEX++, type: "bytes", required: true, converter: ArrayStringConverter })
+    @ProtobufProperty({ id: GenerateKeyProto.INDEX++, type: "string", repeated: true })
     public usage: string[];
 
 }
@@ -253,7 +253,7 @@ export class DeriveKeyProto extends ActionProto {
     @ProtobufProperty({ id: DeriveKeyProto.INDEX++, type: "bool" })
     public extractable: boolean;
 
-    @ProtobufProperty({ id: DeriveKeyProto.INDEX++, type: "bytes", required: true, converter: ArrayStringConverter })
+    @ProtobufProperty({ id: DeriveKeyProto.INDEX++, type: "string", repeated: true })
     public usage: string[];
 
 }
@@ -281,7 +281,7 @@ export class UnwrapKeyProto extends ActionProto {
     @ProtobufProperty({ id: UnwrapKeyProto.INDEX++, type: "bool" })
     public extractable: boolean;
 
-    @ProtobufProperty({ id: UnwrapKeyProto.INDEX++, type: "bytes", required: true, converter: ArrayStringConverter })
+    @ProtobufProperty({ id: UnwrapKeyProto.INDEX++, type: "string", repeated: true })
     public keyUsage: string[];
 
 }
@@ -335,7 +335,7 @@ export class ImportProto extends ActionProto {
     @ProtobufProperty({ id: ImportProto.INDEX++, required: true, type: "bool" })
     public extractable: boolean;
 
-    @ProtobufProperty({ id: ImportProto.INDEX++, converter: ArrayStringConverter })
+    @ProtobufProperty({ id: ImportProto.INDEX++, type: "string", repeated: true })
     public keyUsages: string[];
 
 }
@@ -528,7 +528,7 @@ export class CertificateStorageImportProto extends ActionProto {
     @ProtobufProperty({ id: CertificateStorageImportProto.INDEX++, required: true, parser: AlgorithmProto })
     public algorithm: AlgorithmProto;
 
-    @ProtobufProperty({ id: CertificateStorageImportProto.INDEX++, required: true, converter: ArrayStringConverter })
+    @ProtobufProperty({ id: CertificateStorageImportProto.INDEX++, repeated: true, type: "string" })
     public keyUsages: string[];
 
 }
