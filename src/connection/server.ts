@@ -10,6 +10,7 @@ import { ActionProto, AuthRequestProto, Event, ResultProto } from "../core";
 import { challenge } from "./challenge";
 import { SERVER_WELL_KNOWN } from "./const";
 import { OpenSSLStorage } from "./storages/ossl";
+import { ObjectProto } from "tsprotobuf";
 
 const D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
 
@@ -129,6 +130,7 @@ export class Server extends EventEmitter {
     protected identity: Identity;
     protected storage: OpenSSLStorage;
 
+    public on(event: "auth", listener: (session: Session) => void): this;
     public on(event: "listening", listener: (e: ServerListeningEvent) => void): this;
     public on(event: "close", listener: (e: ServerCloseEvent) => void): this;
     public on(event: "error", listener: (e: ServerErrorEvent) => void): this;
@@ -268,6 +270,7 @@ export class Server extends EventEmitter {
                                             if (response === "activate") {
                                                 this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
                                                 session.authorized = true;
+                                                this.emit("auth", session);
                                             }
                                         });
                                     }
@@ -278,33 +281,26 @@ export class Server extends EventEmitter {
                             } else {
                                 // If session is not authorized throw error
                                 if (!session.authorized) {
-                                    throw new Error("404: Not authorized");
+                                    console.log("404: Not authorized");
+                                    // throw new Error("404: Not authorized");
                                 }
                                 const emit = this.emit("message", new ServerMessageEvent(this, session, actionProto, resolve, reject));
                                 console.log("Emit message:", emit);
                             }
                         })
                             .then((answer: ResultProto) => {
-                                (async () => {
-                                    // Encrypt success result
-                                    const raw = await answer.exportProto();
-                                    const encryptedData = await session.cipher.encrypt(raw);
-                                    const encryptedRaw = await encryptedData.exportProto();
-                                    connection.sendBytes(new Buffer(encryptedRaw));
-                                })();
+                                answer.status = true;
+                                return this.send(session, answer);
                             })
                             .catch((e) => {
                                 (async () => {
-                                    // Encrypt Error result
                                     const resultProto = new ResultProto(actionProto);
                                     console.log("Error for action:", actionProto.action);
                                     console.error(e);
                                     resultProto.error = e.message;
+                                    resultProto.status = false;
 
-                                    const raw = await resultProto.exportProto();
-                                    const encryptedData = await session.cipher.encrypt(raw);
-                                    const encryptedRaw = await encryptedData.exportProto();
-                                    connection.sendBytes(new Buffer(encryptedRaw));
+                                    this.send(session, resultProto);
                                 })();
                             });
                     })().catch((e) => {
@@ -318,6 +314,19 @@ export class Server extends EventEmitter {
         });
 
         return this;
+    }
+
+    public async send(session: Session, data: ObjectProto | ArrayBuffer) {
+        let buf: ArrayBuffer;
+        if (data instanceof ArrayBuffer) {
+            buf = data;
+        } else {
+            buf = await data.exportProto();
+        }
+        // encrypt data
+        const encryptedData = await session.cipher.encrypt(buf);
+        buf = await encryptedData.exportProto();
+        session.connection.sendBytes(new Buffer(buf));
     }
 
     protected async generateIdentity() {

@@ -3,7 +3,7 @@ import { EventEmitter } from "events";
 import { Convert } from "pvtsutils";
 import { ActionProto, Event, ServerInfo } from "../core";
 import { AuthRequestProto, ResultProto } from "../core";
-import { challenge } from "./challenge";
+// import { challenge } from "./challenge";
 import { SERVER_WELL_KNOWN } from "./const";
 import { BrowserStorage } from "./storages/browser";
 
@@ -149,7 +149,7 @@ export class Client extends EventEmitter {
                             .then((data) => {
                                 return (async () => {
                                     if (data && !(new Uint8Array(data)[0])) {
-                                        alert(`PIN: ${await challenge(this.cipher.remoteIdentity.signingKey, identity.signingKey.publicKey)}`);
+                                        // alert(`PIN: ${await challenge(this.cipher.remoteIdentity.signingKey, identity.signingKey.publicKey)}`);
                                     }
                                     this.emit("listening", new ClientListeningEvent(this, address));
                                 })();
@@ -189,6 +189,7 @@ export class Client extends EventEmitter {
         this.socket.close();
     }
 
+    public on(event: "event", listener: (e: ActionProto) => void): this;
     public on(event: "listening", listener: (e: ClientListeningEvent) => void): this;
     public on(event: "closed", listener: (e: ClientCloseEvent) => void): this;
     public on(event: "error", listener: (e: ClientErrorEvent) => void): this;
@@ -262,16 +263,20 @@ export class Client extends EventEmitter {
 
     protected async onMessage(message: ArrayBuffer) {
         const proto = await ResultProto.importProto(message);
+        console.info("Action:", proto.action);
         // find Promise
         const promise = this.stack[proto.actionId];
-        delete this.stack[proto.actionId];
-        console.info("Action:", proto.action);
-        if (proto.error) {
-            console.error("Error action:", proto.action);
-            console.error(proto.error);
-            promise.reject(new Error(proto.error));
+        if (promise) {
+            delete this.stack[proto.actionId];
+            if (proto.error) {
+                console.error("Error action:", proto.action);
+                console.error(proto.error);
+                promise.reject(new Error(proto.error));
+            } else {
+                promise.resolve(proto.data);
+            }
         } else {
-            promise.resolve(proto.data);
+            this.emit("event", proto);
         }
     }
 

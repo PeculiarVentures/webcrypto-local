@@ -1,5 +1,5 @@
 import { ArrayBufferConverter, IProtobufScheme, ObjectProto, ProtobufElement, ProtobufProperty } from "tsprotobuf";
-import { ArrayStringConverter, HexStringConverter } from "./convert";
+import { HexStringConverter } from "./convert";
 
 export interface IAlgorithmConvertible {
     toAlgorithm(): Algorithm;
@@ -28,7 +28,7 @@ export class ActionProto extends BaseProto {
     /**
      * Identity of action (needs to link request to response)
      */
-    @ProtobufProperty({ id: ActionProto.INDEX++, type: "string", required: true })
+    @ProtobufProperty({ id: ActionProto.INDEX++, type: "string", required: false })
     public actionId: string;
 
     constructor() {
