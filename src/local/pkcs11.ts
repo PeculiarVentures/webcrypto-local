@@ -1,3 +1,4 @@
+// tslint:disable-next-line:no-reference
 /// <reference path="../types/pkcs11.d.ts" />
 
 const PKCS11 = require("node-webcrypto-p11");
