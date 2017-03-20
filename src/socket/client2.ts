@@ -40,6 +40,7 @@ export class SocketCrypto extends EventEmitter {
             })
             .on("event", (proto) => {
                 console.log("Client:Event", proto.action);
+                console.log("EventArgs:", proto);
             })
             .on("listening", (e) => {
                 console.info("Client:Listening", e.address);

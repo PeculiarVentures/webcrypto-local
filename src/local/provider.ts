@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
+import * as pkcs11 from "node-webcrypto-p11";
+import { ProviderCryptoProto, ProviderInfoProto } from "../core/protos/provider";
 import { OpenSSLCrypto } from "./ossl";
-import * as pkcs11 from "./pkcs11";
-import { ProviderInfoProto, ProviderCryptoProto } from "../core/protos/provider";
 
 type RefCount = {
     counter: number;
@@ -58,16 +58,16 @@ export class LocalProvider extends EventEmitter {
     public async open() {
         this.info = new ProviderInfoProto();
         this.info.name = "WebcryptoLocal";
-        this.info.cryptos = [];
+        this.info.providers = [];
         let providers: IProvider[] = [];
 
         // Add OpenSSL
         const openSsl = new OpenSSLCrypto();
         this.crypto["1234567890"] = openSsl;
 
-        providers = (await openSsl.info()).cryptos;
+        providers = (await openSsl.info()).providers;
         providers.forEach((item) => {
-            this.info.cryptos.push(new ProviderCryptoProto(item));
+            this.info.providers.push(new ProviderCryptoProto(item));
         });
 
         // Add pkcs11
@@ -77,7 +77,7 @@ export class LocalProvider extends EventEmitter {
             ref.counter++;
             pkcs11Provider.on("listening", (info) => {
                 info.providers.forEach((item) => {
-                    this.info.cryptos.push(new ProviderCryptoProto(item));
+                    this.info.providers.push(new ProviderCryptoProto(item));
                 });
                 this.clickRefCount(ref, this.info);
             })

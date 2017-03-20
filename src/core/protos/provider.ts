@@ -1,6 +1,6 @@
-import { ProtobufElement, ProtobufProperty } from "tsprotobuf";
-import { BaseProto, ActionProto } from "../proto";
 import { assign } from "pvtsutils";
+import { ProtobufElement, ProtobufProperty } from "tsprotobuf";
+import { ActionProto, BaseProto } from "../proto";
 
 // Objects
 
@@ -37,7 +37,7 @@ export class ProviderInfoProto extends BaseProto {
     public name: string;
 
     @ProtobufProperty({ id: ProviderInfoProto.INDEX++, repeated: true, parser: ProviderCryptoProto })
-    public cryptos: ProviderCryptoProto[];
+    public providers: ProviderCryptoProto[];
 
 }
 
@@ -58,5 +58,27 @@ export class ProviderAuthorizedEventProto extends ActionProto {
 
     public static INDEX = ActionProto.INDEX;
     public static ACTION = "provider/event/authorized";
+
+}
+
+@ProtobufElement({ name: "ProviderTokenEvent" })
+export class ProviderTokenEventProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "provider/event/token";
+
+    @ProtobufProperty({ name: "added", id: ProviderTokenEventProto.INDEX++, repeated: true, parser: ProviderCryptoProto })
+    public added: ProviderCryptoProto[];
+
+    @ProtobufProperty({ name: "removed", id: ProviderTokenEventProto.INDEX++, repeated: true, parser: ProviderCryptoProto })
+    public removed: ProviderCryptoProto[];
+
+    constructor(data?: { added: IProvider[], removed: IProvider[] }) {
+        super();
+
+        if (data) {
+            assign(this, data);
+        }
+    }
 
 }

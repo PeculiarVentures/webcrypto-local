@@ -29,7 +29,7 @@ export class OpenSSLCrypto extends OSSLCrypto {
     public async info() {
         const res: IModule = {
             name: "OpenSSL",
-            cryptos: [
+            providers: [
                 {
                     id: "1234567890",
                     name: "OpenSSL",

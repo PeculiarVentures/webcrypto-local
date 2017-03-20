@@ -1,16 +1,47 @@
 import { EventEmitter } from "events";
 import { Server, Session } from "../connection/server";
 import { ActionProto, ResultProto } from "../core/proto";
-import { ProviderInfoActionProto, ProviderInfoProto, ProviderAuthorizedEventProto } from "../core/protos/provider";
+import { ProviderAuthorizedEventProto, ProviderCryptoProto, ProviderInfoActionProto, ProviderTokenEventProto } from "../core/protos/provider";
+import { LocalProvider } from "./provider";
 
 export class LocalServer extends EventEmitter {
 
     public server: Server;
+    public provider: LocalProvider;
+    public sessions: Session[] = [];
 
     constructor() {
         super();
 
         this.server = new Server();
+        this.provider = new LocalProvider({
+            pkcs11: [
+                "/usr/local/lib/softhsm/libsofthsm2.so",
+                // "/usr/local/lib/libykcs11.dylib",
+            ],
+        });
+
+        this.provider
+            .on("token", (info) => {
+                console.log("Provider:Token raised");
+                this.sessions.forEach((session) => {
+                    if (session.cipher && session.authorized) {
+                        // info.added = info.added.map((item) => new ProviderCryptoProto(item)) || [];
+                        // info.removed = info.removed.map((item) => new ProviderCryptoProto(item)) || [];
+                        info.removed.forEach((item, index) => {
+                            info.removed[index] = new ProviderCryptoProto(item);
+                        });
+                        info.added.forEach((item, index) => {
+                            info.added[index] = new ProviderCryptoProto(item);
+                        });
+
+                        this.server.send(session, new ProviderTokenEventProto(info))
+                            .catch((e) => {
+                                console.error(e);
+                            });
+                    }
+                });
+            });
     }
 
     public listen(address: string) {
@@ -18,6 +49,19 @@ export class LocalServer extends EventEmitter {
         this.server
             .on("listening", () => {
                 console.log("Server:listen");
+                this.provider.open()
+                    .catch((err) => {
+                        console.log("Provider:OpenError");
+                        this.emit("error", err);
+                    });
+            })
+            .on("connect", (session) => {
+                console.log("Server:Connect");
+                // check connection in stack
+                if (!(this.sessions.length && this.sessions.some((item) => item === session))) {
+                    console.log("Push session");
+                    this.sessions.push(session);
+                }
             })
             .on("close", () => {
                 // TODO: rename event to 'disconnect' and add event 'connect' for session
@@ -26,7 +70,7 @@ export class LocalServer extends EventEmitter {
             })
             .on("error", (e) => {
                 console.log("Server:error");
-
+                this.emit("error", e.error);
             })
             .on("message", (e) => {
                 console.log("Session:Message");
@@ -49,14 +93,8 @@ export class LocalServer extends EventEmitter {
         let data: ArrayBuffer | undefined;
         switch (action.action) {
             case ProviderInfoActionProto.ACTION: {
+                const info = this.provider.info;
 
-                const info = new ProviderInfoProto();
-                info.name = "WebCryptoLocal";
-
-                await this.server.send(session, new ProviderAuthorizedEventProto())
-                    .catch((e) => {
-                        console.error(e);
-                    });
                 data = await info.exportProto();
                 break;
             }

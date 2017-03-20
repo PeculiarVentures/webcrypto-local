@@ -262,18 +262,20 @@ export class Client extends EventEmitter {
     }
 
     protected async onMessage(message: ArrayBuffer) {
-        const proto = await ResultProto.importProto(message);
+        console.log(Convert.ToBinary(message));
+        const proto = await ActionProto.importProto(message);
         console.info("Action:", proto.action);
         // find Promise
         const promise = this.stack[proto.actionId];
         if (promise) {
             delete this.stack[proto.actionId];
-            if (proto.error) {
-                console.error("Error action:", proto.action);
-                console.error(proto.error);
-                promise.reject(new Error(proto.error));
+            const messageProto = await ResultProto.importProto(await proto.exportProto());
+            if (messageProto.error) {
+                console.error("Error action:", messageProto.action);
+                console.error(messageProto.error);
+                promise.reject(new Error(messageProto.error));
             } else {
-                promise.resolve(proto.data);
+                promise.resolve(messageProto.data);
             }
         } else {
             this.emit("event", proto);

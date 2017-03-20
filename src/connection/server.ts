@@ -132,6 +132,7 @@ export class Server extends EventEmitter {
 
     public on(event: "auth", listener: (session: Session) => void): this;
     public on(event: "listening", listener: (e: ServerListeningEvent) => void): this;
+    public on(event: "connect", listener: (e: Session) => void): this;
     public on(event: "close", listener: (e: ServerCloseEvent) => void): this;
     public on(event: "error", listener: (e: ServerErrorEvent) => void): this;
     public on(event: "message", listener: (e: ServerMessageEvent) => void): this;
@@ -206,6 +207,7 @@ export class Server extends EventEmitter {
                 cipher: null,
                 authorized: false,
             };
+            this.emit("connect", session);
             connection.on("message", (message) => {
                 if (message.type === "utf8") {
                     console.log("Received Message: " + message.utf8Data);

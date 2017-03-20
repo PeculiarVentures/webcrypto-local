@@ -6,5 +6,5 @@ interface IProvider {
 
 interface IModule {
     name: string;
-    cryptos: IProvider[];
+    providers: IProvider[];
 }
