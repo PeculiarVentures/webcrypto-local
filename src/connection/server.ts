@@ -4,13 +4,13 @@ import { EventEmitter } from "events";
 import * as http from "http";
 import { NotificationCenter } from "node-notifier";
 import { assign, Convert } from "pvtsutils";
+import { ObjectProto } from "tsprotobuf";
 import * as url from "url";
 import * as WebSocket from "websocket";
 import { ActionProto, AuthRequestProto, Event, ResultProto } from "../core";
 import { challenge } from "./challenge";
 import { SERVER_WELL_KNOWN } from "./const";
 import { OpenSSLStorage } from "./storages/ossl";
-import { ObjectProto } from "tsprotobuf";
 
 const D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
 

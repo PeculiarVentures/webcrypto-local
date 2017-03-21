@@ -22,7 +22,13 @@ export interface LocalProviderConfigure {
     pkcs11: string[];
 }
 
-type CryptoMap = { [id: string]: Crypto };
+interface ProviderCrypto extends Crypto {
+    isLoggedIn?: boolean;
+    login?: (pin: string) => void;
+    logout?: () => void;
+}
+
+type CryptoMap = { [id: string]: ProviderCrypto };
 
 export class LocalProvider extends EventEmitter {
 
@@ -67,6 +73,7 @@ export class LocalProvider extends EventEmitter {
 
         providers = (await openSsl.info()).providers;
         providers.forEach((item) => {
+            this.crypto[item.id] = openSsl;
             this.info.providers.push(new ProviderCryptoProto(item));
         });
 
@@ -76,8 +83,18 @@ export class LocalProvider extends EventEmitter {
             const pkcs11Provider = new pkcs11.Provider(lib);
             ref.counter++;
             pkcs11Provider.on("listening", (info) => {
-                info.providers.forEach((item) => {
-                    this.info.providers.push(new ProviderCryptoProto(item));
+                info.providers.forEach((item, index) => {
+                    try {
+
+                        this.crypto[item.id] = new pkcs11.WebCrypto({
+                            library: lib,
+                            slot: index,
+                            readWrite: true,
+                        });
+                        this.info.providers.push(new ProviderCryptoProto(item));
+                    } catch (e) {
+                        this.emit("error", e);
+                    }
                 });
                 this.clickRefCount(ref, this.info);
             })
@@ -102,6 +119,14 @@ export class LocalProvider extends EventEmitter {
     public async getInfo(): Promise<ProviderInfoProto> {
         const resProto = new ProviderInfoProto();
         return resProto;
+    }
+
+    public async getCrypto(cryptoID: string) {
+        const crypto = this.crypto[cryptoID];
+        if (!crypto) {
+            throw new Error(`Cannot get crypto by given ID '${cryptoID}'`);
+        }
+        return crypto;
     }
 
     protected clickRefCount(ref: RefCount, info: IModule) {

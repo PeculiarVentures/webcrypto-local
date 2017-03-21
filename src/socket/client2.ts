@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 import { Client } from "../connection/client";
-import { ProviderInfoActionProto, ProviderInfoProto } from "../core/protos/provider";
+import { ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderInfoProto, ProviderTokenEventProto } from "../core/protos/provider";
+import { SocketCrypto } from "./crypto";
 // import { Event } from "../core";
 // import { CertificateStorage } from "./cert_storage";
 // import { KeyStorage } from "./key_storage";
@@ -12,9 +13,11 @@ import { ProviderInfoActionProto, ProviderInfoProto } from "../core/protos/provi
  * - Symmetric cryptography uses native implementation
  * - Asymmetric cryptography uses calls to Server
  */
-export class SocketCrypto extends EventEmitter {
+export class SocketProvider extends EventEmitter {
 
     public client = new Client();
+
+    public crypto: { [id: string]: Crypto }
 
     public get state() {
         return this.client.state;
@@ -40,7 +43,15 @@ export class SocketCrypto extends EventEmitter {
             })
             .on("event", (proto) => {
                 console.log("Client:Event", proto.action);
-                console.log("EventArgs:", proto);
+                (async () => {
+                    switch (proto.action) {
+                        case ProviderTokenEventProto.ACTION: {
+                            const tokenProto = await ProviderTokenEventProto.importProto(await proto.exportProto());
+                            console.log(tokenProto);
+                        }
+                        default:
+                    }
+                })();
             })
             .on("listening", (e) => {
                 console.info("Client:Listening", e.address);
@@ -74,7 +85,16 @@ export class SocketCrypto extends EventEmitter {
         const result = await this.client.send(ProviderInfoActionProto.ACTION, proto);
 
         const infoProto = await ProviderInfoProto.importProto(result);
-        console.log(infoProto);
+        return infoProto;
+    }
+
+    public async getCrypto(cryptoID: string) {
+        const actionProto = new ProviderGetCryptoActionProto();
+        actionProto.cryptoID = cryptoID;
+
+        await this.client.send(ProviderGetCryptoActionProto.ACTION, actionProto);
+
+        return new SocketCrypto(this.client, cryptoID);
     }
 
 }

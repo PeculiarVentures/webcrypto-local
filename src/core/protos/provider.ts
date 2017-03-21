@@ -51,6 +51,17 @@ export class ProviderInfoActionProto extends ActionProto {
 
 }
 
+@ProtobufElement({})
+export class ProviderGetCryptoActionProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "provider/action/getCrypto";
+
+    @ProtobufProperty({id: ProviderGetCryptoActionProto.INDEX++, required: true, type: "string"})
+    public cryptoID: string;
+
+}
+
 // Events
 
 @ProtobufElement({})

@@ -262,7 +262,6 @@ export class Client extends EventEmitter {
     }
 
     protected async onMessage(message: ArrayBuffer) {
-        console.log(Convert.ToBinary(message));
         const proto = await ActionProto.importProto(message);
         console.info("Action:", proto.action);
         // find Promise

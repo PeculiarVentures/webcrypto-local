@@ -4,7 +4,7 @@ import { Convert } from "pvtsutils";
 import { Server, Session } from "../connection/server";
 import { CryptoKeyPairProto, CryptoKeyProto } from "../core";
 import { Event } from "../core";
-import { EncryptProto, ExportProto, GenerateKeyProto, ImportProto, SignProto, VerifyProto } from "../core";
+import { EncryptProto, ExportProto, GenerateKeyActionProto, ImportProto, SignProto, VerifyProto } from "../core";
 import { ActionProto, BaseProto, ResultProto } from "../core";
 import { UnwrapKeyProto, WrapKeyProto } from "../core";
 import { KeyStorageGetItemProto, KeyStorageKeysProto, KeyStorageRemoveItemProto, KeyStorageSetItemProto } from "../core";
@@ -123,7 +123,7 @@ export class LocalServer extends EventEmitter {
     protected async onMessage(session: Session, message: ActionProto) {
         switch (message.action.toLowerCase()) {
             case "generatekey": {
-                const proto = await GenerateKeyProto.importProto(await message.exportProto());
+                const proto = await GenerateKeyActionProto.importProto(await message.exportProto());
                 const keys = await this.crypto.subtle.generateKey(proto.algorithm.toAlgorithm(), proto.extractable, proto.usage);
 
                 // add key to memory storage
