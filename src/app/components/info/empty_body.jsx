@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { EmptyCertIcon } from '../../svg';
-import enLang from '../../../langs/en.json';
+import { EmptyCertIcon } from '../svg';
+import enLang from '../../langs/en.json';
 
 const IconStyled = styled(EmptyCertIcon)`
   width: 74px;
@@ -11,8 +11,9 @@ const TextStyled = styled.div`
   font-size: 16px;
   line-height: 22px;
   letter-spacing: 0.03em;
-  margin-top: 32px;
-  color: ${props => props.theme.sidebar.colorEmpty};
+  margin: 32px auto 0;
+  max-width: 250px;
+  color: ${props => props.theme.info.empty.color};
   @media ${props => props.theme.media.mobile} {
     font-size: 15px;
     line-height: 20px;
@@ -31,6 +32,7 @@ const ContainerStyled = styled.div`
 
 const EmptyBodyStyled = styled.div`
   height: 100%;
+  overflow: auto;
   ${props => props.theme.mixins.ghostVerticalAlign}
 `;
 

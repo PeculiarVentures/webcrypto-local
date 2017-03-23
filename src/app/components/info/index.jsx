@@ -1,8 +1,9 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
 import Header from './header';
-import CertificateInfo from './info_certificate.jsx';
-import KeyInfo from './info_key.jsx';
+import CertificateInfo from './info_certificate';
+import KeyInfo from './info_key';
+import EmptyBody from './empty_body';
 import { DialogActions } from '../../actions/ui';
 
 const RootStyled = styled.div`
@@ -98,27 +99,33 @@ export default class Info extends Component {
   render() {
     const { certificate } = this.props;
 
+    if (Object.keys(certificate).length) {
+      return (
+        <RootStyled>
+          <HeaderContainer>
+            <Header
+              name={certificate.name}
+              type={certificate.type}
+              onCopy={() => {
+                console.log('clicked Copy button');
+              }}
+              onDownload={() => {
+                console.log('clicked Download button');
+              }}
+              onRemove={this.onRemoveHandler}
+              onMenu={this.onMenuHandler}
+            />
+          </HeaderContainer>
+          <InfoContainer>
+            { this.renderContent() }
+          </InfoContainer>
+        </RootStyled>
+      );
+    }
+
     return (
       <RootStyled>
-        <HeaderContainer>
-          <Header
-            name={certificate.name}
-            type={certificate.type}
-            onCopy={() => {
-              console.log('clicked Copy button');
-            }}
-            onDownload={() => {
-              console.log('clicked Download button');
-            }}
-            onRemove={this.onRemoveHandler}
-            onMenu={this.onMenuHandler}
-          />
-        </HeaderContainer>
-        <InfoContainer>
-          {
-            this.renderContent()
-          }
-        </InfoContainer>
+        <EmptyBody />
       </RootStyled>
     );
   }

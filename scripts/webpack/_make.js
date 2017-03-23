@@ -14,7 +14,7 @@ export default (mode) => {
     ));
     config.devtool = developmentConfig.devtool;
     config.entry = developmentConfig.entry;
-  } else if (mode === 'production') {
+  } else if (mode === 'production' || mode === 'build') {
     productionConfig.plugins.map(plugin => (
       config.plugins.push(plugin)
     ));

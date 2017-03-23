@@ -13,3 +13,7 @@
 ### Clear
 
 * `npm run clear`
+
+### Automatic deploy to GitHub pages
+
+* `npm run deploy`

@@ -5,6 +5,7 @@ import Info from '../components/info/index';
 import { Sidebar } from '../components/sidebar';
 import Overlay from './overlay';
 import { CertificateActions } from '../actions/state';
+import { RoutingActions } from '../actions/ui';
 
 const ContentStyled = styled.div`
   height: 100%;
@@ -88,9 +89,13 @@ class RootContainer extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { params, dispatch } = this.props;
+    const { params, dispatch, certificates } = this.props;
     if (prevProps.params.id !== params.id) {
       dispatch(CertificateActions.select(params.id));
+    }
+
+    if (prevProps.certificates.length === 1 && !certificates.length) {
+      dispatch(RoutingActions.push('/'));
     }
   }
 

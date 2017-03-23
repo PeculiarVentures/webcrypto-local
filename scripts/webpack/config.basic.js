@@ -20,6 +20,7 @@ export default (mode) => {
       ]),
       new HtmlWebpackPlugin({
         template: INDEX_HTML_PATH,
+        inject: false,
       }),
     ],
     output: {

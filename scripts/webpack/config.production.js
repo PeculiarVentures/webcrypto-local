@@ -1,12 +1,15 @@
-import path from 'path';
 import webpack from 'webpack';
 import { ENTRY_PATH } from '../config';
 
 export default {
   devtool: false,
-  entry: [
-    path.join(__dirname, '../../', ENTRY_PATH),
-  ],
+  entry: {
+    main: [
+      'babel-polyfill',
+      ENTRY_PATH,
+      'webpack-hot-middleware/client?reload=true',
+    ],
+  },
   plugins: [
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({

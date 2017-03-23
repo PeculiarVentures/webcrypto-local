@@ -16,7 +16,7 @@ export default function (state, payload) {
     }
 
     case ACTIONS_CONST.CERTIFICATE_REMOVE: {
-      certificates.selectNext(id);
+      certificates.selectNextOrPrev(id);
       certificates.remove(id);
       return state;
     }

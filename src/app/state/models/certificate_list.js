@@ -50,22 +50,24 @@ export default class CertificateList extends State.List {
     });
   }
 
-  selectNext(id) {
-    let nextCertId = '';
-    let nextIndex = '';
+  selectNextOrPrev(id) {
+    let certIndex = 0;
 
     this.map((cer, index) => {
       if (cer.get('id') === id) {
-        nextIndex = index + 1;
-      }
-      if (nextIndex === index) {
-        nextCertId = cer.get('id');
+        certIndex = index;
       }
       return true;
     });
 
-    if (nextCertId) {
-      this.select(nextCertId);
+    const nextIndex = certIndex + 1;
+    const prevIndex = certIndex - 1;
+    const children = this.children;
+
+    if (children[nextIndex]) {
+      this.select(children[nextIndex].get('id'))
+    } else if (children[prevIndex]) {
+      this.select(children[prevIndex].get('id'))
     }
   }
 

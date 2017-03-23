@@ -11,7 +11,9 @@
     "development": "cross-env NODE_ENV=development babel-node scripts/run --client",
     "lint": "eslint src",
     "lint-fix": "eslint src --fix",
-    "test": ""
+    "test": "",
+    "deploy:gh-pages": "./scripts/deploy-ghpages.sh",
+    "deploy": "npm run build && npm run deploy:gh-pages"
   },
   "repository": {
     "type": "git",

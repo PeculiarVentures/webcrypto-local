@@ -115,6 +115,9 @@ export function getTheme(palette = defaultPalette) {
         subTitleColor: palette.secondaryTextColor1,
         valueColor: palette.primaryColor,
       },
+      empty: {
+        color: colorManipulator.fade(palette.primaryColor, 0.5),
+      },
     },
     sidebar: {
       background: palette.primaryColor,
@@ -124,7 +127,6 @@ export function getTheme(palette = defaultPalette) {
       colorFooter: colorManipulator.fade(palette.white, 0.7),
       iconStatusOnline: palette.statusOnline,
       iconStatusOffline: palette.errorColor,
-      colorEmpty: palette.secondaryTextColor2,
       colorCertName: palette.secondaryTextColor2,
       colorCertDescr: colorManipulator.fade(palette.secondaryTextColor2, 0.7),
       backgroundCertActive: palette.secondaryColor,
