@@ -58,7 +58,7 @@ export default class SidebarHeader extends Component {
 
   onClickCreateHandler = () => {
     const { dispatch } = this.context;
-    dispatch(RoutingActions.push('/create'));
+    dispatch(RoutingActions.push('create'));
   };
 
   onChangeInputFile = (event) => {

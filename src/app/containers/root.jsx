@@ -95,7 +95,7 @@ class RootContainer extends Component {
     }
 
     if (prevProps.certificates.length === 1 && !certificates.length) {
-      dispatch(RoutingActions.push('/'));
+      dispatch(RoutingActions.push(''));
     }
   }
 

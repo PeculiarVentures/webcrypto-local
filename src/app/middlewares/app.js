@@ -10,7 +10,7 @@ export default () => next => (payload) => {
 
     case ACTIONS_CONST.CERTIFICATE_SELECT: {
       if (payload.id) {
-        RoutingController.push(`/certificate/${id}`);
+        RoutingController.push(`certificate/${id}`);
       }
 
       next(CertificateActions.select(id));
@@ -24,7 +24,7 @@ export default () => next => (payload) => {
       });
 
       next(CertificateActions.add(certificateData));
-      RoutingController.push(`/certificate/${certificateId}`);
+      RoutingController.push(`certificate/${certificateId}`);
       break;
     }
 

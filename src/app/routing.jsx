@@ -5,13 +5,7 @@ import { Router, Route, browserHistory } from 'react-router';
 import Store from './store';
 import { getTheme } from './components/theme';
 import { RootContainer, CreateContainer } from './containers';
-
-// Build for gh-pages
-const href = window.location.href;
-let basicRoutePath = '/';
-if (href.indexOf('github.io') !== -1) {
-  basicRoutePath = '//webcrypto-local';
-}
+import { getAppPath } from './helpers';
 
 export default class Routing extends Component {
 
@@ -20,9 +14,9 @@ export default class Routing extends Component {
       <Provider store={Store}>
         <ThemeProvider theme={getTheme()}>
           <Router history={browserHistory}>
-            <Route path={basicRoutePath} component={RootContainer} />
-            <Route path="certificate/:id" component={RootContainer} />
-            <Route path="create" component={CreateContainer} />
+            <Route path={getAppPath()} component={RootContainer} />
+            <Route path={`${getAppPath()}certificate/:id`} component={RootContainer} />
+            <Route path={`${getAppPath()}create`} component={CreateContainer} />
           </Router>
         </ThemeProvider>
       </Provider>

@@ -37,7 +37,6 @@ if (CLEAR || TEST) {
     clear();
     runServer(MODE, CONFIG).then(() => {
       print.log(`> Development Server Running on - ${URL}`);
-      print.log('>');
     });
   }
 

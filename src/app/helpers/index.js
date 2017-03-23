@@ -6,3 +6,4 @@ export * as stylesMixins from './styles_mixins';
 export objectOmitPluck from './object_omit_pluck';
 export Taber from './taber';
 export getCurrentDate from './get_current_date';
+export getAppPath from './get_app_path';
