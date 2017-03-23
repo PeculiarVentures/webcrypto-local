@@ -1,0 +1,162 @@
+import React, { PropTypes, Component } from 'react';
+import styled from 'styled-components';
+import TextField from '../text_field';
+import SelectDropdown from './select_dropdown';
+import { ArrowSelectDownIcon } from '../../../svg';
+
+const ArrowIconStyled = styled(ArrowSelectDownIcon)`
+  fill: ${props => props.theme.field.select.iconColor};
+  width: 8px;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: block;
+  transform: rotateX(${props => (
+    props.opened
+    ? 180
+    : 0
+  )}deg);
+`;
+
+const SelectFieldContainerStyled = styled.div`
+  position: relative;
+  input {
+    padding-right: 20px;
+  }
+`;
+
+export default class SelectField extends Component {
+
+  static propTypes = {
+    labelText: PropTypes.string,
+    placeholder: PropTypes.string,
+    children: PropTypes.node.isRequired,
+    onChange: PropTypes.func,
+    value: PropTypes.shape({
+      value: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+      ]),
+      name: PropTypes.string,
+      index: PropTypes.number,
+    }),
+  };
+
+  constructor() {
+    super();
+
+    this.state = {
+      opened: false,
+      selectedItemData: {
+        value: '',
+        name: '',
+        index: 0,
+      },
+    };
+  }
+
+  componentDidMount() {
+    const { value } = this.props;
+    if (value) {
+      this.setState({
+        selectedItemData: value,
+      });
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { value } = this.props;
+    if (value && nextProps.value.index !== value.index) {
+      this.setState({
+        selectedItemData: nextProps.value,
+      });
+    }
+  }
+
+  onBlurFieldHandler = () => {
+    setTimeout(() => {
+      this.setState({
+        opened: false,
+      });
+    }, 100);
+  };
+
+  onClickFieldHandler = () => {
+    const { opened } = this.state;
+    this.setState({
+      opened: !opened,
+    });
+  };
+
+  onKeyUpFieldhandler = (e) => {
+    const keyCode = e.keyCode;
+    const { opened } = this.state;
+
+    if (keyCode === 13 && !opened) {
+      this.setState({
+        opened: true,
+      });
+    }
+  };
+
+  onChangeHandler = (data, close) => {
+    const { onChange, value } = this.props;
+
+    if (!value) {
+      this.setState({
+        selectedItemData: data,
+      });
+    }
+
+    if (onChange) onChange(data);
+
+    if (close) {
+      this.onBlurFieldHandler();
+    }
+  };
+
+  getData = () => {
+    return this.state.selectedItemData;
+  };
+
+  renderDropdown() {
+    const { children } = this.props;
+    const { opened, selectedItemData } = this.state;
+
+    if (opened) {
+      return (
+        <SelectDropdown
+          selectedItemData={selectedItemData}
+          onChange={this.onChangeHandler}
+        >
+          { children }
+        </SelectDropdown>
+      );
+    }
+
+    return null;
+  }
+
+  render() {
+    const { labelText, placeholder } = this.props;
+    const { opened, selectedItemData } = this.state;
+
+    return (
+      <SelectFieldContainerStyled>
+        <TextField
+          labelText={labelText}
+          placeholder={placeholder}
+          value={selectedItemData.name}
+          readOnly
+          onBlur={this.onBlurFieldHandler}
+          onClick={this.onClickFieldHandler}
+          onKeyUp={this.onKeyUpFieldhandler}
+        />
+        <ArrowIconStyled
+          opened={opened}
+        />
+        { this.renderDropdown() }
+      </SelectFieldContainerStyled>
+    );
+  }
+}

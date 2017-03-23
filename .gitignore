@@ -10,3 +10,5 @@ out
 *.log
 
 index.d.ts
+
+.idea

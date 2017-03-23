@@ -1,0 +1,24 @@
+// App
+export const APP_RESET_STATE = 'APP:RESET_STATE';
+export const APP_LOAD_STATE = 'APP:LOAD_STATE';
+export const APP_SET_STATE = 'APP:SET_STATE';
+
+// Dialog
+export const DIALOG_OPEN = 'DIALOG:OPEN';
+export const DIALOG_CLOSE = 'DIALOG:CLOSE';
+
+// Modal
+export const MODAL_OPEN = 'MODAL:OPEN';
+export const MODAL_CLOSE = 'MODAL:CLOSE';
+
+// Certificate
+export const CERTIFICATE_SELECT = 'CERTIFICATE:SELECT';
+export const CERTIFICATE_UPDATE = 'CERTIFICATE:UPDATE';
+export const CERTIFICATE_ADD = 'CERTIFICATE:ADD';
+export const CERTIFICATE_REMOVE = 'CERTIFICATE:REMOVE';
+export const CERTIFICATE_DOWNLOAD = 'CERTIFICATE:DOWNLOAD';
+export const CERTIFICATE_COPY = 'CERTIFICATE:COPY';
+
+// Routing
+export const ROUTING_PUSH = 'ROUTING:PUSH';
+export const ROUTING_BACK = 'ROUTING:BACK';
