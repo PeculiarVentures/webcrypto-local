@@ -28,7 +28,6 @@ const SidebarStyled = styled.div`
 export default class Sidebar extends Component {
 
   static propTypes = {
-    online: PropTypes.bool,
     list: PropTypes.oneOfType([
       PropTypes.array,
     ]),
@@ -36,12 +35,11 @@ export default class Sidebar extends Component {
   };
 
   static defaultProps = {
-    online: true,
     list: [],
   };
 
   render() {
-    const { online, list, open } = this.props;
+    const { list, open } = this.props;
 
     return (
       <SidebarStyled
@@ -51,9 +49,7 @@ export default class Sidebar extends Component {
         <SidebarBody
           list={list}
         />
-        <SidebarFooter
-          online={online}
-        />
+        <SidebarFooter />
       </SidebarStyled>
     );
   }

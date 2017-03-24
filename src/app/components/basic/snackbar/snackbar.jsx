@@ -6,7 +6,7 @@ const SnackbarStyled = styled.div`
   position: fixed;
   width: ${props => props.width};
   left: calc((100% - ${props => props.width}) / 2);
-  bottom: ${props => props.origin === 'bottom' ? props.offset : 'auto' };
+  bottom: ${props => props.origin === 'bottom' ? `${props.offset}px` : 'auto' };
   top: ${props => props.origin === 'top' ? props.offset : 'auto' };
   background: ${props => props.theme.snackbar.backgroundColor};
   box-shadow: ${props => props.theme.snackbar.shadow};
@@ -107,7 +107,7 @@ export default class Snackbar extends Component {
   }
 
   getSlideOutDistance(node) {
-    const { offset, origin } = this.props;
+    const { origin } = this.props;
     const { innerHeight } = window;
     const { offsetTop, offsetHeight } = node;
 
@@ -205,8 +205,6 @@ export default class Snackbar extends Component {
   }
 
   render() {
-    const { children, width } = this.props;
-
     return (
       <SnackbarStyled
         {...this.props}

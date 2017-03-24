@@ -6,6 +6,7 @@ import { Sidebar } from '../components/sidebar';
 import Overlay from './overlay';
 import { CertificateActions } from '../actions/state';
 import { RoutingActions } from '../actions/ui';
+import Snackbars from '../components/snackbars';
 
 const ContentStyled = styled.div`
   height: 100%;
@@ -146,7 +147,7 @@ class RootContainer extends Component {
   }
 
   render() {
-    const { certificates, serverIsOnline } = this.props;
+    const { certificates } = this.props;
     const { sidebarOpen } = this.state;
 
     return (
@@ -154,13 +155,13 @@ class RootContainer extends Component {
         <Sidebar
           open={sidebarOpen}
           list={certificates}
-          online={serverIsOnline}
         />
         <InfoStyled>
           <Info
             certificate={this.getSelectedCertificateProps()}
           />
         </InfoStyled>
+        <Snackbars />
         <Overlay {...this.props} />
       </ContentStyled>
     );
