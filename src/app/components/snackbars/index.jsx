@@ -2,8 +2,8 @@ import React, { PropTypes } from 'react';
 import { SegueHandler, Snackbar } from '../basic';
 import { EventChannel } from '../../controllers';
 import { ModalActions } from '../../actions/ui';
-
-window.x = EventChannel;
+import { ACTIONS_CONST } from '../../constants';
+import enLang from '../../langs/en.json';
 
 export default class Snackbars extends React.Component {
 
@@ -32,10 +32,10 @@ export default class Snackbars extends React.Component {
     this.bindedSetMessage = ::this.setMesssage;
     this.bindedResetDelay = ::this.resetDelay;
 
-    EventChannel.on('SNACKBAR:SET_MESSAGE', this.bindedSetMessage);
-    EventChannel.on('SNACKBAR:SHOW', this.bindedShow);
-    EventChannel.on('SNACKBAR:HIDE', this.bindedHide);
-    EventChannel.on('SNACKBAR:CLEAR_DELAY', this.bindedResetDelay);
+    EventChannel.on(ACTIONS_CONST.SNACKBAR_SET_MESSAGE, this.bindedSetMessage);
+    EventChannel.on(ACTIONS_CONST.SNACKBAR_SHOW, this.bindedShow);
+    EventChannel.on(ACTIONS_CONST.SNACKBAR_HIDE, this.bindedHide);
+    EventChannel.on(ACTIONS_CONST.SNACKBAR_CLEAR_DELAY, this.bindedResetDelay);
   }
 
   componentWillUnmount() {
@@ -59,7 +59,7 @@ export default class Snackbars extends React.Component {
 
     switch (type) {
 
-      case 'MODAL:OPEN':
+      case ACTIONS_CONST.MODAL_OPEN:
         dispatch(ModalActions.openModal(value));
         break;
 
@@ -117,7 +117,7 @@ export default class Snackbars extends React.Component {
         name="Snackbars"
         onClose={this.bindedHide}
         transitionGroupEnable
-        offset={16}
+        offset="16px"
         overflowWrapperStyle={{ zIndex: 4 }}
         onMouseOver={() => { clearTimeout(this.hideTimeout); }}
         onMouseLeave={
@@ -125,10 +125,18 @@ export default class Snackbars extends React.Component {
         }
       >
         <Snackbar
+          type="error"
           name="offline"
-        >
-          Offline!!!!!!
-        </Snackbar>
+          buttonText={enLang['Snackbar.Offline.Btn.Get']}
+          onButtonClick={() => console.log('click Get help button')}
+          text={enLang['Snackbar.Offline.Text']}
+        />
+        <Snackbar
+          name="copied"
+          buttonText={enLang['Snackbar.Copy.Btn.Close']}
+          onButtonClick={() => EventChannel.emit(ACTIONS_CONST.SNACKBAR_HIDE)}
+          text={enLang['Snackbar.Copy.Text']}
+        />
       </SegueHandler>
     );
   }

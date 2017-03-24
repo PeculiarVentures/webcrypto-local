@@ -5,6 +5,8 @@ import CertificateInfo from './info_certificate';
 import KeyInfo from './info_key';
 import EmptyBody from './empty_body';
 import { DialogActions } from '../../actions/ui';
+import { EventChannel } from '../../controllers';
+import { ACTIONS_CONST } from '../../constants';
 
 const RootStyled = styled.div`
   width: 100%;
@@ -106,9 +108,7 @@ export default class Info extends Component {
             <Header
               name={certificate.name}
               type={certificate.type}
-              onCopy={() => {
-                console.log('clicked Copy button');
-              }}
+              onCopy={() => EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'copied', 4000)}
               onDownload={() => {
                 console.log('clicked Download button');
               }}

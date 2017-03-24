@@ -56,7 +56,7 @@ export function getTheme(palette = defaultPalette) {
       },
     },
     snackbar: {
-      color: palette.primaryColor,
+      color: '#40484F',
       backgroundColor: defaultPalette.white,
       borderColor: defaultPalette.secondaryButtonColor,
       shadow: `0px 2px 30px 0px ${colorManipulator.fade(palette.black, 0.1)}`,

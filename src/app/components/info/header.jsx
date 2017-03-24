@@ -288,27 +288,28 @@ export default class Header extends Component {
   }
 
   renderButtons() {
-    const { windowSize } = this.context;
-
     return (
       <ButtonsContainer>
-        <StyledButton onClick={this.bindedHandleDownload} secondary>
+        <StyledButton
+          onClick={this.bindedHandleDownload}
+          secondary
+        >
           <DownloadIconStyled />
-          {
-            enLang['Info.Header.Download']
-          }
+          { enLang['Info.Header.Download'] }
         </StyledButton>
-        <StyledButton onClick={this.bindedHandleCopy} secondary>
+        <StyledButton
+          onClick={this.bindedHandleCopy}
+          secondary
+        >
           <CopyIconStyled />
-          {
-            enLang['Info.Header.CopyToClipboard']
-          }
+          { enLang['Info.Header.CopyToClipboard'] }
         </StyledButton>
-        <StyledButton onClick={this.bindedHandleRemove} secondary>
+        <StyledButton
+          onClick={this.bindedHandleRemove}
+          secondary
+        >
           <RemoveIconStyled />
-          {
-            enLang['Info.Header.Remove']
-          }
+          { enLang['Info.Header.Remove'] }
         </StyledButton>
       </ButtonsContainer>
     );

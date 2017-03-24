@@ -1,6 +1,8 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
 import enLang from '../../langs/en.json';
+import { EventChannel } from '../../controllers';
+import { ACTIONS_CONST } from '../../constants';
 
 const SidebarFooterStyled = styled.div`
   border-top: 1px solid ${props => props.theme.sidebar.borderColorFooter};
@@ -53,7 +55,14 @@ export default class SidebarFooter extends Component {
   }
 
   componentDidMount() {
-    const update = () => this.forceUpdate();
+    const update = (onLine) => {
+      if (onLine) {
+        EventChannel.emit(ACTIONS_CONST.SNACKBAR_HIDE);
+      } else {
+        EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'offline', Infinity);
+      }
+      this.forceUpdate();
+    };
 
     this.context.network.on('change', update);
     this.unbind = () => {

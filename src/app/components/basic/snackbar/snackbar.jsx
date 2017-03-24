@@ -6,7 +6,7 @@ const SnackbarStyled = styled.div`
   position: fixed;
   width: ${props => props.width};
   left: calc((100% - ${props => props.width}) / 2);
-  bottom: ${props => props.origin === 'bottom' ? `${props.offset}px` : 'auto' };
+  bottom: ${props => props.origin === 'bottom' ? props.offset : 'auto' };
   top: ${props => props.origin === 'top' ? props.offset : 'auto' };
   background: ${props => props.theme.snackbar.backgroundColor};
   box-shadow: ${props => props.theme.snackbar.shadow};
@@ -48,6 +48,10 @@ const TextStyled = styled.div`
   }
 `;
 
+const ButtonStyled = styled(Button)`
+  height: 28px !important;
+`;
+
 const ButtonsWrapperStyled = styled.div`
   display: table-cell;
   text-align: right;
@@ -74,6 +78,7 @@ export default class Snackbar extends Component {
       PropTypes.func,
     ]),
     children: PropTypes.node,
+    text: PropTypes.string,
   };
 
   static defaultProps = {
@@ -180,7 +185,7 @@ export default class Snackbar extends Component {
   }
 
   renderSnackbarContent() {
-    const { buttonText, children } = this.props;
+    const { children, text, buttonText } = this.props;
 
     if (children) {
       return (
@@ -191,14 +196,15 @@ export default class Snackbar extends Component {
     return (
       <SnackbarContentStyled>
         <TextStyled>
-          Server offline or not installed
+          { text }
         </TextStyled>
         <ButtonsWrapperStyled>
-          <Button onClick={this.bindedOnButtonClick} primary>
-            {
-              buttonText
-            }
-          </Button>
+          <ButtonStyled
+            onClick={this.bindedOnButtonClick}
+            primary
+          >
+            { buttonText }
+          </ButtonStyled>
         </ButtonsWrapperStyled>
       </SnackbarContentStyled>
     );
@@ -212,9 +218,7 @@ export default class Snackbar extends Component {
         onMouseLeave={this.bindedOnMouseLeave}
         innerRef={(node) => { this.refRootNode = node; }}
       >
-        {
-          this.renderSnackbarContent()
-        }
+        { this.renderSnackbarContent() }
       </SnackbarStyled>
     );
   }

@@ -50,5 +50,9 @@
   "Info.InfoTable.LastUsed": "Last used",
   "Info.InfoTable.Algorithm": "Algorithm",
   "Info.InfoTable.Size": "Size",
-  "Info.InfoTable.Usages": "Usages"
+  "Info.InfoTable.Usages": "Usages",
+  "Snackbar.Offline.Btn.Get": "Get help",
+  "Snackbar.Offline.Text": "Server offline or not installed",
+  "Snackbar.Copy.Btn.Close": "Close",
+  "Snackbar.Copy.Text": "Certificate copied to your clipboard"
 }
