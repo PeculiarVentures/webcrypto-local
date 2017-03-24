@@ -333,7 +333,9 @@ export default class Header extends Component {
           { name }
         </Title>
         {
-          device === 'desktop' ? this.renderButtons() : this.renderBurgerButton()
+          device === 'desktop'
+            ? this.renderButtons()
+            : this.renderBurgerButton()
         }
         { this.renderDropdown() }
       </HeaderRoot>

@@ -53,7 +53,7 @@ export default class SidebarHeader extends Component {
 
   static contextTypes = {
     dispatch: PropTypes.func,
-    windowSize: PropTypes.object,
+    deviceType: PropTypes.string,
   };
 
   onClickCreateHandler = () => {
@@ -96,7 +96,8 @@ export default class SidebarHeader extends Component {
   };
 
   getAcceptString() {
-    if (this.context.windowSize.device === 'desktop') {
+    const { deviceType } = this.context;
+    if (deviceType === 'desktop') {
       return AccessedMimes.join(',');
     }
     return AccessedExtentions.map(e => `.${e}`).join(', ');
