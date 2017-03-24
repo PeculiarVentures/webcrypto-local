@@ -1,13 +1,38 @@
-import React, { Component } from 'react';
+import React, { PropTypes, Component } from 'react';
 import { Provider } from 'react-redux';
+import isMobile from 'ismobilejs';
 import { ThemeProvider } from 'styled-components';
 import { Router, Route, browserHistory } from 'react-router';
 import Store from './store';
 import { getTheme } from './components/theme';
 import { RootContainer, CreateContainer } from './containers';
-import { getAppPath } from './helpers';
+import { getAppPath, Network } from './helpers';
 
 export default class Routing extends Component {
+
+  static childContextTypes = {
+    deviceType: PropTypes.string,
+    network: PropTypes.object,
+  };
+
+  static getDeviceType() {
+    let deviceType = 'desktop';
+
+    if (isMobile.tablet) {
+      deviceType = 'tablet';
+    } else if (isMobile.phone) {
+      deviceType = 'phone';
+    }
+
+    return deviceType;
+  }
+
+  getChildContext() {
+    return {
+      deviceType: Routing.getDeviceType(),
+      network: Network.getContext(),
+    };
+  }
 
   render() {
     return (
