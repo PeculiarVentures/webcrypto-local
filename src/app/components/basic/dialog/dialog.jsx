@@ -115,6 +115,7 @@ const Dialog = (props) => {
         <ButtonStyled
           disabled={disableAccept}
           onClick={handleAccept}
+          primary
           {...btnAcceptProps}
         >
           { acceptText }
@@ -178,9 +179,6 @@ Dialog.propTypes = {
 
 Dialog.defaultProps = {
   cancelText: 'Cancel',
-  cancelOnAccept: true,
-  acceptFirst: true,
-  cancelPrimary: true,
 };
 
 export default Dialog;

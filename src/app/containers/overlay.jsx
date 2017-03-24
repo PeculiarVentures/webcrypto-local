@@ -131,6 +131,18 @@ export default class Overlay extends Component {
               })
             )}
           />
+          <Dialog.FortifyAuthorizationDialog
+            name="fortify_authorization"
+            numbers={[2,2,2,2,2,2]}
+            onAccept={() => (
+              console.log('accept')
+            )}
+            onCancel={() => (
+              this.handleAction({
+                type: ACTIONS_CONST.DIALOG_CLOSE,
+              })
+            )}
+          />
         </SegueHandler>
       );
     }
