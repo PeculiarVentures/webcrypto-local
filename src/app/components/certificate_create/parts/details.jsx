@@ -16,16 +16,9 @@ const TextFieldContainer = styled.div`
     margin-left: 0;
   }
   @media ${props => props.theme.media.mobile} {
-    margin-left: 12px;
-    margin-top: 15px;
-    width: calc(50% - 6px);
-    &:nth-child(1),
-    &:nth-child(2) {
-      margin-top: 0;
-    }
-    &:nth-child(2n-1) {
-      margin-left: 0;
-    }
+    margin-left: 0;
+    margin-top: 20px;
+    width: 100%;
   }
 `;
 
@@ -121,6 +114,7 @@ export default class Details extends Component {
               ref={node => (this.fieldNodes.startDate = node)}
               validation={['date']}
               errorText={enLang['CertificateCreate.Details.Field.StartDate.Error']}
+              type="date"
             />
           </TextFieldContainer>
           <TextFieldContainer>
@@ -130,6 +124,7 @@ export default class Details extends Component {
               ref={node => (this.fieldNodes.expirationDate = node)}
               validation={['date']}
               errorText={enLang['CertificateCreate.Details.Field.ExpirationDate.Error']}
+              type="date"
             />
           </TextFieldContainer>
         </GroupPart>

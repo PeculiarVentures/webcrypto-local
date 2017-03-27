@@ -21,6 +21,9 @@ const ErrorTextStyled = styled.div`
   font-size: 12px;
   line-height: 1.1;
   color: ${props => props.theme.field.text.colorInvalid};
+  @media ${props => props.theme.media.mobile} {
+    top: calc(100% + 3px);
+  }
 `;
 
 const fieldReadyStyles = (props) => {
@@ -109,6 +112,10 @@ export default class TextField extends Component {
     disabled: false,
     multiline: false,
     type: 'text',
+  };
+
+  static contextTypes = {
+    deviceType: PropTypes.string,
   };
 
   constructor(props) {
@@ -235,6 +242,7 @@ export default class TextField extends Component {
       errorText,
     } = this.props;
     const { valid } = this.state;
+    const { deviceType } = this.context;
 
     return (
       <FieldContainerStyled>
@@ -249,7 +257,7 @@ export default class TextField extends Component {
           innerRef={node => (this.fieldNode = node)}
           tabIndex={0}
           id={this.fieldId}
-          type={type}
+          type={type === 'date' ? 'text' : type}
           placeholder={placeholder}
           disabled={disabled}
           name={name}
@@ -263,6 +271,26 @@ export default class TextField extends Component {
           onClick={this.onClickHandler}
           readOnly={readOnly}
         />
+        {
+          type === 'date' && deviceType === 'phone'
+          ? <input
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                opacity: 0,
+                width: '100%',
+                height: '100%',
+              }}
+              defaultValue={value}
+              type="date"
+              onBlur={this.onBlurHandler}
+              onChange={(e) => {
+                this.fieldNode.value = e.target.value;
+              }}
+            />
+          : null
+        }
         {
           errorText && !valid
           ? <ErrorTextStyled>

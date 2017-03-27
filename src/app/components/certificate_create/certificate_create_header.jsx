@@ -28,6 +28,7 @@ const Container = styled.div`
   border-bottom: 1px solid ${props => props.theme.certificateCreate.borderColorHeader};
   padding: 24px 0;
   position: relative;
+  z-index: 1;
   @media ${props => props.theme.media.mobile} {
     padding: 0;
   }

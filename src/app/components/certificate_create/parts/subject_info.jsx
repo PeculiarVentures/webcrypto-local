@@ -19,22 +19,9 @@ const TextFieldContainer = styled.div`
     margin-top: 0;
   }
   @media ${props => props.theme.media.mobile} {
-    margin-left: 12px;
-    width: calc(50% - 6px);
-    margin-top: 15px;
-    &:nth-child(1),
-    &:nth-child(2) {
-      margin-top: 0;
-    }
-    &:nth-child(3) {
-      margin-top: 15px;
-    }
-    &:nth-child(3n-2) {
-      margin-left: 12px;
-    }
-    &:nth-child(2n-1) {
-      margin-left: 0;
-    }
+    margin-left: 0;
+    width: 100%;
+    margin-top: 15px !important;
   }
 `;
 

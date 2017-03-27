@@ -39,11 +39,9 @@ const TextFieldContainer = styled.div`
     margin-left: 0;
   }
   @media ${props => props.theme.media.mobile} {
-    margin-left: 12px;
-    width: calc(50% - 6px);
-    &:nth-child(2n-1) {
-      margin-left: 0;
-    }
+    margin-left: 0;
+    width: 100%;
+    margin-top: 15px;
   }
 `;
 

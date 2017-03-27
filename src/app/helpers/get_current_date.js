@@ -6,7 +6,7 @@ export default function getCurrentDate() {
   if (mm.toString().length === 1) {
     mm = `0${mm}`;
   }
-  let dd = now.getDate();
+  let dd = now.getDate().toString();
   if (dd.length === 1) {
     dd = `0${dd}`;
   }
