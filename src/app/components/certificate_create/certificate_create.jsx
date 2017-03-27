@@ -2,7 +2,6 @@ import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
 import CertificateCreateHeader from './certificate_create_header';
 import CertificateCreateBody from './certificate_create_body';
-import countriesData from '../../constants/countries.json';
 import { CertificateActions } from '../../actions/state';
 import { RoutingActions } from '../../actions/ui';
 /* eslint no-unused-vars: 0 */
@@ -19,24 +18,6 @@ const CertificateCreateStyled = styled.div`
 `;
 
 export default class CertificateCreate extends Component {
-
-  static propTypes = {
-    algorithms: PropTypes.oneOfType([
-      PropTypes.array,
-    ]),
-    keySizes: PropTypes.oneOfType([
-      PropTypes.array,
-    ]),
-    countries: PropTypes.oneOfType([
-      PropTypes.array,
-    ]),
-  };
-
-  static defaultProps = {
-    algorithms: ['RSASSA-PKCS1-v1_5', 'RSA-OAEP', 'ECDSA', 'ECDH'],
-    keySizes: ['256', '512', '1024'],
-    countries: countriesData,
-  };
 
   static contextTypes = {
     dispatch: PropTypes.func,
@@ -63,17 +44,12 @@ export default class CertificateCreate extends Component {
   };
 
   render() {
-    const { algorithms, keySizes, countries } = this.props;
-
     return (
       <CertificateCreateStyled>
         <CertificateCreateHeader
           onBack={this.onCancelHandler}
         />
         <CertificateCreateBody
-          algorithms={algorithms}
-          keySizes={keySizes}
-          countries={countries}
           onCancel={this.onCancelHandler}
           onCreate={this.onCreateHandler}
         />

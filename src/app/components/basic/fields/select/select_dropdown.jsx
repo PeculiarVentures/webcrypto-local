@@ -25,7 +25,10 @@ export default class SelectDropdown extends Component {
         PropTypes.string,
         PropTypes.number,
       ]),
-      name: PropTypes.string,
+      name: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+      ]),
       index: PropTypes.number,
     }),
   };

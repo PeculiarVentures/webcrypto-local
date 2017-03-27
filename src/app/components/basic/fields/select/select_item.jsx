@@ -11,7 +11,11 @@ const SelectItemStyled = styled.div`
   font-size: 12px;
   line-height: 14px;
   letter-spacing: 0.075em;
-  cursor: pointer;
+  cursor: ${props => (
+    props.selected
+      ? 'default'
+      : 'pointer'
+  )};
   transition: opacity ${props => props.theme.basicTransition}ms, color ${props => props.theme.basicTransition}ms;
   position: relative;
   opacity: ${props => (
@@ -40,7 +44,10 @@ const SelectItemStyled = styled.div`
 export default class SelectItem extends Component {
 
   static propTypes = {
-    primaryText: PropTypes.string,
+    primaryText: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+    ]),
     value: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number,
@@ -61,8 +68,10 @@ export default class SelectItem extends Component {
   }
 
   onClickHandler = () => {
-    const { index, value, primaryText, onClick } = this.props;
-    onClick(index, value, primaryText);
+    const { index, value, primaryText, onClick, selected } = this.props;
+    if (!selected) {
+      onClick(index, value, primaryText);
+    }
   };
 
   render() {

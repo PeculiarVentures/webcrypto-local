@@ -5,6 +5,8 @@ import Details from './parts/details';
 import SubjectInfo from './parts/subject_info';
 import KeyInfo from './parts/key_info';
 import enLang from '../../langs/en.json';
+import countriesData from '../../constants/countries.json';
+import parametersData from '../../constants/parameters.json';
 
 const BtnsContainer = styled.div`
   text-align: center;
@@ -44,17 +46,19 @@ const CertificateCreateBodyStyled = styled.div`
 export default class CertificateCreateBody extends Component {
 
   static propTypes = {
-    algorithms: PropTypes.oneOfType([
-      PropTypes.array,
-    ]),
-    keySizes: PropTypes.oneOfType([
-      PropTypes.array,
+    parameters: PropTypes.oneOfType([
+      PropTypes.object,
     ]),
     countries: PropTypes.oneOfType([
       PropTypes.array,
     ]),
     onCancel: PropTypes.func,
     onCreate: PropTypes.func,
+  };
+
+  static defaultProps = {
+    countries: countriesData,
+    parameters: parametersData,
   };
 
   onCreateHandler = () => {
@@ -73,7 +77,7 @@ export default class CertificateCreateBody extends Component {
   };
 
   render() {
-    const { countries, algorithms, keySizes } = this.props;
+    const { countries, parameters } = this.props;
 
     return (
       <CertificateCreateBodyStyled>
@@ -86,8 +90,7 @@ export default class CertificateCreateBody extends Component {
             ref={node => (this.subjectNode = node)}
           />
           <KeyInfo
-            algorithms={algorithms}
-            keySizes={keySizes}
+            parameters={parameters}
             ref={node => (this.keyNode = node)}
           />
           <BtnsContainer>

@@ -77,7 +77,10 @@ export default class TextField extends Component {
     onKeyUp: PropTypes.func,
     onClick: PropTypes.func,
     type: PropTypes.string,
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+    ]),
     labelText: PropTypes.string,
     placeholder: PropTypes.string,
     validation: PropTypes.oneOfType([

@@ -20,7 +20,7 @@ const HeaderRoot = styled.div`
 const Title = styled.div`
   font-size: 24px;
   font-weight: 600;
-  letter-spacing: -0.08em;
+  letter-spacing: -0.008em;
   color: ${props => props.theme.info.header.titleColor};
   line-height: 32px;
   display: table-cell;

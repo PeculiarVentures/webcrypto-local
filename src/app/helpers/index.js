@@ -8,3 +8,4 @@ export Taber from './taber';
 export getCurrentDate from './get_current_date';
 export getAppPath from './get_app_path';
 export Network from './network_handler';
+export isEqual from './is_equal';

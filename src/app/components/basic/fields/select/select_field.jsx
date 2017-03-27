@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import TextField from '../text_field';
 import SelectDropdown from './select_dropdown';
 import { ArrowSelectDownIcon } from '../../../svg';
+import { isEqual } from '../../../../helpers';
 
 const ArrowIconStyled = styled(ArrowSelectDownIcon)`
   fill: ${props => props.theme.field.select.iconColor};
@@ -37,20 +38,35 @@ export default class SelectField extends Component {
         PropTypes.string,
         PropTypes.number,
       ]),
-      name: PropTypes.string,
+      name: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+      ]),
+      index: PropTypes.number,
+    }),
+    defaultSelected: PropTypes.shape({
+      value: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+      ]),
+      name: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+      ]),
       index: PropTypes.number,
     }),
   };
 
-  constructor() {
+  constructor(props) {
     super();
 
+    const defaultSelected = props.defaultSelected;
     this.state = {
       opened: false,
       selectedItemData: {
-        value: '',
-        name: '',
-        index: 0,
+        value: defaultSelected ? defaultSelected.value : '',
+        name: defaultSelected ? defaultSelected.name : '',
+        index: defaultSelected ? defaultSelected.index : 0,
       },
     };
   }
@@ -65,10 +81,16 @@ export default class SelectField extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { value } = this.props;
+    const { value, defaultSelected } = this.props;
+    const { selectedItemData } = this.state;
     if (value && nextProps.value.index !== value.index) {
       this.setState({
         selectedItemData: nextProps.value,
+      });
+    }
+    if (defaultSelected && !isEqual(nextProps.defaultSelected, selectedItemData)) {
+      this.setState({
+        selectedItemData: defaultSelected,
       });
     }
   }

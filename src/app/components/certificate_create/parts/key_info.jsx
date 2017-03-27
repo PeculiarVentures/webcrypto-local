@@ -50,26 +50,39 @@ const TextFieldContainer = styled.div`
 export default class KeyInfo extends Component {
 
   static propTypes = {
-    algorithms: PropTypes.oneOfType([
-      PropTypes.array,
+    parameters: PropTypes.oneOfType([
+      PropTypes.object,
     ]),
-    keySizes: PropTypes.oneOfType([
-      PropTypes.array,
-    ]),
+  };
+
+  constructor(props) {
+    super();
+
+    this.keyInfoData = props.parameters.RSA;
+    this.checkboxNodes = {};
+
+    this.state = {
+      algorithmValue: {
+        name: this.keyInfoData[0].name,
+        value: this.keyInfoData[0].name,
+        index: 0,
+      },
+    };
+  }
+
+  handleChangeAlgorithm = (data) => {
+    this.setState({
+      algorithmValue: data,
+    });
   };
 
   getData = () => {
     const usagesArr = [];
-    const usages = {
-      encrypt: this.usageEncryptNode.getValue(),
-      decrypt: this.usageDecryptNode.getValue(),
-      wrapKey: this.usageWrapKeyNode.getValue(),
-      unwrapKey: this.usageUnwrapKeyNode.getValue(),
-    };
 
-    Object.keys(usages).map((usage) => {
-      if (usages[usage]) {
-        usagesArr.push(usage);
+    Object.keys(this.checkboxNodes).map((usageNode) => {
+      const node = this.checkboxNodes[usageNode];
+      if (node && node.getValue()) {
+        usagesArr.push(usageNode);
       }
       return true;
     });
@@ -79,12 +92,14 @@ export default class KeyInfo extends Component {
         algorithm: this.algorithmNode.getData().value,
         size: this.sizeNode.getData().value,
         usages: usagesArr,
-      },
+      }
     };
   };
 
   render() {
-    const { algorithms, keySizes } = this.props;
+    const { keyInfoData } = this;
+    const { algorithmValue } = this.state;
+    const currentAlgorithmData = keyInfoData[algorithmValue.index];
 
     return (
       <GroupContainer>
@@ -98,13 +113,15 @@ export default class KeyInfo extends Component {
               name="algorithm"
               ref={node => (this.algorithmNode = node)}
               placeholder="Select algorithm..."
+              onChange={this.handleChangeAlgorithm}
+              value={algorithmValue}
             >
               {
-                algorithms.map((item, index) => (
+                keyInfoData.map((item, index) => (
                   <SelectItem
                     key={index}
-                    value={item}
-                    primaryText={item}
+                    value={item.name}
+                    primaryText={item.name}
                   />
                 ))
               }
@@ -116,9 +133,14 @@ export default class KeyInfo extends Component {
               name="size"
               ref={node => (this.sizeNode = node)}
               placeholder="Select size..."
+              defaultSelected={{
+                name: currentAlgorithmData.modulusLength[0],
+                value: currentAlgorithmData.modulusLength[0],
+                index: 0,
+              }}
             >
               {
-                keySizes.map((item, index) => (
+                currentAlgorithmData.modulusLength.map((item, index) => (
                   <SelectItem
                     key={index}
                     value={item}
@@ -133,33 +155,16 @@ export default class KeyInfo extends Component {
           <TitleCheckboxes>
             { enLang['CertificateCreate.Body.KeyInfo.Usage.Title'] }
           </TitleCheckboxes>
-          <CheckboxContainer>
-            <Checkbox
-              labelText="encrypt"
-              ref={node => (this.usageEncryptNode = node)}
-            />
-          </CheckboxContainer>
-          <CheckboxContainer>
-            <Checkbox
-              labelText="decrypt"
-              defaultChecked
-              ref={node => (this.usageDecryptNode = node)}
-            />
-          </CheckboxContainer>
-          <CheckboxContainer>
-            <Checkbox
-              labelText="wrapKey"
-              defaultChecked
-              ref={node => (this.usageWrapKeyNode = node)}
-            />
-          </CheckboxContainer>
-          <CheckboxContainer>
-            <Checkbox
-              labelText="unwrapKey"
-              defaultChecked
-              ref={node => (this.usageUnwrapKeyNode = node)}
-            />
-          </CheckboxContainer>
+          {
+            currentAlgorithmData.usages.map((usage, index) => (
+              <CheckboxContainer key={index}>
+                <Checkbox
+                  labelText={usage}
+                  ref={node => (this.checkboxNodes[usage] = node)}
+                />
+              </CheckboxContainer>
+            ))
+          }
         </GroupPart>
       </GroupContainer>
     );
