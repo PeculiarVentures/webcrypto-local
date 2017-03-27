@@ -60,6 +60,7 @@ export default class KeyInfo extends Component {
 
     this.keyInfoData = props.parameters.RSA;
     this.checkboxNodes = {};
+    this.fieldNodes = {};
 
     this.state = {
       algorithmValue: {
@@ -76,8 +77,42 @@ export default class KeyInfo extends Component {
     });
   };
 
+  isValidFields = () => {
+    this.validateFields();
+    const { fieldNodes } = this;
+    let valid = true;
+
+    Object.keys(fieldNodes).map((field) => {
+      const node = fieldNodes[field];
+      if (!node.isValid()) {
+        valid = false;
+      }
+    });
+
+    return valid;
+  };
+
+  validateFields() {
+    const { fieldNodes } = this;
+
+    Object.keys(fieldNodes).map((field) => (
+      fieldNodes[field].validate()
+    ));
+  }
+
   getData = () => {
+    const { fieldNodes } = this;
+    const data = {};
     const usagesArr = [];
+
+    Object.keys(fieldNodes).map((field) => {
+      const node = fieldNodes[field];
+      if ({}.hasOwnProperty.call(node, 'getData')) {
+        data[field] = node.getData().value;
+      } else {
+        data[field] = node.getValue();
+      }
+    });
 
     Object.keys(this.checkboxNodes).map((usageNode) => {
       const node = this.checkboxNodes[usageNode];
@@ -89,8 +124,7 @@ export default class KeyInfo extends Component {
 
     return {
       keyInfo: {
-        algorithm: this.algorithmNode.getData().value,
-        size: this.sizeNode.getData().value,
+        ...data,
         usages: usagesArr,
       }
     };
@@ -111,7 +145,7 @@ export default class KeyInfo extends Component {
             <SelectField
               labelText={enLang['CertificateCreate.KeyInfo.Field.Algorithm']}
               name="algorithm"
-              ref={node => (this.algorithmNode = node)}
+              ref={node => (this.fieldNodes.algorithm = node)}
               placeholder="Select algorithm..."
               onChange={this.handleChangeAlgorithm}
               value={algorithmValue}
@@ -131,7 +165,7 @@ export default class KeyInfo extends Component {
             <SelectField
               labelText={enLang['CertificateCreate.KeyInfo.Field.Size']}
               name="size"
-              ref={node => (this.sizeNode = node)}
+              ref={node => (this.fieldNodes.size = node)}
               placeholder="Select size..."
               defaultSelected={{
                 name: currentAlgorithmData.modulusLength[0],

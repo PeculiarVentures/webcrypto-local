@@ -63,12 +63,19 @@ export default class CertificateCreateBody extends Component {
 
   onCreateHandler = () => {
     const { onCreate } = this.props;
-    const detailsData = this.detailsNode.getData();
-    const subjectData = this.subjectNode.getData();
-    const keyData = this.keyNode.getData();
-    const data = Object.assign(detailsData, subjectData, keyData);
+    const { detailsNode, subjectNode, keyNode } = this;
+    const detailsValid = detailsNode.isValidFields();
+    const subjectInfoValid = subjectNode.isValidFields();
+    const keyInfoValid = keyNode.isValidFields();
 
-    if (onCreate) onCreate(data);
+    if (detailsValid && subjectInfoValid && keyInfoValid) {
+      const detailsData = detailsNode.getData();
+      const subjectInfoData = subjectNode.getData();
+      const keyInfoData = keyNode.getData();
+      const data = Object.assign(detailsData, subjectInfoData, keyInfoData);
+
+      if (onCreate) onCreate(data);
+    }
   };
 
   onCancelHandler = () => {

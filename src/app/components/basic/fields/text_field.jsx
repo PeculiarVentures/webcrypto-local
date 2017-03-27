@@ -187,7 +187,7 @@ export default class TextField extends Component {
     });
   };
 
-  isValid() {
+  isValid = () => {
     const { validation } = this.props;
     const value = this.getValue();
     let valid = true;
@@ -197,7 +197,7 @@ export default class TextField extends Component {
     }
 
     return valid;
-  }
+  };
 
   onClickHandler = (e) => {
     const { onClick } = this.props;

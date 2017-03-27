@@ -46,16 +46,49 @@ export default class SubjectInfo extends Component {
     ]),
   };
 
+  constructor() {
+    super();
+    this.fieldNodes = {};
+  }
+
   getData = () => {
-    return {
-      hostName: this.hostNameNode.getValue(),
-      organization: this.OrganizationNode.getValue(),
-      organizationUnit: this.organizationUnitNode.getValue(),
-      country: this.countryNode.getData().value,
-      region: this.regionNode.getValue(),
-      city: this.cityNode.getValue(),
-    };
+    const { fieldNodes } = this;
+    const data = {};
+
+    Object.keys(fieldNodes).map((field) => {
+      const node = fieldNodes[field];
+      if ({}.hasOwnProperty.call(node, 'getData')) {
+        data[field] = node.getData().value;
+      } else {
+        data[field] = node.getValue();
+      }
+    });
+
+    return data;
   };
+
+  isValidFields = () => {
+    this.validateFields();
+    const { fieldNodes } = this;
+    let valid = true;
+
+    Object.keys(fieldNodes).map((field) => {
+      const node = fieldNodes[field];
+      if (!node.isValid()) {
+        valid = false;
+      }
+    });
+
+    return valid;
+  };
+
+  validateFields() {
+    const { fieldNodes } = this;
+
+    Object.keys(fieldNodes).map((field) => (
+      fieldNodes[field].validate()
+    ));
+  }
 
   render() {
     const { countries } = this.props;
@@ -70,7 +103,7 @@ export default class SubjectInfo extends Component {
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.HostName']}
               name="hostName"
-              ref={node => (this.hostNameNode = node)}
+              ref={node => (this.fieldNodes.hostName = node)}
               validation={['text']}
               errorText={enLang['CertificateCreate.Subject.Field.HostName.Error']}
             />
@@ -79,7 +112,7 @@ export default class SubjectInfo extends Component {
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.Organization']}
               name="organization"
-              ref={node => (this.OrganizationNode = node)}
+              ref={node => (this.fieldNodes.organization = node)}
               validation={['text']}
               errorText={enLang['CertificateCreate.Subject.Field.Organization.Error']}
             />
@@ -88,7 +121,7 @@ export default class SubjectInfo extends Component {
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.OrganizationUnit']}
               name="organizationUnit"
-              ref={node => (this.organizationUnitNode = node)}
+              ref={node => (this.fieldNodes.organizationUnit = node)}
               validation={['text']}
               errorText={enLang['CertificateCreate.Subject.Field.OrganizationUnit.Error']}
             />
@@ -98,7 +131,7 @@ export default class SubjectInfo extends Component {
               labelText={enLang['CertificateCreate.Subject.Field.Country']}
               placeholder="Select country..."
               name="country"
-              ref={node => (this.countryNode = node)}
+              ref={node => (this.fieldNodes.country = node)}
               validation={['text']}
               errorText={enLang['CertificateCreate.Subject.Field.Country.Error']}
             >
@@ -117,7 +150,7 @@ export default class SubjectInfo extends Component {
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.Region']}
               name="region"
-              ref={node => (this.regionNode = node)}
+              ref={node => (this.fieldNodes.region = node)}
               validation={['text']}
               errorText={enLang['CertificateCreate.Subject.Field.Region.Error']}
             />
@@ -126,7 +159,7 @@ export default class SubjectInfo extends Component {
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.City']}
               name="city"
-              ref={node => (this.cityNode = node)}
+              ref={node => (this.fieldNodes.city = node)}
               validation={['text']}
               errorText={enLang['CertificateCreate.Subject.Field.City.Error']}
             />

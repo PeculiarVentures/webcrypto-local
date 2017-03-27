@@ -161,6 +161,14 @@ export default class SelectField extends Component {
     return null;
   }
 
+  isValid = () => {
+    return this.fieldNode.isValid();
+  };
+
+  validate = () => {
+    this.fieldNode.validate();
+  };
+
   render() {
     const { labelText, placeholder, validation, errorText } = this.props;
     const { opened, selectedItemData } = this.state;
@@ -177,6 +185,7 @@ export default class SelectField extends Component {
           onKeyUp={this.onKeyUpFieldhandler}
           validation={validation}
           errorText={errorText}
+          ref={node => (this.fieldNode = node)}
         />
         <ArrowIconStyled
           opened={opened}

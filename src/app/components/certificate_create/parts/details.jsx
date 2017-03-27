@@ -35,23 +35,61 @@ export default class Details extends Component {
     return new Date(date).getTime().toString();
   }
 
+  constructor() {
+    super();
+    this.fieldNodes = {};
+  }
+
   getData = () => {
-    return {
-      name: this.friendlyNameNode.getValue(),
-      startDate: Details.modifyDate(this.startDateNode.getValue()),
-      expirationDate: Details.modifyDate(this.expirationDateNode.getValue()),
-    };
+    const { fieldNodes } = this;
+    const data = {};
+
+    Object.keys(fieldNodes).map((field) => {
+      const node = fieldNodes[field];
+      if (field.indexOf('Date') !== -1) {
+        data[field] = Details.modifyDate(node.getValue());
+      } else {
+        data[field] = node.getValue();
+      }
+    });
+
+    return data;
   };
 
+  isValidFields = () => {
+    this.validateFields();
+    const { fieldNodes } = this;
+    let valid = true;
+
+    Object.keys(fieldNodes).map((field) => {
+      const node = fieldNodes[field];
+      if (!node.isValid()) {
+        valid = false;
+      }
+    });
+
+    return valid;
+  };
+
+  validateFields() {
+    const { fieldNodes } = this;
+
+    Object.keys(fieldNodes).map((field) => (
+      fieldNodes[field].validate()
+    ));
+  }
+
   componentDidMount() {
-    $(this.startDateNode.fieldNode).datepicker({
+    const { fieldNodes } = this;
+    const { startDate, expirationDate } = fieldNodes;
+    $(startDate.fieldNode).datepicker({
       navigationAsDateFormat: true,
       showOtherMonths: true,
       dateFormat: 'yy-mm-dd',
       selectOtherMonths: true,
       defaultDate: getCurrentDate(),
     });
-    $(this.expirationDateNode.fieldNode).datepicker({
+    $(expirationDate.fieldNode).datepicker({
       navigationAsDateFormat: true,
       showOtherMonths: true,
       dateFormat: 'yy-mm-dd',
@@ -70,7 +108,7 @@ export default class Details extends Component {
             <TextField
               labelText={enLang['CertificateCreate.Details.Field.FriendlyName']}
               name="friendlyName"
-              ref={node => (this.friendlyNameNode = node)}
+              ref={node => (this.fieldNodes.name = node)}
               validation={['text']}
               errorText={enLang['CertificateCreate.Details.Field.FriendlyName.Error']}
             />
@@ -80,7 +118,7 @@ export default class Details extends Component {
               labelText={enLang['CertificateCreate.Details.Field.StartDate']}
               name="startDate"
               value={getCurrentDate()}
-              ref={node => (this.startDateNode = node)}
+              ref={node => (this.fieldNodes.startDate = node)}
               validation={['date']}
               errorText={enLang['CertificateCreate.Details.Field.StartDate.Error']}
             />
@@ -89,7 +127,7 @@ export default class Details extends Component {
             <TextField
               labelText={enLang['CertificateCreate.Details.Field.ExpirationDate']}
               name="expirationDate"
-              ref={node => (this.expirationDateNode = node)}
+              ref={node => (this.fieldNodes.expirationDate = node)}
               validation={['date']}
               errorText={enLang['CertificateCreate.Details.Field.ExpirationDate.Error']}
             />
