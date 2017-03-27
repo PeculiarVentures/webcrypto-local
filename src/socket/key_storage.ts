@@ -17,7 +17,7 @@ export class SocketKeyStorage implements IKeyStorage {
         proto.providerID = this.service.id;
         const result = await this.service.client.send(proto);
         if (result) {
-            const keys = Convert.ToUtf8String(result).split(";");
+            const keys = Convert.ToUtf8String(result).split(",");
             return keys;
         }
         return [];

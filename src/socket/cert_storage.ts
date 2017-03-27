@@ -64,7 +64,7 @@ export class SocketCertificateStorage implements ICertificateStorage {
 
         // prepare result
         if (result) {
-            const keys = Convert.ToUtf8String(result).split(";");
+            const keys = Convert.ToUtf8String(result).split(",");
             return keys;
         }
         return [];

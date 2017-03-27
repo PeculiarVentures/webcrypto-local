@@ -22,7 +22,7 @@ export class KeyStorageGetItemActionProto extends CryptoActionProto {
     @ProtobufProperty({ id: KeyStorageGetItemActionProto.INDEX++, required: true, type: "string" })
     public key: string;
 
-    @ProtobufProperty({ id: KeyStorageGetItemActionProto.INDEX++, required: true, parser: AlgorithmProto })
+    @ProtobufProperty({ id: KeyStorageGetItemActionProto.INDEX++, parser: AlgorithmProto })
     public algorithm: AlgorithmProto;
 
     @ProtobufProperty({ id: KeyStorageGetItemActionProto.INDEX++, repeated: true, type: "string" })

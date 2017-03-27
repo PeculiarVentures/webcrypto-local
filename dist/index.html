@@ -22,15 +22,17 @@
             .on("listening", (e) => {
                 // console.info(e.address);
                 // Test
+                // TestSign();
                 // TestWrap();
                 // TestDeriveBits();
                 // TestDeriveKey();
                 // TestKeyStorageSetItem();
                 // TestKeyStorageGetItem();
-                // TestKeyStorageRemoveItem();
+                TestKeyStorageRemoveItem();
+                // TestKeyStorageKeys();
                 // TestCertStorageKeys();
                 // TestCertStorageImportCert();
-                TestCertStorageExportCert();                
+                // TestCertStorageExportCert();                
                 // TestCertStorageSetItemCert();
                 // TestCertStorageSetItemRequest();
                 // TestCertStorageRemoveItemCert();
@@ -40,6 +42,8 @@
             .on("close", (e) => {
                 console.info("close");
             });
+
+        const PROVIDER_ID = 0;
 
         const X509_RAW = HexToArray("308203A830820290A003020102020900FEDCE3010FC948FF300D06092A864886F70D01010505003034310B300906035504061302465231123010060355040A0C094468696D796F7469733111300F06035504030C084365727469676E61301E170D3037303632393135313330355A170D3237303632393135313330355A3034310B300906035504061302465231123010060355040A0C094468696D796F7469733111300F06035504030C084365727469676E6130820122300D06092A864886F70D01010105000382010F003082010A0282010100C868F1C9D6D6B3347526821EECB4BEEA5CE126ED114761E1A27C16784021E4609E5AC863E1C4B19692FF186D6923E12B62F7DDE2362F9107B948CF0EEC79B62CE7344B700825A33C871B19F281070F389019D311FE86B4F2D15E1E1E96CD806CCE3B3193B6F2A0D0A995127DA59ACC6BC884568A33A9E722155316F0CC17EC575FE9A20A9809DEE35F9C6FDC48E3850B155AA6BA9FAC48E309B2F7F432DE5E34BE1C785D425BCE0E228F4D90D77D3218B30B2C6ABF8E3F141189200E7714B53D940887F7251ED5B26000EC6F2A28256E2A3E186317253F3E442016F626C825AE054AB4E7632CF38C16537E5CFB111A08C146629F22B8F1C28D69DCFA3A5806DF0203010001A381BC3081B9300F0603551D130101FF040530030101FF301D0603551D0E041604141AEDFE413990B42459BE01F252D545F65A39DC1130640603551D23045D305B80141AEDFE413990B42459BE01F252D545F65A39DC11A138A4363034310B300906035504061302465231123010060355040A0C094468696D796F7469733111300F06035504030C084365727469676E61820900FEDCE3010FC948FF300E0603551D0F0101FF040403020106301106096086480186F8420101040403020007300D06092A864886F70D0101050500038201010085031E9271F642AFE1A3619EEBF3C00FF2A5D4DA95E6D6BE68363D7E6E1F4C8AEFD10F216D5EA55263CE12F8EF2ADA6FEB37FE1302C7CB3B3E226BDA612E7FD4723DDD30E11E4C40198C0FD79CD183307B9859DC7DC6B90C294CA133A2EB673A6584D396E2ED7645708FB52BDEF923D6496E3C14B5C69F351E50D0C18F6A70440262CBAE1D6841A7AA57E853AA07D206F6D514060B9103752C6C72B561959A0D8BB90DE7F5DF54CDDEE6D8D609089763E5C12EB0B74426C026C0AF55309E3BD5362A1904F45C1EFFCF2CB7FFD0FD874011D51123BB48C021A9A4282DFD15F8B04E2BF4305B21FC119134BE41EF7B9D9775FF9795C096582FEABB46D7BBE4D92E");
 
@@ -57,7 +61,7 @@
         function TestGetCrypto() {
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1]
+                    const provider = info.providers[PROVIDER_ID]
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -78,7 +82,7 @@
             const usages = ["sign", "verify"];
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[2]
+                    const provider = info.providers[PROVIDER_ID]
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -106,7 +110,7 @@
             const usages = ["sign", "verify"];
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1]
+                    const provider = info.providers[PROVIDER_ID]
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -141,7 +145,7 @@
             const usages = ["encrypt", "decrypt"];
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1]
+                    const provider = info.providers[PROVIDER_ID]
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -176,7 +180,7 @@
             const usages = ["encrypt", "decrypt", "wrapKey", "unwrapKey"];
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1]
+                    const provider = info.providers[PROVIDER_ID]
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -210,7 +214,7 @@
             const usages = ["deriveBits", "deriveKey"];
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1]
+                    const provider = info.providers[PROVIDER_ID]
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -243,7 +247,7 @@
             const usages = ["deriveBits", "deriveKey"];
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1]
+                    const provider = info.providers[PROVIDER_ID]
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -276,7 +280,7 @@
             const usages = ["sign", "verify"];
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1];
+                    const provider = info.providers[PROVIDER_ID];
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -298,9 +302,9 @@
                                 // })
                                 .then((names) => {
                                     console.log("Keys before setItem", names);
-                                    return crypto.keyStorage.setItem("my-private-key", keys.privateKey);
+                                    return crypto.keyStorage.setItem(keys.privateKey);
                                 })
-                                .then(() => {
+                                .then((index) => {
                                     return crypto.keyStorage.keys();
                                 })
                                 .then((names) => {
@@ -312,13 +316,37 @@
                     console.log(err);
                 });
         }
-
+        function TestKeyStorageKeys() {
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[PROVIDER_ID];
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    return crypto.isLoggedIn()
+                        .then((ok) => {
+                            if (!ok) {
+                                return crypto.login();
+                            }
+                        })
+                        .then(() => {
+                            return crypto.keyStorage.keys()
+                                .then((names) => {
+                                    console.log("Certificates:", names);
+                                })
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
         function TestKeyStorageGetItem() {
-            const alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 2048 };
+            const alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-384", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 2048 };
             const usages = ["sign", "verify"];
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1];
+                    const provider = info.providers[PROVIDER_ID];
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -333,11 +361,16 @@
                             return crypto.keyStorage.keys()
                                 .then((names) => {
                                     console.log("Keys:", names);
-                                    return crypto.keyStorage.getItem("private-6d792d707269766174652d6b6579");
+                                    return crypto.keyStorage.getItem("private-31733649322d30365337322d34713162312d3133453470", alg, ["sign"]);
+                                    // return crypto.keyStorage.getItem("private-31733649322d30365337322d34713162312d3133453470"); // default
                                 })
                                 .then((key) => {
                                     console.log("Key:", key);
-                                });
+                                    return crypto.subtle.sign(alg, key, new ArrayBuffer(12));
+                                })
+                                .then((signature) => {
+                                    console.log("Signature:", new Uint8Array(signature));
+                                })
                         })
                 })
                 .catch((err) => {
@@ -349,7 +382,7 @@
             const usages = ["sign", "verify"];
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1];
+                    const provider = info.providers[PROVIDER_ID];
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -364,7 +397,17 @@
                             return crypto.keyStorage.keys()
                                 .then((names) => {
                                     console.log("Keys:", names);
-                                    return crypto.keyStorage.removeItem("private-6d792d707269766174652d6b6579");
+                                    return crypto.subtle.generateKey(alg, false, ["sign", "verify"]);
+                                })
+                                .then((keys) => {
+                                    return crypto.keyStorage.setItem(keys.privateKey)
+                                })
+                                .then((index) => {
+                                    return crypto.keyStorage.keys()
+                                        .then((indexes) => {
+                                            console.log(indexes);
+                                            return crypto.keyStorage.removeItem(index);
+                                        });
                                 })
                                 .then((key) => {
                                     return crypto.keyStorage.keys()
@@ -381,7 +424,7 @@
         function TestCertStorageKeys() {
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1];
+                    const provider = info.providers[PROVIDER_ID];
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -408,7 +451,7 @@
 
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1];
+                    const provider = info.providers[PROVIDER_ID];
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -439,7 +482,7 @@
 
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1];
+                    const provider = info.providers[PROVIDER_ID];
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -474,7 +517,7 @@
 
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1];
+                    const provider = info.providers[PROVIDER_ID];
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -509,7 +552,7 @@
 
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1];
+                    const provider = info.providers[PROVIDER_ID];
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -544,7 +587,7 @@
 
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1];
+                    const provider = info.providers[PROVIDER_ID];
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -578,7 +621,7 @@
 
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1];
+                    const provider = info.providers[PROVIDER_ID];
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
@@ -612,7 +655,7 @@
 
             ws.info()
                 .then((info) => {
-                    const provider = info.providers[1];
+                    const provider = info.providers[PROVIDER_ID];
                     console.log("Provider:", provider);
                     return ws.getCrypto(provider.id);
                 })
