@@ -19,7 +19,7 @@ const ErrorTextStyled = styled.div`
   left: 0;
   width: 100%;
   font-size: 12px;
-  line-height: 1.3;
+  line-height: 1.1;
   color: ${props => props.theme.field.text.colorInvalid};
 `;
 
@@ -162,7 +162,7 @@ export default class TextField extends Component {
       const value = this.getValue();
       const { onBlur } = this.props;
       if (onBlur) onBlur(value);
-    }, 100);
+    }, 150);
   };
 
   onKeyUpHandler = (e) => {
