@@ -34,6 +34,7 @@ export default class SelectField extends Component {
     children: PropTypes.node.isRequired,
     onChange: PropTypes.func,
     validation: PropTypes.arrayOf(PropTypes.string),
+    errorText: PropTypes.string,
     value: PropTypes.shape({
       value: PropTypes.oneOfType([
         PropTypes.string,
@@ -161,7 +162,7 @@ export default class SelectField extends Component {
   }
 
   render() {
-    const { labelText, placeholder, validation } = this.props;
+    const { labelText, placeholder, validation, errorText } = this.props;
     const { opened, selectedItemData } = this.state;
 
     return (
@@ -175,6 +176,7 @@ export default class SelectField extends Component {
           onClick={this.onClickFieldHandler}
           onKeyUp={this.onKeyUpFieldhandler}
           validation={validation}
+          errorText={errorText}
         />
         <ArrowIconStyled
           opened={opened}

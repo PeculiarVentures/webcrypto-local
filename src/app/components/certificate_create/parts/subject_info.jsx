@@ -63,40 +63,44 @@ export default class SubjectInfo extends Component {
     return (
       <GroupContainer>
         <Title>
-          { enLang['CertificateCreate.Body.Subject.Title'] }
+          { enLang['CertificateCreate.Subject.Title'] }
         </Title>
         <GroupPart>
           <TextFieldContainer>
             <TextField
-              labelText={enLang['CertificateCreate.Body.Subject.Field.HostName']}
+              labelText={enLang['CertificateCreate.Subject.Field.HostName']}
               name="hostName"
               ref={node => (this.hostNameNode = node)}
               validation={['text']}
+              errorText={enLang['CertificateCreate.Subject.Field.HostName.Error']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
             <TextField
-              labelText={enLang['CertificateCreate.Body.Subject.Field.Organization']}
+              labelText={enLang['CertificateCreate.Subject.Field.Organization']}
               name="organization"
               ref={node => (this.OrganizationNode = node)}
               validation={['text']}
+              errorText={enLang['CertificateCreate.Subject.Field.Organization.Error']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
             <TextField
-              labelText={enLang['CertificateCreate.Body.Subject.Field.OrganizationUnit']}
+              labelText={enLang['CertificateCreate.Subject.Field.OrganizationUnit']}
               name="organizationUnit"
               ref={node => (this.organizationUnitNode = node)}
               validation={['text']}
+              errorText={enLang['CertificateCreate.Subject.Field.OrganizationUnit.Error']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
             <SelectField
-              labelText={enLang['CertificateCreate.Body.Subject.Field.Country']}
+              labelText={enLang['CertificateCreate.Subject.Field.Country']}
               placeholder="Select country..."
               name="country"
               ref={node => (this.countryNode = node)}
               validation={['text']}
+              errorText={enLang['CertificateCreate.Subject.Field.Country.Error']}
             >
               {
                 countries.map((item, index) => (
@@ -111,18 +115,20 @@ export default class SubjectInfo extends Component {
           </TextFieldContainer>
           <TextFieldContainer>
             <TextField
-              labelText={enLang['CertificateCreate.Body.Subject.Field.Region']}
+              labelText={enLang['CertificateCreate.Subject.Field.Region']}
               name="region"
               ref={node => (this.regionNode = node)}
               validation={['text']}
+              errorText={enLang['CertificateCreate.Subject.Field.Region.Error']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
             <TextField
-              labelText={enLang['CertificateCreate.Body.Subject.Field.City']}
+              labelText={enLang['CertificateCreate.Subject.Field.City']}
               name="city"
               ref={node => (this.cityNode = node)}
               validation={['text']}
+              errorText={enLang['CertificateCreate.Subject.Field.City.Error']}
             />
           </TextFieldContainer>
         </GroupPart>

@@ -97,13 +97,13 @@ export default class CertificateCreateBody extends Component {
             <Button
               onClick={this.onCancelHandler}
             >
-              { enLang['CertificateCreate.Body.Btn.Cancel'] }
+              { enLang['CertificateCreate.Btn.Cancel'] }
             </Button>
             <ButtonStyled
               primary
               onClick={this.onCreateHandler}
             >
-              { enLang['CertificateCreate.Body.Btn.Create'] }
+              { enLang['CertificateCreate.Btn.Create'] }
             </ButtonStyled>
           </BtnsContainer>
         </Container>

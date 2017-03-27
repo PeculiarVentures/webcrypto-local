@@ -13,23 +13,33 @@ const FieldLabelStyled = styled.label`
   margin-bottom: 4px;
 `;
 
-const fieldReadyStyles = (props) => {
-  const transition = `${props.theme.basicTransition}ms`;
-  const multiline = props.multiline;
-  let placeholderColor = props.theme.field.text.placeholderColor;
-  let color = props.theme.field.text.color;
-  let borderColor = props.theme.field.text.borderColor;
-  let borderColorActive = props.theme.field.text.borderColorActive;
+const ErrorTextStyled = styled.div`
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  font-size: 12px;
+  line-height: 1.3;
+  color: ${props => props.theme.field.text.colorInvalid};
+`;
 
-  if (!props.valid) {
-    borderColor = props.theme.field.text.borderColorInvalid;
+const fieldReadyStyles = (props) => {
+  const { theme, multiline, valid, disabled } = props;
+  const transition = `${theme.basicTransition}ms`;
+  let placeholderColor = theme.field.text.placeholderColor;
+  let color = theme.field.text.color;
+  let borderColor = theme.field.text.borderColor;
+  let borderColorActive = theme.field.text.borderColorActive;
+
+  if (!valid) {
+    borderColor = theme.field.text.borderColorInvalid;
     borderColorActive = borderColor;
   }
 
-  if (props.disabled) {
-    placeholderColor = props.theme.field.text.placeholderColorDisabled;
-    color = props.theme.field.text.colorDisabled;
-    borderColor = props.theme.field.text.borderColorDisabled;
+  if (disabled) {
+    placeholderColor = theme.field.text.placeholderColorDisabled;
+    color = theme.field.text.colorDisabled;
+    borderColor = theme.field.text.borderColorDisabled;
     borderColorActive = borderColor;
   }
 
@@ -39,7 +49,7 @@ const fieldReadyStyles = (props) => {
     letter-spacing: 0.07em;
     padding: ${multiline ? '10' : '0 10'}px;
     height: ${multiline ? 100 : 28}px;
-    border-radius: ${props.theme.borderRadius}px;
+    border-radius: ${theme.borderRadius}px;
     transition: border-color ${transition}, color ${transition};
     border: 1px solid ${borderColor};
     color: ${color};
@@ -59,11 +69,13 @@ const fieldReadyStyles = (props) => {
     &:-ms-input-placeholder {
       color: $${placeholderColor};
     }
-    ${props.theme.mixins.truncateText}
+    ${theme.mixins.truncateText}
   `;
 };
 
-const FieldContainerStyled = styled.div``;
+const FieldContainerStyled = styled.div`
+  position: relative;
+`;
 
 export default class TextField extends Component {
 
@@ -89,6 +101,7 @@ export default class TextField extends Component {
     ]),
     capitalize: PropTypes.bool,
     readOnly: PropTypes.bool,
+    errorText: PropTypes.string,
   };
 
   static defaultProps = {
@@ -218,6 +231,7 @@ export default class TextField extends Component {
       multiline,
       value,
       readOnly,
+      errorText,
     } = this.props;
     const { valid } = this.state;
 
@@ -248,6 +262,13 @@ export default class TextField extends Component {
           onClick={this.onClickHandler}
           readOnly={readOnly}
         />
+        {
+          errorText && !valid
+          ? <ErrorTextStyled>
+            { errorText }
+          </ErrorTextStyled>
+          : null
+        }
       </FieldContainerStyled>
     );
   }

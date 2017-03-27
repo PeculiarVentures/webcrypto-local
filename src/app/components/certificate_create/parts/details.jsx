@@ -63,32 +63,35 @@ export default class Details extends Component {
     return (
       <GroupContainer>
         <Title>
-          { enLang['CertificateCreate.Body.Details.Title'] }
+          { enLang['CertificateCreate.Details.Title'] }
         </Title>
         <GroupPart>
           <TextFieldContainer>
             <TextField
-              labelText={enLang['CertificateCreate.Body.Details.Field.FriendlyName']}
+              labelText={enLang['CertificateCreate.Details.Field.FriendlyName']}
               name="friendlyName"
               ref={node => (this.friendlyNameNode = node)}
               validation={['text']}
+              errorText={enLang['CertificateCreate.Details.Field.FriendlyName.Error']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
             <TextField
-              labelText={enLang['CertificateCreate.Body.Details.Field.StartDate']}
+              labelText={enLang['CertificateCreate.Details.Field.StartDate']}
               name="startDate"
               value={getCurrentDate()}
               ref={node => (this.startDateNode = node)}
               validation={['date']}
+              errorText={enLang['CertificateCreate.Details.Field.StartDate.Error']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
             <TextField
-              labelText={enLang['CertificateCreate.Body.Details.Field.ExpirationDate']}
+              labelText={enLang['CertificateCreate.Details.Field.ExpirationDate']}
               name="expirationDate"
               ref={node => (this.expirationDateNode = node)}
               validation={['date']}
+              errorText={enLang['CertificateCreate.Details.Field.ExpirationDate.Error']}
             />
           </TextFieldContainer>
         </GroupPart>

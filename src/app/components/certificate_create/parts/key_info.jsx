@@ -104,12 +104,12 @@ export default class KeyInfo extends Component {
     return (
       <GroupContainer>
         <Title>
-          { enLang['CertificateCreate.Body.KeyInfo.Title'] }
+          { enLang['CertificateCreate.KeyInfo.Title'] }
         </Title>
         <GroupPart>
           <TextFieldContainer>
             <SelectField
-              labelText={enLang['CertificateCreate.Body.KeyInfo.Field.Algorithm']}
+              labelText={enLang['CertificateCreate.KeyInfo.Field.Algorithm']}
               name="algorithm"
               ref={node => (this.algorithmNode = node)}
               placeholder="Select algorithm..."
@@ -129,7 +129,7 @@ export default class KeyInfo extends Component {
           </TextFieldContainer>
           <TextFieldContainer>
             <SelectField
-              labelText={enLang['CertificateCreate.Body.KeyInfo.Field.Size']}
+              labelText={enLang['CertificateCreate.KeyInfo.Field.Size']}
               name="size"
               ref={node => (this.sizeNode = node)}
               placeholder="Select size..."
@@ -153,7 +153,7 @@ export default class KeyInfo extends Component {
         </GroupPart>
         <GroupPart>
           <TitleCheckboxes>
-            { enLang['CertificateCreate.Body.KeyInfo.Usage.Title'] }
+            { enLang['CertificateCreate.KeyInfo.Usage.Title'] }
           </TitleCheckboxes>
           {
             currentAlgorithmData.usages.map((usage, index) => (

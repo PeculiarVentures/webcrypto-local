@@ -72,6 +72,7 @@ export function getTheme(palette = defaultPalette) {
         borderColorInvalid: colorManipulator.fade(palette.errorColor, 0.5),
         color: palette.primaryColor,
         colorDisabled: colorManipulator.fade(palette.primaryColor, 0.5),
+        colorInvalid: colorManipulator.fade(palette.errorColor, 0.8),
         placeholderColor: colorManipulator.fade(palette.secondaryTextColor1, 0.8),
         placeholderColorDisabled: colorManipulator.fade(palette.secondaryTextColor1, 0.5),
         labelColor: palette.secondaryTextColor1,
