@@ -1,11 +1,15 @@
 import { State } from 'quantizer';
-import { CERTIFICATE } from '../../constants';
-import { CertificateSchema } from '../schemes';
+import { CERTIFICATE, KEY } from '../../constants';
+import { CertificateSchema, KeySchema } from '../schemes';
 
 export default class CertificateModel extends State.Map {
 
   constructor(value) {
-    super(Object.assign({}, CERTIFICATE.DEFAULT, value), CertificateSchema);
+    if (value.type === 'key') {
+      super(Object.assign({}, KEY.DEFAULT, value), KeySchema);
+    } else {
+      super(Object.assign({}, CERTIFICATE.DEFAULT, value), CertificateSchema);
+    }
   }
 
 }

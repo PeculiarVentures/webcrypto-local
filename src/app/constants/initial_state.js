@@ -18,8 +18,8 @@ export const DEFAULT = {
       keyInfo: {
         createdAt: '1490109843341',
         lastUsed: '1490109843358',
-        algorithm: 'RSA',
-        size: 512,
+        algorithm: 'RSASSA-PKCS1-v1_5',
+        size: 1024,
         usages: ['encrypt', 'decrypt'],
       },
       selected: false,
@@ -88,5 +88,15 @@ export const DEFAULT = {
       selected: false,
       type: 'certificate',
     },
+    {
+      id: '1f223772-2947-5698-be71-f16d0ed7882r',
+      name: 'Key example',
+      createdAt: '1490109843341',
+      lastUsed: '1490209843441',
+      algorithm: 'RSA',
+      size: 512,
+      usages: ['encrypt', 'decrypt'],
+      type: 'key',
+    }
   ],
 };

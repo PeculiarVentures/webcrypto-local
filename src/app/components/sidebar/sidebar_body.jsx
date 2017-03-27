@@ -23,15 +23,35 @@ export default class SidebarBody extends Component {
     list: [],
   };
 
+  static contextTypes = {
+    windowSize: PropTypes.object,
+  };
+
   renderCertificates() {
     const { list } = this.props;
 
     return list.map((item, index) => (
       <Certificate
         key={index}
-        {...item}
+        id={item.id}
+        name={item.name}
+        type={item.type}
+        selected={item.selected}
+        algorithm={item.algorithm || item.keyInfo.algorithm}
+        startDate={item.startDate || item.createdAt}
       />
     ));
+  }
+
+  getEmptyBody() {
+    const { windowSize } = this.context;
+
+    if (windowSize.device === 'mobile') {
+      return (
+        <EmptyBody blackBg />
+      )
+    }
+    return null;
   }
 
   render() {
@@ -41,7 +61,7 @@ export default class SidebarBody extends Component {
       <SidebarBodyStyled>
         {
           !list.length
-            ? <EmptyBody blackBg />
+            ? this.getEmptyBody()
             : this.renderCertificates()
         }
       </SidebarBodyStyled>

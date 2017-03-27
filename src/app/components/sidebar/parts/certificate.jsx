@@ -88,7 +88,7 @@ const Certificate = (props, context) => {
     id,
     name,
     type,
-    keyInfo,
+    algorithm,
     startDate,
     selected,
   } = props;
@@ -130,7 +130,7 @@ const Certificate = (props, context) => {
             { name }
           </Name>
           <AlgName>
-            { keyInfo.algorithm }
+            { algorithm }
           </AlgName>
           <Date>
             {
@@ -149,9 +149,7 @@ Certificate.propTypes = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   type: PropTypes.string,
-  keyInfo: PropTypes.shape({
-    algorithm: PropTypes.string,
-  }),
+  algorithm: PropTypes.string,
   startDate: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.string,

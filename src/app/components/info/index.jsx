@@ -59,6 +59,15 @@ export default class Info extends Component {
       city: PropTypes.string,
       startDate: PropTypes.string,
       expirationDate: PropTypes.string,
+      // for key
+      createdAt: PropTypes.string,
+      lastUsed: PropTypes.string,
+      algorithm: PropTypes.string,
+      size: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+      ]),
+      usages: PropTypes.arrayOf(PropTypes.string),
     }),
   };
 

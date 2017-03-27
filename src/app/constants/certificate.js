@@ -1,5 +1,3 @@
-import * as Key from './key';
-
 export const DEFAULT = {
   id: '[[id]]',
   name: '',
@@ -11,7 +9,13 @@ export const DEFAULT = {
   country: '',
   region: '',
   city: '',
-  keyInfo: Key.DEFAULT,
+  keyInfo: {
+    createdAt: '',
+    lastUsed: '',
+    algorithm: '',
+    size: '',
+    usages: [],
+  },
   selected: false,
   type: 'certificate',
 };

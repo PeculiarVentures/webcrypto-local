@@ -1,5 +1,4 @@
 import { Type, Schema } from 'quantizer';
-import { KeyModel } from '../models';
 
 export default new Schema('Certificate', {
   id: Type.ObjectID,
@@ -12,7 +11,14 @@ export default new Schema('Certificate', {
   country: Type.String,
   region: Type.String,
   city: Type.String,
-  keyInfo: KeyModel,
+  keyInfo: {
+    createdAt: Type.String,
+    lastUsed: Type.String,
+    algorithm: Type.String,
+    size: Type.number,
+    usages: Type.List,
+    selected: Type.Boolean,
+  },
   selected: Type.Boolean,
   type: Type.String,
 });
