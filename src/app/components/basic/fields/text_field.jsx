@@ -118,7 +118,7 @@ export default class TextField extends Component {
       valid: true,
     };
 
-    this.supportedTypes = ['text', 'email', 'password'];
+    this.supportedTypes = ['text', 'email', 'password', 'date'];
     this.fieldId = uuid();
     this.FieldStyled = styled[props.multiline ? 'textarea' : 'input']`
       ${p => fieldReadyStyles(p)}
