@@ -86,6 +86,7 @@ export default class Info extends Component {
 
     switch (type) {
       case 'certificate':
+      case 'request':
         return (
           <CertificateInfo {...certificate} />
         );

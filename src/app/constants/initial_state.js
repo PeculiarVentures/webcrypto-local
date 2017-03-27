@@ -69,7 +69,7 @@ export const DEFAULT = {
     },
     {
       id: '912bf948-472e-465b-a764-e5a0877c90dc',
-      name: 'Another one certificate',
+      name: 'Request',
       startDate: '1490109843341',
       expirationDate: '1490129843341',
       hostName: 'www.i.com',
@@ -86,7 +86,7 @@ export const DEFAULT = {
         usages: ['encrypt', 'decrypt'],
       },
       selected: false,
-      type: 'certificate',
+      type: 'request',
     },
     {
       id: '1f223772-2947-5698-be71-f16d0ed7882r',
