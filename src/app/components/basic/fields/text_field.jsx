@@ -53,6 +53,7 @@ const fieldReadyStyles = (props) => {
     transition: border-color ${transition}, color ${transition};
     border: 1px solid ${borderColor};
     color: ${color};
+    user-select: text;
     &:hover,
     &:focus {
       border-color: ${borderColorActive};
