@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import styled from 'styled-components';
 import { EmptyCertIcon } from '../svg';
 import enLang from '../../langs/en.json';
@@ -13,7 +13,11 @@ const TextStyled = styled.div`
   letter-spacing: 0.03em;
   margin: 32px auto 0;
   max-width: 250px;
-  color: ${props => props.theme.info.empty.color};
+  color: ${props => (
+    props.blackBg
+      ? props.theme.sidebar.colorEmpty
+      : props.theme.info.empty.color
+  )};
   @media ${props => props.theme.media.mobile} {
     font-size: 15px;
     line-height: 20px;
@@ -36,15 +40,19 @@ const EmptyBodyStyled = styled.div`
   ${props => props.theme.mixins.ghostVerticalAlign}
 `;
 
-const EmptyBody = () => (
+const EmptyBody = ({ blackBg }) => (
   <EmptyBodyStyled>
     <ContainerStyled>
-      <IconStyled />
-      <TextStyled>
+      <IconStyled blackBg={blackBg} />
+      <TextStyled blackBg={blackBg}>
         { enLang['Sidebar.Body.Empty'] }
       </TextStyled>
     </ContainerStyled>
   </EmptyBodyStyled>
 );
+
+EmptyBody.propTypes = {
+  blackBg: PropTypes.bool,
+};
 
 export default EmptyBody;

@@ -87,6 +87,9 @@ class RootContainer extends Component {
     } else if (!selectedCertificate.id && certificates.length) {
       dispatch(CertificateActions.select(certificates[0].id));
     }
+    if (!certificates.length) {
+      this.handleRootAction({ type: 'SIDEBAR:OPEN' });
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -96,6 +99,7 @@ class RootContainer extends Component {
     }
 
     if (prevProps.certificates.length === 1 && !certificates.length) {
+      this.handleRootAction({ type: 'SIDEBAR:OPEN' });
       dispatch(RoutingActions.push(''));
     }
   }

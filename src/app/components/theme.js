@@ -134,6 +134,7 @@ export function getTheme(palette = defaultPalette) {
       colorCertName: palette.secondaryTextColor2,
       colorCertDescr: colorManipulator.fade(palette.secondaryTextColor2, 0.7),
       backgroundCertActive: palette.secondaryColor,
+      colorEmpty: palette.secondaryTextColor2,
     },
     certificateCreate: {
       background: palette.white,

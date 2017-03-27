@@ -1,6 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
 import Certificate from './parts/certificate';
+import EmptyBody from '../info/empty_body';
 
 const SidebarBodyStyled = styled.div`
   height: calc(100% - 84px - 44px);
@@ -40,7 +41,7 @@ export default class SidebarBody extends Component {
       <SidebarBodyStyled>
         {
           !list.length
-            ? null
+            ? <EmptyBody blackBg />
             : this.renderCertificates()
         }
       </SidebarBodyStyled>
