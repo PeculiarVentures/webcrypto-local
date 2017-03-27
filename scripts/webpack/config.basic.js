@@ -17,6 +17,9 @@ export default (mode) => {
         {
           from: './src/app/assets',
         },
+        {
+          from: './src/app/404.html',
+        },
       ]),
       new HtmlWebpackPlugin({
         template: INDEX_HTML_PATH,
