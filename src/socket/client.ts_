@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import { Client } from "../connection/client";
 import { Event } from "../core";
-import { CertificateStorage } from "./cert_storage";
+import { SocketCertificateStorage } from "./cert_storage";
 import { KeyStorage } from "./key_storage";
 import { SocketSubtleCrypto } from "./subtle";
 
@@ -44,7 +44,7 @@ export class SocketCrypto extends EventEmitter implements Crypto {
 
     public readonly subtle: SocketSubtleCrypto;
     public readonly keyStorage: KeyStorage;
-    public readonly certStorage: CertificateStorage;
+    public readonly certStorage: SocketCertificateStorage;
     public client = new Client();
 
     public get state() {
@@ -55,7 +55,7 @@ export class SocketCrypto extends EventEmitter implements Crypto {
         super();
         this.subtle = new SocketSubtleCrypto(this);
         this.keyStorage = new KeyStorage(this);
-        this.certStorage = new CertificateStorage(this);
+        this.certStorage = new SocketCertificateStorage(this);
     }
 
     public getRandomValues(array: ArrayBufferView) {

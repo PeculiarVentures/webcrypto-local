@@ -145,7 +145,7 @@ export class Client extends EventEmitter {
                         });
 
                         // authenticate
-                        this.send(AuthRequestProto.ACTION, new AuthRequestProto())
+                        this.send(new AuthRequestProto())
                             .then((data) => {
                                 return (async () => {
                                     if (data && !(new Uint8Array(data)[0])) {
@@ -208,14 +208,14 @@ export class Client extends EventEmitter {
     /**
      * Sends and receives
      */
-    public send(event: string, data?: ActionProto): Promise<ArrayBuffer> {
+    public send(data?: ActionProto): Promise<ArrayBuffer> {
         console.log("Send message:", data.action);
         return new Promise((resolve, reject) => {
             this.checkSocketState();
             if (!data) {
                 data = new ActionProto();
             }
-            data.action = event;
+            data.action = data.action;
             data.actionId = (this.messageCounter++).toString();
             data.exportProto()
                 .then((raw) => {

@@ -7,7 +7,7 @@ server.listen("127.0.0.1:8080")
         console.log(`${e.address}`);
     })
     .on("error", (e: Error) => {
-        console.error(e)
+        console.error(e);
     })
     .on("close", (e: any) => {
         console.log("Close:", e.remoteAddress);

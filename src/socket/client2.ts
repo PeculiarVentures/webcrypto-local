@@ -17,7 +17,7 @@ export class SocketProvider extends EventEmitter {
 
     public client = new Client();
 
-    public crypto: { [id: string]: Crypto }
+    public crypto: { [id: string]: Crypto };
 
     public get state() {
         return this.client.state;
@@ -82,7 +82,7 @@ export class SocketProvider extends EventEmitter {
 
     public async info() {
         const proto = new ProviderInfoActionProto();
-        const result = await this.client.send(ProviderInfoActionProto.ACTION, proto);
+        const result = await this.client.send(proto);
 
         const infoProto = await ProviderInfoProto.importProto(result);
         return infoProto;
@@ -92,7 +92,7 @@ export class SocketProvider extends EventEmitter {
         const actionProto = new ProviderGetCryptoActionProto();
         actionProto.cryptoID = cryptoID;
 
-        await this.client.send(ProviderGetCryptoActionProto.ACTION, actionProto);
+        await this.client.send(actionProto);
 
         return new SocketCrypto(this.client, cryptoID);
     }

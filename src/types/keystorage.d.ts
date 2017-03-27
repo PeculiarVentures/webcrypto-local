@@ -17,6 +17,7 @@ interface IKeyStorage {
      * @memberOf KeyStorage
      */
     getItem(key: string): Promise<CryptoKey>;
+    getItem(key: string, algorithm: Algorithm, usages: string[]): Promise<CryptoKey>;
     /**
      * Add key to storage
      * 
@@ -26,7 +27,7 @@ interface IKeyStorage {
      * 
      * @memberOf KeyStorage
      */
-    setItem(key: string, value: CryptoKey): Promise<void>;
+    setItem(value: CryptoKey): Promise<string>;
 
     /**
      * Removes item from storage by given key
@@ -37,5 +38,5 @@ interface IKeyStorage {
      * @memberOf KeyStorage
      */
     removeItem(key: string): Promise<void>;
-
+    clear(): Promise<void>;
 }

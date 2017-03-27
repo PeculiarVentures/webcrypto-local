@@ -1,11 +1,15 @@
 import { Client } from "../connection/client";
-import { LoginActionProto, IsLoggedInActionProto } from "../core/protos/subtle";
+import { IsLoggedInActionProto, LoginActionProto } from "../core/protos/crypto";
+import { SocketCertificateStorage } from "./cert_storage";
+import { SocketKeyStorage } from "./key_storage";
 import { SocketSubtleCrypto } from "./subtle";
 
 export class SocketCrypto implements Crypto {
 
     public id: string;
     public subtle: SocketSubtleCrypto;
+    public keyStorage: IKeyStorage;
+    public certStorage: ICertificateStorage;
 
     public client: Client;
 
@@ -14,6 +18,8 @@ export class SocketCrypto implements Crypto {
         this.id = id;
 
         this.subtle = new SocketSubtleCrypto(this);
+        this.keyStorage = new SocketKeyStorage(this);
+        this.certStorage = new SocketCertificateStorage(this);
     }
 
     public getRandomValues(data: ArrayBufferView): ArrayBufferView {
@@ -24,14 +30,14 @@ export class SocketCrypto implements Crypto {
         const action = new LoginActionProto();
         action.providerID = this.id;
 
-        return this.client.send(LoginActionProto.ACTION, action);
+        return this.client.send(action);
     }
 
     public async isLoggedIn() {
         const action = new IsLoggedInActionProto();
         action.providerID = this.id;
 
-        const res = await this.client.send(IsLoggedInActionProto.ACTION, action);
+        const res = await this.client.send(action);
         return !!(new Uint8Array(res)[0]);
     }
 

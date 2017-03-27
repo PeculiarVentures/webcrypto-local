@@ -8,7 +8,6 @@ import { DeriveBitsActionProto, DeriveKeyActionProto } from "../core/protos/subt
 import { UnwrapKeyActionProto, WrapKeyActionProto } from "../core/protos/subtle";
 import { DigestActionProto, GenerateKeyActionProto } from "../core/protos/subtle";
 import { SocketCrypto } from "./crypto";
-// import { RsaCrypto } from "./crypto";
 
 export class SocketSubtleCrypto extends SubtleCrypto {
 
@@ -40,7 +39,7 @@ export class SocketSubtleCrypto extends SubtleCrypto {
         action.key = baseKey;
         action.length = length;
 
-        const result = await this.service.client.send(DeriveBitsActionProto.ACTION, action);
+        const result = await this.service.client.send(action);
         return result;
     }
 
@@ -61,7 +60,7 @@ export class SocketSubtleCrypto extends SubtleCrypto {
         action.extractable = extractable;
         action.usage = keyUsages;
 
-        const result = await this.service.client.send(DeriveKeyActionProto.ACTION, action);
+        const result = await this.service.client.send(action);
 
         // CryptoKey
         return await CryptoKeyProto.importProto(result);
@@ -80,7 +79,7 @@ export class SocketSubtleCrypto extends SubtleCrypto {
         action.data = buffer.buffer;
         action.providerID = this.service.id;
 
-        const result = await this.service.client.send(DigestActionProto.ACTION, action);
+        const result = await this.service.client.send(action);
 
         return result;
     }
@@ -101,7 +100,7 @@ export class SocketSubtleCrypto extends SubtleCrypto {
         action.usage = keyUsages;
 
         console.log(action);
-        const result = await this.service.client.send(GenerateKeyActionProto.ACTION, action);
+        const result = await this.service.client.send(action);
 
         try {
             // CryptoKeyPair
@@ -120,7 +119,7 @@ export class SocketSubtleCrypto extends SubtleCrypto {
         action.format = format;
         action.key = key;
 
-        const result = await this.service.client.send(ExportKeyActionProto.ACTION, action);
+        const result = await this.service.client.send(action);
         if (format === "jwk") {
             return JSON.parse(Convert.ToBinary(result));
         } else {
@@ -147,7 +146,7 @@ export class SocketSubtleCrypto extends SubtleCrypto {
         action.extractable = extractable;
         action.keyUsages = keyUsages;
 
-        const result = await this.service.client.send(ImportKeyActionProto.ACTION, action);
+        const result = await this.service.client.send(action);
 
         // CryptoKey
         return await CryptoKeyProto.importProto(result);
@@ -167,7 +166,7 @@ export class SocketSubtleCrypto extends SubtleCrypto {
         action.key = key;
         action.data = buffer.buffer;
 
-        const result = await this.service.client.send(SignActionProto.ACTION, action);
+        const result = await this.service.client.send(action);
         return result;
     }
 
@@ -187,7 +186,7 @@ export class SocketSubtleCrypto extends SubtleCrypto {
         action.data = buffer.buffer;
         action.signature = signatureBytes.buffer;
 
-        const result = await this.service.client.send(VerifyActionProto.ACTION, action);
+        const result = await this.service.client.send(action);
         return !!(new Uint8Array(result)[0]);
     }
 
@@ -203,7 +202,7 @@ export class SocketSubtleCrypto extends SubtleCrypto {
         action.wrappingKey = wrappingKey;
         action.format = format;
 
-        const result = await this.service.client.send(WrapKeyActionProto.ACTION, action);
+        const result = await this.service.client.send(action);
         return result;
     }
 
@@ -225,7 +224,7 @@ export class SocketSubtleCrypto extends SubtleCrypto {
         action.extractable = extractable;
         action.keyUsage = keyUsages;
 
-        const result = await this.service.client.send(UnwrapKeyActionProto.ACTION, action);
+        const result = await this.service.client.send(action);
 
         // CryptoKey
         return await CryptoKeyProto.importProto(result);
@@ -253,7 +252,7 @@ export class SocketSubtleCrypto extends SubtleCrypto {
         action.key = key;
         action.data = buffer.buffer;
 
-        const result = await this.service.client.send(ActionClass.ACTION, action);
+        const result = await this.service.client.send(action);
         return result;
     }
 

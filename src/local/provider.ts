@@ -26,6 +26,8 @@ interface ProviderCrypto extends Crypto {
     isLoggedIn?: boolean;
     login?: (pin: string) => void;
     logout?: () => void;
+    keyStorage: IKeyStorage;
+    certStorage: ICertificateStorage;
 }
 
 type CryptoMap = { [id: string]: ProviderCrypto };
@@ -85,7 +87,6 @@ export class LocalProvider extends EventEmitter {
             pkcs11Provider.on("listening", (info) => {
                 info.providers.forEach((item, index) => {
                     try {
-
                         this.crypto[item.id] = new pkcs11.WebCrypto({
                             library: lib,
                             slot: index,

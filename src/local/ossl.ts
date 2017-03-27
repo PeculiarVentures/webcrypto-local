@@ -10,8 +10,8 @@ export class OpenSSLCrypto extends OSSLCrypto {
 
     public name = "OpenSSL";
 
-    public keyStorage: IKeyStorage = new OpenSSLKeyStorage(".keystorage");
-    public certStorage: ICertificateStorage = new OpenSSLCertificateStorage(".certstorage");
+    public keyStorage: IKeyStorage = new OpenSSLKeyStorage(".keystorage/store.json");
+    public certStorage: ICertificateStorage = new OpenSSLCertificateStorage(".certstorage/store.json");
 
     public isLoggedIn = true;
 

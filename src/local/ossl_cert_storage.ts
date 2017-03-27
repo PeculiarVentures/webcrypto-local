@@ -1,7 +1,8 @@
 import * as fs from "fs";
 import { Convert } from "pvtsutils";
+import { Certificate } from "../pki/cert";
+import { X509CertificateRequest } from "../pki/request";
 import { X509Certificate } from "../pki/x509";
-import { X509Request } from "../pki/request";
 
 const crypto: Crypto = new (require("node-webcrypto-ossl"))();
 
@@ -24,35 +25,34 @@ export class OpenSSLCertificateStorage implements ICertificateStorage {
         this.file = file;
     }
 
+    public exportCert(format: "pem", item: CryptoCertificate): Promise<string>
+    public exportCert(format: "raw", item: CryptoCertificate): Promise<ArrayBuffer>
+    public exportCert(format: CryptoCertificateFormat, item: CryptoCertificate): Promise<ArrayBuffer | string>
+    public async exportCert(format: CryptoCertificateFormat, item: Certificate): Promise<ArrayBuffer | string> {
+        switch (format) {
+            case "raw": {
+                return item.exportRaw();
+            }
+            case "pem": {
+                throw new Error("PEM format is not implemented");
+            }
+            default:
+                throw new Error("Unsupported format for CryptoCertificate. Must be 'raw' or 'pem'");
+        }
+    }
+
+    public importCert(type: "request", data: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoX509CertificateRequest>;
+    public importCert(type: "x509", data: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoX509Certificate>;
+    public importCert(type: CryptoCertificateFormat, data: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoCertificate>;
     public async importCert(type: string, data: ArrayBuffer, algorithm: Algorithm, keyUsages: string[]) {
-        let res: ICertificateStorageItem;
+        let res: CryptoCertificate;
         switch (type) {
             case "x509": {
-                const cert = X509Certificate.importRaw(data);
-                const id = await cert.thumbprint(crypto, "SHA-256");
-                const resX509: IX509Certificate = {
-                    id: Convert.ToHex(id),
-                    issuerName: cert.issuerName,
-                    subjectName: cert.subjectName,
-                    publicKey: await cert.exportKey(crypto, algorithm, keyUsages),
-                    serialNumber: cert.serialNumber,
-                    type,
-                    value: data,
-                };
-                res = resX509;
+                res = await X509Certificate.importCert(crypto, data, algorithm, keyUsages);
                 break;
             }
             case "request": {
-                const request = X509Request.importRaw(data);
-                const id = await request.thumbprint(crypto, "SHA-256");
-                const resRequest: IX509Request = {
-                    id: Convert.ToHex(id),
-                    subjectName: request.subjectName,
-                    publicKey: await request.exportKey(crypto, algorithm, keyUsages),
-                    type,
-                    value: data,
-                };
-                res = resRequest;
+                res = await X509CertificateRequest.importCert(crypto, data, algorithm, keyUsages);
                 break;
             }
             default:
@@ -66,11 +66,13 @@ export class OpenSSLCertificateStorage implements ICertificateStorage {
         return Object.keys(keys);
     }
 
-    public async setItem(key: string, item: ICertificateStorageItem) {
+    public setItem(item: CryptoCertificate): Promise<string>;
+    public async setItem(item: Certificate) {
         const certs = this.readFile();
         const value = await this.certToJson(item);
-        certs[key] = value;
+        certs[item.id] = value;
         this.writeFile(certs);
+        return item.id;
     }
 
     public async getItem(key: string) {
@@ -90,7 +92,11 @@ export class OpenSSLCertificateStorage implements ICertificateStorage {
         this.writeFile(certs);
     }
 
-    protected async certToJson(cert: ICertificateStorageItem) {
+    public async clear() {
+        this.writeFile({});
+    }
+
+    protected async certToJson(cert: Certificate) {
         const date = new Date().toISOString();
         return {
             // TODO: Can be error, check algorithm type
@@ -99,7 +105,7 @@ export class OpenSSLCertificateStorage implements ICertificateStorage {
             type: cert.type,
             createdAt: date,
             lastUsed: date,
-            raw: Convert.ToBase64(cert.value),
+            raw: Convert.ToBase64(cert.exportRaw()),
         } as IJsonOpenSSLCertificate;
     }
 
