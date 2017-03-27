@@ -71,6 +71,7 @@ export default class Details extends Component {
               labelText={enLang['CertificateCreate.Body.Details.Field.FriendlyName']}
               name="friendlyName"
               ref={node => (this.friendlyNameNode = node)}
+              validation={['text']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
@@ -79,6 +80,7 @@ export default class Details extends Component {
               name="startDate"
               value={getCurrentDate()}
               ref={node => (this.startDateNode = node)}
+              validation={['date']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
@@ -86,6 +88,7 @@ export default class Details extends Component {
               labelText={enLang['CertificateCreate.Body.Details.Field.ExpirationDate']}
               name="expirationDate"
               ref={node => (this.expirationDateNode = node)}
+              validation={['date']}
             />
           </TextFieldContainer>
         </GroupPart>

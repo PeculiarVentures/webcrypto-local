@@ -33,6 +33,7 @@ export default class SelectField extends Component {
     placeholder: PropTypes.string,
     children: PropTypes.node.isRequired,
     onChange: PropTypes.func,
+    validation: PropTypes.arrayOf(PropTypes.string),
     value: PropTypes.shape({
       value: PropTypes.oneOfType([
         PropTypes.string,
@@ -160,7 +161,7 @@ export default class SelectField extends Component {
   }
 
   render() {
-    const { labelText, placeholder } = this.props;
+    const { labelText, placeholder, validation } = this.props;
     const { opened, selectedItemData } = this.state;
 
     return (
@@ -173,6 +174,7 @@ export default class SelectField extends Component {
           onBlur={this.onBlurFieldHandler}
           onClick={this.onClickFieldHandler}
           onKeyUp={this.onKeyUpFieldhandler}
+          validation={validation}
         />
         <ArrowIconStyled
           opened={opened}

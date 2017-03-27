@@ -143,9 +143,12 @@ export default class TextField extends Component {
   };
 
   onBlurHandler = () => {
-    const value = this.getValue();
-    const { onBlur } = this.props;
-    if (onBlur) onBlur(value);
+    setTimeout(() => {
+      this.validate();
+      const value = this.getValue();
+      const { onBlur } = this.props;
+      if (onBlur) onBlur(value);
+    }, 100);
   };
 
   onKeyUpHandler = (e) => {
@@ -154,22 +157,34 @@ export default class TextField extends Component {
   };
 
   onChangeHandler = () => {
-    const { validation, onChange, name } = this.props;
+    const { onChange, name } = this.props;
     const value = this.getValue();
-    let valid = true;
-
-    if (value && validation) {
-      valid = validator(value, validation);
-    }
-
-    this.setState({
-      valid,
-    });
+    const valid = this.isValid();
 
     if (onChange) {
       onChange(value, valid, name);
     }
   };
+
+  validate = () => {
+    const valid = this.isValid();
+
+    this.setState({
+      valid,
+    });
+  };
+
+  isValid() {
+    const { validation } = this.props;
+    const value = this.getValue();
+    let valid = true;
+
+    if (validation) {
+      valid = validator(value, validation);
+    }
+
+    return valid;
+  }
 
   onClickHandler = (e) => {
     const { onClick } = this.props;
@@ -187,10 +202,6 @@ export default class TextField extends Component {
 
     return value;
   };
-
-  isValid() {
-    return this.state.valid;
-  }
 
   resetValue() {
     const { fieldNode } = this;

@@ -71,6 +71,7 @@ export default class SubjectInfo extends Component {
               labelText={enLang['CertificateCreate.Body.Subject.Field.HostName']}
               name="hostName"
               ref={node => (this.hostNameNode = node)}
+              validation={['text']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
@@ -78,6 +79,7 @@ export default class SubjectInfo extends Component {
               labelText={enLang['CertificateCreate.Body.Subject.Field.Organization']}
               name="organization"
               ref={node => (this.OrganizationNode = node)}
+              validation={['text']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
@@ -85,6 +87,7 @@ export default class SubjectInfo extends Component {
               labelText={enLang['CertificateCreate.Body.Subject.Field.OrganizationUnit']}
               name="organizationUnit"
               ref={node => (this.organizationUnitNode = node)}
+              validation={['text']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
@@ -93,6 +96,7 @@ export default class SubjectInfo extends Component {
               placeholder="Select country..."
               name="country"
               ref={node => (this.countryNode = node)}
+              validation={['text']}
             >
               {
                 countries.map((item, index) => (
@@ -110,6 +114,7 @@ export default class SubjectInfo extends Component {
               labelText={enLang['CertificateCreate.Body.Subject.Field.Region']}
               name="region"
               ref={node => (this.regionNode = node)}
+              validation={['text']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
@@ -117,6 +122,7 @@ export default class SubjectInfo extends Component {
               labelText={enLang['CertificateCreate.Body.Subject.Field.City']}
               name="city"
               ref={node => (this.cityNode = node)}
+              validation={['text']}
             />
           </TextFieldContainer>
         </GroupPart>
