@@ -20,7 +20,7 @@ const SidebarStyled = styled.div`
     transform: translate3d(${props => (
       props.open
         ? 0
-        : '-100%'
+        : '-100vw'
     )}, 0, 0);
   }
 `;

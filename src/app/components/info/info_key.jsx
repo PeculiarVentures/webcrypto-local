@@ -24,15 +24,11 @@ const KeyInfo = (props) => {
 
       <Row>
         <Title>
-          {
-            enLang['Info.InfoTable.KeyInfo']
-          }
+          { enLang['Info.InfoTable.KeyInfo'] }
         </Title>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.CreatedAt']
-            }
+            { enLang['Info.InfoTable.CreatedAt'] }
           </SubTitle>
           <Value>
             {
@@ -44,9 +40,7 @@ const KeyInfo = (props) => {
         </Col>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.LastUsed']
-            }
+            { enLang['Info.InfoTable.LastUsed'] }
           </SubTitle>
           <Value>
             {
@@ -59,38 +53,26 @@ const KeyInfo = (props) => {
         <br />
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.Algorithm']
-            }
+            { enLang['Info.InfoTable.Algorithm'] }
           </SubTitle>
           <Value>
-            {
-              algorithm
-            }
+            { algorithm }
           </Value>
         </Col>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.Size']
-            }
+            { enLang['Info.InfoTable.Size'] }
           </SubTitle>
           <Value>
-            {
-              size
-            }
+            { size }
           </Value>
         </Col>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.Usages']
-            }
+            { enLang['Info.InfoTable.Usages'] }
           </SubTitle>
           <Value>
-            {
-              renderUsages()
-            }
+            { renderUsages() }
           </Value>
         </Col>
       </Row>

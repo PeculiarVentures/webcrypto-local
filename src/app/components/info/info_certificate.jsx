@@ -22,27 +22,19 @@ const CertificateInfo = (props) => {
 
       <Row>
         <Title>
-          {
-            enLang['Info.InfoTable.Details']
-          }
+          { enLang['Info.InfoTable.Details'] }
         </Title>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.FriendlyName']
-            }
+            { enLang['Info.InfoTable.FriendlyName'] }
           </SubTitle>
           <Value>
-            {
-              name
-            }
+            { name }
           </Value>
         </Col>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.StartDate']
-            }
+            { enLang['Info.InfoTable.StartDate'] }
           </SubTitle>
           <Value>
             {
@@ -54,9 +46,7 @@ const CertificateInfo = (props) => {
         </Col>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.ExpirationDate']
-            }
+            { enLang['Info.InfoTable.ExpirationDate'] }
           </SubTitle>
           <Value>
             {
@@ -70,95 +60,65 @@ const CertificateInfo = (props) => {
 
       <Row>
         <Title>
-          {
-            enLang['Info.InfoTable.SubjectInfo']
-          }
+          { enLang['Info.InfoTable.SubjectInfo'] }
         </Title>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.HostName']
-            }
+            { enLang['Info.InfoTable.HostName'] }
           </SubTitle>
           <Value>
-            {
-              hostName
-            }
+            { hostName }
           </Value>
         </Col>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.Organization']
-            }
+            { enLang['Info.InfoTable.Organization'] }
           </SubTitle>
           <Value>
-            {
-              organization
-            }
+            { organization }
           </Value>
         </Col>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.OrganizationUnit']
-            }
+            { enLang['Info.InfoTable.OrganizationUnit'] }
           </SubTitle>
           <Value>
-            {
-              organizationUnit
-            }
+            { organizationUnit }
           </Value>
         </Col>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.Country']
-            }
+            { enLang['Info.InfoTable.Country'] }
           </SubTitle>
           <Value>
-            {
-              country
-            }
+            { country }
           </Value>
         </Col>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.Region']
-            }
+            { enLang['Info.InfoTable.Region'] }
           </SubTitle>
           <Value>
-            {
-              region
-            }
+            { region }
           </Value>
         </Col>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.City']
-            }
+            { enLang['Info.InfoTable.City'] }
           </SubTitle>
           <Value>
-            {
-              city
-            }
+            { city }
           </Value>
         </Col>
       </Row>
 
       <Row>
         <Title>
-          {
-            enLang['Info.InfoTable.KeyInfo']
-          }
+          { enLang['Info.InfoTable.KeyInfo'] }
         </Title>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.CreatedAt']
-            }
+            { enLang['Info.InfoTable.CreatedAt'] }
           </SubTitle>
           <Value>
             {
@@ -170,9 +130,7 @@ const CertificateInfo = (props) => {
         </Col>
         <Col>
           <SubTitle>
-            {
-              enLang['Info.InfoTable.LastUsed']
-            }
+            { enLang['Info.InfoTable.LastUsed'] }
           </SubTitle>
           <Value>
             {

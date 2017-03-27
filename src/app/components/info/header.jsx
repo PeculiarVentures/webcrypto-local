@@ -106,10 +106,11 @@ const DropdownMenu = styled.div`
   position: fixed;
   left: 0;
   top: 57px;
-  width: 100vw;
-  height: calc(100vh - 57px);
+  width: 100%;
+  height: calc(100% - 57px);
   display: table;
   background: ${props => props.theme.info.header.dropdownColor};
+  animation: ${props => props.theme.mixins.fadeIn} 300ms;
 `;
 
 const DropdownItemsWrapper = styled.div`
@@ -188,6 +189,10 @@ export default class Header extends Component {
   handleCopy() {
     const { onCopy } = this.props;
 
+    this.setState({
+      dropdown: false,
+    });
+
     if (onCopy) {
       onCopy();
     }
@@ -207,6 +212,11 @@ export default class Header extends Component {
 
   handleMenu() {
     const { onMenu } = this.props;
+
+    this.setState({
+      dropdown: false,
+    });
+
     if (onMenu) onMenu();
   }
 

@@ -51,13 +51,10 @@ export const Col = styled.div`
   }
   @media ${props => props.theme.media.mobile} {
     width: calc(100% / 2);
-    margin-top: 18px;
+    margin-top: 20px !important;
+    padding: 0 0 0 6px !important;
     &:nth-child(2n) {
-      padding-right: 0;
-    }
-    &:nth-child(3n) {
-      padding-right: 5px;
-      padding-left: 0;
+      padding-left: 0 !important;
     }
   }
 `;
@@ -71,6 +68,7 @@ export const SubTitle = styled.div`
 export const Value = styled.div`
   margin-top: 4px;
   font-size: 14px;
+  line-height: 18px;
   letter-spacing: 0.05em;
   color: ${props => props.theme.info.infoTable.valueColor};
 `;
