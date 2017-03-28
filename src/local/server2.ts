@@ -401,6 +401,9 @@ export class LocalServer extends EventEmitter {
                 const key = this.getItemFromStorage(params.item).item as CryptoKey;
                 const crypto = await this.provider.getCrypto(params.providerID);
                 // do operation
+                if ((key.algorithm as any).toAlgorithm) {
+                    (key as any).algorithm = (key.algorithm as any).toAlgorithm();
+                }
                 const index = await crypto.keyStorage.setItem(key);
                 data = Convert.FromUtf8String(index);
                 // result

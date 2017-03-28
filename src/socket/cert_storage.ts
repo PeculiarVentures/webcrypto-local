@@ -70,11 +70,19 @@ export class SocketCertificateStorage implements ICertificateStorage {
         return [];
     }
 
-    public async getItem(key: string) {
+    public getItem(key: string): Promise<CryptoCertificate>;
+    public getItem(key: string, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoCertificate>
+    public async getItem(key: string, algorithm?: Algorithm, keyUsages?: string[]) {
         // prepare request
         const proto = new CertificateStorageGetItemActionProto();
         proto.providerID = this.service.id;
         proto.key = key;
+
+        if (algorithm) {
+            const alg = PrepareAlgorithm(algorithm);
+            proto.algorithm.fromAlgorithm(alg);
+            proto.keyUsages = keyUsages;
+        }
 
         // send and receive result
         const result = await this.service.client.send(proto);
