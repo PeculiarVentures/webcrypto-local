@@ -1,7 +1,0 @@
-{
-  "ENTRY_PATH": "./src/app/index.jsx",
-  "ENTRY_FOLDER": "src",
-  "OUTPUT_PATH": "dist",
-  "INDEX_HTML_PATH": "./src/app/index.html",
-  "URL": "http://localhost:3000"
-}
