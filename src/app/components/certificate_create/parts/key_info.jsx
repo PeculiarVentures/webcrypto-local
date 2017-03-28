@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
-import { SelectField, SelectItem, Checkbox } from '../../basic';
+import { SelectField, SelectItem, Checkbox, SelectNative } from '../../basic';
 import { Title, GroupContainer, GroupPart } from './styles';
 import enLang from '../../../langs/en.json';
 
@@ -53,6 +53,10 @@ export default class KeyInfo extends Component {
     ]),
   };
 
+  static contextTypes = {
+    deviceType: PropTypes.string,
+  };
+
   constructor(props) {
     super();
 
@@ -70,8 +74,22 @@ export default class KeyInfo extends Component {
   }
 
   handleChangeAlgorithm = (data) => {
+    let value = data;
+    if (typeof data !== 'object') {
+      let index = 0;
+      this.keyInfoData.map((key, _index) => {
+        if (key.name === data) {
+          index = _index;
+        }
+      });
+      value = {
+        value: data,
+        name: data,
+        index,
+      }
+    }
     this.setState({
-      algorithmValue: data,
+      algorithmValue: value,
     });
   };
 
@@ -131,6 +149,7 @@ export default class KeyInfo extends Component {
   render() {
     const { keyInfoData } = this;
     const { algorithmValue } = this.state;
+    const { deviceType } = this.context;
     const currentAlgorithmData = keyInfoData[algorithmValue.index];
 
     return (
@@ -140,47 +159,73 @@ export default class KeyInfo extends Component {
         </Title>
         <GroupPart>
           <TextFieldContainer>
-            <SelectField
-              labelText={enLang['CertificateCreate.KeyInfo.Field.Algorithm']}
-              name="algorithm"
-              ref={node => (this.fieldNodes.algorithm = node)}
-              placeholder="Select algorithm..."
-              onChange={this.handleChangeAlgorithm}
-              value={algorithmValue}
-            >
-              {
-                keyInfoData.map((item, index) => (
-                  <SelectItem
-                    key={index}
-                    value={item.name}
-                    primaryText={item.name}
-                  />
-                ))
-              }
-            </SelectField>
+            {
+              deviceType === 'phone'
+              ? <SelectNative
+                labelText={enLang['CertificateCreate.KeyInfo.Field.Algorithm']}
+                placeholder="Select algorithm..."
+                ref={node => (this.fieldNodes.algorithm = node)}
+                options={keyInfoData.map((key) => {
+                  key.value = key.name;
+                  return key;
+                })}
+                onChange={this.handleChangeAlgorithm}
+                value={algorithmValue.value}
+              />
+              : <SelectField
+                labelText={enLang['CertificateCreate.KeyInfo.Field.Algorithm']}
+                name="algorithm"
+                ref={node => (this.fieldNodes.algorithm = node)}
+                placeholder="Select algorithm..."
+                onChange={this.handleChangeAlgorithm}
+                value={algorithmValue}
+              >
+                {
+                  keyInfoData.map((item, index) => (
+                    <SelectItem
+                      key={index}
+                      value={item.name}
+                      primaryText={item.name}
+                    />
+                  ))
+                }
+              </SelectField>
+            }
           </TextFieldContainer>
           <TextFieldContainer>
-            <SelectField
-              labelText={enLang['CertificateCreate.KeyInfo.Field.Size']}
-              name="size"
-              ref={node => (this.fieldNodes.size = node)}
-              placeholder="Select size..."
-              defaultSelected={{
-                name: currentAlgorithmData.modulusLength[0],
-                value: currentAlgorithmData.modulusLength[0],
-                index: 0,
-              }}
-            >
-              {
-                currentAlgorithmData.modulusLength.map((item, index) => (
-                  <SelectItem
-                    key={index}
-                    value={item}
-                    primaryText={item}
-                  />
-                ))
-              }
-            </SelectField>
+            {
+              deviceType === 'phone'
+              ? <SelectNative
+                labelText={enLang['CertificateCreate.KeyInfo.Field.Size']}
+                placeholder="Select size..."
+                ref={node => (this.fieldNodes.size = node)}
+                options={currentAlgorithmData.modulusLength.map((module) => ({
+                  value: module,
+                }))}
+                defaultValue={currentAlgorithmData.modulusLength[0]}
+              />
+              : <SelectField
+                labelText={enLang['CertificateCreate.KeyInfo.Field.Size']}
+                name="size"
+                ref={node => (this.fieldNodes.size = node)}
+                placeholder="Select size..."
+                defaultSelected={{
+                  name: currentAlgorithmData.modulusLength[0],
+                  value: currentAlgorithmData.modulusLength[0],
+                  index: 0,
+                }}
+              >
+                {
+                  currentAlgorithmData.modulusLength.map((item, index) => (
+                    <SelectItem
+                      key={index}
+                      value={item}
+                      primaryText={item}
+                    />
+                  ))
+                }
+              </SelectField>
+            }
           </TextFieldContainer>
         </GroupPart>
         <GroupPart>

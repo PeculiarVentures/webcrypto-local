@@ -119,10 +119,16 @@ export default class SelectNative extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { value } = this.props;
+    const { value, defaultValue } = this.props;
+    const { selectedValue } = this.state;
     if (value && nextProps.value !== value) {
       this.setState({
         selectedValue: nextProps.value,
+      });
+    }
+    if (defaultValue && (nextProps.defaultValue !== selectedValue)) {
+      this.setState({
+        selectedValue: defaultValue,
       });
     }
   }
