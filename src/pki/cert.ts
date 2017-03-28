@@ -11,7 +11,11 @@ export abstract class Certificate implements CryptoCertificate {
     public static importCert<T extends Certificate>(this: CertificateConstructor<T>, provider: Crypto, rawData: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<T>
     public static async importCert<T extends Certificate>(this: CertificateConstructor<T>, provider: Crypto, rawData: BufferSource, algorithm?: Algorithm, keyUsages?: string[]): Promise<T> {
         const res = new this();
+<<<<<<< HEAD
         res.importCert(provider, rawData, algorithm, keyUsages);
+=======
+        await res.importCert(provider, rawData, algorithm, keyUsages);
+>>>>>>> multi_providers_2
         return res;
     }
 
