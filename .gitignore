@@ -12,3 +12,4 @@ out
 index.d.ts
 
 .idea
+scripts/compiled_env.json
