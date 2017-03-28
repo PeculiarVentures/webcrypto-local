@@ -2,10 +2,6 @@ import { EventEmitter } from "events";
 import { Client } from "../connection/client";
 import { ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderInfoProto, ProviderTokenEventProto } from "../core/protos/provider";
 import { SocketCrypto } from "./crypto";
-// import { Event } from "../core";
-// import { CertificateStorage } from "./cert_storage";
-// import { KeyStorage } from "./key_storage";
-// import { SocketSubtleCrypto } from "./subtle";
 
 /**
  * Implementation of WebCrypto interface
