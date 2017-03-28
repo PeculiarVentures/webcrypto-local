@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
-import { TextField, SelectField, SelectItem } from '../../basic';
+import { TextField, SelectField, SelectItem, SelectNative } from '../../basic';
 import { Title, GroupContainer, GroupPart } from './styles';
 import enLang from '../../../langs/en.json';
 
@@ -31,6 +31,10 @@ export default class SubjectInfo extends Component {
     countries: PropTypes.oneOfType([
       PropTypes.array,
     ]),
+  };
+
+  static contextTypes = {
+    deviceType: PropTypes.string,
   };
 
   constructor() {
@@ -79,6 +83,7 @@ export default class SubjectInfo extends Component {
 
   render() {
     const { countries } = this.props;
+    const { deviceType } = this.context;
 
     return (
       <GroupContainer>
@@ -114,24 +119,35 @@ export default class SubjectInfo extends Component {
             />
           </TextFieldContainer>
           <TextFieldContainer>
-            <SelectField
-              labelText={enLang['CertificateCreate.Subject.Field.Country']}
-              placeholder="Select country..."
-              name="country"
-              ref={node => (this.fieldNodes.country = node)}
-              validation={['text']}
-              errorText={enLang['CertificateCreate.Subject.Field.Country.Error']}
-            >
-              {
-                countries.map((item, index) => (
-                  <SelectItem
-                    key={index}
-                    value={item.code}
-                    primaryText={item.value}
-                  />
-                ))
-              }
-            </SelectField>
+            {
+              deviceType === 'phone'
+                ? <SelectNative
+                  labelText={enLang['CertificateCreate.Subject.Field.Country']}
+                  placeholder="Select country..."
+                  validation={['text']}
+                  errorText={enLang['CertificateCreate.Subject.Field.Country.Error']}
+                  ref={node => (this.fieldNodes.country = node)}
+                  options={countries}
+                />
+                : <SelectField
+                  labelText={enLang['CertificateCreate.Subject.Field.Country']}
+                  placeholder="Select country..."
+                  name="country"
+                  ref={node => (this.fieldNodes.country = node)}
+                  validation={['text']}
+                  errorText={enLang['CertificateCreate.Subject.Field.Country.Error']}
+                >
+                  {
+                    countries.map((item, index) => (
+                      <SelectItem
+                        key={index}
+                        value={item.code}
+                        primaryText={item.value}
+                      />
+                    ))
+                  }
+                </SelectField>
+            }
           </TextFieldContainer>
           <TextFieldContainer>
             <TextField

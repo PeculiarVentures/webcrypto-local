@@ -71,7 +71,7 @@ const fieldReadyStyles = (props) => {
       color: ${placeholderColor};
     }
     &:-ms-input-placeholder {
-      color: $${placeholderColor};
+      color: ${placeholderColor};
     }
     ${theme.mixins.truncateText}
   `;
