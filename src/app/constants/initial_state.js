@@ -97,6 +97,6 @@ export const DEFAULT = {
       size: 512,
       usages: ['encrypt', 'decrypt'],
       type: 'key',
-    }
+    },
   ],
 };

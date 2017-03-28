@@ -31,8 +31,8 @@ export class LocalServer extends EventEmitter {
         this.server = new Server();
         this.provider = new LocalProvider({
             pkcs11: [
-                "/usr/local/lib/softhsm/libsofthsm2.so",
-                "/usr/local/lib/libykcs11.dylib",
+                // "/usr/local/lib/softhsm/libsofthsm2.so",
+                // "/usr/local/lib/libykcs11.dylib",
             ],
         });
 

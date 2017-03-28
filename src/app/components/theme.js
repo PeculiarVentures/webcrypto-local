@@ -102,7 +102,7 @@ export function getTheme(palette = defaultPalette) {
       colorDescr: colorManipulator.fade(palette.primaryColor, 0.7),
       authorization: {
         borderColorNumber: colorManipulator.fade(palette.secondaryTextColor1, 0.4),
-      }
+      },
     },
     info: {
       header: {

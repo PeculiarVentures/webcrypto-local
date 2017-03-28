@@ -15,11 +15,14 @@
 </head>
 <body>
 	<div id="root"></div>
+	<script src="https://cdn.rawgit.com/dcodeIO/protobuf.js/6.6.0/dist/protobuf.min.js"></script>
+	<script src="https://cdn.rawgit.com/jakearchibald/idb/97e4e878/lib/idb.js"></script>
+	<script src="/webcrypto-socket.js"></script>
 	<script>
 		// Build for gh-pages
-        var loc = document.querySelectorAll('body')[0];
-        var script = document.createElement('script');
-		var href = window.location.href;
+        const loc = document.querySelectorAll('body')[0];
+        const script = document.createElement('script');
+		const href = window.location.href;
 
 		if (href.indexOf('github.io') !== -1) {
           script.src = './main.js';

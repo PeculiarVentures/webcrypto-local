@@ -65,9 +65,9 @@ export default class CertificateList extends State.List {
     const children = this.children;
 
     if (children[nextIndex]) {
-      this.select(children[nextIndex].get('id'))
+      this.select(children[nextIndex].get('id'));
     } else if (children[prevIndex]) {
-      this.select(children[prevIndex].get('id'))
+      this.select(children[prevIndex].get('id'));
     }
   }
 

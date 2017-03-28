@@ -5,3 +5,4 @@ OUTPUT_PATH=dist_ui
 INDEX_HTML_PATH=./src/app/index.html
 
 URL=http://localhost:3000
+SERVER_URL=127.0.0.1:8080

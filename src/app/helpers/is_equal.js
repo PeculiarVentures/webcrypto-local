@@ -3,7 +3,7 @@ export default function isEqual(a, b) {
   const bProps = Object.getOwnPropertyNames(b);
 
 
-  if (aProps.length != bProps.length) {
+  if (aProps.length !== bProps.length) {
     return false;
   }
 

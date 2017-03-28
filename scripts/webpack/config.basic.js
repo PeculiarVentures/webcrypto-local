@@ -20,6 +20,9 @@ export default (mode) => {
         {
           from: './src/app/404.html',
         },
+        {
+          from: './dist/webcrypto-socket.js',
+        },
       ]),
       new HtmlWebpackPlugin({
         template: INDEX_HTML_PATH,

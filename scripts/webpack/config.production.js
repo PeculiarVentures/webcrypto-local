@@ -7,7 +7,6 @@ export default {
     main: [
       'babel-polyfill',
       ENTRY_PATH,
-      'webpack-hot-middleware/client?reload=true',
     ],
   },
   plugins: [
