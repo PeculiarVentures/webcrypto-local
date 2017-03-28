@@ -35,7 +35,7 @@ else
 fi
 
 # copy over or recompile the new site
-cp -R ../../dist/* ./
+cp -R ../../dist_ui/* ./
 
 # stage any changes and new files
 git add -A

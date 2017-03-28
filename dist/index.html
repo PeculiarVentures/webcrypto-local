@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="http://cdn.rawgit.com/dcodeIO/protobuf.js/6.6.0/dist/protobuf.js"></script>
+    <script src="https://cdn.rawgit.com/jakearchibald/idb/97e4e878/lib/idb.js"></script>
+    <!--<script src="https://peculiarventures.github.io/pv-webcrypto-tests/src/webcrypto-liner.min.js"></script>-->
+    <!--<script src="https://peculiarventures.github.io/pv-webcrypto-tests/src/asmcrypto.js"></script>-->
+    <!--<script src="https://peculiarventures.github.io/pv-webcrypto-tests/src/elliptic.js"></script>-->
+    <script src="./webcrypto-socket.js"></script>
+    <script>
+        var ws = new WebcryptoSocket.SocketProvider();
+        ws.connect("127.0.0.1:8080")
+            .on("error", (e) => {
+                console.error(e.error);
+            })
+            .on("listening", (e) => {
+                // console.info(e.address);
+                // Test
+                // TestWrap();
+                // TestDeriveBits();
+                TestDeriveKey();
+            })
+            .on("close", (e) => {
+                console.info("close");
+            });
+
+        function TestGetCrypto() {
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[1]
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    console.log(crypto);
+                    return crypto.subtle.digest("SHA-256", new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]))
+                })
+                .then((hash) => {
+                    console.log(new Uint8Array(hash));
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+
+        function TestGenerateKey() {
+            const alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 2048 };
+            const usages = ["sign", "verify"];
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[2]
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    return crypto.isLoggedIn()
+                        .then((ok) => {
+                            if (!ok) {
+                                return crypto.login();
+                            }
+                        })
+                        .then(() => {
+                            return crypto.subtle.generateKey(alg, false, usages);
+                        })
+                        .then((keys) => {
+                            console.log(keys);
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+
+        function TestSign() {
+            const alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 2048 };
+            const usages = ["sign", "verify"];
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[1]
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    return crypto.isLoggedIn()
+                        .then((ok) => {
+                            if (!ok) {
+                                return crypto.login();
+                            }
+                        })
+                        .then(() => {
+                            return crypto.subtle.generateKey(alg, false, usages);
+                        })
+                        .then((keys) => {
+                            const data = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]);
+                            return crypto.subtle.sign(alg, keys.privateKey, data)
+                                .then((sig) => {
+                                    return crypto.subtle.verify(alg, keys.publicKey, sig, data);
+                                })
+                                .then((ok) => {
+                                    console.log("Signature:", ok);
+                                })
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+
+        function TestEncrypt() {
+            const alg = { name: "AES-CBC", length: 256, iv: new ArrayBuffer(16) };
+            const usages = ["encrypt", "decrypt"];
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[1]
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    return crypto.isLoggedIn()
+                        .then((ok) => {
+                            if (!ok) {
+                                return crypto.login();
+                            }
+                        })
+                        .then(() => {
+                            return crypto.subtle.generateKey(alg, false, usages);
+                        })
+                        .then((key) => {
+                            const data = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]);
+                            return crypto.subtle.encrypt(alg, key, data)
+                                .then((enc) => {
+                                    return crypto.subtle.decrypt(alg, key, enc);
+                                })
+                                .then((dec) => {
+                                    console.log("Data:", new Uint8Array(dec));
+                                })
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+
+        function TestWrap() {
+            const alg = { name: "AES-CBC", length: 256, iv: new ArrayBuffer(16) };
+            const usages = ["encrypt", "decrypt", "wrapKey", "unwrapKey"];
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[1]
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    return crypto.isLoggedIn()
+                        .then((ok) => {
+                            if (!ok) {
+                                return crypto.login();
+                            }
+                        })
+                        .then(() => {
+                            return crypto.subtle.generateKey(alg, true, usages);
+                        })
+                        .then((key) => {
+                            return crypto.subtle.wrapKey("raw", key, key, alg)
+                                .then((enc) => {
+                                    return crypto.subtle.unwrapKey("raw", enc, key, alg, alg, false, ["encrypt"]);
+                                })
+                                .then((k) => {
+                                    console.log("Key:", k);
+                                })
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+        
+        function TestDeriveBits() {
+            const alg = { name: "ECDH", namedCurve: "P-256" };
+            const usages = ["deriveBits", "deriveKey"];
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[1]
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    return crypto.isLoggedIn()
+                        .then((ok) => {
+                            if (!ok) {
+                                return crypto.login();
+                            }
+                        })
+                        .then(() => {
+                            return crypto.subtle.generateKey(alg, false, usages);
+                        })
+                        .then((keys) => {
+                            alg.public = keys.publicKey;
+                            console.log(alg);
+                            return crypto.subtle.deriveBits(alg, keys.privateKey, 128)
+                                .then((bits) => {
+                                    console.log("Bits:", new Uint8Array(bits));
+                                })
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+        
+        function TestDeriveKey() {
+            const alg = { name: "ECDH", namedCurve: "P-256" };
+            const usages = ["deriveBits", "deriveKey"];
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[1]
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    return crypto.isLoggedIn()
+                        .then((ok) => {
+                            if (!ok) {
+                                return crypto.login();
+                            }
+                        })
+                        .then(() => {
+                            return crypto.subtle.generateKey(alg, false, usages);
+                        })
+                        .then((keys) => {
+                            alg.public = keys.publicKey;
+                            console.log(alg);
+                            return crypto.subtle.deriveKey(alg, keys.privateKey, {name: "AES-CBC", length: 256}, false, ["encrypt", "decrypt"])
+                                .then((key) => {
+                                    console.log("Derived key:", key);
+                                })
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+    </script>
+</body>
+
+</html>
