@@ -13,9 +13,9 @@
     "lint-fix": "eslint src --fix",
     "test": "",
     "deploy:gh-pages": "./scripts/deploy-ghpages.sh",
-    "deploy": "npm run build && npm run deploy:gh-pages",
     "build:ts": "rm -rf out && tsc && rollup -c",
-    "server:socket": "node out/test/local"
+    "server:socket": "node out/test/local",
+    "predevelopment": "npm run build:ts"
   },
   "repository": {
     "type": "git",
@@ -77,6 +77,7 @@
     "react-redux": "^5.0.3",
     "react-router": "3.0.1",
     "redux": "^3.6.0",
+    "redux-saga": "^0.14.3",
     "rollup": "^0.41.4",
     "rollup-plugin-node-builtins": "^2.1.0",
     "rollup-plugin-node-resolve": "^2.0.0",

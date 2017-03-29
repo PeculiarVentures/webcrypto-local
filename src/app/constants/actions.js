@@ -28,3 +28,7 @@ export const CERTIFICATE_COPY = 'CERTIFICATE:COPY';
 // Routing
 export const ROUTING_PUSH = 'ROUTING:PUSH';
 export const ROUTING_BACK = 'ROUTING:BACK';
+
+// Webcrypto
+export const WS_GET_KEYS = 'WS:GET_KEYS';
+export const WS_GET_KEY = 'WS:GET_KEY';
