@@ -1,4 +1,6 @@
+import { put } from 'redux-saga/effects';
 import { ws } from '../../controllers/webcrypto_socket';
+import { ErrorActions } from '../../actions/state';
 
 export function* getCrypto(providerId) {
   try {
@@ -11,7 +13,7 @@ export function* getCrypto(providerId) {
     }
     return crypto;
   } catch (error) {
-    console.log(error);
+    yield put(ErrorActions.error(error));
   }
   return false;
 }
@@ -30,7 +32,7 @@ export function* getCertificate({ providerId = 0, certId }) {
     try {
       return yield crypto.certStorage.getItem(certId);
     } catch (error) {
-      console.log(error);
+      yield put(ErrorActions.error(error));
     }
   }
   return false;

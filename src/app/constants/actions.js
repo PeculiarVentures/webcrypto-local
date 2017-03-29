@@ -35,3 +35,6 @@ export const WS_GET_KEY = 'WS:GET_KEY';
 export const WS_REMOVE_KEY = 'WS:REMOVE_KEY';
 export const WS_GET_CERTIFICATES = 'WS:GET_CERTIFICATES';
 export const WS_GET_CERTIFICATE = 'WS:GET_CERTIFICATE';
+
+// Error
+export const ERROR = 'ERROR';

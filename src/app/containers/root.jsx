@@ -82,11 +82,13 @@ class RootContainer extends Component {
   componentDidMount() {
     const { dispatch, certificates, params } = this.props;
     const selectedCertificate = this.getSelectedCertificateProps();
+
     if (params.id) {
       dispatch(CertificateActions.select(params.id));
     } else if (!selectedCertificate.id && certificates.length) {
       dispatch(CertificateActions.select(certificates[0].id));
     }
+
     if (!certificates.length) {
       this.handleRootAction({ type: 'SIDEBAR:OPEN' });
     }
@@ -94,8 +96,22 @@ class RootContainer extends Component {
 
   componentDidUpdate(prevProps) {
     const { params, dispatch, certificates } = this.props;
-    if (prevProps.params.id !== params.id) {
-      dispatch(CertificateActions.select(params.id));
+
+    const selectedCert = this.getSelectedCertificateProps();
+
+    if (!params.id && !selectedCert.id && certificates.length) {
+      dispatch(CertificateActions.select(certificates[0].id));
+      dispatch(RoutingActions.push(`certificate/${certificates[0].id}`));
+    }
+
+    if (selectedCert.id && params.id && (selectedCert.id !== params.id)) {
+      dispatch(CertificateActions.select(selectedCert.id));
+      dispatch(RoutingActions.push(`certificate/${selectedCert.id}`));
+    }
+
+    if (params.id && !selectedCert.id && (prevProps.certificates.length !== certificates.length)) {
+      dispatch(CertificateActions.select(certificates[0].id));
+      dispatch(RoutingActions.push(`certificate/${certificates[0].id}`));
     }
 
     if (prevProps.certificates.length === 1 && !certificates.length) {

@@ -6,7 +6,7 @@ export const ws = new WebcryptoSocket.SocketProvider();
 export function wsConnect(onListening) {
   ws.connect(SERVER_URL)
     .on('error', (e) => {
-      console.error(e.error);
+      console.error('Connected error', e.error);
     })
     .on('listening', onListening)
     .on('close', () => {

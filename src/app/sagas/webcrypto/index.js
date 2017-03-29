@@ -12,18 +12,16 @@ const keyDataHandler = keyData => ({
   usages: keyData.usages,
   name: 'Need key "name"',
   size: keyData.algorithm.modulusLength,
-  selected: false,
   createdAt: 'Need key "createdAt"',
   lastUsed: 'Need key "lastUsed"',
   type: 'key',
 });
 
-const certDatahandler = (certData) => {
+const certDataHandler = (certData) => {
   const decodedSubject = decodeSubjectString(certData.subjectName);
   return Object.assign({
     id: certData.id,
     name: 'Need key "name"',
-    selected: false,
     type: 'certificate',
     startDate: new Date(certData.notBefore).getTime().toString(),
     expirationDate: new Date(certData.notAfter).getTime().toString(),
@@ -46,6 +44,16 @@ const certDatahandler = (certData) => {
 function* getKeys({ providerId }) {
   const keys = yield Key.getKeys(providerId);
   if (keys.length) {
+    // const getKeysArr = [];
+    // for (const keyId of keys) {
+    //   getKeysArr.push(Key.getKey({ providerId, keyId }));
+    // }
+    //
+    // const keysArr = yield getKeysArr;
+    // for (const key of keysArr) {
+    //   const keyData = keyDataHandler(key);
+    //   yield put(CertificateActions.add(keyData));
+    // }
     for (const keyId of keys) {
       const key = yield Key.getKey({ providerId, keyId });
       const keyData = keyDataHandler(key);
@@ -57,9 +65,19 @@ function* getKeys({ providerId }) {
 function* getCerificates({ providerId }) {
   const certificates = yield Certificate.getCertificates(providerId);
   if (certificates.length) {
+    // const getCertificatesArr = [];
+    // for (const certId of certificates) {
+    //   getCertificatesArr.push(Certificate.getCertificate({ providerId, certId }));
+    // }
+    //
+    // const certificatesArr = yield getCertificatesArr;
+    // for (const certificate of certificatesArr) {
+    //   const certData = certDataHandler(certificate);
+    //   yield put(CertificateActions.add(certData));
+    // }
     for (const certId of certificates) {
       const certificate = yield Certificate.getCertificate({ providerId, certId });
-      const certData = certDatahandler(certificate);
+      const certData = certDataHandler(certificate);
       yield put(CertificateActions.add(certData));
     }
   }

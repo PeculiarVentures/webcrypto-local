@@ -9,9 +9,9 @@ export default () => next => (payload) => {
   switch (type) {
 
     case ACTIONS_CONST.CERTIFICATE_SELECT: {
-      if (payload.id) {
-        RoutingController.push(`certificate/${id}`);
-      }
+      // if (payload.id) {
+      //   RoutingController.push(`certificate/${id}`);
+      // }
 
       next(CertificateActions.select(id));
       break;
@@ -21,10 +21,11 @@ export default () => next => (payload) => {
       const certificateId = result.id || uuid();
       const certificateData = Object.assign({}, result, {
         id: certificateId,
+        selected: false,
       });
 
       next(CertificateActions.add(certificateData));
-      RoutingController.push(`certificate/${certificateId}`);
+      // RoutingController.push(`certificate/${certificateId}`);
       break;
     }
 
