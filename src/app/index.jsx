@@ -7,6 +7,9 @@ import Store from './store';
 import { wsConnect } from './controllers/webcrypto_socket';
 
 window.Store = Store;
-wsConnect();
+wsConnect(() => {
+  Store.dispatch({ type: 'WS:GET_KEYS' });
+  Store.dispatch({ type: 'WS:GET_CERTIFICATES' });
+});
 
 ReactDOM.render(<Routing />, document.getElementById('root'));

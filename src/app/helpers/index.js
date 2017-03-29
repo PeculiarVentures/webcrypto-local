@@ -10,3 +10,4 @@ export getAppPath from './get_app_path';
 export Network from './network_handler';
 export isEqual from './is_equal';
 export HexToArray from './hex_to_array';
+export decodeSubjectString from './decode_subject_string';

@@ -19,6 +19,9 @@ const KeyInfo = (props) => {
     return `${usage}, `;
   });
 
+  const createdAtDate = moment(parseInt(createdAt, 10)).format('D MMM YYYY');
+  const lastUsedDate = moment(parseInt(lastUsed, 10)).format('D MMM YYYY');
+
   return (
     <Root>
 
@@ -32,9 +35,9 @@ const KeyInfo = (props) => {
           </SubTitle>
           <Value>
             {
-              createdAt
-                ? moment(parseInt(createdAt)).format('D MMM YYYY')
-                : null
+              createdAtDate !== 'Invalid date'
+                ? createdAtDate
+                : createdAt
             }
           </Value>
         </Col>
@@ -44,9 +47,9 @@ const KeyInfo = (props) => {
           </SubTitle>
           <Value>
             {
-              lastUsed
-                ? moment(parseInt(lastUsed)).format('D MMM YYYY')
-                : null
+              lastUsedDate !== 'Invalid date'
+                ? lastUsedDate
+                : lastUsed
             }
           </Value>
         </Col>

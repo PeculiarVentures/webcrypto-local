@@ -3,14 +3,12 @@ import { SERVER_URL } from '../../../scripts/config';
 
 export const ws = new WebcryptoSocket.SocketProvider();
 
-export function wsConnect() {
+export function wsConnect(onListening) {
   ws.connect(SERVER_URL)
     .on('error', (e) => {
       console.error(e.error);
     })
-    .on('listening', () => {
-      console.log('listening', SERVER_URL);
-    })
+    .on('listening', onListening)
     .on('close', () => {
       console.info('close');
     });

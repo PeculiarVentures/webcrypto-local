@@ -17,6 +17,9 @@ const CertificateInfo = (props) => {
     keyInfo,
   } = props;
 
+  const createdAtDate = moment(parseInt(keyInfo.createdAt, 10)).format('D MMM YYYY');
+  const lastUsedDate = moment(parseInt(keyInfo.lastUsed, 10)).format('D MMM YYYY');
+
   return (
     <Root>
 
@@ -39,7 +42,7 @@ const CertificateInfo = (props) => {
           <Value>
             {
               startDate
-                ? moment(parseInt(startDate)).format('D MMM YYYY')
+                ? moment(parseInt(startDate, 10)).format('D MMM YYYY')
                 : null
             }
           </Value>
@@ -51,7 +54,7 @@ const CertificateInfo = (props) => {
           <Value>
             {
               expirationDate
-                ? moment(parseInt(expirationDate)).format('D MMM YYYY')
+                ? moment(parseInt(expirationDate, 10)).format('D MMM YYYY')
                 : null
             }
           </Value>
@@ -122,9 +125,9 @@ const CertificateInfo = (props) => {
           </SubTitle>
           <Value>
             {
-              keyInfo.createdAt
-                ? moment(parseInt(keyInfo.createdAt)).format('D MMM YYYY')
-                : null
+              createdAtDate !== 'Invalid date'
+                ? createdAtDate
+                : keyInfo.createdAt
             }
           </Value>
         </Col>
@@ -134,9 +137,9 @@ const CertificateInfo = (props) => {
           </SubTitle>
           <Value>
             {
-              keyInfo.lastUsed
-                ? moment(parseInt(keyInfo.lastUsed)).format('D MMM YYYY')
-                : null
+              lastUsedDate !== 'Invalid date'
+                ? lastUsedDate
+                : keyInfo.lastUsed
             }
           </Value>
         </Col>

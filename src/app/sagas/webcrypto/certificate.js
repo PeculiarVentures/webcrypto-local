@@ -16,30 +16,22 @@ export function* getCrypto(providerId) {
   return false;
 }
 
-export function* getKeys(providerId = 0) {
+export function* getCertificates(providerId = 0) {
   const crypto = yield getCrypto(providerId);
   if (crypto) {
-    return yield crypto.keyStorage.keys();
+    return yield crypto.certStorage.keys();
   }
   return [];
 }
 
-export function* getKey({ providerId = 0, keyId }) {
+export function* getCertificate({ providerId = 0, certId }) {
   const crypto = yield getCrypto(providerId);
   if (crypto) {
     try {
-      return yield crypto.keyStorage.getItem(keyId);
+      return yield crypto.certStorage.getItem(certId);
     } catch (error) {
       console.log(error);
     }
   }
   return false;
 }
-
-// export function* removeKey({ providerId = 0, keyId }) {
-//   const crypto = yield getCrypto(providerId);
-//   if (crypto) {
-//     yield crypto.keyStorage.removeItem(keyId);
-//   }
-//   return false;
-// }

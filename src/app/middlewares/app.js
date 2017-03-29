@@ -18,7 +18,7 @@ export default () => next => (payload) => {
     }
 
     case ACTIONS_CONST.CERTIFICATE_ADD: {
-      const certificateId = uuid();
+      const certificateId = result.id || uuid();
       const certificateData = Object.assign({}, result, {
         id: certificateId,
       });

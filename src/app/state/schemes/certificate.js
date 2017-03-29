@@ -17,7 +17,6 @@ export default new Schema('Certificate', {
     algorithm: Type.String,
     size: Type.number,
     usages: Type.List,
-    selected: Type.Boolean,
   },
   selected: Type.Boolean,
   type: Type.String,
