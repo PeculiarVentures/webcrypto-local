@@ -4,12 +4,12 @@ const subjectNames = {
   C: 'country',
   OU: 'organizationUnit',
   L: 'city',
-  S: 'region',
+  ST: 'region',
 };
 
 export default function decodeSubjectString(subjectString) {
   const subjectObj = {};
-  const arrSubjects = subjectString.split(/[, ]+/);
+  const arrSubjects = subjectString.split(/, /g);
   arrSubjects.map((sbj) => {
     const arrSubject = sbj.split('=');
     const subjectName = subjectNames[arrSubject[0]];

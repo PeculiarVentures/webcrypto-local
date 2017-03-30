@@ -1,8 +1,9 @@
 import { takeEvery } from 'redux-saga';
 import { put } from 'redux-saga/effects';
+import { ws } from '../../controllers/webcrypto_socket';
 import { decodeSubjectString } from '../../helpers';
 import { ACTIONS_CONST } from '../../constants';
-import { CertificateActions } from '../../actions/state';
+import { CertificateActions, ErrorActions } from '../../actions/state';
 import * as Key from './key';
 import * as Certificate from './certificate';
 
@@ -22,7 +23,7 @@ const certDataHandler = (certData) => {
   return Object.assign({
     id: certData.id,
     name: 'Need key "name"',
-    type: 'certificate',
+    type: certData.type === 'request' ? 'request' : 'certificate',
     startDate: new Date(certData.notBefore).getTime().toString(),
     expirationDate: new Date(certData.notAfter).getTime().toString(),
     keyInfo: {
@@ -41,8 +42,25 @@ const certDataHandler = (certData) => {
   }, decodedSubject);
 };
 
+function* getCrypto(providerId = 0) {
+  try {
+    const info = yield ws.info();
+    const provider = info.providers[providerId];
+    const crypto = yield ws.getCrypto(provider.id);
+    const isLoggedIn = yield crypto.isLoggedIn();
+    if (!isLoggedIn) {
+      yield crypto.login();
+    }
+    return crypto;
+  } catch (error) {
+    yield put(ErrorActions.error(error));
+  }
+  return false;
+}
+
 function* getKeys({ providerId }) {
-  const keys = yield Key.getKeys(providerId);
+  const crypto = yield getCrypto(providerId);
+  const keys = yield Key.getKeys(crypto);
   if (keys.length) {
     // const getKeysArr = [];
     // for (const keyId of keys) {
@@ -55,7 +73,7 @@ function* getKeys({ providerId }) {
     //   yield put(CertificateActions.add(keyData));
     // }
     for (const keyId of keys) {
-      const key = yield Key.getKey({ providerId, keyId });
+      const key = yield Key.getKey(crypto, keyId);
       const keyData = keyDataHandler(key);
       yield put(CertificateActions.add(keyData));
     }
@@ -63,7 +81,8 @@ function* getKeys({ providerId }) {
 }
 
 function* getCerificates({ providerId }) {
-  const certificates = yield Certificate.getCertificates(providerId);
+  const crypto = yield getCrypto(providerId);
+  const certificates = yield Certificate.getCertificates(crypto);
   if (certificates.length) {
     // const getCertificatesArr = [];
     // for (const certId of certificates) {
@@ -76,16 +95,22 @@ function* getCerificates({ providerId }) {
     //   yield put(CertificateActions.add(certData));
     // }
     for (const certId of certificates) {
-      const certificate = yield Certificate.getCertificate({ providerId, certId });
+      const certificate = yield Certificate.getCertificate(crypto, certId);
       const certData = certDataHandler(certificate);
       yield put(CertificateActions.add(certData));
     }
   }
 }
 
+function* createCSR({ providerId, data }) {
+  const crypto = yield getCrypto(providerId);
+  yield Certificate.createCSR(crypto, data);
+}
+
 export default function* () {
   yield [
     takeEvery(ACTIONS_CONST.WS_GET_KEYS, getKeys),
     takeEvery(ACTIONS_CONST.WS_GET_CERTIFICATES, getCerificates),
+    takeEvery(ACTIONS_CONST.WS_CREATE_CSR, createCSR),
   ];
 }
