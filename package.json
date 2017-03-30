@@ -13,7 +13,7 @@
     "lint-fix": "eslint src --fix",
     "test": "",
     "deploy:gh-pages": "./scripts/deploy-ghpages.sh",
-    "build:ts": "rm -rf out && tsc && rollup -c",
+    "build:ts": "rimraf out && tsc && rollup -c",
     "server:socket": "node out/test/local",
     "predevelopment": "npm run build:ts"
   },
@@ -78,6 +78,7 @@
     "react-router": "3.0.1",
     "redux": "^3.6.0",
     "redux-saga": "^0.14.3",
+    "rimraf": "^2.6.1",
     "rollup": "^0.41.4",
     "rollup-plugin-node-builtins": "^2.1.0",
     "rollup-plugin-node-resolve": "^2.0.0",
