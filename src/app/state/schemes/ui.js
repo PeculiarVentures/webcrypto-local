@@ -5,6 +5,7 @@ export default new Schema('UI', {
   modal: Type.String,
   dialog: Type.String,
   snackbar: Type.String,
+  dataLoaded: Type.Boolean,
   serverIsOnline: Type.Boolean,
   certificates: new Type({
     name: 'CertificateList',

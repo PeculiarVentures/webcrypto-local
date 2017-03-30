@@ -64,7 +64,7 @@ function* getKeys({ providerId }) {
   if (keys.length) {
     // const getKeysArr = [];
     // for (const keyId of keys) {
-    //   getKeysArr.push(Key.getKey({ providerId, keyId }));
+    //   getKeysArr.push(Key.getKey(crypto, keyId));
     // }
     //
     // const keysArr = yield getKeysArr;
@@ -86,7 +86,7 @@ function* getCerificates({ providerId }) {
   if (certificates.length) {
     // const getCertificatesArr = [];
     // for (const certId of certificates) {
-    //   getCertificatesArr.push(Certificate.getCertificate({ providerId, certId }));
+    //   getCertificatesArr.push(Certificate.getCertificate(crypto, certId));
     // }
     //
     // const certificatesArr = yield getCertificatesArr;

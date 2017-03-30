@@ -51,21 +51,21 @@ export function* getCertificate(crypto, certId) {
 
 export function* createCSR(crypto) {
   const data = {
-    commonName: 'My cert 4',
-    domainName: 'domain',
+    commonName: 'My cert 6',
+    hostName: 'domain',
     organization: 'OOO Name 4',
     organizationUnit: '123',
     locality: 'aa3',
     country: 'pd3',
     state: 'state 1',
     keyInfo: {
+      extractable: false,
       algorithm: {
         name: 'RSASSA-PKCS1-v1_5',
         hash: 'SHA-256',
         modulusLength: 1024,
         publicExponent: new Uint8Array([1, 0, 1]),
       },
-      extractable: false,
       usages: ['sign', 'verify'],
     },
   };
@@ -105,17 +105,17 @@ export function* createCSR(crypto) {
       yield pkcs10.sign(privateKey);
 
       const csrBuffer = pkcs10.toSchema().toBER(false);
-      const request = yield crypto.certStorage.importCert('request', csrBuffer, algorithm, usages);
 
-      yield crypto.certStorage.setItem(request);
+      let importCert = '';
+      try {
+        importCert = yield crypto.certStorage.importCert('x509', csrBuffer, algorithm, usages);
+      } catch (error) {
+        importCert = yield crypto.certStorage.importCert('request', csrBuffer, algorithm, usages);
+      }
+
+      yield crypto.certStorage.setItem(importCert);
       yield crypto.keyStorage.setItem(privateKey);
-      yield crypto.keyStorage.setItem(publicKey);
-
-      return {
-        privateKey,
-        publicKey,
-        request,
-      };
+      // yield crypto.keyStorage.setItem(publicKey);
     } catch (error) {
       yield put(ErrorActions.error(error));
     }

@@ -14,3 +14,8 @@ export const setState = (state, from) => ({
   state,
   from,
 });
+
+export const dataLoaded = state => ({
+  type: ACTIONS_CONST.APP_DATA_LOADED,
+  state,
+});

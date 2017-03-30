@@ -8,8 +8,8 @@ import { wsConnect } from './controllers/webcrypto_socket';
 
 window.Store = Store;
 wsConnect(() => {
-  // Store.dispatch({ type: 'WS:GET_KEYS' });
-  // Store.dispatch({ type: 'WS:GET_CERTIFICATES' });
+  Store.dispatch({ type: 'WS:GET_KEYS' });
+  Store.dispatch({ type: 'WS:GET_CERTIFICATES' });
 });
 
 ReactDOM.render(<Routing />, document.getElementById('root'));

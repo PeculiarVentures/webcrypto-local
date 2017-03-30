@@ -32,20 +32,19 @@ export default class Sidebar extends Component {
       PropTypes.array,
     ]),
     open: PropTypes.bool,
-  };
-
-  static defaultProps = {
-    list: [],
+    dataLoaded: PropTypes.bool,
   };
 
   render() {
-    const { list, open } = this.props;
+    const { list, open, dataLoaded } = this.props;
 
     return (
       <SidebarStyled
         open={open}
       >
-        <SidebarHeader />
+        <SidebarHeader
+          dataLoaded={dataLoaded}
+        />
         <SidebarBody
           list={list}
         />

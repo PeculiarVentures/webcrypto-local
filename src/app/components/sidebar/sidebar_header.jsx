@@ -33,7 +33,11 @@ const InputFileStyled = styled.input`
   top: 0;
   left: 0;
   opacity: 0;
-  cursor: pointer;
+  cursor: ${props => (
+    props.disabled
+      ? 'default'
+      : 'pointer'
+  )};
 `;
 
 const SidebarHeaderStyled = styled.div`
@@ -50,6 +54,10 @@ const SidebarHeaderStyled = styled.div`
 `;
 
 export default class SidebarHeader extends Component {
+
+  static propTypes = {
+    dataLoaded: PropTypes.bool,
+  };
 
   static contextTypes = {
     dispatch: PropTypes.func,
@@ -104,15 +112,18 @@ export default class SidebarHeader extends Component {
   }
 
   render() {
+    const { dataLoaded } = this.props;
     const acceptString = this.getAcceptString();
 
     return (
       <SidebarHeaderStyled>
         <ButtonStyled
+          disabled={!dataLoaded}
           primary
         >
           <InputFileStyled
             type="file"
+            disabled={!dataLoaded}
             accept={acceptString}
             multiple
             onChange={this.onChangeInputFile}
@@ -121,6 +132,7 @@ export default class SidebarHeader extends Component {
           { enLang['Sidebar.Header.Btn.Import'] }
         </ButtonStyled>
         <ButtonStyled
+          disabled={!dataLoaded}
           primary
           onClick={this.onClickCreateHandler}
         >

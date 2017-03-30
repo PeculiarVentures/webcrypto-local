@@ -2,6 +2,7 @@ export const DEFAULT = {
   modal: '',
   dialog: '',
   snackbar: '',
+  dataLoaded: true,
   serverIsOnline: true,
   certificates: [],
   // certificates: [

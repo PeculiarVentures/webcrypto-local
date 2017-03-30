@@ -14,6 +14,11 @@ export default function (state, payload) {
       break;
     }
 
+    case ACTIONS_CONST.APP_DATA_LOADED: {
+      state.merge({ dataLoaded: payload.state });
+      break;
+    }
+
     default:
       return state;
   }

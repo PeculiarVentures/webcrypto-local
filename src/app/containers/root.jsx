@@ -32,6 +32,18 @@ class RootContainer extends Component {
       PropTypes.object,
     ]),
     dispatch: PropTypes.func,
+    certificates: PropTypes.oneOfType([
+      PropTypes.array,
+    ]),
+    dataLoaded: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    params: {},
+    location: {},
+    dispatch: () => {},
+    certificates: [],
+    dataLoaded: false,
   };
 
   static childContextTypes = {
@@ -39,14 +51,6 @@ class RootContainer extends Component {
     windowSize: PropTypes.object,
     handleRootAction: PropTypes.func,
   };
-
-  getChildContext() {
-    return {
-      dispatch: this.props.dispatch,
-      windowSize: this.state.windowSize,
-      handleRootAction: this.handleRootAction.bind(this),
-    };
-  }
 
   static getWindowSize() {
     const width = window.innerWidth;
@@ -77,6 +81,14 @@ class RootContainer extends Component {
     this.bindedOnResize = ::this.onResize;
 
     window.addEventListener('resize', this.bindedOnResize);
+  }
+
+  getChildContext() {
+    return {
+      dispatch: this.props.dispatch,
+      windowSize: this.state.windowSize,
+      handleRootAction: this.handleRootAction.bind(this),
+    };
   }
 
   componentDidMount() {
@@ -138,6 +150,7 @@ class RootContainer extends Component {
       if (cert.selected) {
         certificate = cert;
       }
+      return true;
     });
 
     return certificate;
@@ -151,14 +164,14 @@ class RootContainer extends Component {
         this.setState({
           sidebarOpen: true,
         });
-        break;
+        return true;
       }
 
       case 'SIDEBAR:CLOSE': {
         this.setState({
           sidebarOpen: false,
         });
-        break;
+        return true;
       }
 
       default:
@@ -167,7 +180,7 @@ class RootContainer extends Component {
   }
 
   render() {
-    const { certificates } = this.props;
+    const { certificates, dataLoaded } = this.props;
     const { sidebarOpen } = this.state;
 
     return (
@@ -175,6 +188,7 @@ class RootContainer extends Component {
         <Sidebar
           open={sidebarOpen}
           list={certificates}
+          dataLoaded={dataLoaded}
         />
         <InfoStyled>
           <Info
