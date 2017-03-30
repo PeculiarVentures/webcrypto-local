@@ -11,3 +11,4 @@ export DocRequestIcon from './doc_request';
 export DocKeyIcon from './doc_key';
 export EmptyCertIcon from './empty_cert';
 export TripleDot from './triple_dot';
+export SidebarShellIcon from './sidebar_shell';

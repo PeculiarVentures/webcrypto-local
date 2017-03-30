@@ -38,6 +38,7 @@ export default class Info extends Component {
   };
 
   static propTypes = {
+    dataLoaded: PropTypes.bool,
     certificate: PropTypes.shape({
       name: PropTypes.string,
       type: PropTypes.string,
@@ -80,6 +81,13 @@ export default class Info extends Component {
     dispatch(DialogActions.open('remove_certificate'));
   };
 
+  onMenuHandler = () => {
+    const { handleRootAction } = this.context;
+    handleRootAction({
+      type: 'SIDEBAR:OPEN',
+    });
+  };
+
   renderContent() {
     const { certificate } = this.props;
     const { type } = certificate;
@@ -101,17 +109,10 @@ export default class Info extends Component {
     }
   }
 
-  onMenuHandler = () => {
-    const { handleRootAction } = this.context;
-    handleRootAction({
-      type: 'SIDEBAR:OPEN',
-    });
-  };
-
   render() {
-    const { certificate } = this.props;
+    const { certificate, dataLoaded } = this.props;
 
-    if (Object.keys(certificate).length) {
+    if (Object.keys(certificate).length && dataLoaded) {
       return (
         <RootStyled>
           <HeaderContainer>

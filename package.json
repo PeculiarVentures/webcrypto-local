@@ -8,14 +8,14 @@
     "clear": "cross-env NODE_ENV=production babel-node scripts/run --clear",
     "server": "cross-env NODE_ENV=server babel-node scripts/run --client",
     "production": "cross-env NODE_ENV=production babel-node scripts/run --client",
+    "predevelopment": "npm run build:ws",
     "development": "cross-env NODE_ENV=development babel-node scripts/run --client",
     "lint": "eslint src",
     "lint-fix": "eslint src --fix",
     "test": "",
     "deploy:gh-pages": "./scripts/deploy-ghpages.sh",
-    "build:ts": "rimraf out && tsc && rollup -c",
-    "server:socket": "node out/test/local",
-    "predevelopment": "npm run build:ts"
+    "build:ws": "rimraf out && tsc && rollup -c",
+    "server:ws": "node out/test/local"
   },
   "repository": {
     "type": "git",

@@ -35,6 +35,12 @@ export default class Sidebar extends Component {
     dataLoaded: PropTypes.bool,
   };
 
+  static defaultProps = {
+    list: [],
+    open: false,
+    dataLoaded: false,
+  };
+
   render() {
     const { list, open, dataLoaded } = this.props;
 
@@ -47,6 +53,7 @@ export default class Sidebar extends Component {
         />
         <SidebarBody
           list={list}
+          dataLoaded={dataLoaded}
         />
         <SidebarFooter />
       </SidebarStyled>

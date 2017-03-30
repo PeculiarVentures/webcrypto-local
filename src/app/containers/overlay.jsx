@@ -4,7 +4,7 @@ import { Taber } from '../helpers';
 import { SegueHandler } from '../components/basic';
 import * as Dialog from '../components/dialogs';
 import { ACTIONS_CONST } from '../constants';
-import { CertificateActions } from '../actions/state';
+import { WSActions } from '../actions/state';
 import { DialogActions } from '../actions/ui';
 
 const OverlayStyled = styled.div`
@@ -55,7 +55,7 @@ export default class Overlay extends Component {
   }
 
   renderModal() {
-    const { modal } = this.props;
+    // const { modal } = this.props;
 
     // if (modal) {
     //   return (
@@ -91,8 +91,8 @@ export default class Overlay extends Component {
     const { dispatch } = this.context;
 
     switch (type) {
-      case ACTIONS_CONST.CERTIFICATE_REMOVE: {
-        dispatch(CertificateActions.remove(id));
+      case ACTIONS_CONST.WS_REMOVE_CSR: {
+        dispatch(WSActions.removeCSR(id));
         break;
       }
 
@@ -121,7 +121,7 @@ export default class Overlay extends Component {
             certificateName={selectedCertificateProps.name}
             onAccept={() => (
               this.handleAction({
-                type: ACTIONS_CONST.CERTIFICATE_REMOVE,
+                type: ACTIONS_CONST.WS_REMOVE_CSR,
                 id: selectedCertificateProps.id,
               })
             )}
@@ -133,7 +133,7 @@ export default class Overlay extends Component {
           />
           <Dialog.FortifyAuthorizationDialog
             name="fortify_authorization"
-            numbers={[2,2,2,2,2,2]}
+            numbers={[2, 2, 2, 2, 2, 2]}
             onAccept={() => (
               console.log('accept')
             )}

@@ -101,7 +101,7 @@ export default class Details extends Component {
             <TextField
               labelText={enLang['CertificateCreate.Details.Field.FriendlyName']}
               name="friendlyName"
-              ref={node => (this.fieldNodes.name = node)}
+              ref={node => (this.fieldNodes.commonName = node)}
               validation={['text']}
               errorText={enLang['CertificateCreate.Details.Field.FriendlyName.Error']}
             />

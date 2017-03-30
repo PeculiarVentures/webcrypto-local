@@ -81,12 +81,13 @@ export default class KeyInfo extends Component {
         if (key.name === data) {
           index = _index;
         }
+        return true;
       });
       value = {
         value: data,
         name: data,
         index,
-      }
+      };
     }
     this.setState({
       algorithmValue: value,
@@ -103,6 +104,7 @@ export default class KeyInfo extends Component {
       if (!node.isValid()) {
         valid = false;
       }
+      return true;
     });
 
     return valid;
@@ -111,7 +113,7 @@ export default class KeyInfo extends Component {
   validateFields() {
     const { fieldNodes } = this;
 
-    Object.keys(fieldNodes).map((field) => (
+    Object.keys(fieldNodes).map(field => (
       fieldNodes[field].validate()
     ));
   }
@@ -128,6 +130,7 @@ export default class KeyInfo extends Component {
       } else {
         data[field] = node.getValue();
       }
+      return true;
     });
 
     Object.keys(this.checkboxNodes).map((usageNode) => {
@@ -140,9 +143,17 @@ export default class KeyInfo extends Component {
 
     return {
       keyInfo: {
-        ...data,
-        usages: usagesArr,
-      }
+        extractable: false,
+        algorithm: {
+          name: data.algorithm,
+          hash: 'SHA-256',
+          modulusLength: data.size,
+          publicExponent: new Uint8Array([1, 0, 1]),
+        },
+        // TODO: question about crypto usages
+        // usages: usagesArr,
+        usages: ['sign', 'verify'],
+      },
     };
   };
 
@@ -199,7 +210,7 @@ export default class KeyInfo extends Component {
                 labelText={enLang['CertificateCreate.KeyInfo.Field.Size']}
                 placeholder="Select size..."
                 ref={node => (this.fieldNodes.size = node)}
-                options={currentAlgorithmData.modulusLength.map((module) => ({
+                options={currentAlgorithmData.modulusLength.map(module => ({
                   value: module,
                 }))}
                 defaultValue={currentAlgorithmData.modulusLength[0]}

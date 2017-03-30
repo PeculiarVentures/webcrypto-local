@@ -1,46 +1,11 @@
 import { takeEvery } from 'redux-saga';
 import { put } from 'redux-saga/effects';
-import { ws } from '../../controllers/webcrypto_socket';
-import { decodeSubjectString } from '../../helpers';
+import { ws, WSController } from '../../controllers/webcrypto_socket';
 import { ACTIONS_CONST } from '../../constants';
-import { CertificateActions, ErrorActions } from '../../actions/state';
+import { AppActions, CertificateActions, ErrorActions } from '../../actions/state';
+import { RoutingActions } from '../../actions/ui';
 import * as Key from './key';
 import * as Certificate from './certificate';
-
-const keyDataHandler = keyData => ({
-  id: keyData.id,
-  algorithm: keyData.algorithm.name,
-  usages: keyData.usages,
-  name: 'Need key "name"',
-  size: keyData.algorithm.modulusLength,
-  createdAt: 'Need key "createdAt"',
-  lastUsed: 'Need key "lastUsed"',
-  type: 'key',
-});
-
-const certDataHandler = (certData) => {
-  const decodedSubject = decodeSubjectString(certData.subjectName);
-  return Object.assign({
-    id: certData.id,
-    name: 'Need key "name"',
-    type: certData.type === 'request' ? 'request' : 'certificate',
-    startDate: new Date(certData.notBefore).getTime().toString(),
-    expirationDate: new Date(certData.notAfter).getTime().toString(),
-    keyInfo: {
-      createdAt: 'Need key "createdAt"',
-      lastUsed: 'Need key "lastUsed"',
-      algorithm: certData.publicKey.algorithm.name,
-      size: certData.publicKey.algorithm.modulusLength,
-      usages: certData.publicKey.usages,
-    },
-    hostName: 'Need key "hostName"',
-    organization: 'Need key "organization"',
-    organizationUnit: 'Need key "organizationUnit"',
-    country: 'Need key "country"',
-    region: 'Need key "region"',
-    city: 'Need key "city"',
-  }, decodedSubject);
-};
 
 function* getCrypto(providerId = 0) {
   try {
@@ -74,7 +39,7 @@ function* getKeys({ providerId }) {
     // }
     for (const keyId of keys) {
       const key = yield Key.getKey(crypto, keyId);
-      const keyData = keyDataHandler(key);
+      const keyData = WSController.keyDataHandler(key);
       yield put(CertificateActions.add(keyData));
     }
   }
@@ -96,15 +61,29 @@ function* getCerificates({ providerId }) {
     // }
     for (const certId of certificates) {
       const certificate = yield Certificate.getCertificate(crypto, certId);
-      const certData = certDataHandler(certificate);
+      const certData = WSController.certDataHandler(certificate);
       yield put(CertificateActions.add(certData));
     }
+    yield put(AppActions.dataLoaded(true));
   }
 }
 
 function* createCSR({ providerId, data }) {
   const crypto = yield getCrypto(providerId);
-  yield Certificate.createCSR(crypto, data);
+  const certId = yield Certificate.createCSR(crypto, data);
+  if (certId) {
+    const certificate = yield Certificate.getCertificate(crypto, certId);
+    const certData = WSController.certDataHandler(certificate);
+    yield put(CertificateActions.add(certData));
+    yield put(RoutingActions.push(`certificate/${certificate.id}`));
+  }
+}
+
+function* removeCSR({ providerId, certId }) {
+  const crypto = yield getCrypto(providerId);
+  if (crypto) {
+    yield Certificate.removeCSR(crypto, certId);
+  }
 }
 
 export default function* () {
@@ -112,5 +91,6 @@ export default function* () {
     takeEvery(ACTIONS_CONST.WS_GET_KEYS, getKeys),
     takeEvery(ACTIONS_CONST.WS_GET_CERTIFICATES, getCerificates),
     takeEvery(ACTIONS_CONST.WS_CREATE_CSR, createCSR),
+    takeEvery(ACTIONS_CONST.WS_REMOVE_CSR, removeCSR),
   ];
 }

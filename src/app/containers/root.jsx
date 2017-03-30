@@ -192,6 +192,7 @@ class RootContainer extends Component {
         />
         <InfoStyled>
           <Info
+            dataLoaded={dataLoaded}
             certificate={this.getSelectedCertificateProps()}
           />
         </InfoStyled>

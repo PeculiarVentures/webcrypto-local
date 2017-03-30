@@ -53,6 +53,7 @@ export default class SubjectInfo extends Component {
       } else {
         data[field] = node.getValue();
       }
+      return true;
     });
 
     return data;
@@ -68,6 +69,7 @@ export default class SubjectInfo extends Component {
       if (!node.isValid()) {
         valid = false;
       }
+      return true;
     });
 
     return valid;
@@ -76,7 +78,7 @@ export default class SubjectInfo extends Component {
   validateFields() {
     const { fieldNodes } = this;
 
-    Object.keys(fieldNodes).map((field) => (
+    Object.keys(fieldNodes).map(field => (
       fieldNodes[field].validate()
     ));
   }
@@ -153,7 +155,7 @@ export default class SubjectInfo extends Component {
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.Region']}
               name="region"
-              ref={node => (this.fieldNodes.region = node)}
+              ref={node => (this.fieldNodes.locality = node)}
               validation={['text']}
               errorText={enLang['CertificateCreate.Subject.Field.Region.Error']}
             />
@@ -162,7 +164,7 @@ export default class SubjectInfo extends Component {
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.City']}
               name="city"
-              ref={node => (this.fieldNodes.city = node)}
+              ref={node => (this.fieldNodes.state = node)}
               validation={['text']}
               errorText={enLang['CertificateCreate.Subject.Field.City.Error']}
             />

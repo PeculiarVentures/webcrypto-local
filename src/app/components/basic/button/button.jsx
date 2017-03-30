@@ -31,37 +31,38 @@ const basicStyles = `
 `;
 
 const readyStyles = (props) => {
-  let borderColor = props.theme.button.default.borderColor;
-  let color = props.theme.button.default.color;
-  let background = props.theme.button.default.background;
+  const { button, borderRadius, basicTransition, media } = props.theme;
+  let borderColor = button.default.borderColor;
+  let color = button.default.color;
+  let background = button.default.background;
 
   if (props.primary) {
-    borderColor = props.theme.button.primary.borderColor;
-    color = props.theme.button.primary.color;
-    background = props.theme.button.primary.background;
+    borderColor = button.primary.borderColor;
+    color = button.primary.color;
+    background = button.primary.background;
   } else if (props.secondary) {
-    borderColor = props.theme.button.secondary.borderColor;
-    color = props.theme.button.secondary.color;
-    background = props.theme.button.secondary.background;
+    borderColor = button.secondary.borderColor;
+    color = button.secondary.color;
+    background = button.secondary.background;
   }
 
   if (props.disabled) {
-    borderColor = props.theme.button.disabled.borderColor;
-    color = props.theme.button.disabled.color;
-    background = props.theme.button.disabled.background;
+    borderColor = button.disabled.borderColor;
+    color = button.disabled.color;
+    background = button.disabled.background;
   }
 
   return `
     ${basicStyles}
-    border-radius: ${props.theme.borderRadius}px;
-    transition: opacity ${props.theme.basicTransition}ms;
+    border-radius: ${borderRadius}px;
+    transition: opacity ${basicTransition}ms;
     color: ${color};
     border-color: ${borderColor};
     background: ${background};
     svg {
       fill: ${color};
     }
-    @media ${props.theme.media.mobile} {
+    @media ${media.mobile} {
       height: 32px;
       font-size: 12px;
     }
@@ -74,9 +75,15 @@ export default class Button extends Component {
     children: PropTypes.node.isRequired,
     primary: PropTypes.bool,
     secondary: PropTypes.bool,
-    reverse: PropTypes.bool,
     href: PropTypes.string,
     disabled: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    primary: false,
+    secondary: false,
+    href: '',
+    disabled: false,
   };
 
   render() {

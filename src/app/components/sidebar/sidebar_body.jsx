@@ -2,6 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
 import Certificate from './parts/certificate';
 import EmptyBody from '../info/empty_body';
+import Shell from './parts/shell';
 
 const SidebarBodyStyled = styled.div`
   height: calc(100% - 84px - 44px);
@@ -17,15 +18,28 @@ export default class SidebarBody extends Component {
     list: PropTypes.oneOfType([
       PropTypes.array,
     ]),
+    dataLoaded: PropTypes.bool,
   };
 
   static defaultProps = {
     list: [],
+    dataLoaded: false,
   };
 
   static contextTypes = {
     windowSize: PropTypes.object,
   };
+
+  getEmptyBody() {
+    const { windowSize } = this.context;
+
+    if (windowSize.device === 'mobile') {
+      return (
+        <EmptyBody blackBg />
+      );
+    }
+    return null;
+  }
 
   renderCertificates() {
     const { list } = this.props;
@@ -43,27 +57,34 @@ export default class SidebarBody extends Component {
     ));
   }
 
-  getEmptyBody() {
-    const { windowSize } = this.context;
+  renderContent() {
+    const { list, dataLoaded } = this.props;
 
-    if (windowSize.device === 'mobile') {
-      return (
-        <EmptyBody blackBg />
-      )
+    switch (true) {
+      case !dataLoaded:
+        return (
+          <Shell />
+        );
+
+      case !list.length:
+        return (
+          this.getEmptyBody()
+        );
+
+      case list.length > 0:
+        return (
+          this.renderCertificates()
+        );
+
+      default:
+        return null;
     }
-    return null;
   }
 
   render() {
-    const { list } = this.props;
-
     return (
       <SidebarBodyStyled>
-        {
-          !list.length
-            ? this.getEmptyBody()
-            : this.renderCertificates()
-        }
+        { this.renderContent() }
       </SidebarBodyStyled>
     );
   }

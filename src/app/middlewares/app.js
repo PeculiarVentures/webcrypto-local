@@ -25,15 +25,14 @@ export default () => next => (payload) => {
       });
 
       next(CertificateActions.add(certificateData));
-      // RoutingController.push(`certificate/${certificateId}`);
       break;
     }
 
-    case ACTIONS_CONST.CERTIFICATE_REMOVE: {
-      next(DialogActions.close());
-      next(CertificateActions.remove(id));
-      break;
-    }
+    // case ACTIONS_CONST.CERTIFICATE_REMOVE: {
+    //   next(DialogActions.close());
+    //   next(CertificateActions.remove(id));
+    //   break;
+    // }
 
     case ACTIONS_CONST.ROUTING_PUSH: {
       RoutingController.push(path);
