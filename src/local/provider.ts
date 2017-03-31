@@ -1,4 +1,5 @@
 import { EventEmitter } from "events";
+import * as fs from "fs";
 import * as pkcs11 from "node-webcrypto-p11";
 import { ProviderCryptoProto, ProviderInfoProto } from "../core/protos/provider";
 import { OpenSSLCrypto } from "./ossl";
@@ -82,34 +83,38 @@ export class LocalProvider extends EventEmitter {
         // Add pkcs11
         const ref: RefCount = { counter: 0 };
         for (const lib of this.config.pkcs11) {
-            const pkcs11Provider = new pkcs11.Provider(lib);
-            ref.counter++;
-            pkcs11Provider.on("listening", (info) => {
-                info.providers.forEach((item, index) => {
-                    try {
-                        this.crypto[item.id] = new pkcs11.WebCrypto({
-                            library: lib,
-                            slot: index,
-                            readWrite: true,
-                        });
-                        this.info.providers.push(new ProviderCryptoProto(item));
-                    } catch (e) {
-                        this.emit("error", e);
-                    }
-                });
-                this.clickRefCount(ref, this.info);
-            })
-                .once("error", (err) => {
+            if (fs.existsSync(lib)) {
+                const pkcs11Provider = new pkcs11.Provider(lib);
+                ref.counter++;
+                pkcs11Provider.on("listening", (info) => {
+                    info.providers.forEach((item, index) => {
+                        try {
+                            this.crypto[item.id] = new pkcs11.WebCrypto({
+                                library: lib,
+                                slot: index,
+                                // readWrite: true,
+                            });
+                            this.info.providers.push(new ProviderCryptoProto(item));
+                        } catch (e) {
+                            this.emit("error", e);
+                        }
+                    });
                     this.clickRefCount(ref, this.info);
                 })
-                .on("token", (info) => {
-                    this.emit("token", info);
-                })
-                .on("error", (err) => {
-                    console.log(err);
-                });
+                    .once("error", (err) => {
+                        this.clickRefCount(ref, this.info);
+                    })
+                    .on("token", (info) => {
+                        this.emit("token", info);
+                    })
+                    .on("error", (err) => {
+                        console.log(err);
+                    });
 
-            pkcs11Provider.open();
+                pkcs11Provider.open();
+            } else {
+                console.log(`Provider by path ${lib} is not found`);
+            }
         }
     }
 
