@@ -141,3 +141,14 @@ export class CertificateStorageExportActionProto extends CryptoActionProto {
     public item: CryptoCertificateProto;
 
 }
+
+@ProtobufElement({})
+export class CertificateStorageIndexOfActionProto extends CryptoActionProto {
+
+    public static INDEX = CryptoActionProto.INDEX;
+    public static ACTION = "crypto/certificateStorage/indexOf";
+
+    @ProtobufProperty({ id: CertificateStorageIndexOfActionProto.INDEX++, required: true, parser: CryptoCertificateProto })
+    public item: CryptoCertificateProto;
+
+}

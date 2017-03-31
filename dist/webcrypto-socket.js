@@ -1,7 +1,7 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('protobufjs')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'protobufjs'], factory) :
-	(factory((global.WebcryptoSocket = global.WebcryptoSocket || {}),global.protobuf));
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('protobufjs')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'protobufjs'], factory) :
+  (factory((global.WebcryptoSocket = global.WebcryptoSocket || {}),global.protobuf));
 }(this, (function (exports,protobufjs) { 'use strict';
 
 /*! *****************************************************************************
@@ -5098,6 +5098,21 @@ __decorate([
 CertificateStorageExportActionProto = CertificateStorageExportActionProto_1 = __decorate([
     ProtobufElement({})
 ], CertificateStorageExportActionProto);
+var CertificateStorageIndexOfActionProto = CertificateStorageIndexOfActionProto_1 = (function (_super) {
+    __extends(CertificateStorageIndexOfActionProto, _super);
+    function CertificateStorageIndexOfActionProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return CertificateStorageIndexOfActionProto;
+}(CryptoActionProto));
+CertificateStorageIndexOfActionProto.INDEX = CryptoActionProto.INDEX;
+CertificateStorageIndexOfActionProto.ACTION = "crypto/certificateStorage/indexOf";
+__decorate([
+    ProtobufProperty({ id: CertificateStorageIndexOfActionProto_1.INDEX++, required: true, parser: CryptoCertificateProto })
+], CertificateStorageIndexOfActionProto.prototype, "item", void 0);
+CertificateStorageIndexOfActionProto = CertificateStorageIndexOfActionProto_1 = __decorate([
+    ProtobufElement({})
+], CertificateStorageIndexOfActionProto);
 var CryptoCertificateProto_1;
 var CryptoX509CertificateProto_1;
 var CryptoX509CertificateRequestProto_1;
@@ -5106,11 +5121,29 @@ var CertificateStorageGetItemActionProto_1;
 var CertificateStorageRemoveItemActionProto_1;
 var CertificateStorageImportActionProto_1;
 var CertificateStorageExportActionProto_1;
+var CertificateStorageIndexOfActionProto_1;
 
 var SocketCertificateStorage = (function () {
     function SocketCertificateStorage(service) {
         this.service = service;
     }
+    SocketCertificateStorage.prototype.indexOf = function (item) {
+        return __awaiter(this, void 0, void 0, function () {
+            var proto, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        proto = new CertificateStorageIndexOfActionProto();
+                        proto.providerID = this.service.id;
+                        proto.item = item;
+                        return [4 /*yield*/, this.service.client.send(proto)];
+                    case 1:
+                        result = _a.sent();
+                        return [2 /*return*/, result ? Convert.ToUtf8String(result) : null];
+                }
+            });
+        });
+    };
     SocketCertificateStorage.prototype.exportCert = function (format, item) {
         return __awaiter(this, void 0, void 0, function () {
             var proto, result;

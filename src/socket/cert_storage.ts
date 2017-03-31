@@ -1,6 +1,6 @@
 import { Convert } from "pvtsutils";
 import { PrepareAlgorithm } from "webcrypto-core";
-import { CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetItemActionProto, CertificateStorageImportActionProto, CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto, CryptoCertificateProto, CryptoX509CertificateProto, CryptoX509CertificateRequestProto } from "../core/protos/certstorage";
+import { CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetItemActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto, CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto, CryptoCertificateProto, CryptoX509CertificateProto, CryptoX509CertificateRequestProto } from "../core/protos/certstorage";
 import { SocketCrypto } from "./crypto";
 
 export class SocketCertificateStorage implements ICertificateStorage {
@@ -9,6 +9,17 @@ export class SocketCertificateStorage implements ICertificateStorage {
 
     constructor(service: SocketCrypto) {
         this.service = service;
+    }
+
+    public async indexOf(item: CryptoCertificateProto): Promise<string> {
+        // prepare request
+        const proto = new CertificateStorageIndexOfActionProto();
+        proto.providerID = this.service.id;
+        proto.item = item;
+
+        // send and receive result
+        const result = await this.service.client.send(proto);
+        return result ? Convert.ToUtf8String(result) : null;
     }
 
     public exportCert(format: "pem", item: CryptoCertificate): Promise<string>

@@ -9,13 +9,14 @@
 <body>
     <script src="http://cdn.rawgit.com/dcodeIO/protobuf.js/6.6.0/dist/protobuf.js"></script>
     <script src="https://cdn.rawgit.com/jakearchibald/idb/97e4e878/lib/idb.js"></script>
+    <!--<script src="https://peculiarventures.github.io/pv-webcrypto-tests/src/promise.js"></script>-->
     <!--<script src="https://peculiarventures.github.io/pv-webcrypto-tests/src/webcrypto-liner.min.js"></script>-->
     <!--<script src="https://peculiarventures.github.io/pv-webcrypto-tests/src/asmcrypto.js"></script>-->
     <!--<script src="https://peculiarventures.github.io/pv-webcrypto-tests/src/elliptic.js"></script>-->
     <script src="./webcrypto-socket.js"></script>
     <script>
         var ws = new WebcryptoSocket.SocketProvider();
-        ws.connect("127.0.0.1:8080")
+        ws.connect("localhost:8080")
             .on("error", (e) => {
                 console.error(e.error);
             })
@@ -26,20 +27,21 @@
                 // TestWrap();
                 // TestDeriveBits();
                 // TestDeriveKey();
-//                 TestKeyStorageSetItem();
+                // TestKeyStorageSetItem();
                 // TestKeyStorageGetItem("private-4f9b9ce747e7006e7a2f08bf9f9d478cb454b4b6f4f3f2c3fcc885467b97568e");
                 // TestKeyStorageRemoveItem();
                 // TestKeyStorageKeys();
                 // TestKeyStorageClear();
-//                TestCertStorageKeys();
+                // TestCertStorageKeys();
                 // TestCertStorageImportCert();
+                TestCertStorageIndexOfCert("x509-e3b6a2db2ed7ce48842f7ac53241c7b71d54144bfb40c11f3f1d0b42f5eea12d");
                 // TestCertStorageImportRequest();
                 // TestCertStorageExportCert();                
-//                 TestCertStorageSetItemCert();
+                // TestCertStorageSetItemCert();
                 // TestCertStorageSetItemRequest();
-                // TestCertStorageRemoveItemCert();
+                // TestCertStorageRemoveItemCert("request-9cb2b372daea96f94477ee0be4248c23efad5164e5ad738b4076bccde298f244");
                 // TestCertStorageClear();
-                // TestCertStorageGetItemCert();
+                // TestCertStorageGetItemCert("x509-e3b6a2db2ed7ce48842f7ac53241c7b71d54144bfb40c11f3f1d0b42f5eea12d");
             })
             .on("close", (e) => {
                 console.info("close");
@@ -649,7 +651,7 @@
                     console.log(err);
                 });
         }
-        function TestCertStorageRemoveItemCert() {
+        function TestCertStorageRemoveItemCert(itemId) {
             var alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" };
 
             ws.info()
@@ -669,7 +671,7 @@
                             return crypto.certStorage.keys()
                                 .then((names) => {
                                     console.log("Certificates:", names);
-                                    return crypto.certStorage.removeItem("x509-c53021e4c84bd1a9e9dee840ba6a169f77928f91");
+                                    return crypto.certStorage.removeItem(itemId);
                                 })
                                 .then(() => {
                                     return crypto.certStorage.keys()
@@ -717,7 +719,7 @@
                     console.log(err);
                 });
         }
-        function TestCertStorageGetItemCert() {
+        function TestCertStorageGetItemCert(itemId) {
             var alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" };
 
             ws.info()
@@ -737,8 +739,8 @@
                             return crypto.certStorage.keys()
                                 .then((names) => {
                                     console.log("Certificates:", names);
-                                    return crypto.certStorage.getItem("x509-c53021e4c84bd1a9e9dee840ba6a169f77928f91", alg, ["verify"]);
-                                    // return crypto.certStorage.getItem("x509-c53021e4c84bd1a9e9dee840ba6a169f77928f91"); // default alg, usage
+                                    return crypto.certStorage.getItem(itemId, alg, ["verify"]);
+                                    // return crypto.certStorage.getItem(itemId); // default alg, usage
                                 })
                                 .then((cert) => {
                                     console.log(cert);
@@ -747,6 +749,40 @@
                                 .then((ok) => {
                                     console.log("Verification:", ok);
                                 })
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+        function TestCertStorageIndexOfCert(itemId) {
+            var alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" };
+
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[PROVIDER_ID];
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    return crypto.isLoggedIn()
+                        .then((ok) => {
+                            if (!ok) {
+                                return crypto.login();
+                            }
+                        })
+                        .then(() => {
+                            return crypto.certStorage.keys()
+                                .then((names) => {
+                                    console.log("Certificates:", names);
+                                    return crypto.certStorage.getItem(itemId, alg, ["verify"]);
+                                })
+                                .then((cert) => {
+                                    return crypto.certStorage.indexOf(cert);
+                                })
+                                .then((index) => {
+                                    console.log("Index:", index);
+                                });
                         })
                 })
                 .catch((err) => {

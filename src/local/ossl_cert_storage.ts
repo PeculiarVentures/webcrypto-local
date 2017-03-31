@@ -62,17 +62,34 @@ export class OpenSSLCertificateStorage implements ICertificateStorage {
     }
 
     public async keys() {
-        const keys = this.readFile();
-        return Object.keys(keys);
+        const items = this.readFile();
+        return Object.keys(items);
     }
 
-    public setItem(item: CryptoCertificate): Promise<string>;
+    public setItem(item: Certificate): Promise<string>;
     public async setItem(item: Certificate) {
         const certs = this.readFile();
         const value = await this.certToJson(item);
         certs[item.id] = value;
         this.writeFile(certs);
         return item.id;
+    }
+
+    public async indexOf(item: CryptoCertificate): Promise<string> {
+        if (item instanceof Certificate) {
+            const certs = this.readFile();
+            for (const index in certs) {
+                const identity = await item.getID(crypto, "SHA-256");
+                console.log("Identity:", identity);
+                console.log("Index:", index);
+                if (index === identity) {
+                    return index;
+                }
+            }
+            return null;
+        } else {
+            throw new Error(`Parameter is not OpenSSL CertificateItem`);
+        }
     }
 
     public async getItem(key: string) {
