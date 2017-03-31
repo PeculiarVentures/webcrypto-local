@@ -3,8 +3,8 @@ import { NotificationCenter } from "node-notifier";
 import { Convert } from "pvtsutils";
 import { ObjectProto } from "tsprotobuf";
 import { Server, Session } from "../connection/server";
-import { ActionProto, CryptoKeyPairProto, CryptoKeyProto, ResultProto, CryptoItemProto } from "../core/proto";
-import { CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetItemActionProto, CertificateStorageImportActionProto, CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto } from "../core/protos/certstorage";
+import { ActionProto, CryptoItemProto, CryptoKeyPairProto, CryptoKeyProto, ResultProto } from "../core/proto";
+import { CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetItemActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto, CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto } from "../core/protos/certstorage";
 import { ArrayStringConverter } from "../core/protos/converter";
 import { IsLoggedInActionProto, LoginActionProto } from "../core/protos/crypto";
 import { KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto } from "../core/protos/keystorage";
@@ -535,6 +535,20 @@ export class LocalServer extends EventEmitter {
                 // do operation
                 await crypto.certStorage.clear();
                 // result
+                break;
+            }
+            case CertificateStorageIndexOfActionProto.ACTION: {
+                // load cert storage
+                const params = await CertificateStorageIndexOfActionProto.importProto(action);
+                const crypto = await this.provider.getCrypto(params.providerID);
+                const cert = this.getItemFromStorage(params.item).item as CryptoCertificate;
+
+                // do operation
+                const index = await crypto.certStorage.indexOf(cert);
+                // result
+                if (index) {
+                    data = Convert.FromUtf8String(index);
+                }
                 break;
             }
             default:

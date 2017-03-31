@@ -40,7 +40,7 @@ export abstract class Certificate implements CryptoCertificate {
 
     public async getID(provider: Crypto, algorithm: string) {
         const hash = await provider.subtle.digest(algorithm, this.raw);
-        return Convert.ToHex(hash);
+        return `${this.type}-${Convert.ToHex(hash)}`;
     }
 
 }
