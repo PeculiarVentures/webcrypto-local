@@ -33,10 +33,10 @@ export class LocalServer extends EventEmitter {
             pkcs11: [
                 // "/usr/local/lib/softhsm/libsofthsm2.so",
                 // "/usr/local/lib/libykcs11.dylib",
+                // "yubico/libykcs11-1.dll",
+                // "/Windows/System32/eTPKCS11.dll",
             ],
-        });
-
-        this.provider
+        })
             .on("token", (info) => {
                 console.log("Provider:Token raised");
                 this.sessions.forEach((session) => {
@@ -381,7 +381,7 @@ export class LocalServer extends EventEmitter {
                 const key = await crypto.keyStorage.getItem(
                     params.key,
                     params.algorithm.isEmpty() ? null : params.algorithm,
-                    params.keyUsages ? null : params.keyUsages,
+                    !params.keyUsages ? null : params.keyUsages,
                 );
 
                 if (key) {
@@ -463,7 +463,7 @@ export class LocalServer extends EventEmitter {
                 const item = await crypto.certStorage.getItem(
                     params.key,
                     params.algorithm.isEmpty() ? null : params.algorithm,
-                    params.keyUsages ? null : params.keyUsages,
+                    !params.keyUsages ? null : params.keyUsages,
                 );
 
                 if (item) {
