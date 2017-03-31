@@ -8,6 +8,12 @@ interface IKeyStorage {
      * @memberOf KeyStorage
      */
     keys(): Promise<string[]>;
+
+    /**
+     * Returns identity of item from kry storage.
+     * If item is not found, then returns `null`
+     */
+    indexOf(item: CryptoKey): Promise<string | null>;
     /**
      * Returns key from storage
      * 

@@ -24,6 +24,15 @@ export class OpenSSLKeyStorage implements IKeyStorage {
         return Object.keys(keys);
     }
 
+    public async indexOf(item: CryptoKey) {
+        const keys = this.readFile();
+        const id = await this.getID(item);
+        if (id in keys) {
+            return id;
+        }
+        return null;
+    }
+
     public async setItem(value: CryptoKey) {
         const keys = this.readFile();
         const id = await this.getID(value);
@@ -35,6 +44,9 @@ export class OpenSSLKeyStorage implements IKeyStorage {
     public async getItem(key: string) {
         const keys = this.readFile();
         const keyJson = keys[key];
+        if (!keyJson) {
+            return null;
+        }
         const res = this.keyFromJson(keyJson);
         this.writeFile(keys);
         return res;

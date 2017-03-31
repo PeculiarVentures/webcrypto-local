@@ -27,14 +27,15 @@
                 // TestWrap();
                 // TestDeriveBits();
                 // TestDeriveKey();
-                // TestKeyStorageSetItem();
-                // TestKeyStorageGetItem("private-4f9b9ce747e7006e7a2f08bf9f9d478cb454b4b6f4f3f2c3fcc885467b97568e");
-                // TestKeyStorageRemoveItem();
                 // TestKeyStorageKeys();
+                TestKeyStorageIndexOf("private-713400c913c5f0be5183431f7af2b6df236db5095ddb30b37124acfba46e7edd");
+                // TestKeyStorageSetItem();
+                // TestKeyStorageGetItem("private-713400c913c5f0be5183431f7af2b6df236db5095ddb30b37124acfba46e7edd");
+                // TestKeyStorageRemoveItem();
                 // TestKeyStorageClear();
                 // TestCertStorageKeys();
                 // TestCertStorageImportCert();
-                TestCertStorageIndexOfCert("x509-e3b6a2db2ed7ce48842f7ac53241c7b71d54144bfb40c11f3f1d0b42f5eea12d");
+                // TestCertStorageIndexOfCert("x509-e3b6a2db2ed7ce48842f7ac53241c7b71d54144bfb40c11f3f1d0b42f5eea12d");
                 // TestCertStorageImportRequest();
                 // TestCertStorageExportCert();                
                 // TestCertStorageSetItemCert();
@@ -338,6 +339,45 @@
                             return crypto.keyStorage.keys()
                                 .then((names) => {
                                     console.log("Certificates:", names);
+                                })
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+        function TestKeyStorageIndexOf(itemIndex) {
+            const alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-384", publicExponent: new Uint8Array([1, 0, 1]), modulusLength: 2048 };
+            const usages = ["sign", "verify"];
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[PROVIDER_ID];
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    return crypto.isLoggedIn()
+                        .then((ok) => {
+                            if (!ok) {
+                                return crypto.login();
+                            }
+                        })
+                        .then(() => {
+                            return crypto.keyStorage.keys()
+                                .then((names) => {
+                                    console.log("Keys:", names);
+                                    return crypto.keyStorage.getItem(itemIndex, alg, ["sign"]);
+                                })
+                                .then((key) => {
+                                    console.log("CryptoKey:", key);
+                                    if (key) {
+                                        return crypto.keyStorage.indexOf(key);
+                                    } else {
+                                        throw new Error("Key is not found");
+                                    }
+                                })
+                                .then((index) => {
+                                    console.log("Index:", index);
                                 })
                         })
                 })
