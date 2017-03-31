@@ -10,7 +10,7 @@ interface IKeyStorage {
     keys(): Promise<string[]>;
 
     /**
-     * Returns identity of item from kry storage.
+     * Returns identity of item from key storage.
      * If item is not found, then returns `null`
      */
     indexOf(item: CryptoKey): Promise<string | null>;

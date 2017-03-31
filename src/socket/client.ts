@@ -53,9 +53,9 @@ export class SocketProvider extends EventEmitter {
                 console.info("Client:Listening", e.address);
                 this.emit("listening", address);
             })
-            .on("closed", (e) => {
+            .on("close", (e) => {
                 console.info("Client:Closed");
-                this.emit("closed", e.remoteAddress);
+                this.emit("close", e.remoteAddress);
             });
 
         return this;

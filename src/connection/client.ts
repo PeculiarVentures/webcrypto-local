@@ -191,14 +191,14 @@ export class Client extends EventEmitter {
 
     public on(event: "event", listener: (e: ActionProto) => void): this;
     public on(event: "listening", listener: (e: ClientListeningEvent) => void): this;
-    public on(event: "closed", listener: (e: ClientCloseEvent) => void): this;
+    public on(event: "close", listener: (e: ClientCloseEvent) => void): this;
     public on(event: "error", listener: (e: ClientErrorEvent) => void): this;
     public on(event: string | symbol, listener: Function) {
         return super.on(event, listener);
     }
 
     public once(event: "listening", listener: (e: ClientListeningEvent) => void): this;
-    public once(event: "closed", listener: (e: ClientCloseEvent) => void): this;
+    public once(event: "close", listener: (e: ClientCloseEvent) => void): this;
     public once(event: "error", listener: (e: ClientErrorEvent) => void): this;
     public once(event: string | symbol, listener: Function): this;
     public once(event: string | symbol, listener: Function) {
