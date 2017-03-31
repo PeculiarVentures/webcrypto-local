@@ -19,6 +19,11 @@ export default function (state, payload) {
       break;
     }
 
+    case ACTIONS_CONST.APP_ONLINE: {
+      state.merge({ serverIsOnline: payload.state });
+      break;
+    }
+
     default:
       return state;
   }

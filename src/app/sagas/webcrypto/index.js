@@ -56,7 +56,7 @@ function* getCerificates({ providerId }) {
     //
     // const certificatesArr = yield getCertificatesArr;
     // for (const certificate of certificatesArr) {
-    //   const certData = certDataHandler(certificate);
+    //   const certData = WSController.certDataHandler(certificate);
     //   yield put(CertificateActions.add(certData));
     // }
     for (const certId of certificates) {
@@ -64,8 +64,8 @@ function* getCerificates({ providerId }) {
       const certData = WSController.certDataHandler(certificate);
       yield put(CertificateActions.add(certData));
     }
-    yield put(AppActions.dataLoaded(true));
   }
+  yield put(AppActions.dataLoaded(true));
 }
 
 function* createCSR({ providerId, data }) {

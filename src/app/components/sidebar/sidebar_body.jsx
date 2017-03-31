@@ -66,18 +66,15 @@ export default class SidebarBody extends Component {
           <Shell />
         );
 
-      case !list.length:
-        return (
-          this.getEmptyBody()
-        );
-
       case list.length > 0:
         return (
           this.renderCertificates()
         );
 
       default:
-        return null;
+        return (
+          this.getEmptyBody()
+        );
     }
   }
 

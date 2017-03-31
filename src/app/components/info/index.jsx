@@ -7,6 +7,10 @@ import EmptyBody from './empty_body';
 import { DialogActions } from '../../actions/ui';
 import { EventChannel } from '../../controllers';
 import { ACTIONS_CONST } from '../../constants';
+import { InfoShellIcon } from '../svg';
+import StyledAnimatedIcon from '../sidebar/parts/shell.styles';
+
+const StyledShellInfo = StyledAnimatedIcon(InfoShellIcon, 'i_gradient');
 
 const RootStyled = styled.div`
   width: 100%;
@@ -74,6 +78,7 @@ export default class Info extends Component {
 
   static defaultProps = {
     certificate: {},
+    dataLoaded: false,
   };
 
   onRemoveHandler = () => {
@@ -88,7 +93,7 @@ export default class Info extends Component {
     });
   };
 
-  renderContent() {
+  renderInfoContent() {
     const { certificate } = this.props;
     const { type } = certificate;
 
@@ -112,32 +117,57 @@ export default class Info extends Component {
   render() {
     const { certificate, dataLoaded } = this.props;
 
-    if (Object.keys(certificate).length && dataLoaded) {
-      return (
-        <RootStyled>
-          <HeaderContainer>
-            <Header
-              name={certificate.name}
-              type={certificate.type}
-              onCopy={() => EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'copied', 4000)}
-              onDownload={() => {
-                console.log('clicked Download button');
-              }}
-              onRemove={this.onRemoveHandler}
-              onMenu={this.onMenuHandler}
-            />
-          </HeaderContainer>
-          <InfoContainer>
-            { this.renderContent() }
-          </InfoContainer>
-        </RootStyled>
-      );
-    }
+    switch (true) {
+      case !dataLoaded:
+        return (
+          <RootStyled>
+            <HeaderContainer>
+              <Header
+                dataLoaded={dataLoaded}
+              />
+            </HeaderContainer>
+            <InfoContainer>
+              <div
+                style={{
+                  width: '100%',
+                  maxWidth: 700,
+                  padding: '75px 20px',
+                  margin: '0 auto',
+                }}
+              >
+                <StyledShellInfo />
+              </div>
+            </InfoContainer>
+          </RootStyled>
+        );
 
-    return (
-      <RootStyled>
-        <EmptyBody />
-      </RootStyled>
-    );
+      case Object.keys(certificate).length > 0:
+        return (
+          <RootStyled>
+            <HeaderContainer>
+              <Header
+                dataLoaded={dataLoaded}
+                name={certificate.name}
+                onCopy={() => EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'copied', 4000)}
+                onDownload={() => {
+                  console.log('clicked Download button');
+                }}
+                onRemove={this.onRemoveHandler}
+                onMenu={this.onMenuHandler}
+              />
+            </HeaderContainer>
+            <InfoContainer>
+              { this.renderInfoContent() }
+            </InfoContainer>
+          </RootStyled>
+        );
+
+      default:
+        return (
+          <RootStyled>
+            <EmptyBody />
+          </RootStyled>
+        );
+    }
   }
 }

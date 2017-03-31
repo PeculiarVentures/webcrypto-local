@@ -3,6 +3,7 @@ export const APP_RESET_STATE = 'APP:RESET_STATE';
 export const APP_LOAD_STATE = 'APP:LOAD_STATE';
 export const APP_SET_STATE = 'APP:SET_STATE';
 export const APP_DATA_LOADED = 'APP:DATA_LOADED';
+export const APP_ONLINE = 'APP:ONLINE';
 
 // Dialog
 export const DIALOG_OPEN = 'DIALOG:OPEN';

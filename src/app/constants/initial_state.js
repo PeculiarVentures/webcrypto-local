@@ -3,7 +3,7 @@ export const DEFAULT = {
   dialog: '',
   snackbar: '',
   dataLoaded: false,
-  serverIsOnline: true,
+  serverIsOnline: false,
   certificates: [],
   // certificates: [
   //   {
