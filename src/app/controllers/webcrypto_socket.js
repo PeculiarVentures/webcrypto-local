@@ -2,7 +2,6 @@
 import * as pkijs from 'pkijs';
 import * as asn1js from 'asn1js';
 import { SERVER_URL } from '../../../scripts/config';
-import { decodeSubjectString } from '../helpers';
 
 export const ws = new WebcryptoSocket.SocketProvider();
 
@@ -14,8 +13,16 @@ const subjectTypesAndValues = {
   country: '2.5.4.6',
   locality: '2.5.4.7',
   state: '2.5.4.8',
-  expirationDate: '2.5.29.22',
-  creationDate: '0.2.262.1.10.7.5',
+};
+
+const subjectNames = {
+  O: 'organization',
+  CN: 'name',
+  C: 'country',
+  OU: 'organizationUnit',
+  L: 'city',
+  ST: 'region',
+  '1.3.6.1.2.1.1.5': 'hostName',
 };
 
 export const WSController = {
@@ -53,7 +60,7 @@ export const WSController = {
   },
 
   certDataHandler: function certDataHandler(certData) {
-    const decodedSubject = decodeSubjectString(certData.subjectName);
+    const decodedSubject = this.decodeSubjectString(certData.subjectName);
     return Object.assign({
       id: certData.id,
       name: 'Need key "name"',
@@ -74,5 +81,18 @@ export const WSController = {
       region: 'Need key "region"',
       city: 'Need key "city"',
     }, decodedSubject);
+  },
+
+  decodeSubjectString: function decodeSubjectString(subjectString) {
+    const subjectObj = {};
+    const arrSubjects = subjectString.split(/, /g);
+    arrSubjects.map((sbj) => {
+      const arrSubject = sbj.split('=');
+      const subjectName = subjectNames[arrSubject[0]];
+      const subjectValue = arrSubject[1];
+      subjectObj[subjectName] = subjectValue;
+      return true;
+    });
+    return subjectObj;
   },
 };

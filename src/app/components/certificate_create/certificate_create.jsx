@@ -4,8 +4,6 @@ import CertificateCreateHeader from './certificate_create_header';
 import CertificateCreateBody from './certificate_create_body';
 import { WSActions } from '../../actions/state';
 import { RoutingActions } from '../../actions/ui';
-/* eslint no-unused-vars: 0 */
-import datePickerStyles from './parts/date_picker.styles';
 
 const CertificateCreateStyled = styled.div`
   height: 100%;
@@ -30,13 +28,7 @@ export default class CertificateCreate extends Component {
 
   onCreateHandler = (data) => {
     const { dispatch } = this.context;
-
-    const now = new Date().getTime().toString();
-    const keyInfo = Object.assign({}, data.keyInfo, {
-      createdAt: now,
-      lastUsed: now,
-    });
-    const _data = Object.assign({}, data, keyInfo);
+    const _data = Object.assign({}, data);
 
     // console.log(_data);
     dispatch(WSActions.createCSR(0, _data));
