@@ -80,8 +80,6 @@ export class OpenSSLCertificateStorage implements ICertificateStorage {
             const certs = this.readFile();
             for (const index in certs) {
                 const identity = await item.getID(crypto, "SHA-256");
-                console.log("Identity:", identity);
-                console.log("Index:", index);
                 if (index === identity) {
                     return index;
                 }
@@ -95,6 +93,9 @@ export class OpenSSLCertificateStorage implements ICertificateStorage {
     public async getItem(key: string) {
         const certs = this.readFile();
         const value = certs[key];
+        if (!value) {
+            return null;
+        }
 
         // Update date of last usage
         value.lastUsed = new Date().toISOString();

@@ -1,7 +1,7 @@
 import { Convert } from "pvtsutils";
 import { PrepareAlgorithm } from "webcrypto-core";
 import { CryptoKeyProto } from "../core/proto";
-import { KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto } from "../core/protos/keystorage";
+import { KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto, KeyStorageIndexOfActionProto } from "../core/protos/keystorage";
 import { SocketCrypto } from "./crypto";
 
 export class SocketKeyStorage implements IKeyStorage {
@@ -21,6 +21,17 @@ export class SocketKeyStorage implements IKeyStorage {
             return keys;
         }
         return [];
+    }
+
+    public async indexOf(item: CryptoKeyProto): Promise<string> {
+        // prepare request
+        const proto = new KeyStorageIndexOfActionProto();
+        proto.providerID = this.service.id;
+        proto.item = item;
+
+        // send and receive result
+        const result = await this.service.client.send(proto);
+        return result ? Convert.ToUtf8String(result) : null;
     }
 
     public getItem(key: string): Promise<CryptoKey>;

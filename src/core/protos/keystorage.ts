@@ -56,3 +56,14 @@ export class KeyStorageClearActionProto extends CryptoActionProto {
     public static ACTION = "crypto/keyStorage/clear";
 
 }
+
+@ProtobufElement({})
+export class KeyStorageIndexOfActionProto extends CryptoActionProto {
+
+    public static INDEX = CryptoActionProto.INDEX;
+    public static ACTION = "crypto/keyStorage/indexOf";
+
+    @ProtobufProperty({ id: KeyStorageIndexOfActionProto.INDEX++, required: true, parser: CryptoKeyProto })
+    public item: CryptoKeyProto;
+
+}

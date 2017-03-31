@@ -7,7 +7,7 @@ import { ActionProto, CryptoItemProto, CryptoKeyPairProto, CryptoKeyProto, Resul
 import { CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetItemActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto, CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto } from "../core/protos/certstorage";
 import { ArrayStringConverter } from "../core/protos/converter";
 import { IsLoggedInActionProto, LoginActionProto } from "../core/protos/crypto";
-import { KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto } from "../core/protos/keystorage";
+import { KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto, KeyStorageIndexOfActionProto } from "../core/protos/keystorage";
 import { ProviderAuthorizedEventProto, ProviderCryptoProto, ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderTokenEventProto } from "../core/protos/provider";
 import { DecryptActionProto, DeriveBitsActionProto, DeriveKeyActionProto, DigestActionProto, EncryptActionProto, ExportKeyActionProto, GenerateKeyActionProto, ImportKeyActionProto, SignActionProto, UnwrapKeyActionProto, VerifyActionProto, WrapKeyActionProto } from "../core/protos/subtle";
 import { ServiceCryptoItem } from "./crypto_item";
@@ -384,15 +384,17 @@ export class LocalServer extends EventEmitter {
                     params.keyUsages ? null : params.keyUsages,
                 );
 
-                // add keys to memory storage
-                if (!key) {
-                    throw new Error(`Cannot get key by identity '${params.key}'`);
-                }
-                const thumbprint = await GetIdentity(key, crypto);
-                const cryptoKey = new ServiceCryptoItem(thumbprint, key, params.providerID);
-                this.memoryStorage.push(cryptoKey);
+                if (key) {
+                    // add keys to memory storage
+                    if (!key) {
+                        throw new Error(`Cannot get key by identity '${params.key}'`);
+                    }
+                    const thumbprint = await GetIdentity(key, crypto);
+                    const cryptoKey = new ServiceCryptoItem(thumbprint, key, params.providerID);
+                    this.memoryStorage.push(cryptoKey);
 
-                data = await cryptoKey.toProto().exportProto();
+                    data = await cryptoKey.toProto().exportProto();
+                }
                 break;
             }
             case KeyStorageSetItemActionProto.ACTION: {
@@ -428,6 +430,20 @@ export class LocalServer extends EventEmitter {
                 data = (await ArrayStringConverter.set(keys)).buffer;
                 break;
             }
+            case KeyStorageIndexOfActionProto.ACTION: {
+                // load cert storage
+                const params = await KeyStorageIndexOfActionProto.importProto(action);
+                const crypto = await this.provider.getCrypto(params.providerID);
+                const key = this.getItemFromStorage(params.item).item as CryptoKey;
+
+                // do operation
+                const index = await crypto.keyStorage.indexOf(key);
+                // result
+                if (index) {
+                    data = Convert.FromUtf8String(index);
+                }
+                break;
+            }
             case KeyStorageClearActionProto.ACTION: {
                 // load cert storage
                 const params = await KeyStorageClearActionProto.importProto(action);
@@ -450,17 +466,19 @@ export class LocalServer extends EventEmitter {
                     params.keyUsages ? null : params.keyUsages,
                 );
 
-                // add key to memory storage
-                const thumbprint = await GetIdentity(item.publicKey, crypto);
-                const cryptoKey = new ServiceCryptoItem(thumbprint, item.publicKey, params.providerID);
-                this.memoryStorage.push(cryptoKey);
-                // add cert to memory storage
-                const cryptoCert = new ServiceCryptoItem(thumbprint, item, params.providerID);
-                this.memoryStorage.push(cryptoCert);
+                if (item) {
+                    // add key to memory storage
+                    const thumbprint = await GetIdentity(item.publicKey, crypto);
+                    const cryptoKey = new ServiceCryptoItem(thumbprint, item.publicKey, params.providerID);
+                    this.memoryStorage.push(cryptoKey);
+                    // add cert to memory storage
+                    const cryptoCert = new ServiceCryptoItem(thumbprint, item, params.providerID);
+                    this.memoryStorage.push(cryptoCert);
 
-                // create Cert proto
-                resultProto.data = await cryptoCert.toProto().exportProto();
-                return resultProto;
+                    // create Cert proto
+                    data = await cryptoCert.toProto().exportProto();
+                }
+                break;
             }
             case CertificateStorageSetItemActionProto.ACTION: {
                 // prepare incoming data

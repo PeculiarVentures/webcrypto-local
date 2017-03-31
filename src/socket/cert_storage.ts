@@ -99,8 +99,11 @@ export class SocketCertificateStorage implements ICertificateStorage {
         const result = await this.service.client.send(proto);
 
         // prepare result
-        const certItem = await CryptoCertificateProto.importProto(result);
-        return prepareCertItem(certItem);
+        if (result && result.byteLength) {
+            const certItem = await CryptoCertificateProto.importProto(result);
+            return prepareCertItem(certItem);
+        }
+        return null;
     }
 
     public async setItem(value: CryptoCertificateProto) {

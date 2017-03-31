@@ -5229,10 +5229,12 @@ var SocketCertificateStorage = (function () {
                         return [4 /*yield*/, this.service.client.send(proto)];
                     case 1:
                         result = _a.sent();
+                        if (!(result && result.byteLength)) return [3 /*break*/, 3];
                         return [4 /*yield*/, CryptoCertificateProto.importProto(result)];
                     case 2:
                         certItem = _a.sent();
                         return [2 /*return*/, prepareCertItem(certItem)];
+                    case 3: return [2 /*return*/, null];
                 }
             });
         });
@@ -5388,9 +5390,25 @@ KeyStorageClearActionProto.ACTION = "crypto/keyStorage/clear";
 KeyStorageClearActionProto = __decorate([
     ProtobufElement({})
 ], KeyStorageClearActionProto);
+var KeyStorageIndexOfActionProto = KeyStorageIndexOfActionProto_1 = (function (_super) {
+    __extends(KeyStorageIndexOfActionProto, _super);
+    function KeyStorageIndexOfActionProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return KeyStorageIndexOfActionProto;
+}(CryptoActionProto));
+KeyStorageIndexOfActionProto.INDEX = CryptoActionProto.INDEX;
+KeyStorageIndexOfActionProto.ACTION = "crypto/keyStorage/indexOf";
+__decorate([
+    ProtobufProperty({ id: KeyStorageIndexOfActionProto_1.INDEX++, required: true, parser: CryptoKeyProto })
+], KeyStorageIndexOfActionProto.prototype, "item", void 0);
+KeyStorageIndexOfActionProto = KeyStorageIndexOfActionProto_1 = __decorate([
+    ProtobufElement({})
+], KeyStorageIndexOfActionProto);
 var KeyStorageSetItemActionProto_1;
 var KeyStorageGetItemActionProto_1;
 var KeyStorageRemoveItemActionProto_1;
+var KeyStorageIndexOfActionProto_1;
 
 var SocketKeyStorage = (function () {
     function SocketKeyStorage(service) {
@@ -5412,6 +5430,23 @@ var SocketKeyStorage = (function () {
                             return [2 /*return*/, keys];
                         }
                         return [2 /*return*/, []];
+                }
+            });
+        });
+    };
+    SocketKeyStorage.prototype.indexOf = function (item) {
+        return __awaiter(this, void 0, void 0, function () {
+            var proto, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        proto = new KeyStorageIndexOfActionProto();
+                        proto.providerID = this.service.id;
+                        proto.item = item;
+                        return [4 /*yield*/, this.service.client.send(proto)];
+                    case 1:
+                        result = _a.sent();
+                        return [2 /*return*/, result ? Convert.ToUtf8String(result) : null];
                 }
             });
         });

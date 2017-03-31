@@ -22,7 +22,7 @@ interface CryptoX509CertificateRequest extends CryptoCertificate {
 interface ICertificateStorage {
 
     keys(): Promise<string[]>;
-    indexOf(item: CryptoCertificate): Promise<string>;
+    indexOf(item: CryptoCertificate): Promise<string | null>;
 
     /**
      * Import certificate from data
