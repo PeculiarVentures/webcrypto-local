@@ -1,5 +1,5 @@
 {
-  "RSA": [
+  "parameters": [
 	{
 	  "name": "RSASSA-PKCS1-v1_5",
 	  "hash": ["SHA-1", "SHA-512"],
@@ -17,18 +17,11 @@
 	  "hash": ["SHA-1", "SHA-512"],
 	  "modulusLength": [1024, 2048, 4096],
 	  "usages": ["sign", "verify"]
-	}
-  ],
-  "EC": [
-	{
-	  "name": "ECDSA",
-	  "namedCurve": ["P-256", "P-384", "P-521"],
-	  "usages": ["sign", "verify"]
 	},
 	{
-	  "name": "ECDH",
-	  "namedCurve": ["P-256", "P-384", "P-521"],
-	  "usages": ["deriveKey", "deriveBits"]
+	  "name": "ECDSA",
+	  "modulusLength": ["P-256", "P-384", "P-521"],
+	  "usages": ["sign", "verify"]
 	}
   ]
 }

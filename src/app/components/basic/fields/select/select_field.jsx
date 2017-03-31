@@ -90,9 +90,10 @@ export default class SelectField extends Component {
         selectedItemData: nextProps.value,
       });
     }
+
     if (defaultSelected && !isEqual(nextProps.defaultSelected, selectedItemData)) {
       this.setState({
-        selectedItemData: defaultSelected,
+        selectedItemData: nextProps.defaultSelected,
       });
     }
   }
@@ -139,8 +140,16 @@ export default class SelectField extends Component {
     }
   };
 
-  getData = () => {
-    return this.state.selectedItemData;
+  getData = () => (
+    this.state.selectedItemData
+  );
+
+  isValid = () => (
+    this.fieldNode.isValid()
+  );
+
+  validate = () => {
+    this.fieldNode.validate();
   };
 
   renderDropdown() {
@@ -160,14 +169,6 @@ export default class SelectField extends Component {
 
     return null;
   }
-
-  isValid = () => {
-    return this.fieldNode.isValid();
-  };
-
-  validate = () => {
-    this.fieldNode.validate();
-  };
 
   render() {
     const { labelText, placeholder, validation, errorText } = this.props;

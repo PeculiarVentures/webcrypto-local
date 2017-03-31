@@ -112,23 +112,32 @@ class RootContainer extends Component {
     const { params, dispatch, certificates } = this.props;
 
     const selectedCert = this.getSelectedCertificateProps();
+    const selectedCertId = selectedCert.id;
+    const paramsId = params.id;
+    const certificatesLength = certificates.length;
+    const prevCertificatesLength = prevProps.certificates.length;
+    const firstCertificate = certificates[0];
 
-    if (!params.id && !selectedCert.id && certificates.length) {
-      dispatch(CertificateActions.select(certificates[0].id));
-      dispatch(RoutingActions.push(`certificate/${certificates[0].id}`));
+    if (!paramsId && !selectedCertId && certificatesLength) {
+      dispatch(CertificateActions.select(firstCertificate.id));
+      dispatch(RoutingActions.push(`certificate/${firstCertificate.id}`));
     }
 
-    if (selectedCert.id && params.id && (selectedCert.id !== params.id)) {
-      dispatch(CertificateActions.select(selectedCert.id));
-      dispatch(RoutingActions.push(`certificate/${selectedCert.id}`));
+    if (selectedCertId && paramsId && (selectedCertId !== paramsId)) {
+      dispatch(CertificateActions.select(selectedCertId));
+      dispatch(RoutingActions.push(`certificate/${selectedCertId}`));
     }
 
-    if (params.id && !selectedCert.id && (prevProps.certificates.length !== certificates.length)) {
-      dispatch(CertificateActions.select(certificates[0].id));
-      dispatch(RoutingActions.push(`certificate/${certificates[0].id}`));
+    if (
+      paramsId && !selectedCertId
+      && (prevCertificatesLength !== certificatesLength)
+      && firstCertificate
+    ) {
+      dispatch(CertificateActions.select(firstCertificate.id));
+      dispatch(RoutingActions.push(`certificate/${firstCertificate.id}`));
     }
 
-    if (prevProps.certificates.length === 1 && !certificates.length) {
+    if (prevCertificatesLength === 1 && !certificatesLength) {
       this.handleRootAction({ type: 'SIDEBAR:OPEN' });
       dispatch(RoutingActions.push(''));
     }

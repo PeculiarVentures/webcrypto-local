@@ -1,4 +1,5 @@
 /* eslint no-undef: 0 */
+import UUID from 'uuid';
 import * as pkijs from 'pkijs';
 import * as asn1js from 'asn1js';
 import { SERVER_URL } from '../../../scripts/config';
@@ -46,9 +47,10 @@ export const WSController = {
     return pkcs10;
   },
 
-  keyDataHandler: function keyDataHandler(keyData) {
+  keyDataHandler: function keyDataHandler(keyData, keyId) {
     return {
       id: keyData.id,
+      _id: keyId,
       algorithm: keyData.algorithm.name,
       usages: keyData.usages,
       name: 'Need key "name"',
@@ -59,10 +61,11 @@ export const WSController = {
     };
   },
 
-  certDataHandler: function certDataHandler(certData) {
+  certDataHandler: function certDataHandler(certData, certId) {
     const decodedSubject = this.decodeSubjectString(certData.subjectName);
     return Object.assign({
       id: certData.id,
+      _id: certId,
       name: 'Need key "name"',
       type: certData.type === 'request' ? 'request' : 'certificate',
       startDate: new Date(certData.notBefore).getTime().toString(),

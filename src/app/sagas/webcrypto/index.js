@@ -1,5 +1,5 @@
 import { takeEvery } from 'redux-saga';
-import { put } from 'redux-saga/effects';
+import { select, put } from 'redux-saga/effects';
 import { ws, WSController } from '../../controllers/webcrypto_socket';
 import { ACTIONS_CONST } from '../../constants';
 import { AppActions, CertificateActions, ErrorActions } from '../../actions/state';
@@ -39,7 +39,7 @@ function* getKeys({ providerId }) {
     // }
     for (const keyId of keys) {
       const key = yield Key.getKey(crypto, keyId);
-      const keyData = WSController.keyDataHandler(key);
+      const keyData = WSController.keyDataHandler(key, keyId);
       yield put(CertificateActions.add(keyData));
     }
   }
@@ -61,7 +61,7 @@ function* getCerificates({ providerId }) {
     // }
     for (const certId of certificates) {
       const certificate = yield Certificate.getCertificate(crypto, certId);
-      const certData = WSController.certDataHandler(certificate);
+      const certData = WSController.certDataHandler(certificate, certId);
       yield put(CertificateActions.add(certData));
     }
   }
@@ -73,7 +73,7 @@ function* createCSR({ providerId, data }) {
   const certId = yield Certificate.createCSR(crypto, data);
   if (certId) {
     const certificate = yield Certificate.getCertificate(crypto, certId);
-    const certData = WSController.certDataHandler(certificate);
+    const certData = WSController.certDataHandler(certificate, certId);
     yield put(CertificateActions.add(certData));
     yield put(RoutingActions.push(`certificate/${certificate.id}`));
   }
@@ -81,8 +81,13 @@ function* createCSR({ providerId, data }) {
 
 function* removeCSR({ providerId, certId }) {
   const crypto = yield getCrypto(providerId);
+  const state = yield select();
+  const certStorageId = state.find('certificates').where({ id: certId }).get()._id;
   if (crypto) {
-    yield Certificate.removeCSR(crypto, certId);
+    const remove = yield Certificate.removeCSR(crypto, certStorageId);
+    if (remove) {
+      yield put(CertificateActions.remove(certId));
+    }
   }
 }
 

@@ -82,6 +82,15 @@ export default class Checkbox extends Component {
     name: PropTypes.string,
   };
 
+  static defaultProps = {
+    defaultChecked: false,
+    disabled: false,
+    checked: false,
+    onCheck: null,
+    labelText: '',
+    name: '',
+  };
+
   constructor() {
     super();
 
@@ -129,9 +138,9 @@ export default class Checkbox extends Component {
     }
   };
 
-  getValue = () => {
-    return this.state.switched;
-  };
+  getValue = () => (
+    this.state.switched
+  );
 
   render() {
     const { disabled, labelText } = this.props;

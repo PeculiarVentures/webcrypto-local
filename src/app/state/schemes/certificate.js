@@ -2,6 +2,7 @@ import { Type, Schema } from 'quantizer';
 
 export default new Schema('Certificate', {
   id: Type.ObjectID,
+  _id: Type.ObjectID,
   name: Type.String,
   startDate: Type.String,
   expirationDate: Type.String,

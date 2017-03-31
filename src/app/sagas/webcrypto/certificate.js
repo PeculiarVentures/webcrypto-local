@@ -60,7 +60,7 @@ export function* createCSR(crypto, data) {
 
       yield pkcs10.subjectPublicKeyInfo.importKey(publicKey);
 
-      const hash = yield crypto.subtle.digest({ name: 'SHA-1' }, pkcs10.subjectPublicKeyInfo.subjectPublicKey.valueBlock.valueHex);
+      const hash = yield crypto.subtle.digest({ name: 'SHA-256' }, pkcs10.subjectPublicKeyInfo.subjectPublicKey.valueBlock.valueHex);
       const attribute = new pkijs.Attribute({
         type: '1.2.840.113549.1.9.14',
         values: [(new pkijs.Extensions({
@@ -99,9 +99,12 @@ export function* createCSR(crypto, data) {
 
 export function* removeCSR(crypto, certId) {
   if (crypto) {
-    console.log('delete', certId);
-    // const x = yield crypto.certStorage.removeItem(certId);
-    // console.log(yield crypto.certStorage.keys());
+    try {
+      yield crypto.certStorage.removeItem(certId);
+      return true;
+    } catch (error) {
+      yield put(ErrorActions.error(error));
+    }
   }
   return false;
 }

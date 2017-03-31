@@ -60,7 +60,7 @@ export default class KeyInfo extends Component {
   constructor(props) {
     super();
 
-    this.keyInfoData = props.parameters.RSA;
+    this.keyInfoData = props.parameters.parameters;
     this.checkboxNodes = {};
     this.fieldNodes = {};
 
@@ -141,18 +141,23 @@ export default class KeyInfo extends Component {
       return true;
     });
 
+    const keySize = {};
+    if (typeof data.size !== 'number') {
+      keySize.namedCurve = data.size;
+    } else {
+      keySize.modulusLength = data.size;
+    }
+
     return {
       keyInfo: {
         extractable: false,
         algorithm: {
           name: data.algorithm,
           hash: 'SHA-256',
-          modulusLength: data.size,
+          ...keySize,
           publicExponent: new Uint8Array([1, 0, 1]),
         },
-        // TODO: question about crypto usages
-        // usages: usagesArr,
-        usages: ['sign', 'verify'],
+        usages: usagesArr,
       },
     };
   };
@@ -249,6 +254,8 @@ export default class KeyInfo extends Component {
                 <Checkbox
                   labelText={usage}
                   ref={node => (this.checkboxNodes[usage] = node)}
+                  checked
+                  disabled
                 />
               </CheckboxContainer>
             ))
