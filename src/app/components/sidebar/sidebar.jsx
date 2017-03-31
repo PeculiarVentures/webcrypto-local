@@ -33,16 +33,18 @@ export default class Sidebar extends Component {
     ]),
     open: PropTypes.bool,
     dataLoaded: PropTypes.bool,
+    serverIsOnline: PropTypes.bool,
   };
 
   static defaultProps = {
     list: [],
     open: false,
     dataLoaded: false,
+    serverIsOnline: false,
   };
 
   render() {
-    const { list, open, dataLoaded } = this.props;
+    const { list, open, dataLoaded, serverIsOnline } = this.props;
 
     return (
       <SidebarStyled
@@ -55,7 +57,9 @@ export default class Sidebar extends Component {
           list={list}
           dataLoaded={dataLoaded}
         />
-        <SidebarFooter />
+        <SidebarFooter
+          serverIsOnline={serverIsOnline}
+        />
       </SidebarStyled>
     );
   }

@@ -19,15 +19,11 @@ const subjectTypesAndValues = {
 };
 
 export const WSController = {
-  connect: function connect(onListening) {
+  connect: function connect(onListening, onError, onClose) {
     ws.connect(SERVER_URL)
-      .on('error', (e) => {
-        console.error('Connected error', e.error);
-      })
+      .on('error', onError)
       .on('listening', onListening)
-      .on('close', () => {
-        console.info('close');
-      });
+      .on('close', onClose);
   },
 
   decoratePkcs10Subject: function decoratePkcs10Subject(pkcs10, data) {

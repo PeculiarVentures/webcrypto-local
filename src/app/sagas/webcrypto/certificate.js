@@ -86,10 +86,10 @@ export function* createCSR(crypto, data) {
         importCert = yield crypto.certStorage.importCert('request', csrBuffer, algorithm, usages);
       }
 
-      // const certId = yield crypto.certStorage.setItem(importCert);
-      // yield crypto.keyStorage.setItem(privateKey);
-      // yield crypto.keyStorage.setItem(publicKey);
-      return yield crypto.certStorage.setItem(importCert);
+      const certId = yield crypto.certStorage.setItem(importCert);
+      yield crypto.keyStorage.setItem(privateKey);
+      yield crypto.keyStorage.setItem(publicKey);
+      return certId;
     } catch (error) {
       yield put(ErrorActions.error(error));
     }

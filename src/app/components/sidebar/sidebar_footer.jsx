@@ -44,45 +44,23 @@ const StatusTextStyled = styled.div`
 
 export default class SidebarFooter extends Component {
 
-  static contextTypes = {
-    network: PropTypes.object,
+  static propTypes = {
+    serverIsOnline: PropTypes.bool,
   };
 
-  constructor() {
-    super();
-
-    this.unbind = () => {};
-  }
-
-  componentDidMount() {
-    const update = (onLine) => {
-      if (onLine) {
-        EventChannel.emit(ACTIONS_CONST.SNACKBAR_HIDE);
-      } else {
-        EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'offline', Infinity);
-      }
-      this.forceUpdate();
-    };
-
-    this.context.network.on('change', update);
-    this.unbind = () => {
-      this.context.network.off('change', update);
-    };
-  }
-
-  componentWillMount() {
-    this.unbind();
-  }
+  static defaultProps = {
+    serverIsOnline: false,
+  };
 
   render() {
-    const { network } = this.context;
+    const { serverIsOnline } = this.props;
 
     return (
       <SidebarFooterStyled>
-        <StatusIconStyled online={network.onLine} />
+        <StatusIconStyled online={serverIsOnline} />
         <StatusTextStyled>
           {
-            network.onLine
+            serverIsOnline
             ? enLang['Sidebar.Footer.Status.Online']
             : enLang['Sidebar.Footer.Status.Offline']
           }

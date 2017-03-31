@@ -6,13 +6,12 @@ import { Router, Route, browserHistory } from 'react-router';
 import Store from './store';
 import { getTheme } from './components/theme';
 import { RootContainer, CreateContainer } from './containers';
-import { getAppPath, Network } from './helpers';
+import { getAppPath } from './helpers';
 
 export default class Routing extends Component {
 
   static childContextTypes = {
     deviceType: PropTypes.string,
-    network: PropTypes.object,
   };
 
   static getDeviceType() {
@@ -30,7 +29,6 @@ export default class Routing extends Component {
   getChildContext() {
     return {
       deviceType: Routing.getDeviceType(),
-      network: Network.getContext(),
     };
   }
 

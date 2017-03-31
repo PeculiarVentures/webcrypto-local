@@ -1,8 +1,24 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
 import { Button } from '../basic';
-import { DownloadIcon, CopyIcon, RemoveIcon, TripleDot, ArrowBackIcon } from '../svg';
+import {
+  DownloadIcon,
+  CopyIcon,
+  RemoveIcon,
+  TripleDot,
+  ArrowBackIcon,
+  TitleShellIcon,
+} from '../svg';
 import enLang from '../../langs/en.json';
+import StyledAnimatedIcon from '../sidebar/parts/shell.styles';
+
+const StyledShellTitle = StyledAnimatedIcon(TitleShellIcon, 't_gradient');
+
+const TitleShell = styled.div`
+  display: table-cell;
+  vertical-align: middle;
+  width: 200px;
+`;
 
 const HeaderRoot = styled.div`
   border-bottom: 1px solid ${props => props.theme.info.header.borderColor};
@@ -77,11 +93,11 @@ const ArrowBackIconStyled = styled(ArrowBackIcon)`
 
 const TripleDotIconStyled = styled(TripleDot)`
   ${MobileButtonIconStyles}
-  fill: ${props => {
-    return props.active ?
+  fill: ${props => (
+    props.active ?
       props.theme.info.header.activeBurgerColor :
       props.theme.info.header.burgerColor
-  }}
+  )}
 `;
 
 const MobileButtonStyled = styled.div`
@@ -142,11 +158,20 @@ export default class Header extends Component {
 
   static propTypes = {
     name: PropTypes.string,
-    type: PropTypes.string,
     onDownload: PropTypes.func,
     onCopy: PropTypes.func,
     onRemove: PropTypes.func,
     onMenu: PropTypes.func,
+    dataLoaded: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    dataLoaded: false,
+    name: '',
+    onDownload: () => {},
+    onCopy: () => {},
+    onRemove: () => {},
+    onMenu: () => {},
   };
 
   static contextTypes = {
@@ -226,13 +251,21 @@ export default class Header extends Component {
     });
   }
 
-  renderEmptyState() {
+  renderShellState() {
+    const { windowSize } = this.context;
+    const { device } = windowSize;
+
     return (
       <HeaderRoot>
         { this.renderMenuButton() }
-        <Title>
-          { enLang['Info.Header.NoOneCertificate'] }
-        </Title>
+        <TitleShell>
+          <StyledShellTitle />
+        </TitleShell>
+        {
+          device === 'desktop'
+            ? this.renderButtons()
+            : null
+        }
       </HeaderRoot>
     );
   }
@@ -272,6 +305,8 @@ export default class Header extends Component {
         </DropdownMenu>
       );
     }
+
+    return null;
   }
 
   renderMenuButton() {
@@ -285,6 +320,8 @@ export default class Header extends Component {
         </MobileButtonStyled>
       );
     }
+
+    return null;
   }
 
   renderBurgerButton() {
@@ -298,11 +335,14 @@ export default class Header extends Component {
   }
 
   renderButtons() {
+    const { dataLoaded } = this.props;
+
     return (
       <ButtonsContainer>
         <StyledButton
           onClick={this.bindedHandleDownload}
           secondary
+          disabled={!dataLoaded}
         >
           <DownloadIconStyled />
           { enLang['Info.Header.Download'] }
@@ -310,6 +350,7 @@ export default class Header extends Component {
         <StyledButton
           onClick={this.bindedHandleCopy}
           secondary
+          disabled={!dataLoaded}
         >
           <CopyIconStyled />
           { enLang['Info.Header.CopyToClipboard'] }
@@ -317,6 +358,7 @@ export default class Header extends Component {
         <StyledButton
           onClick={this.bindedHandleRemove}
           secondary
+          disabled={!dataLoaded}
         >
           <RemoveIconStyled />
           { enLang['Info.Header.Remove'] }
@@ -327,14 +369,14 @@ export default class Header extends Component {
 
   render() {
     const {
-      type,
+      dataLoaded,
       name,
     } = this.props;
     const { windowSize } = this.context;
     const { device } = windowSize;
 
-    if (!type) {
-      return this.renderEmptyState();
+    if (!dataLoaded) {
+      return this.renderShellState();
     }
 
     return (

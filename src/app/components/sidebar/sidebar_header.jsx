@@ -59,6 +59,10 @@ export default class SidebarHeader extends Component {
     dataLoaded: PropTypes.bool,
   };
 
+  static defaultProps = {
+    dataLoaded: false,
+  };
+
   static contextTypes = {
     dispatch: PropTypes.func,
     deviceType: PropTypes.string,
