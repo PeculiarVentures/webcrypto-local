@@ -18,7 +18,7 @@ import { ActionProto } from "../../core";
         .on("error", (e) => {
             console.error(e.error);
         })
-        .on("closed", (e) => {
+        .on("close", (e) => {
             console.log("Close");
         });
 
