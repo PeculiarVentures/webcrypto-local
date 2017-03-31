@@ -1,8 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
 import enLang from '../../langs/en.json';
-import { EventChannel } from '../../controllers';
-import { ACTIONS_CONST } from '../../constants';
 
 const SidebarFooterStyled = styled.div`
   border-top: 1px solid ${props => props.theme.sidebar.borderColorFooter};
@@ -20,11 +18,17 @@ const StatusIconStyled = styled.div`
   display: inline-block;
   vertical-align: top;
   border-radius: 50%;
-  background: ${props => (
-    props.online
-    ? props.theme.sidebar.iconStatusOnline
-    : props.theme.sidebar.iconStatusOffline
-  )};
+  background: ${(props) => {
+    const status = props.status;
+    if (status === 'seaching') {
+      return props.theme.sidebar.iconStatusSeaching;
+    } else if (status === 'online') {
+      return props.theme.sidebar.iconStatusOnline;
+    } else if (status === 'offline') {
+      return props.theme.sidebar.iconStatusOffline;
+    }
+    return '';
+  }};
   margin-right: 9px;
   margin-top: 5px;
   transition: background ${props => props.theme.basicTransition}ms;
@@ -45,25 +49,41 @@ const StatusTextStyled = styled.div`
 export default class SidebarFooter extends Component {
 
   static propTypes = {
-    serverIsOnline: PropTypes.bool,
+    serverStatus: PropTypes.string,
   };
 
   static defaultProps = {
-    serverIsOnline: false,
+    serverStatus: 'seaching',
   };
 
+  getStatusText() {
+    const { serverStatus } = this.props;
+
+    switch (serverStatus) {
+      case 'seaching':
+        return enLang['Sidebar.Footer.Status.Seaching'];
+
+      case 'online':
+        return enLang['Sidebar.Footer.Status.Online'];
+
+      case 'offline':
+        return enLang['Sidebar.Footer.Status.Offline'];
+
+      default:
+        return null;
+    }
+  }
+
   render() {
-    const { serverIsOnline } = this.props;
+    const { serverStatus } = this.props;
 
     return (
       <SidebarFooterStyled>
-        <StatusIconStyled online={serverIsOnline} />
+        <StatusIconStyled
+          status={serverStatus}
+        />
         <StatusTextStyled>
-          {
-            serverIsOnline
-            ? enLang['Sidebar.Footer.Status.Online']
-            : enLang['Sidebar.Footer.Status.Offline']
-          }
+          { this.getStatusText() }
         </StatusTextStyled>
       </SidebarFooterStyled>
     );

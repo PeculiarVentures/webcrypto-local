@@ -7,10 +7,15 @@ import { RoutingActions } from '../../actions/ui';
 import * as Key from './key';
 import * as Certificate from './certificate';
 
+function* getProviders() {
+  const info = yield ws.info();
+  return info.providers;
+}
+
 function* getCrypto(providerId = 0) {
   try {
-    const info = yield ws.info();
-    const provider = info.providers[providerId];
+    const providers = yield getProviders();
+    const provider = providers[providerId];
     const crypto = yield ws.getCrypto(provider.id);
     const isLoggedIn = yield crypto.isLoggedIn();
     if (!isLoggedIn) {
@@ -46,23 +51,28 @@ function* getKeys({ providerId }) {
 }
 
 function* getCerificates({ providerId }) {
-  const crypto = yield getCrypto(providerId);
-  const certificates = yield Certificate.getCertificates(crypto);
-  if (certificates.length) {
-    // const getCertificatesArr = [];
-    // for (const certId of certificates) {
-    //   getCertificatesArr.push(Certificate.getCertificate(crypto, certId));
-    // }
-    //
-    // const certificatesArr = yield getCertificatesArr;
-    // for (const certificate of certificatesArr) {
-    //   const certData = WSController.certDataHandler(certificate);
-    //   yield put(CertificateActions.add(certData));
-    // }
-    for (const certId of certificates) {
-      const certificate = yield Certificate.getCertificate(crypto, certId);
-      const certData = WSController.certDataHandler(certificate, certId);
-      yield put(CertificateActions.add(certData));
+  const providers = yield getProviders();
+
+  // TODO: 'for' created for test
+  for (let i = 0; i < providers.length; i += 1) {
+    const crypto = yield getCrypto(i);
+    const certificates = yield Certificate.getCertificates(crypto);
+    if (certificates.length) {
+      // const getCertificatesArr = [];
+      // for (const certId of certificates) {
+      //   getCertificatesArr.push(Certificate.getCertificate(crypto, certId));
+      // }
+      //
+      // const certificatesArr = yield getCertificatesArr;
+      // for (const certificate of certificatesArr) {
+      //   const certData = WSController.certDataHandler(certificate);
+      //   yield put(CertificateActions.add(certData));
+      // }
+      for (const certId of certificates) {
+        const certificate = yield Certificate.getCertificate(crypto, certId);
+        const certData = WSController.certDataHandler(certificate, certId);
+        yield put(CertificateActions.add(certData));
+      }
     }
   }
   yield put(AppActions.dataLoaded(true));

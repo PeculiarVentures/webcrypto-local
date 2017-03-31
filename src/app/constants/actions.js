@@ -3,7 +3,6 @@ export const APP_RESET_STATE = 'APP:RESET_STATE';
 export const APP_LOAD_STATE = 'APP:LOAD_STATE';
 export const APP_SET_STATE = 'APP:SET_STATE';
 export const APP_DATA_LOADED = 'APP:DATA_LOADED';
-export const APP_ONLINE = 'APP:ONLINE';
 
 // Dialog
 export const DIALOG_OPEN = 'DIALOG:OPEN';
@@ -39,6 +38,7 @@ export const WS_GET_CERTIFICATES = 'WS:GET_CERTIFICATES';
 export const WS_GET_CERTIFICATE = 'WS:GET_CERTIFICATE';
 export const WS_CREATE_CSR = 'WS:CREATE_CSR';
 export const WS_REMOVE_CSR = 'WS:REMOVE_CSR';
+export const WS_STATUS = 'WS:STATUS';
 
 // Error
 export const ERROR = 'ERROR';

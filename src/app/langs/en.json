@@ -8,6 +8,7 @@
   "Dialog.FortifyAuthorization.Description": "A website has requested access to your certificates and cryptographic keys. Click Authorize if the code below maches the one in your browser and you want to grant access.",
   "Sidebar.Footer.Status.Online": "Server is online",
   "Sidebar.Footer.Status.Offline": "Server is offline",
+  "Sidebar.Footer.Status.Seaching": "Seaching for server",
   "Sidebar.Body.Empty": "You do not have any certificates. Import one now.",
   "Sidebar.Header.Btn.Import": "Import",
   "Sidebar.Header.Btn.Create": "Create new",

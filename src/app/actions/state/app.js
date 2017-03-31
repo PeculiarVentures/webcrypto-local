@@ -19,8 +19,3 @@ export const dataLoaded = state => ({
   type: ACTIONS_CONST.APP_DATA_LOADED,
   state,
 });
-
-export const online = state => ({
-  type: ACTIONS_CONST.APP_ONLINE,
-  state,
-});

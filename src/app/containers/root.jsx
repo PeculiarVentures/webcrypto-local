@@ -36,7 +36,7 @@ class RootContainer extends Component {
       PropTypes.array,
     ]),
     dataLoaded: PropTypes.bool,
-    serverIsOnline: PropTypes.bool,
+    serverStatus: PropTypes.string,
   };
 
   static defaultProps = {
@@ -45,7 +45,7 @@ class RootContainer extends Component {
     dispatch: () => {},
     certificates: [],
     dataLoaded: false,
-    serverIsOnline: false,
+    serverStatus: 'seaching',
   };
 
   static childContextTypes = {
@@ -191,7 +191,7 @@ class RootContainer extends Component {
   }
 
   render() {
-    const { certificates, dataLoaded, serverIsOnline } = this.props;
+    const { certificates, dataLoaded, serverStatus } = this.props;
     const { sidebarOpen } = this.state;
 
     return (
@@ -200,7 +200,7 @@ class RootContainer extends Component {
           open={sidebarOpen}
           list={certificates}
           dataLoaded={dataLoaded}
-          serverIsOnline={serverIsOnline}
+          serverStatus={serverStatus}
         />
         <InfoStyled>
           <Info

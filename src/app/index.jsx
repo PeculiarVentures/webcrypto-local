@@ -11,16 +11,16 @@ window.Store = Store;
 const wsOnListening = () => {
   // Store.dispatch({ type: 'WS:GET_KEYS' });
   Store.dispatch({ type: 'WS:GET_CERTIFICATES' });
-  Store.dispatch({ type: 'APP:ONLINE', state: true });
+  Store.dispatch({ type: 'WS:STATUS', state: 'online' });
 };
 
 const wsOnError = (error) => {
   console.log('Connected error', error);
-  Store.dispatch({ type: 'APP:ONLINE', state: false });
+  Store.dispatch({ type: 'WS:STATUS', state: 'offline' });
 };
 
 const wsOnClose = () => {
-  Store.dispatch({ type: 'APP:ONLINE', state: false });
+  Store.dispatch({ type: 'WS:STATUS', state: 'offline' });
 };
 
 WSController.connect(wsOnListening, wsOnError, wsOnClose);

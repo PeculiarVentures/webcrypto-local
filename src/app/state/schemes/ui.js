@@ -6,7 +6,7 @@ export default new Schema('UI', {
   dialog: Type.String,
   snackbar: Type.String,
   dataLoaded: Type.Boolean,
-  serverIsOnline: Type.Boolean,
+  serverStatus: Type.String,
   certificates: new Type({
     name: 'CertificateList',
     instance: CertificateList,

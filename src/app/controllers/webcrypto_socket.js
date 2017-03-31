@@ -1,10 +1,11 @@
 /* eslint no-undef: 0 */
-import UUID from 'uuid';
+// import UUID from 'uuid';
 import * as pkijs from 'pkijs';
 import * as asn1js from 'asn1js';
 import { SERVER_URL } from '../../../scripts/config';
 
 export const ws = new WebcryptoSocket.SocketProvider();
+window.ws = ws;
 
 const subjectTypesAndValues = {
   commonName: '2.5.4.3',

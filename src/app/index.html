@@ -18,21 +18,23 @@
 	<script src="https://cdn.rawgit.com/dcodeIO/protobuf.js/6.6.0/dist/protobuf.min.js"></script>
 	<script src="https://cdn.rawgit.com/jakearchibald/idb/97e4e878/lib/idb.js"></script>
 	<script>
-		// Build for gh-pages
-        const loc = document.querySelectorAll('body')[0];
-        const script = document.createElement('script');
-        const script2 = document.createElement('script');
-		const href = window.location.href;
+      // Build for gh-pages
+      const loc = document.querySelectorAll('body')[0];
+      const script = document.createElement('script');
+      const script2 = document.createElement('script');
+      const href = window.location.href;
 
-		if (href.indexOf('github.io') !== -1) {
-          script.src = './webcrypto-socket.js';
-          script2.src = './main.js';
-		} else {
-          script.src = '/webcrypto-socket.js';
-          script2.src = '/main.js';
-		}
-        loc.appendChild(script);
+      if (href.indexOf('github.io') !== -1) {
+        script.src = './webcrypto-socket.js';
+        script2.src = './main.js';
+      } else {
+        script.src = '/webcrypto-socket.js';
+        script2.src = '/main.js';
+      }
+      loc.appendChild(script);
+      setTimeout(function() {
         loc.appendChild(script2);
+      }, 200);
 	</script>
 </body>
 </html>

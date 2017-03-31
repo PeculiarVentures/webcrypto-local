@@ -10,3 +10,8 @@ export const removeCSR = certId => ({
   type: ACTIONS_CONST.WS_REMOVE_CSR,
   certId,
 });
+
+export const status = state => ({
+  type: ACTIONS_CONST.WS_STATUS,
+  state,
+});

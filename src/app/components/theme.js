@@ -132,6 +132,7 @@ export function getTheme(palette = defaultPalette) {
       colorFooter: colorManipulator.fade(palette.white, 0.7),
       iconStatusOnline: palette.statusOnline,
       iconStatusOffline: palette.errorColor,
+      iconStatusSeaching: '#FFC325',
       colorCertName: palette.secondaryTextColor2,
       colorCertDescr: colorManipulator.fade(palette.secondaryTextColor2, 0.7),
       backgroundCertActive: palette.secondaryColor,

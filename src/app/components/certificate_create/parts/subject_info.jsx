@@ -155,7 +155,7 @@ export default class SubjectInfo extends Component {
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.Region']}
               name="region"
-              ref={node => (this.fieldNodes.locality = node)}
+              ref={node => (this.fieldNodes.state = node)}
               validation={['text']}
               errorText={enLang['CertificateCreate.Subject.Field.Region.Error']}
             />
@@ -164,7 +164,7 @@ export default class SubjectInfo extends Component {
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.City']}
               name="city"
-              ref={node => (this.fieldNodes.state = node)}
+              ref={node => (this.fieldNodes.locality = node)}
               validation={['text']}
               errorText={enLang['CertificateCreate.Subject.Field.City.Error']}
             />
