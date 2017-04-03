@@ -3,7 +3,9 @@ import { MessageSignedProtocol, PreKeyMessageProtocol } from "2key-ratchet";
 import { EventEmitter } from "events";
 import * as http from "http";
 import { NotificationCenter } from "node-notifier";
+import * as os from "os";
 import { assign, Convert } from "pvtsutils";
+import * as readline from "readline";
 import { ObjectProto } from "tsprotobuf";
 import * as url from "url";
 import * as WebSocket from "websocket";
@@ -260,21 +262,41 @@ export class Server extends EventEmitter {
                                         // generate OTP
                                         const pin = await challenge(this.identity.signingKey.publicKey, session.cipher.remoteIdentity.signingKey);
                                         // Show notice
-                                        notifier.notify({
-                                            title: "webcrypto-local",
-                                            message: `Is it correct PIN ${pin}?`,
-                                            wait: true,
-                                            actions: "Yes",
-                                            closeLabel: "No",
-                                            // timeout: 30,
-                                        } as any, (error: Error, response: string) => {
-                                            console.log("Notifier response:", response);
-                                            if (response === "activate") {
-                                                this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
-                                                session.authorized = true;
-                                                this.emit("auth", session);
+                                        switch (os.type()) {
+                                            case "Darwin": {
+                                                // OSX
+                                                notifier.notify({
+                                                    title: "webcrypto-local",
+                                                    message: `Is it correct PIN ${pin}?`,
+                                                    wait: true,
+                                                    actions: "Yes",
+                                                    closeLabel: "No",
+                                                    // timeout: 30,
+                                                } as any, (error: Error, response: string) => {
+                                                    console.log("Notifier response:", response);
+                                                    if (response === "activate") {
+                                                        this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
+                                                        session.authorized = true;
+                                                        this.emit("auth", session);
+                                                    }
+                                                });
                                             }
-                                        });
+                                            default: {
+                                                // Windows, Linux
+                                                const rl = readline.createInterface({
+                                                    input: process.stdin,
+                                                    output: process.stdout,
+                                                });
+
+                                                rl.question("Is it correct PIN ${pin} (y/n)?", (answer) => {
+                                                    if (answer && answer.toLowerCase() === "y") {
+                                                        this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
+                                                        session.authorized = true;
+                                                        this.emit("auth", session);
+                                                    }
+                                                });
+                                            }
+                                        }
                                     }
                                     // result
                                     resultProto.data = new Uint8Array([session.authorized ? 1 : 0]).buffer;
@@ -283,8 +305,7 @@ export class Server extends EventEmitter {
                             } else {
                                 // If session is not authorized throw error
                                 if (!session.authorized) {
-                                    console.log("404: Not authorized");
-                                    // throw new Error("404: Not authorized");
+                                    throw new Error("404: Not authorized");
                                 }
                                 const emit = this.emit("message", new ServerMessageEvent(this, session, actionProto, resolve, reject));
                                 console.log("Emit message:", emit);

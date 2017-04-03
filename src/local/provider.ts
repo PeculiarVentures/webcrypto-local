@@ -92,7 +92,7 @@ export class LocalProvider extends EventEmitter {
                             this.crypto[item.id] = new pkcs11.WebCrypto({
                                 library: lib,
                                 slot: index,
-                                // readWrite: true,
+                                readWrite: true,
                             });
                             this.info.providers.push(new ProviderCryptoProto(item));
                         } catch (e) {
