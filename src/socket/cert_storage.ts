@@ -30,7 +30,7 @@ export class SocketCertificateStorage implements ICertificateStorage {
         const proto = new CertificateStorageExportActionProto();
         proto.providerID = this.service.id;
 
-        proto.format = format;
+        proto.format = "raw"; // export only 'raw' format
         proto.item = item;
 
         // send and receive result
@@ -41,8 +41,37 @@ export class SocketCertificateStorage implements ICertificateStorage {
             // raw
             return result;
         } else {
-            // jwk
-            return Convert.ToUtf8String(result);
+            // pem
+            let header = "";
+            switch (item.type) {
+                case "x509": {
+                    header = "CERTIFICATE";
+                    break;
+                }
+                case "request": {
+                    header = "CERTIFICATE REQUEST";
+                    break;
+                }
+                default:
+                    throw new Error(`Cannot create PEM for unknown type of certificate item`);
+            }
+            const res: string[] = [];
+            const b64 = Convert.ToBase64(result);
+            res.push(`-----BEGIN ${header}-----`);
+            let counter = 0;
+            let raw = "";
+            while (counter < b64.length) {
+                if (counter && !(counter % 64)) {
+                    res.push(raw);
+                    raw = "";
+                }
+                raw += b64[counter++];
+            }
+            if (raw) {
+                res.push(raw);
+            }
+            res.push(`-----END ${header}-----`);
+            return res.join("\r\n");
         }
     }
 
