@@ -4,35 +4,35 @@
 
 ## UI
 
-### Quick Development Start
+#### Quick Development Start
 
  * Clone latest version this repository
  * `npm install`
  * `npm run development`
- 
-### Quick Production Start
+
+#### Quick Production Start
 
  * Clone latest version this repository
  * `npm install`
  * `npm run production`
 
-### Clear
+#### Clear
 
 * `npm run clear`
 
-### Automatic deploy to GitHub pages
+#### Automatic deploy to GitHub pages
 
 * `npm run deploy`
 
 ## webcrypto-socket
 
-### Build
+#### Build
 
 ```
 npm run build:ws
 ```
 
-### Build && Server
+#### Build && Server
 
 ```
 npm run server:ws
