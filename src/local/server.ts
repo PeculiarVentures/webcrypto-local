@@ -1,10 +1,8 @@
 import { EventEmitter } from "events";
-import { NotificationCenter } from "node-notifier";
-import * as os from "os";
 import { Convert } from "pvtsutils";
-import * as readline from "readline";
 import { ObjectProto } from "tsprotobuf";
 import { Server, Session } from "../connection/server";
+import { Notification } from "../core/notification";
 import { ActionProto, CryptoItemProto, CryptoKeyPairProto, CryptoKeyProto, ResultProto } from "../core/proto";
 import { CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetItemActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto, CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto } from "../core/protos/certstorage";
 import { ArrayStringConverter } from "../core/protos/converter";
@@ -15,7 +13,6 @@ import { DecryptActionProto, DeriveBitsActionProto, DeriveKeyActionProto, Digest
 import { ServiceCryptoItem } from "./crypto_item";
 import { LocalProvider } from "./provider";
 
-const notifier = new (NotificationCenter as any)();
 const crypto: Crypto = new (require("node-webcrypto-ossl"))();
 
 export class LocalServer extends EventEmitter {
@@ -141,52 +138,8 @@ export class LocalServer extends EventEmitter {
 
                 if (crypto.login) {
                     // show prompt
-                    await new Promise((resolve, reject) => {
-                        switch (os.type()) {
-                            case "Darwin": {
-                                notifier.notify({
-                                    title: "webcrypto-local",
-                                    message: `Enter PIN for PKCS#11 token`,
-                                    wait: true,
-                                    // actions: "Yes",
-                                    // closeLabel: "No",
-                                    timeout: -1,
-                                    reply: true,
-                                    // timeout: 30,
-                                } as any, (response: string, metadata: { activationValue: string }) => {
-                                    try {
-                                        if (response !== "replied") {
-                                            reject(new Error("CryptoLogin timeout"));
-                                        } else {
-                                            console.log(crypto);
-                                            console.log(metadata.activationValue, metadata.activationValue.length);
-                                            // throw new Error("Oops");
-                                            crypto.login(metadata.activationValue);
-                                            resolve();
-                                        }
-                                    } catch (err) {
-                                        reject(err);
-                                    }
-                                });
-                            }
-                            default: {
-                                // Windows, Linux
-                                const rl = readline.createInterface({
-                                    input: process.stdin,
-                                    output: process.stdout,
-                                });
-
-                                rl.question("Enter PIN for PKCS#11 token: ", (answer) => {
-                                    try {
-                                        crypto.login(answer);
-                                        resolve();
-                                    } catch (e) {
-                                        reject(e);
-                                    }
-                                });
-                            }
-                        }
-                    });
+                    const pin = await Notification.prompt("Enter PIN for PKCS#11 token: ");
+                    crypto.login(pin);
                 }
                 break;
             }

@@ -2,21 +2,17 @@ import { AsymmetricRatchet, Identity, PreKeyBundleProtocol } from "2key-ratchet"
 import { MessageSignedProtocol, PreKeyMessageProtocol } from "2key-ratchet";
 import { EventEmitter } from "events";
 import * as http from "http";
-import { NotificationCenter } from "node-notifier";
-import * as os from "os";
 import { assign, Convert } from "pvtsutils";
-import * as readline from "readline";
 import { ObjectProto } from "tsprotobuf";
 import * as url from "url";
 import * as WebSocket from "websocket";
 import { ActionProto, AuthRequestProto, Event, ResultProto } from "../core";
+import { Notification } from "../core/notification";
 import { challenge } from "./challenge";
 import { SERVER_WELL_KNOWN } from "./const";
 import { OpenSSLStorage } from "./storages/ossl";
 
 const D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
-
-const notifier = new (NotificationCenter as any)();
 
 type AlgorithmUsageType = "generateKey" | "importKey" | "exportKey" | "sign" | "verify" | "deriveKey" | "deriveBits" | "encrypt" | "decrypt" | "wrapKey" | "unwrapKey" | "digest";
 
@@ -262,40 +258,11 @@ export class Server extends EventEmitter {
                                         // generate OTP
                                         const pin = await challenge(this.identity.signingKey.publicKey, session.cipher.remoteIdentity.signingKey);
                                         // Show notice
-                                        switch (os.type()) {
-                                            case "Darwin": {
-                                                // OSX
-                                                notifier.notify({
-                                                    title: "webcrypto-local",
-                                                    message: `Is it correct PIN ${pin}?`,
-                                                    wait: true,
-                                                    actions: "Yes",
-                                                    closeLabel: "No",
-                                                    // timeout: 30,
-                                                } as any, (error: Error, response: string) => {
-                                                    console.log("Notifier response:", response);
-                                                    if (response === "activate") {
-                                                        this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
-                                                        session.authorized = true;
-                                                        this.emit("auth", session);
-                                                    }
-                                                });
-                                            }
-                                            default: {
-                                                // Windows, Linux
-                                                const rl = readline.createInterface({
-                                                    input: process.stdin,
-                                                    output: process.stdout,
-                                                });
-
-                                                rl.question("Is it correct PIN ${pin} (y/n)?", (answer) => {
-                                                    if (answer && answer.toLowerCase() === "y") {
-                                                        this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
-                                                        session.authorized = true;
-                                                        this.emit("auth", session);
-                                                    }
-                                                });
-                                            }
+                                        const ok = await Notification.question(`Is it correct pin ${pin}?`);
+                                        if (ok) {
+                                            this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
+                                            session.authorized = true;
+                                            this.emit("auth", session);
                                         }
                                     }
                                     // result
