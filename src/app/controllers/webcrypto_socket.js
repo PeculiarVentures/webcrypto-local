@@ -71,11 +71,10 @@ export const WSController = {
       name: '',
       type: type === 'request' ? 'request' : 'certificate',
       keyInfo: {
-        algorithm: publicKey.algorithm.name,
-        usages: publicKey.usages,
         modulusBits: publicKey.algorithm.modulusLength,
         namedCurve: publicKey.algorithm.namedCurve,
         type: this.getKeyType(publicKey.algorithm.name),
+        publicExponent: publicKey.algorithm.publicExponent.join(', ') === '1, 0, 1' ? '65537' : '3',
       },
       commonName: '',
       organization: '',

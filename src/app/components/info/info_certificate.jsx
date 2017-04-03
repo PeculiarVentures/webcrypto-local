@@ -13,6 +13,41 @@ const CertificateInfo = (props) => {
     keyInfo,
   } = props;
 
+  const getKeyInfoFields = () => {
+    if (keyInfo.type === 'RSA') {
+      return (
+        <span>
+          <Col>
+            <SubTitle>
+              { enLang['Info.InfoTable.Key.ModulusBits'] }
+            </SubTitle>
+            <Value>
+              { keyInfo.modulusBits }
+            </Value>
+          </Col>
+          <Col>
+            <SubTitle>
+              { enLang['Info.InfoTable.Key.PublicExponent'] }
+            </SubTitle>
+            <Value>
+              { keyInfo.publicExponent }
+            </Value>
+          </Col>
+        </span>
+      );
+    }
+    return (
+      <Col>
+        <SubTitle>
+          { enLang['Info.InfoTable.Key.NamedCurve'] }
+        </SubTitle>
+        <Value>
+          { keyInfo.namedCurve }
+        </Value>
+      </Col>
+    );
+  };
+
   return (
     <Root>
 
@@ -82,41 +117,7 @@ const CertificateInfo = (props) => {
             { keyInfo.type }
           </Value>
         </Col>
-        <Col>
-          <SubTitle>
-            { enLang['Info.InfoTable.Key.Algorithm'] }
-          </SubTitle>
-          <Value>
-            { keyInfo.algorithm }
-          </Value>
-        </Col>
-        {
-          keyInfo.modulusBits
-          ? <Col>
-            <SubTitle>
-              { enLang['Info.InfoTable.Key.ModulusBits'] }
-            </SubTitle>
-            <Value>
-              { keyInfo.modulusBits }
-            </Value>
-          </Col>
-          : <Col>
-            <SubTitle>
-              { enLang['Info.InfoTable.Key.NamedCurve'] }
-            </SubTitle>
-            <Value>
-              { keyInfo.namedCurve }
-            </Value>
-          </Col>
-        }
-        <Col>
-          <SubTitle>
-            { enLang['Info.InfoTable.Key.Usages'] }
-          </SubTitle>
-          <Value>
-            { keyInfo.usages.join(', ') }
-          </Value>
-        </Col>
+        { getKeyInfoFields() }
       </Row>
 
     </Root>
@@ -125,14 +126,13 @@ const CertificateInfo = (props) => {
 
 CertificateInfo.propTypes = {
   keyInfo: PropTypes.shape({
-    algorithm: PropTypes.string,
     modulusBits: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number,
     ]),
     namedCurve: PropTypes.string,
     type: PropTypes.string,
-    usages: PropTypes.arrayOf(PropTypes.string),
+    publicExponent: PropTypes.string,
   }),
   commonName: PropTypes.string,
   organization: PropTypes.string,

@@ -11,11 +11,10 @@ export default new Schema('Certificate', {
   region: Type.String,
   city: Type.String,
   keyInfo: {
-    algorithm: Type.String,
     modulusBits: Type.Any,
     namedCurve: Type.Any,
+    publicExponent: Type.Any,
     type: Type.String,
-    usages: Type.List,
   },
   selected: Type.Boolean,
   type: Type.String,
