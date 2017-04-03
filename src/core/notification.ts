@@ -30,6 +30,7 @@ export class Notification {
                             resolve(false);
                         }
                     });
+                    break;
                 }
                 default: {
                     // Windows, Linux
@@ -70,6 +71,7 @@ export class Notification {
                             reject(err);
                         }
                     });
+                    break;
                 }
                 default: {
                     // Windows, Linux
