@@ -52,7 +52,6 @@ export default class SidebarBody extends Component {
         type={item.type}
         selected={item.selected}
         algorithm={item.algorithm || item.keyInfo.algorithm}
-        startDate={item.startDate || item.createdAt}
       />
     ));
   }

@@ -48,13 +48,13 @@ export default class Info extends Component {
       commonName: PropTypes.string,
       type: PropTypes.string,
       keyInfo: PropTypes.shape({
-        createdAt: PropTypes.string,
-        lastUsed: PropTypes.string,
         algorithm: PropTypes.string,
-        size: PropTypes.oneOfType([
+        modulusBits: PropTypes.oneOfType([
           PropTypes.string,
           PropTypes.number,
         ]),
+        namedCurve: PropTypes.string,
+        type: PropTypes.string,
         usages: PropTypes.arrayOf(PropTypes.string),
       }),
       hostName: PropTypes.string,

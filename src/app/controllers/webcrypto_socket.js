@@ -54,36 +54,35 @@ export const WSController = {
       _id: keyId,
       algorithm: keyData.algorithm.name,
       usages: keyData.usages,
-      name: 'Need key "name"',
+      name: '',
       size: keyData.algorithm.modulusLength,
-      createdAt: 'Need key "createdAt"',
-      lastUsed: 'Need key "lastUsed"',
+      createdAt: '',
+      lastUsed: '',
       type: 'key',
     };
   },
 
   certDataHandler: function certDataHandler(certData, certId) {
-    const decodedSubject = this.decodeSubjectString(certData.subjectName);
+    const { publicKey, id, type, subjectName } = certData;
+    const decodedSubject = this.decodeSubjectString(subjectName);
     return Object.assign({
-      id: certData.id,
+      id,
       _id: certId,
-      name: 'Need key "name"',
-      type: certData.type === 'request' ? 'request' : 'certificate',
-      startDate: new Date(certData.notBefore).getTime().toString(),
-      expirationDate: new Date(certData.notAfter).getTime().toString(),
+      name: '',
+      type: type === 'request' ? 'request' : 'certificate',
       keyInfo: {
-        createdAt: 'Need key "createdAt"',
-        lastUsed: 'Need key "lastUsed"',
-        algorithm: certData.publicKey.algorithm.name,
-        size: certData.publicKey.algorithm.modulusLength,
-        usages: certData.publicKey.usages,
+        algorithm: publicKey.algorithm.name,
+        usages: publicKey.usages,
+        modulusBits: publicKey.algorithm.modulusLength,
+        namedCurve: publicKey.algorithm.namedCurve,
+        type: this.getKeyType(publicKey.algorithm.name),
       },
-      commonName: 'Need key "commonName"',
-      organization: 'Need key "organization"',
-      organizationUnit: 'Need key "organizationUnit"',
-      country: 'Need key "country"',
-      region: 'Need key "region"',
-      city: 'Need key "city"',
+      commonName: '',
+      organization: '',
+      organizationUnit: '',
+      country: '',
+      region: '',
+      city: '',
     }, decodedSubject);
   },
 
@@ -101,5 +100,15 @@ export const WSController = {
       return true;
     });
     return subjectObj;
+  },
+
+  getKeyType: function getKeyType(algorithm) {
+    if (algorithm.slice(0, 3) === 'RSA') {
+      return 'RSA';
+    }
+    if (algorithm.slice(0, 2) === 'EC') {
+      return 'EC';
+    }
+    return algorithm;
   },
 };

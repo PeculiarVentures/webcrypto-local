@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react';
-import moment from 'moment';
 import { Root, Row, Title, Col, SubTitle, Value } from './styled/info';
 import enLang from '../../langs/en.json';
 
@@ -13,9 +12,6 @@ const CertificateInfo = (props) => {
     city,
     keyInfo,
   } = props;
-
-  const createdAtDate = moment(parseInt(keyInfo.createdAt, 10)).format('D MMM YYYY');
-  const lastUsedDate = moment(parseInt(keyInfo.lastUsed, 10)).format('D MMM YYYY');
 
   return (
     <Root>
@@ -76,30 +72,49 @@ const CertificateInfo = (props) => {
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.KeyInfo'] }
+          { enLang['Info.InfoTable.Key.Title'] }
         </Title>
         <Col>
           <SubTitle>
-            { enLang['Info.InfoTable.CreatedAt'] }
+            { enLang['Info.InfoTable.Key.Type'] }
           </SubTitle>
           <Value>
-            {
-              createdAtDate !== 'Invalid date'
-                ? createdAtDate
-                : keyInfo.createdAt
-            }
+            { keyInfo.type }
           </Value>
         </Col>
         <Col>
           <SubTitle>
-            { enLang['Info.InfoTable.LastUsed'] }
+            { enLang['Info.InfoTable.Key.Algorithm'] }
           </SubTitle>
           <Value>
-            {
-              lastUsedDate !== 'Invalid date'
-                ? lastUsedDate
-                : keyInfo.lastUsed
-            }
+            { keyInfo.algorithm }
+          </Value>
+        </Col>
+        {
+          keyInfo.modulusBits
+          ? <Col>
+            <SubTitle>
+              { enLang['Info.InfoTable.Key.ModulusBits'] }
+            </SubTitle>
+            <Value>
+              { keyInfo.modulusBits }
+            </Value>
+          </Col>
+          : <Col>
+            <SubTitle>
+              { enLang['Info.InfoTable.Key.NamedCurve'] }
+            </SubTitle>
+            <Value>
+              { keyInfo.namedCurve }
+            </Value>
+          </Col>
+        }
+        <Col>
+          <SubTitle>
+            { enLang['Info.InfoTable.Key.Usages'] }
+          </SubTitle>
+          <Value>
+            { keyInfo.usages.join(', ') }
           </Value>
         </Col>
       </Row>
@@ -110,13 +125,13 @@ const CertificateInfo = (props) => {
 
 CertificateInfo.propTypes = {
   keyInfo: PropTypes.shape({
-    createdAt: PropTypes.string,
-    lastUsed: PropTypes.string,
     algorithm: PropTypes.string,
-    size: PropTypes.oneOfType([
+    modulusBits: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number,
     ]),
+    namedCurve: PropTypes.string,
+    type: PropTypes.string,
     usages: PropTypes.arrayOf(PropTypes.string),
   }),
   commonName: PropTypes.string,

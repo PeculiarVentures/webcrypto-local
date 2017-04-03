@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 import styled from 'styled-components';
-import moment from 'moment';
 import { CertificateActions } from '../../../actions/state';
 import { DocCertIcon, DocRequestIcon, DocKeyIcon } from '../../svg';
 
@@ -18,12 +17,6 @@ const AlgName = styled.div`
   @media ${props => props.theme.media.mobile} {
     font-size: 11px;
   }
-`;
-
-const Date = styled(AlgName)`
-  width: 85px;
-  padding-right: 0;
-  text-align: right;
 `;
 
 const Name = styled.div`
@@ -89,7 +82,6 @@ const Certificate = (props, context) => {
     name,
     type,
     algorithm,
-    startDate,
     selected,
   } = props;
   const { dispatch, handleRootAction } = context;
@@ -132,13 +124,6 @@ const Certificate = (props, context) => {
           <AlgName>
             { algorithm }
           </AlgName>
-          <Date>
-            {
-              startDate
-                ? moment(parseInt(startDate)).format('D MMM YYYY')
-                : null
-            }
-          </Date>
         </CertDescrStyled>
       </ContainerStyled>
     </CertificateStyled>
@@ -150,10 +135,6 @@ Certificate.propTypes = {
   name: PropTypes.string.isRequired,
   type: PropTypes.string,
   algorithm: PropTypes.string,
-  startDate: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]),
   selected: PropTypes.bool,
 };
 

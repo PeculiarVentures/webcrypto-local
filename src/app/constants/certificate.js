@@ -11,10 +11,10 @@ export const DEFAULT = {
   region: '',
   city: '',
   keyInfo: {
-    createdAt: '',
-    lastUsed: '',
     algorithm: '',
-    size: '',
+    modulusBits: '',
+    namedCurve: '',
+    type: '',
     usages: [],
   },
   selected: false,
