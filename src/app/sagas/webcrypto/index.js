@@ -6,6 +6,7 @@ import { AppActions, CertificateActions, ErrorActions } from '../../actions/stat
 import { RoutingActions } from '../../actions/ui';
 import * as Key from './key';
 import * as Certificate from './certificate';
+import { ab2hex, downloadCertificate } from '../../helpers';
 
 function* getProviders() {
   const info = yield ws.info();
@@ -70,7 +71,10 @@ function* getCerificates({ providerId }) {
       // }
       for (const certId of certificates) {
         const certificate = yield Certificate.getCertificate(crypto, certId);
-        // console.log(certificate);
+        // let x = crypto.certStorage.exportCert('raw', certificate);
+        // console.log(yield x);
+        // const raw = ab2hex(yield x);
+        // downloadCertificate('test', raw);
         const certData = WSController.certDataHandler(certificate, certId);
         yield put(CertificateActions.add(certData));
       }

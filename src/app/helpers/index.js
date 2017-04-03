@@ -10,3 +10,6 @@ export getAppPath from './get_app_path';
 export Network from './network_handler';
 export isEqual from './is_equal';
 export HexToArray from './hex_to_array';
+export ab2hex from './array_buffer_to_hex';
+export downloadURI from './download_uri';
+export downloadCertificate from './download_certificate';

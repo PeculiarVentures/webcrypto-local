@@ -13,38 +13,33 @@ const CertificateInfo = (props) => {
     keyInfo,
   } = props;
 
+  const renderInfoContainer = (title, value) => {
+    if (value) {
+      return (
+        <Col>
+          <SubTitle>
+            { title }
+          </SubTitle>
+          <Value>
+            { value }
+          </Value>
+        </Col>
+      );
+    }
+    return null;
+  };
+
   const getKeyInfoFields = () => {
     if (keyInfo.type === 'RSA') {
       return (
         <span>
-          <Col>
-            <SubTitle>
-              { enLang['Info.InfoTable.Key.ModulusBits'] }
-            </SubTitle>
-            <Value>
-              { keyInfo.modulusBits }
-            </Value>
-          </Col>
-          <Col>
-            <SubTitle>
-              { enLang['Info.InfoTable.Key.PublicExponent'] }
-            </SubTitle>
-            <Value>
-              { keyInfo.publicExponent }
-            </Value>
-          </Col>
+          { renderInfoContainer(enLang['Info.InfoTable.Key.ModulusBits'], keyInfo.modulusBits) }
+          { renderInfoContainer(enLang['Info.InfoTable.Key.PublicExponent'], keyInfo.publicExponent) }
         </span>
       );
     }
     return (
-      <Col>
-        <SubTitle>
-          { enLang['Info.InfoTable.Key.NamedCurve'] }
-        </SubTitle>
-        <Value>
-          { keyInfo.namedCurve }
-        </Value>
-      </Col>
+      renderInfoContainer(enLang['Info.InfoTable.Key.NamedCurve'], keyInfo.namedCurve)
     );
   };
 
@@ -55,68 +50,19 @@ const CertificateInfo = (props) => {
         <Title>
           { enLang['Info.InfoTable.SubjectInfo'] }
         </Title>
-        <Col>
-          <SubTitle>
-            { enLang['Info.InfoTable.CommonName'] }
-          </SubTitle>
-          <Value>
-            { commonName }
-          </Value>
-        </Col>
-        <Col>
-          <SubTitle>
-            { enLang['Info.InfoTable.Organization'] }
-          </SubTitle>
-          <Value>
-            { organization }
-          </Value>
-        </Col>
-        <Col>
-          <SubTitle>
-            { enLang['Info.InfoTable.OrganizationUnit'] }
-          </SubTitle>
-          <Value>
-            { organizationUnit }
-          </Value>
-        </Col>
-        <Col>
-          <SubTitle>
-            { enLang['Info.InfoTable.Country'] }
-          </SubTitle>
-          <Value>
-            { country }
-          </Value>
-        </Col>
-        <Col>
-          <SubTitle>
-            { enLang['Info.InfoTable.Region'] }
-          </SubTitle>
-          <Value>
-            { region }
-          </Value>
-        </Col>
-        <Col>
-          <SubTitle>
-            { enLang['Info.InfoTable.City'] }
-          </SubTitle>
-          <Value>
-            { city }
-          </Value>
-        </Col>
+        { renderInfoContainer(enLang['Info.InfoTable.CommonName'], commonName) }
+        { renderInfoContainer(enLang['Info.InfoTable.Organization'], organization) }
+        { renderInfoContainer(enLang['Info.InfoTable.OrganizationUnit'], organizationUnit) }
+        { renderInfoContainer(enLang['Info.InfoTable.Country'], country) }
+        { renderInfoContainer(enLang['Info.InfoTable.Region'], region) }
+        { renderInfoContainer(enLang['Info.InfoTable.City'], city) }
       </Row>
 
       <Row>
         <Title>
           { enLang['Info.InfoTable.Key.Title'] }
         </Title>
-        <Col>
-          <SubTitle>
-            { enLang['Info.InfoTable.Key.Type'] }
-          </SubTitle>
-          <Value>
-            { keyInfo.type }
-          </Value>
-        </Col>
+        { renderInfoContainer(enLang['Info.InfoTable.Key.Type'], keyInfo.type) }
         { getKeyInfoFields() }
       </Row>
 
@@ -140,6 +86,21 @@ CertificateInfo.propTypes = {
   country: PropTypes.string,
   region: PropTypes.string,
   city: PropTypes.string,
+};
+
+CertificateInfo.defaultProps = {
+  keyInfo: {
+    modulusBits: '',
+    namedCurve: '',
+    type: '',
+    publicExponent: '',
+  },
+  commonName: '',
+  organization: '',
+  organizationUnit: '',
+  country: '',
+  region: '',
+  city: '',
 };
 
 export default CertificateInfo;
