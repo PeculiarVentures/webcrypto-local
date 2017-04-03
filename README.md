@@ -24,29 +24,19 @@
 
 * `npm run deploy`
 
-## TS
-
-### Build
-
-```
-tsc
-```
-
-### Run
-
-```
-node out/test/local
-```
-
 ## webcrypto-socket
 
 ### Build
 
 ```
-rollup -c
+npm run build:ws
 ```
 
-### Run
+### Build && Server
+
+```
+npm run server:ws
+```
 
 #### Tests combined with Chrome native webcrypto
 
