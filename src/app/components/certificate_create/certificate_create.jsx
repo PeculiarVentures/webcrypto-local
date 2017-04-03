@@ -17,6 +17,16 @@ const CertificateCreateStyled = styled.div`
 
 export default class CertificateCreate extends Component {
 
+  static propTypes = {
+    dataLoaded: PropTypes.bool,
+    serverStatus: PropTypes.string,
+  };
+
+  static defaultProps = {
+    dataLoaded: false,
+    serverStatus: 'seaching',
+  };
+
   static contextTypes = {
     dispatch: PropTypes.func,
   };
@@ -32,6 +42,7 @@ export default class CertificateCreate extends Component {
   };
 
   render() {
+    const { dataLoaded, serverStatus } = this.props;
     return (
       <CertificateCreateStyled>
         <CertificateCreateHeader
@@ -40,6 +51,8 @@ export default class CertificateCreate extends Component {
         <CertificateCreateBody
           onCancel={this.onCancelHandler}
           onCreate={this.onCreateHandler}
+          dataLoaded={dataLoaded}
+          serverStatus={serverStatus}
         />
       </CertificateCreateStyled>
     );

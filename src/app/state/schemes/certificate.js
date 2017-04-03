@@ -15,6 +15,7 @@ export default new Schema('Certificate', {
     namedCurve: Type.Any,
     publicExponent: Type.Any,
     type: Type.String,
+    algorithm: Type.String,
   },
   selected: Type.Boolean,
   type: Type.String,

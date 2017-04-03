@@ -3314,17 +3314,17 @@ var Client = (function (_super) {
         return new Promise(function (resolve, reject) {
             var xmlHttp = getXmlHttp();
             xmlHttp.open("GET", "http://" + address + SERVER_WELL_KNOWN, true);
+            xmlHttp.responseType = "text";
             xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState !== 4) {
-                    return;
-                }
-                if (xmlHttp.status === 200) {
-                    var json = JSON.parse(xmlHttp.responseText);
-                    console.log(json);
-                    resolve(json);
-                }
-                else {
-                    reject(new Error("Cannot GET response"));
+                if (xmlHttp.readyState === 4) {
+                    if (xmlHttp.status === 200) {
+                        var json = JSON.parse(xmlHttp.responseText);
+                        console.log(json);
+                        resolve(json);
+                    }
+                    else {
+                        reject(new Error("Cannot GET response"));
+                    }
                 }
             };
             xmlHttp.send(null);

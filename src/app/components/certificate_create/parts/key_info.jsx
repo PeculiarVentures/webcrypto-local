@@ -73,6 +73,80 @@ export default class KeyInfo extends Component {
     };
   }
 
+  getData = () => {
+    const { fieldNodes } = this;
+    const data = {};
+    const usagesArr = [];
+
+    // fields
+    Object.keys(fieldNodes).map((field) => {
+      const node = fieldNodes[field];
+      if (node) {
+        if ({}.hasOwnProperty.call(node, 'getData')) {
+          data[field] = node.getData().value;
+        } else {
+          data[field] = node.getValue();
+        }
+      }
+      return true;
+    });
+
+    // usages
+    Object.keys(this.checkboxNodes).map((usageNode) => {
+      const node = this.checkboxNodes[usageNode];
+      if (node && node.getValue()) {
+        usagesArr.push(usageNode);
+      }
+      return true;
+    });
+
+    const algorithmData = {
+      hash: 'SHA-256',
+      name: data.algorithm,
+      publicExponent: data.publicExponent === 3 ? new Uint8Array([3]) : new Uint8Array([1, 0, 1]),
+    };
+
+    if (data.algorithm.slice(0, 2) === 'EC') {
+      algorithmData.namedCurve = data.size;
+    } else {
+      algorithmData.modulusLength = data.size;
+    }
+
+    return {
+      keyInfo: {
+        extractable: false,
+        algorithm: algorithmData,
+        usages: usagesArr,
+      },
+    };
+  };
+
+  validateFields() {
+    const { fieldNodes } = this;
+
+    Object.keys(fieldNodes).map((field) => {
+      if (fieldNodes[field]) {
+        return fieldNodes[field].validate();
+      }
+    });
+  }
+
+  isValidFields = () => {
+    this.validateFields();
+    const { fieldNodes } = this;
+    let valid = true;
+
+    Object.keys(fieldNodes).map((field) => {
+      const node = fieldNodes[field];
+      if (node && !node.isValid()) {
+        valid = false;
+      }
+      return true;
+    });
+
+    return valid;
+  };
+
   handleChangeAlgorithm = (data) => {
     let value = data;
     if (typeof data !== 'object') {
@@ -94,79 +168,15 @@ export default class KeyInfo extends Component {
     });
   };
 
-  isValidFields = () => {
-    this.validateFields();
-    const { fieldNodes } = this;
-    let valid = true;
-
-    Object.keys(fieldNodes).map((field) => {
-      const node = fieldNodes[field];
-      if (!node.isValid()) {
-        valid = false;
-      }
-      return true;
-    });
-
-    return valid;
-  };
-
-  validateFields() {
-    const { fieldNodes } = this;
-
-    Object.keys(fieldNodes).map(field => (
-      fieldNodes[field].validate()
-    ));
-  }
-
-  getData = () => {
-    const { fieldNodes } = this;
-    const data = {};
-    const usagesArr = [];
-
-    Object.keys(fieldNodes).map((field) => {
-      const node = fieldNodes[field];
-      if ({}.hasOwnProperty.call(node, 'getData')) {
-        data[field] = node.getData().value;
-      } else {
-        data[field] = node.getValue();
-      }
-      return true;
-    });
-
-    Object.keys(this.checkboxNodes).map((usageNode) => {
-      const node = this.checkboxNodes[usageNode];
-      if (node && node.getValue()) {
-        usagesArr.push(usageNode);
-      }
-      return true;
-    });
-
-    const keySize = {};
-    if (typeof data.size !== 'number') {
-      keySize.namedCurve = data.size;
-    } else {
-      keySize.modulusLength = data.size;
-    }
-
-    return {
-      keyInfo: {
-        extractable: false,
-        algorithm: {
-          name: data.algorithm,
-          hash: 'SHA-256',
-          ...keySize,
-          publicExponent: new Uint8Array([1, 0, 1]),
-        },
-        usages: usagesArr,
-      },
-    };
-  };
-
   render() {
     const { keyInfoData } = this;
     const { algorithmValue } = this.state;
     const { deviceType } = this.context;
     const currentAlgorithmData = keyInfoData[algorithmValue.index];
+    const isECType = algorithmValue.name.slice(0, 2) === 'EC';
+    const selectSizeLabel = isECType
+      ? enLang['CertificateCreate.KeyInfo.Field.NamedCurve']
+      : enLang['CertificateCreate.KeyInfo.Field.ModulusBits'];
 
     return (
       <GroupContainer>
@@ -212,7 +222,7 @@ export default class KeyInfo extends Component {
             {
               deviceType === 'phone'
               ? <SelectNative
-                labelText={enLang['CertificateCreate.KeyInfo.Field.Size']}
+                labelText={selectSizeLabel}
                 placeholder="Select size..."
                 ref={node => (this.fieldNodes.size = node)}
                 options={currentAlgorithmData.modulusLength.map(module => ({
@@ -221,7 +231,7 @@ export default class KeyInfo extends Component {
                 defaultValue={currentAlgorithmData.modulusLength[0]}
               />
               : <SelectField
-                labelText={enLang['CertificateCreate.KeyInfo.Field.Size']}
+                labelText={selectSizeLabel}
                 name="size"
                 ref={node => (this.fieldNodes.size = node)}
                 placeholder="Select size..."
@@ -243,6 +253,45 @@ export default class KeyInfo extends Component {
               </SelectField>
             }
           </TextFieldContainer>
+          {
+            !isECType
+            ? <TextFieldContainer>
+              {
+                deviceType === 'phone'
+                  ? <SelectNative
+                    labelText={enLang['CertificateCreate.KeyInfo.Field.PublicExponent']}
+                    placeholder="Select exponent..."
+                    ref={node => (this.fieldNodes.publicExponent = node)}
+                    options={currentAlgorithmData.publicExponent.map(module => ({
+                      value: module,
+                    }))}
+                    defaultValue={currentAlgorithmData.publicExponent[0]}
+                  />
+                  : <SelectField
+                    labelText={enLang['CertificateCreate.KeyInfo.Field.PublicExponent']}
+                    name="exponent"
+                    ref={node => (this.fieldNodes.publicExponent = node)}
+                    placeholder="Select exponent..."
+                    defaultSelected={{
+                      name: currentAlgorithmData.publicExponent[0],
+                      value: currentAlgorithmData.publicExponent[0],
+                      index: 0,
+                    }}
+                  >
+                    {
+                      currentAlgorithmData.publicExponent.map((item, index) => (
+                        <SelectItem
+                          key={index}
+                          value={item}
+                          primaryText={item}
+                        />
+                      ))
+                    }
+                  </SelectField>
+              }
+            </TextFieldContainer>
+            : null
+          }
         </GroupPart>
         <GroupPart>
           <TitleCheckboxes>

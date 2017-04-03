@@ -1,7 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
 import { Button } from '../basic';
-import Details from './parts/details';
 import SubjectInfo from './parts/subject_info';
 import KeyInfo from './parts/key_info';
 import enLang from '../../langs/en.json';
@@ -54,11 +53,17 @@ export default class CertificateCreateBody extends Component {
     ]),
     onCancel: PropTypes.func,
     onCreate: PropTypes.func,
+    dataLoaded: PropTypes.bool,
+    serverStatus: PropTypes.string,
   };
 
   static defaultProps = {
     countries: countriesData,
     parameters: parametersData,
+    dataLoaded: false,
+    serverStatus: 'seaching',
+    onCancel: null,
+    onCreate: null,
   };
 
   onCreateHandler = () => {
@@ -82,7 +87,7 @@ export default class CertificateCreateBody extends Component {
   };
 
   render() {
-    const { countries, parameters } = this.props;
+    const { countries, parameters, dataLoaded, serverStatus } = this.props;
 
     return (
       <CertificateCreateBodyStyled>
@@ -104,6 +109,7 @@ export default class CertificateCreateBody extends Component {
             <ButtonStyled
               primary
               onClick={this.onCreateHandler}
+              disabled={!dataLoaded || serverStatus !== 'online'}
             >
               { enLang['CertificateCreate.Btn.Create'] }
             </ButtonStyled>

@@ -70,7 +70,7 @@ function* getCerificates({ providerId }) {
       // }
       for (const certId of certificates) {
         const certificate = yield Certificate.getCertificate(crypto, certId);
-        console.log(certificate);
+        // console.log(certificate);
         const certData = WSController.certDataHandler(certificate, certId);
         yield put(CertificateActions.add(certData));
       }

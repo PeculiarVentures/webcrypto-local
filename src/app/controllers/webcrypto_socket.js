@@ -75,6 +75,7 @@ export const WSController = {
         namedCurve: publicKey.algorithm.namedCurve,
         type: this.getKeyType(publicKey.algorithm.name),
         publicExponent: publicKey.algorithm.publicExponent.join(', ') === '1, 0, 1' ? '65537' : '3',
+        algorithm: publicKey.algorithm.name,
       },
       commonName: '',
       organization: '',

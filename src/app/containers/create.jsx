@@ -11,6 +11,14 @@ class CreateContainer extends Component {
 
   static propTypes = {
     dispatch: PropTypes.func,
+    dataLoaded: PropTypes.bool,
+    serverStatus: PropTypes.string,
+  };
+
+  static defaultProps = {
+    dispatch: null,
+    dataLoaded: false,
+    serverStatus: 'seaching',
   };
 
   static childContextTypes = {
@@ -24,9 +32,13 @@ class CreateContainer extends Component {
   }
 
   render() {
+    const { dataLoaded, serverStatus } = this.props;
     return (
       <ContentStyled>
-        <CertificateCreate />
+        <CertificateCreate
+          dataLoaded={dataLoaded}
+          serverStatus={serverStatus}
+        />
       </ContentStyled>
     );
   }

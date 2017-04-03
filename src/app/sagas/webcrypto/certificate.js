@@ -45,6 +45,7 @@ export function* createCSR(crypto, data) {
 
   if (crypto) {
     const { algorithm, extractable, usages } = data.keyInfo;
+    const algorithmHash = algorithm.hash;
     let pkcs10 = new pkijs.CertificationRequest();
 
     try {
@@ -60,7 +61,10 @@ export function* createCSR(crypto, data) {
 
       yield pkcs10.subjectPublicKeyInfo.importKey(publicKey);
 
-      const hash = yield crypto.subtle.digest({ name: 'SHA-256' }, pkcs10.subjectPublicKeyInfo.subjectPublicKey.valueBlock.valueHex);
+      const hash = yield crypto.subtle.digest(
+        { name: algorithmHash },
+        pkcs10.subjectPublicKeyInfo.subjectPublicKey.valueBlock.valueHex
+      );
       const attribute = new pkijs.Attribute({
         type: '1.2.840.113549.1.9.14',
         values: [(new pkijs.Extensions({

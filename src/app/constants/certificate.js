@@ -15,6 +15,7 @@ export const DEFAULT = {
     namedCurve: '',
     type: '',
     publicExponent: '',
+    algorithm: '',
   },
   selected: false,
   type: 'certificate',
