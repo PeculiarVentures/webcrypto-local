@@ -19,7 +19,7 @@ const subjectTypesAndValues = {
 
 const subjectNames = {
   O: 'organization',
-  CN: 'name',
+  CN: 'commonName',
   C: 'country',
   OU: 'organizationUnit',
   L: 'city',
@@ -78,7 +78,7 @@ export const WSController = {
         size: certData.publicKey.algorithm.modulusLength,
         usages: certData.publicKey.usages,
       },
-      hostName: 'Need key "hostName"',
+      commonName: 'Need key "commonName"',
       organization: 'Need key "organization"',
       organizationUnit: 'Need key "organizationUnit"',
       country: 'Need key "country"',
@@ -95,6 +95,9 @@ export const WSController = {
       const subjectName = subjectNames[arrSubject[0]];
       const subjectValue = arrSubject[1];
       subjectObj[subjectName] = subjectValue;
+      if (subjectName === 'commonName') {
+        subjectObj.name = subjectValue;
+      }
       return true;
     });
     return subjectObj;

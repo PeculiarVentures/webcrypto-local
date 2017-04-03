@@ -4,7 +4,7 @@ export const DEFAULT = {
   name: '',
   startDate: '',
   expirationDate: '',
-  hostName: '',
+  commonName: '',
   organization: '',
   organizationUnit: '',
   country: '',

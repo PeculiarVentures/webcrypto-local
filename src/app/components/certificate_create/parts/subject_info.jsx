@@ -95,11 +95,11 @@ export default class SubjectInfo extends Component {
         <GroupPart>
           <TextFieldContainer>
             <TextField
-              labelText={enLang['CertificateCreate.Subject.Field.HostName']}
+              labelText={enLang['CertificateCreate.Subject.Field.CommonName']}
               name="hostName"
-              ref={node => (this.fieldNodes.hostName = node)}
+              ref={node => (this.fieldNodes.commonName = node)}
               validation={['text']}
-              errorText={enLang['CertificateCreate.Subject.Field.HostName.Error']}
+              errorText={enLang['CertificateCreate.Subject.Field.CommonName.Error']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
@@ -107,8 +107,6 @@ export default class SubjectInfo extends Component {
               labelText={enLang['CertificateCreate.Subject.Field.Organization']}
               name="organization"
               ref={node => (this.fieldNodes.organization = node)}
-              validation={['text']}
-              errorText={enLang['CertificateCreate.Subject.Field.Organization.Error']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
@@ -116,8 +114,6 @@ export default class SubjectInfo extends Component {
               labelText={enLang['CertificateCreate.Subject.Field.OrganizationUnit']}
               name="organizationUnit"
               ref={node => (this.fieldNodes.organizationUnit = node)}
-              validation={['text']}
-              errorText={enLang['CertificateCreate.Subject.Field.OrganizationUnit.Error']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
@@ -126,8 +122,6 @@ export default class SubjectInfo extends Component {
                 ? <SelectNative
                   labelText={enLang['CertificateCreate.Subject.Field.Country']}
                   placeholder="Select country..."
-                  validation={['text']}
-                  errorText={enLang['CertificateCreate.Subject.Field.Country.Error']}
                   ref={node => (this.fieldNodes.country = node)}
                   options={countries}
                 />
@@ -136,8 +130,6 @@ export default class SubjectInfo extends Component {
                   placeholder="Select country..."
                   name="country"
                   ref={node => (this.fieldNodes.country = node)}
-                  validation={['text']}
-                  errorText={enLang['CertificateCreate.Subject.Field.Country.Error']}
                 >
                   {
                     countries.map((item, index) => (
@@ -156,8 +148,6 @@ export default class SubjectInfo extends Component {
               labelText={enLang['CertificateCreate.Subject.Field.Region']}
               name="region"
               ref={node => (this.fieldNodes.state = node)}
-              validation={['text']}
-              errorText={enLang['CertificateCreate.Subject.Field.Region.Error']}
             />
           </TextFieldContainer>
           <TextFieldContainer>
@@ -165,8 +155,6 @@ export default class SubjectInfo extends Component {
               labelText={enLang['CertificateCreate.Subject.Field.City']}
               name="city"
               ref={node => (this.fieldNodes.locality = node)}
-              validation={['text']}
-              errorText={enLang['CertificateCreate.Subject.Field.City.Error']}
             />
           </TextFieldContainer>
         </GroupPart>

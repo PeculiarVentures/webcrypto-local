@@ -63,16 +63,14 @@ export default class CertificateCreateBody extends Component {
 
   onCreateHandler = () => {
     const { onCreate } = this.props;
-    const { detailsNode, subjectNode, keyNode } = this;
-    const detailsValid = detailsNode.isValidFields();
+    const { subjectNode, keyNode } = this;
     const subjectInfoValid = subjectNode.isValidFields();
     const keyInfoValid = keyNode.isValidFields();
 
-    if (detailsValid && subjectInfoValid && keyInfoValid) {
-      const detailsData = detailsNode.getData();
+    if (subjectInfoValid && keyInfoValid) {
       const subjectInfoData = subjectNode.getData();
       const keyInfoData = keyNode.getData();
-      const data = Object.assign(detailsData, subjectInfoData, keyInfoData);
+      const data = Object.assign(subjectInfoData, keyInfoData);
 
       if (onCreate) onCreate(data);
     }
@@ -89,9 +87,6 @@ export default class CertificateCreateBody extends Component {
     return (
       <CertificateCreateBodyStyled>
         <Container>
-          <Details
-            ref={node => (this.detailsNode = node)}
-          />
           <SubjectInfo
             countries={countries}
             ref={node => (this.subjectNode = node)}

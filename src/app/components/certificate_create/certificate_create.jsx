@@ -28,10 +28,7 @@ export default class CertificateCreate extends Component {
 
   onCreateHandler = (data) => {
     const { dispatch } = this.context;
-    const _data = Object.assign({}, data);
-
-    // console.log(_data);
-    dispatch(WSActions.createCSR(0, _data));
+    dispatch(WSActions.createCSR(0, data));
   };
 
   render() {

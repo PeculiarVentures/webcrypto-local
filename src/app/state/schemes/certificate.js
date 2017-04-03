@@ -6,7 +6,7 @@ export default new Schema('Certificate', {
   name: Type.String,
   startDate: Type.String,
   expirationDate: Type.String,
-  hostName: Type.String,
+  commonName: Type.String,
   organization: Type.String,
   organizationUnit: Type.String,
   country: Type.String,

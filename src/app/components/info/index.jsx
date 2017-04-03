@@ -45,6 +45,7 @@ export default class Info extends Component {
     dataLoaded: PropTypes.bool,
     certificate: PropTypes.shape({
       name: PropTypes.string,
+      commonName: PropTypes.string,
       type: PropTypes.string,
       keyInfo: PropTypes.shape({
         createdAt: PropTypes.string,
@@ -62,8 +63,6 @@ export default class Info extends Component {
       country: PropTypes.string,
       region: PropTypes.string,
       city: PropTypes.string,
-      startDate: PropTypes.string,
-      expirationDate: PropTypes.string,
       // for key
       createdAt: PropTypes.string,
       lastUsed: PropTypes.string,
