@@ -1,13 +1,15 @@
 import { EventEmitter } from "events";
 import { NotificationCenter } from "node-notifier";
+import * as os from "os";
 import { Convert } from "pvtsutils";
+import * as readline from "readline";
 import { ObjectProto } from "tsprotobuf";
 import { Server, Session } from "../connection/server";
 import { ActionProto, CryptoItemProto, CryptoKeyPairProto, CryptoKeyProto, ResultProto } from "../core/proto";
 import { CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetItemActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto, CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto } from "../core/protos/certstorage";
 import { ArrayStringConverter } from "../core/protos/converter";
 import { IsLoggedInActionProto, LoginActionProto } from "../core/protos/crypto";
-import { KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto, KeyStorageIndexOfActionProto } from "../core/protos/keystorage";
+import { KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageIndexOfActionProto, KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto } from "../core/protos/keystorage";
 import { ProviderAuthorizedEventProto, ProviderCryptoProto, ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderTokenEventProto } from "../core/protos/provider";
 import { DecryptActionProto, DeriveBitsActionProto, DeriveKeyActionProto, DigestActionProto, EncryptActionProto, ExportKeyActionProto, GenerateKeyActionProto, ImportKeyActionProto, SignActionProto, UnwrapKeyActionProto, VerifyActionProto, WrapKeyActionProto } from "../core/protos/subtle";
 import { ServiceCryptoItem } from "./crypto_item";
@@ -34,7 +36,7 @@ export class LocalServer extends EventEmitter {
                 // "/usr/local/lib/softhsm/libsofthsm2.so",
                 // "/usr/local/lib/libykcs11.dylib",
                 // "yubico/libykcs11-1.dll",
-                // "/Windows/System32/eTPKCS11.dll",
+                "/Windows/System32/eTPKCS11.dll",
             ],
         })
             .on("token", (info) => {
@@ -140,30 +142,50 @@ export class LocalServer extends EventEmitter {
                 if (crypto.login) {
                     // show prompt
                     await new Promise((resolve, reject) => {
-                        notifier.notify({
-                            title: "webcrypto-local",
-                            message: `Enter PIN for PKCS#11 token`,
-                            wait: true,
-                            // actions: "Yes",
-                            // closeLabel: "No",
-                            timeout: -1,
-                            reply: true,
-                            // timeout: 30,
-                        } as any, (error: Error, response: string, metadata: { activationValue: string }) => {
-                            try {
-                                if (response !== "replied") {
-                                    reject(new Error("CryptoLogin timeout"));
-                                } else {
-                                    console.log(crypto);
-                                    console.log(metadata.activationValue, metadata.activationValue.length);
-                                    // throw new Error("Oops");
-                                    crypto.login(metadata.activationValue);
-                                    resolve();
-                                }
-                            } catch (err) {
-                                reject(err);
+                        switch (os.type()) {
+                            case "Darwin": {
+                                notifier.notify({
+                                    title: "webcrypto-local",
+                                    message: `Enter PIN for PKCS#11 token`,
+                                    wait: true,
+                                    // actions: "Yes",
+                                    // closeLabel: "No",
+                                    timeout: -1,
+                                    reply: true,
+                                    // timeout: 30,
+                                } as any, (response: string, metadata: { activationValue: string }) => {
+                                    try {
+                                        if (response !== "replied") {
+                                            reject(new Error("CryptoLogin timeout"));
+                                        } else {
+                                            console.log(crypto);
+                                            console.log(metadata.activationValue, metadata.activationValue.length);
+                                            // throw new Error("Oops");
+                                            crypto.login(metadata.activationValue);
+                                            resolve();
+                                        }
+                                    } catch (err) {
+                                        reject(err);
+                                    }
+                                });
                             }
-                        });
+                            default: {
+                                // Windows, Linux
+                                const rl = readline.createInterface({
+                                    input: process.stdin,
+                                    output: process.stdout,
+                                });
+
+                                rl.question("Enter PIN for PKCS#11 token: ", (answer) => {
+                                    try {
+                                        crypto.login(answer);
+                                        resolve();
+                                    } catch (e) {
+                                        reject(e);
+                                    }
+                                });
+                            }
+                        }
                     });
                 }
                 break;
