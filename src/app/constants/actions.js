@@ -37,8 +37,10 @@ export const WS_REMOVE_KEY = 'WS:REMOVE_KEY';
 export const WS_GET_CERTIFICATES = 'WS:GET_CERTIFICATES';
 export const WS_GET_CERTIFICATE = 'WS:GET_CERTIFICATE';
 export const WS_CREATE_CSR = 'WS:CREATE_CSR';
-export const WS_REMOVE_CSR = 'WS:REMOVE_CSR';
+export const WS_REMOVE_ITEM = 'WS:REMOVE_CSR';
 export const WS_STATUS = 'WS:STATUS';
+export const WS_DOWNLOAD_CERTIFICATE = 'WS:DOWNLOAD_CERTIFICATE';
+export const WS_COPY_CERTIFICATE = 'WS:COPY_CERTIFICATE';
 
 // Error
 export const ERROR = 'ERROR';

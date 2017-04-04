@@ -87,18 +87,16 @@ export default class Overlay extends Component {
   }
 
   handleAction = (payload) => {
-    const { type, id } = payload;
+    const { type } = payload;
     const { dispatch } = this.context;
 
     switch (type) {
-      case ACTIONS_CONST.WS_REMOVE_CSR: {
-        dispatch(WSActions.removeCSR(id));
-        break;
+      case ACTIONS_CONST.WS_REMOVE_ITEM: {
+        return dispatch(WSActions.removeItem());
       }
 
       case ACTIONS_CONST.DIALOG_CLOSE: {
-        dispatch(DialogActions.close());
-        break;
+        return dispatch(DialogActions.close());
       }
 
       default:
@@ -121,8 +119,7 @@ export default class Overlay extends Component {
             certificateName={selectedCertificateProps.name}
             onAccept={() => (
               this.handleAction({
-                type: ACTIONS_CONST.WS_REMOVE_CSR,
-                id: selectedCertificateProps.id,
+                type: ACTIONS_CONST.WS_REMOVE_ITEM,
               })
             )}
             onCancel={() => (

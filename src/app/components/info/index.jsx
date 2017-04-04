@@ -5,8 +5,7 @@ import CertificateInfo from './info_certificate';
 import KeyInfo from './info_key';
 import EmptyBody from './empty_body';
 import { DialogActions } from '../../actions/ui';
-import { EventChannel } from '../../controllers';
-import { ACTIONS_CONST } from '../../constants';
+import { WSActions } from '../../actions/state';
 import { InfoShellIcon } from '../svg';
 import StyledAnimatedIcon from '../sidebar/parts/shell.styles';
 
@@ -84,6 +83,16 @@ export default class Info extends Component {
     dispatch(DialogActions.open('remove_certificate'));
   };
 
+  onDownloadhandler = () => {
+    const { dispatch } = this.context;
+    dispatch(WSActions.downloadCertificate('pem'));
+  };
+
+  onCopyHandler = () => {
+    const { dispatch } = this.context;
+    dispatch(WSActions.copyCertificate('pem'));
+  };
+
   onMenuHandler = () => {
     const { handleRootAction } = this.context;
     handleRootAction({
@@ -146,10 +155,9 @@ export default class Info extends Component {
               <Header
                 dataLoaded={dataLoaded}
                 name={certificate.name}
-                onCopy={() => EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'copied', 4000)}
-                onDownload={() => {
-                  console.log('clicked Download button');
-                }}
+                isKey={certificate.type === 'key'}
+                onCopy={this.onCopyHandler}
+                onDownload={this.onDownloadhandler}
                 onRemove={this.onRemoveHandler}
                 onMenu={this.onMenuHandler}
               />

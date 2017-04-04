@@ -1,5 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
+// import $ from 'jquery';
+// import Clipboard from 'clipboard';
 import { Button } from '../basic';
 import {
   DownloadIcon,
@@ -163,6 +165,7 @@ export default class Header extends Component {
     onRemove: PropTypes.func,
     onMenu: PropTypes.func,
     dataLoaded: PropTypes.bool,
+    isKey: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -172,6 +175,7 @@ export default class Header extends Component {
     onCopy: () => {},
     onRemove: () => {},
     onMenu: () => {},
+    isKey: false,
   };
 
   static contextTypes = {
@@ -191,6 +195,14 @@ export default class Header extends Component {
     this.bindedHandleCopy = ::this.handleCopy;
     this.bindedHandleRemove = ::this.handleRemove;
   }
+
+  // componentDidMount() {
+  //   $('#btn').data('id', 1);
+  //   $('#btn').on('datachange', function() {
+  //     console.log(1111111);
+  //   });
+  //   $('#btn').data('id', 2).trigger('datachange');
+  // }
 
   componentDidUpdate(prevProps, prevState, prevContext) {
     const { windowSize } = this.context;
@@ -271,34 +283,36 @@ export default class Header extends Component {
   }
 
   renderDropdown() {
-    const { dropdown } = this.state;
+    const { dropdown, isKey } = this.state;
 
     if (dropdown) {
       return (
         <DropdownMenu>
           <DropdownItemsWrapper>
-            <DropdownItemContainer>
-              <DropdownItemStyled onClick={this.bindedHandleDownload} secondary>
-                <DownloadIconStyled />
-                {
-                  enLang['Info.Header.Download']
-                }
-              </DropdownItemStyled>
-            </DropdownItemContainer>
-            <DropdownItemContainer>
-              <DropdownItemStyled onClick={this.bindedHandleCopy} secondary>
-                <CopyIconStyled />
-                {
-                  enLang['Info.Header.CopyToClipboard']
-                }
-              </DropdownItemStyled>
-            </DropdownItemContainer>
+            {
+              isKey
+              ? null
+              : <DropdownItemContainer>
+                <DropdownItemStyled onClick={this.bindedHandleDownload} secondary>
+                  <DownloadIconStyled />
+                  { enLang['Info.Header.Download'] }
+                </DropdownItemStyled>
+              </DropdownItemContainer>
+            }
+            {
+              isKey
+                ? null
+                : <DropdownItemContainer>
+                  <DropdownItemStyled onClick={this.bindedHandleCopy} secondary>
+                    <CopyIconStyled />
+                    { enLang['Info.Header.CopyToClipboard'] }
+                  </DropdownItemStyled>
+                </DropdownItemContainer>
+            }
             <DropdownItemContainer>
               <DropdownItemStyled onClick={this.bindedHandleRemove} secondary>
                 <RemoveIconStyled />
-                {
-                  enLang['Info.Header.Remove']
-                }
+                { enLang['Info.Header.Remove'] }
               </DropdownItemStyled>
             </DropdownItemContainer>
           </DropdownItemsWrapper>
@@ -335,26 +349,34 @@ export default class Header extends Component {
   }
 
   renderButtons() {
-    const { dataLoaded } = this.props;
+    const { dataLoaded, isKey } = this.props;
 
     return (
       <ButtonsContainer>
-        <StyledButton
-          onClick={this.bindedHandleDownload}
-          secondary
-          disabled={!dataLoaded}
-        >
-          <DownloadIconStyled />
-          { enLang['Info.Header.Download'] }
-        </StyledButton>
-        <StyledButton
-          onClick={this.bindedHandleCopy}
-          secondary
-          disabled={!dataLoaded}
-        >
-          <CopyIconStyled />
-          { enLang['Info.Header.CopyToClipboard'] }
-        </StyledButton>
+        {
+          isKey
+          ? null
+          : <StyledButton
+            onClick={this.bindedHandleDownload}
+            secondary
+            disabled={!dataLoaded}
+          >
+            <DownloadIconStyled />
+            { enLang['Info.Header.Download'] }
+          </StyledButton>
+        }
+        {
+          isKey
+            ? null
+            : <StyledButton
+              onClick={this.bindedHandleCopy}
+              secondary
+              disabled={!dataLoaded}
+            >
+              <CopyIconStyled />
+              { enLang['Info.Header.CopyToClipboard'] }
+            </StyledButton>
+        }
         <StyledButton
           onClick={this.bindedHandleRemove}
           secondary

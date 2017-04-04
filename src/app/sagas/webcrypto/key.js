@@ -39,7 +39,12 @@ export function* createKey(crypto) {
 
 export function* removeKey(crypto, keyId) {
   if (crypto) {
-    yield crypto.keyStorage.removeItem(keyId);
+    try {
+      yield crypto.keyStorage.removeItem(keyId);
+      return true;
+    } catch (error) {
+      yield put(ErrorActions.error(error));
+    }
   }
   return false;
 }

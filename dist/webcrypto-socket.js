@@ -5146,13 +5146,13 @@ var SocketCertificateStorage = (function () {
     };
     SocketCertificateStorage.prototype.exportCert = function (format, item) {
         return __awaiter(this, void 0, void 0, function () {
-            var proto, result;
+            var proto, result, header, res, b64, counter, raw;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         proto = new CertificateStorageExportActionProto();
                         proto.providerID = this.service.id;
-                        proto.format = format;
+                        proto.format = "raw";
                         proto.item = item;
                         return [4 /*yield*/, this.service.client.send(proto)];
                     case 1:
@@ -5161,7 +5161,36 @@ var SocketCertificateStorage = (function () {
                             return [2 /*return*/, result];
                         }
                         else {
-                            return [2 /*return*/, Convert.ToUtf8String(result)];
+                            header = "";
+                            switch (item.type) {
+                                case "x509": {
+                                    header = "CERTIFICATE";
+                                    break;
+                                }
+                                case "request": {
+                                    header = "CERTIFICATE REQUEST";
+                                    break;
+                                }
+                                default:
+                                    throw new Error("Cannot create PEM for unknown type of certificate item");
+                            }
+                            res = [];
+                            b64 = Convert.ToBase64(result);
+                            res.push("-----BEGIN " + header + "-----");
+                            counter = 0;
+                            raw = "";
+                            while (counter < b64.length) {
+                                if (counter && !(counter % 64)) {
+                                    res.push(raw);
+                                    raw = "";
+                                }
+                                raw += b64[counter++];
+                            }
+                            if (raw) {
+                                res.push(raw);
+                            }
+                            res.push("-----END " + header + "-----");
+                            return [2 /*return*/, res.join("\r\n")];
                         }
                         return [2 /*return*/];
                 }

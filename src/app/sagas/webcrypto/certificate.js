@@ -22,7 +22,19 @@ export function* getCertificate(crypto, certId) {
   return false;
 }
 
-export function* createCSR(crypto, data) {
+export function* exportCertificate(crypto, certId, format = 'pem') {
+  if (crypto) {
+    try {
+      const cert = yield crypto.certStorage.getItem(certId);
+      return yield crypto.certStorage.exportCert(format, cert);
+    } catch (error) {
+      yield put(ErrorActions.error(error));
+    }
+  }
+  return false;
+}
+
+export function* createCertificate(crypto, data) {
   // const data = {
   //   commonName: 'My cert 6',
   //   hostName: 'domain',
@@ -101,7 +113,7 @@ export function* createCSR(crypto, data) {
   return false;
 }
 
-export function* removeCSR(crypto, certId) {
+export function* removeCertificate(crypto, certId) {
   if (crypto) {
     try {
       yield crypto.certStorage.removeItem(certId);

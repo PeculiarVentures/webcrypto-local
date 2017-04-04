@@ -1,12 +1,13 @@
 import { takeEvery } from 'redux-saga';
 import { select, put } from 'redux-saga/effects';
 import { ws, WSController } from '../../controllers/webcrypto_socket';
+import { EventChannel } from '../../controllers';
 import { ACTIONS_CONST } from '../../constants';
 import { AppActions, CertificateActions, ErrorActions } from '../../actions/state';
 import { RoutingActions } from '../../actions/ui';
 import * as Key from './key';
 import * as Certificate from './certificate';
-import { ab2hex, downloadCertificate } from '../../helpers';
+import { ab2hex, downloadCertFromURI, copyTextToBuffer } from '../../helpers';
 
 function* getProviders() {
   const info = yield ws.info();
@@ -71,10 +72,10 @@ function* getCerificates({ providerId }) {
       // }
       for (const certId of certificates) {
         const certificate = yield Certificate.getCertificate(crypto, certId);
-        // let x = crypto.certStorage.exportCert('raw', certificate);
+        // let x = crypto.certStorage.exportCert('pem', certificate);
         // console.log(yield x);
         // const raw = ab2hex(yield x);
-        // downloadCertificate('test', raw);
+        // downloadCertificate('test', yield x);
         const certData = WSController.certDataHandler(certificate, certId);
         yield put(CertificateActions.add(certData));
       }
@@ -83,9 +84,9 @@ function* getCerificates({ providerId }) {
   yield put(AppActions.dataLoaded(true));
 }
 
-function* createCSR({ providerId, data }) {
+function* createCertificate({ providerId, data }) {
   const crypto = yield getCrypto(providerId);
-  const certId = yield Certificate.createCSR(crypto, data);
+  const certId = yield Certificate.createCertificate(crypto, data);
   if (certId) {
     const certificate = yield Certificate.getCertificate(crypto, certId);
     const certData = WSController.certDataHandler(certificate, certId);
@@ -94,15 +95,51 @@ function* createCSR({ providerId, data }) {
   }
 }
 
-function* removeCSR({ providerId, certId }) {
+function* removeItem({ providerId }) {
   const crypto = yield getCrypto(providerId);
   const state = yield select();
-  const certStorageId = state.find('certificates').where({ id: certId }).get()._id;
+  const certStorage = state.find('certificates').where({ selected: true }).get();
   if (crypto) {
-    const remove = yield Certificate.removeCSR(crypto, certStorageId);
-    if (remove) {
-      yield put(CertificateActions.remove(certId));
+    let remove = '';
+    if (certStorage.type === 'key') {
+      remove = yield Key.removeKey(crypto, certStorage._id);
+    } else {
+      remove = yield Certificate.removeCertificate(crypto, certStorage._id);
     }
+    if (remove) {
+      yield put(CertificateActions.remove(certStorage.id));
+    }
+  }
+}
+
+function* downloadCertificate({ providerId, format }) {
+  const crypto = yield getCrypto(providerId);
+  const state = yield select();
+  const certStorage = state.find('certificates').where({ selected: true }).get();
+  if (crypto) {
+    const cert = yield Certificate.exportCertificate(crypto, certStorage._id, format);
+    if (cert && typeof cert === 'string') {
+      downloadCertFromURI(certStorage.name, cert);
+    } else if (cert) {
+      const certHex = ab2hex(cert);
+      downloadCertFromURI(certStorage.name, certHex);
+    }
+  }
+}
+
+function* copyCertificateToBuffer({ providerId, format }) {
+  const crypto = yield getCrypto(providerId);
+  const state = yield select();
+  const certStorage = state.find('certificates').where({ selected: true }).get();
+  if (crypto) {
+    const cert = yield Certificate.exportCertificate(crypto, certStorage._id, format);
+    if (cert && typeof cert === 'string') {
+      copyTextToBuffer(cert);
+    } else if (cert) {
+      const certHex = ab2hex(cert);
+      copyTextToBuffer(certHex);
+    }
+    EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'copied', 4000);
   }
 }
 
@@ -110,7 +147,9 @@ export default function* () {
   yield [
     takeEvery(ACTIONS_CONST.WS_GET_KEYS, getKeys),
     takeEvery(ACTIONS_CONST.WS_GET_CERTIFICATES, getCerificates),
-    takeEvery(ACTIONS_CONST.WS_CREATE_CSR, createCSR),
-    takeEvery(ACTIONS_CONST.WS_REMOVE_CSR, removeCSR),
+    takeEvery(ACTIONS_CONST.WS_CREATE_CSR, createCertificate),
+    takeEvery(ACTIONS_CONST.WS_REMOVE_ITEM, removeItem),
+    takeEvery(ACTIONS_CONST.WS_DOWNLOAD_CERTIFICATE, downloadCertificate),
+    takeEvery(ACTIONS_CONST.WS_COPY_CERTIFICATE, copyCertificateToBuffer),
   ];
 }
