@@ -1,7 +1,5 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
-// import $ from 'jquery';
-// import Clipboard from 'clipboard';
 import { Button } from '../basic';
 import {
   DownloadIcon,
@@ -196,14 +194,6 @@ export default class Header extends Component {
     this.bindedHandleRemove = ::this.handleRemove;
   }
 
-  // componentDidMount() {
-  //   $('#btn').data('id', 1);
-  //   $('#btn').on('datachange', function() {
-  //     console.log(1111111);
-  //   });
-  //   $('#btn').data('id', 2).trigger('datachange');
-  // }
-
   componentDidUpdate(prevProps, prevState, prevContext) {
     const { windowSize } = this.context;
     const { device } = windowSize;
@@ -283,7 +273,8 @@ export default class Header extends Component {
   }
 
   renderDropdown() {
-    const { dropdown, isKey } = this.state;
+    const { isKey } = this.props;
+    const { dropdown } = this.state;
 
     if (dropdown) {
       return (

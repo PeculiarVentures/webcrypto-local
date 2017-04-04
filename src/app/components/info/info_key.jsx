@@ -12,12 +12,21 @@ const KeyInfo = (props) => {
     usages,
   } = props;
 
-  const renderUsages = () => usages.map((usage, key) => {
-    if (key === usages.length - 1) {
-      return usage;
+  const renderInfoContainer = (title, value) => {
+    if (value) {
+      return (
+        <Col>
+          <SubTitle>
+            { title }
+          </SubTitle>
+          <Value>
+            { value }
+          </Value>
+        </Col>
+      );
     }
-    return `${usage}, `;
-  });
+    return null;
+  };
 
   const createdAtDate = moment(parseInt(createdAt, 10)).format('D MMM YYYY');
   const lastUsedDate = moment(parseInt(lastUsed, 10)).format('D MMM YYYY');
@@ -27,57 +36,27 @@ const KeyInfo = (props) => {
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.KeyInfo'] }
+          { enLang['Info.InfoTable.Key.Title'] }
         </Title>
-        <Col>
-          <SubTitle>
-            { enLang['Info.InfoTable.CreatedAt'] }
-          </SubTitle>
-          <Value>
-            {
-              createdAtDate !== 'Invalid date'
-                ? createdAtDate
-                : createdAt
-            }
-          </Value>
-        </Col>
-        <Col>
-          <SubTitle>
-            { enLang['Info.InfoTable.LastUsed'] }
-          </SubTitle>
-          <Value>
-            {
-              lastUsedDate !== 'Invalid date'
-                ? lastUsedDate
-                : lastUsed
-            }
-          </Value>
-        </Col>
-        <br />
-        <Col>
-          <SubTitle>
-            { enLang['Info.InfoTable.Algorithm'] }
-          </SubTitle>
-          <Value>
-            { algorithm }
-          </Value>
-        </Col>
-        <Col>
-          <SubTitle>
-            { enLang['Info.InfoTable.Size'] }
-          </SubTitle>
-          <Value>
-            { size }
-          </Value>
-        </Col>
-        <Col>
-          <SubTitle>
-            { enLang['Info.InfoTable.Usages'] }
-          </SubTitle>
-          <Value>
-            { renderUsages() }
-          </Value>
-        </Col>
+        {
+          renderInfoContainer(
+            enLang['Info.InfoTable.Key.CreatedAt'],
+            createdAtDate !== 'Invalid date'
+              ? createdAtDate
+              : createdAt,
+          )
+        }
+        {
+          renderInfoContainer(
+            enLang['Info.InfoTable.Key.LastUsed'],
+            lastUsedDate !== 'Invalid date'
+              ? lastUsedDate
+              : lastUsed,
+          )
+        }
+        { renderInfoContainer(enLang['Info.InfoTable.Key.Algorithm'], algorithm) }
+        { renderInfoContainer(enLang['Info.InfoTable.Key.Size'], size) }
+        { renderInfoContainer(enLang['Info.InfoTable.Key.Usages'], usages.join(', ')) }
       </Row>
 
     </Root>
@@ -90,6 +69,14 @@ KeyInfo.propTypes = {
   algorithm: PropTypes.string,
   size: PropTypes.number,
   usages: PropTypes.arrayOf(PropTypes.string),
+};
+
+KeyInfo.defaultProps = {
+  createdAt: '',
+  lastUsed: '',
+  algorithm: '',
+  size: '',
+  usages: [],
 };
 
 export default KeyInfo;

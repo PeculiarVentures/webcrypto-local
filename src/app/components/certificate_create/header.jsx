@@ -53,7 +53,7 @@ const CertificateCreateHeaderStyled = styled.div`
   }
 `;
 
-const CertificateCreateHeader = (props) => {
+const Header = (props) => {
   const { onBack } = props;
 
   const onClickhandler = () => {
@@ -77,8 +77,8 @@ const CertificateCreateHeader = (props) => {
   );
 };
 
-CertificateCreateHeader.propTypes = {
+Header.propTypes = {
   onBack: PropTypes.func,
 };
 
-export default CertificateCreateHeader;
+export default Header;

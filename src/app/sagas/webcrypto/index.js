@@ -7,7 +7,7 @@ import { AppActions, CertificateActions, ErrorActions } from '../../actions/stat
 import { RoutingActions } from '../../actions/ui';
 import * as Key from './key';
 import * as Certificate from './certificate';
-import { ab2hex, downloadCertFromURI, copyTextToBuffer } from '../../helpers';
+import { ab2hex, downloadCertFromURI, copyTextToBuffer, certToJson } from '../../helpers';
 
 function* getProviders() {
   const info = yield ws.info();
@@ -49,6 +49,7 @@ function* getKeys({ providerId }) {
       const keyData = WSController.keyDataHandler(key, keyId);
       yield put(CertificateActions.add(keyData));
     }
+    yield put(AppActions.dataLoaded(true));
   }
 }
 
@@ -56,31 +57,36 @@ function* getCerificates({ providerId }) {
   const providers = yield getProviders();
 
   // TODO: 'for' created for test
-  for (let i = 0; i < providers.length; i += 1) {
-    const crypto = yield getCrypto(i);
-    const certificates = yield Certificate.getCertificates(crypto);
-    if (certificates.length) {
-      // const getCertificatesArr = [];
-      // for (const certId of certificates) {
-      //   getCertificatesArr.push(Certificate.getCertificate(crypto, certId));
-      // }
-      //
-      // const certificatesArr = yield getCertificatesArr;
-      // for (const certificate of certificatesArr) {
-      //   const certData = WSController.certDataHandler(certificate);
-      //   yield put(CertificateActions.add(certData));
-      // }
-      for (const certId of certificates) {
-        const certificate = yield Certificate.getCertificate(crypto, certId);
-        // let x = crypto.certStorage.exportCert('pem', certificate);
-        // console.log(yield x);
-        // const raw = ab2hex(yield x);
-        // downloadCertificate('test', yield x);
-        const certData = WSController.certDataHandler(certificate, certId);
-        yield put(CertificateActions.add(certData));
+  // for (let i = 0; i < providers.length; i += 1) {
+  const crypto = yield getCrypto(providerId);
+  const certificates = yield Certificate.getCertificates(crypto);
+  if (certificates.length) {
+    // const getCertificatesArr = [];
+    // for (const certId of certificates) {
+    //   getCertificatesArr.push(Certificate.getCertificate(crypto, certId));
+    // }
+    //
+    // const certificatesArr = yield getCertificatesArr;
+    // for (const certificate of certificatesArr) {
+    //   const certData = WSController.certDataHandler(certificate);
+    //   yield put(CertificateActions.add(certData));
+    // }
+    for (const certId of certificates) {
+      const item = yield Certificate.getCertificate(crypto, certId);
+      let certData = '';
+
+      if (item.type === 'x509') {
+        const certificateRaw = yield crypto.certStorage.exportCert('raw', item);
+        const certificateDetails = certToJson(certificateRaw);
+        certData = WSController.certDataHandler(certificateDetails, item, certId);
+      } else {
+        certData = WSController.requestDataHandler(item, certId);
       }
+
+      yield put(CertificateActions.add(certData));
     }
   }
+  // }
   yield put(AppActions.dataLoaded(true));
 }
 
@@ -88,10 +94,10 @@ function* createCertificate({ providerId, data }) {
   const crypto = yield getCrypto(providerId);
   const certId = yield Certificate.createCertificate(crypto, data);
   if (certId) {
-    const certificate = yield Certificate.getCertificate(crypto, certId);
-    const certData = WSController.certDataHandler(certificate, certId);
+    const item = yield Certificate.getCertificate(crypto, certId);
+    const certData = WSController.requestDataHandler(item, certId);
     yield put(CertificateActions.add(certData));
-    yield put(RoutingActions.push(`certificate/${certificate.id}`));
+    yield put(RoutingActions.push(`certificate/${item.id}`));
   }
 }
 

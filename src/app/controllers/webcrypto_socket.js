@@ -62,19 +62,45 @@ export const WSController = {
     };
   },
 
-  certDataHandler: function certDataHandler(certData, certId) {
-    const { publicKey, id, type, subjectName } = certData;
-    const decodedSubject = this.decodeSubjectString(subjectName);
+  certDataHandler: function certDataHandler(certDetails, certData, certId) {
+    const { id } = certData;
+    const { issuerName, extensions, publicKey, version, signature, serialNumber } = certDetails;
+    const decodedSubject = this.decodeSubjectString(issuerName);
     return Object.assign({
       id,
       _id: certId,
+      type: 'certificate',
       name: '',
-      type: type === 'request' ? 'request' : 'certificate',
+      country: '',
+      organization: '',
+      organizationUnit: '',
+      commonName: '',
+      region: '',
+      city: '',
+      serialNumber,
+      extensions,
+      publicKey,
+      version,
+      signature,
+      keyInfo: {
+        algorithm: signature.algorithm.name,
+      },
+    }, decodedSubject);
+  },
+
+  requestDataHandler: function requestDataHandler(reqData, reqId) {
+    const { publicKey, id, subjectName } = reqData;
+    const decodedSubject = this.decodeSubjectString(subjectName);
+    return Object.assign({
+      id,
+      _id: reqId,
+      name: '',
+      type: 'request',
       keyInfo: {
         modulusBits: publicKey.algorithm.modulusLength,
         namedCurve: publicKey.algorithm.namedCurve,
         type: this.getKeyType(publicKey.algorithm.name),
-        publicExponent: publicKey.algorithm.publicExponent.join(', ') === '1, 0, 1' ? '65537' : '3',
+        publicExponent: publicKey.algorithm.publicExponent.byteLength === 3 ? '65537' : '3',
         algorithm: publicKey.algorithm.name,
       },
       commonName: '',

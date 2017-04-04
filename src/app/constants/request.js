@@ -9,13 +9,12 @@ export const DEFAULT = {
   region: '',
   city: '',
   keyInfo: {
+    modulusBits: '',
+    namedCurve: '',
+    type: '',
+    publicExponent: '',
     algorithm: '',
   },
-  extensions: {},
-  publicKey: {},
-  version: '',
-  signature: {},
-  serialNumber: '',
   selected: false,
-  type: 'certificate',
+  type: 'request',
 };

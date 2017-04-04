@@ -42,7 +42,7 @@ const CertificateCreateBodyStyled = styled.div`
   }
 `;
 
-export default class CertificateCreateBody extends Component {
+export default class Body extends Component {
 
   static propTypes = {
     parameters: PropTypes.oneOfType([

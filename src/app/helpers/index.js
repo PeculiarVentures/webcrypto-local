@@ -14,3 +14,4 @@ export ab2hex from './array_buffer_to_hex';
 export downloadURI from './download_uri';
 export downloadCertFromURI from './download_cert_from_uri';
 export copyTextToBuffer from './copy_text_to_buffer';
+export certToJson from './cert_to_json';

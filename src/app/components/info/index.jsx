@@ -2,6 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
 import Header from './header';
 import CertificateInfo from './info_certificate';
+import RequestInfo from './info_request';
 import KeyInfo from './info_key';
 import EmptyBody from './empty_body';
 import { DialogActions } from '../../actions/ui';
@@ -42,35 +43,9 @@ export default class Info extends Component {
 
   static propTypes = {
     dataLoaded: PropTypes.bool,
-    certificate: PropTypes.shape({
-      name: PropTypes.string,
-      commonName: PropTypes.string,
-      type: PropTypes.string,
-      keyInfo: PropTypes.shape({
-        modulusBits: PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.number,
-        ]),
-        namedCurve: PropTypes.string,
-        type: PropTypes.string,
-        publicExponent: PropTypes.string,
-      }),
-      hostName: PropTypes.string,
-      organization: PropTypes.string,
-      organizationUnit: PropTypes.string,
-      country: PropTypes.string,
-      region: PropTypes.string,
-      city: PropTypes.string,
-      // for key
-      createdAt: PropTypes.string,
-      lastUsed: PropTypes.string,
-      algorithm: PropTypes.string,
-      size: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number,
-      ]),
-      usages: PropTypes.arrayOf(PropTypes.string),
-    }),
+    certificate: PropTypes.oneOfType([
+      PropTypes.object,
+    ]),
   };
 
   static defaultProps = {
@@ -106,9 +81,13 @@ export default class Info extends Component {
 
     switch (type) {
       case 'certificate':
-      case 'request':
         return (
           <CertificateInfo {...certificate} />
+        );
+
+      case 'request':
+        return (
+          <RequestInfo {...certificate} />
         );
 
       case 'key':

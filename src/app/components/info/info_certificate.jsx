@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Root, Row, Title, Col, SubTitle, Value } from './styled/info';
+import { Root, Row, Title, RowCertInfo, RowCert, ColCert } from './styled/info';
 import enLang from '../../langs/en.json';
 
 const CertificateInfo = (props) => {
@@ -10,97 +10,154 @@ const CertificateInfo = (props) => {
     country,
     region,
     city,
-    keyInfo,
+    extensions,
+    publicKey,
+    version,
+    signature,
+    serialNumber,
   } = props;
 
-  const renderInfoContainer = (title, value) => {
+  const renderRowContainer = (title, value) => {
     if (value) {
       return (
-        <Col>
-          <SubTitle>
-            { title }
-          </SubTitle>
-          <Value>
+        <RowCertInfo>
+          <ColCert>
+            { title }:
+          </ColCert>
+          <ColCert>
             { value }
-          </Value>
-        </Col>
+          </ColCert>
+        </RowCertInfo>
       );
     }
     return null;
   };
 
-  const getKeyInfoFields = () => {
-    if (keyInfo.type === 'RSA') {
-      return (
-        <span>
-          { renderInfoContainer(enLang['Info.InfoTable.Key.ModulusBits'], keyInfo.modulusBits) }
-          { renderInfoContainer(enLang['Info.InfoTable.Key.PublicExponent'], keyInfo.publicExponent) }
-        </span>
-      );
-    }
-    return (
-      renderInfoContainer(enLang['Info.InfoTable.Key.NamedCurve'], keyInfo.namedCurve)
-    );
-  };
-
   return (
     <Root>
-
       <Row>
         <Title>
-          { enLang['Info.InfoTable.SubjectInfo'] }
+          { enLang['Info.InfoTable.Certificate.IssuerName'] }
         </Title>
-        { renderInfoContainer(enLang['Info.InfoTable.CommonName'], commonName) }
-        { renderInfoContainer(enLang['Info.InfoTable.Organization'], organization) }
-        { renderInfoContainer(enLang['Info.InfoTable.OrganizationUnit'], organizationUnit) }
-        { renderInfoContainer(enLang['Info.InfoTable.Country'], country) }
-        { renderInfoContainer(enLang['Info.InfoTable.Region'], region) }
-        { renderInfoContainer(enLang['Info.InfoTable.City'], city) }
+        <RowCert>
+          { renderRowContainer(enLang['Info.InfoTable.OrganizationUnit'], organizationUnit) }
+          { renderRowContainer(enLang['Info.InfoTable.Organization'], organization) }
+          { renderRowContainer(enLang['Info.InfoTable.CommonName'], commonName) }
+          { renderRowContainer(enLang['Info.InfoTable.Country'], country) }
+          { renderRowContainer(enLang['Info.InfoTable.Region'], region) }
+          { renderRowContainer(enLang['Info.InfoTable.City'], city) }
+        </RowCert>
+        <RowCert>
+          { renderRowContainer(enLang['Info.InfoTable.Certificate.SerialNumber'], serialNumber) }
+          { renderRowContainer(enLang['Info.InfoTable.Certificate.Version'], version) }
+        </RowCert>
       </Row>
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.Key.Title'] }
+          { enLang['Info.InfoTable.Certificate.PublicKeyInfo'] }
         </Title>
-        { renderInfoContainer(enLang['Info.InfoTable.Key.Type'], keyInfo.type) }
-        { getKeyInfoFields() }
+        <RowCert>
+          { renderRowContainer(enLang['Info.InfoTable.Key.Algorithm'], publicKey.algorithm.name) }
+          { renderRowContainer(enLang['Info.InfoTable.Key.ModulusBits'], publicKey.algorithm.modulusBits) }
+          { renderRowContainer(enLang['Info.InfoTable.Key.PublicExponent'], publicKey.algorithm.publicExponent) }
+        </RowCert>
+        <RowCert>
+          { renderRowContainer(enLang['Info.InfoTable.Certificate.Value'], publicKey.value) }
+        </RowCert>
       </Row>
 
+      <Row>
+        <Title>
+          { enLang['Info.InfoTable.Certificate.Signature'] }
+        </Title>
+        <RowCert>
+          { renderRowContainer(enLang['Info.InfoTable.Key.Algorithm'], signature.algorithm.name) }
+          { renderRowContainer(enLang['Info.InfoTable.Certificate.Hash'], signature.algorithm.hash) }
+        </RowCert>
+        <RowCert>
+          { renderRowContainer(enLang['Info.InfoTable.Certificate.Value'], signature.value) }
+        </RowCert>
+      </Row>
+
+      <Row>
+        <Title>
+          { enLang['Info.InfoTable.Certificate.Extension'] }
+        </Title>
+        {
+          extensions.map((ext, index) => (
+            <RowCert
+              key={index}
+            >
+              { renderRowContainer(enLang['Info.InfoTable.Certificate.Name'], ext.name) }
+              { renderRowContainer(enLang['Info.InfoTable.Certificate.Value'], ext.value) }
+              { renderRowContainer(enLang['Info.InfoTable.Certificate.Critical'], ext.critical ? 'yes' : 'no') }
+            </RowCert>
+          ))
+        }
+      </Row>
     </Root>
   );
+
+  // return (
+  //   <Root>
+  //
+  //     <Row>
+  //       <Title>
+  //         { enLang['Info.InfoTable.SubjectInfo'] }
+  //       </Title>
+  //       { renderInfoContainer(enLang['Info.InfoTable.CommonName'], commonName) }
+  //       { renderInfoContainer(enLang['Info.InfoTable.Organization'], organization) }
+  //       { renderInfoContainer(enLang['Info.InfoTable.OrganizationUnit'], organizationUnit) }
+  //       { renderInfoContainer(enLang['Info.InfoTable.Country'], country) }
+  //       { renderInfoContainer(enLang['Info.InfoTable.Region'], region) }
+  //       { renderInfoContainer(enLang['Info.InfoTable.City'], city) }
+  //     </Row>
+  //
+  //     <Row>
+  //       <Title>
+  //         { enLang['Info.InfoTable.Key.Title'] }
+  //       </Title>
+  //       { renderInfoContainer(enLang['Info.InfoTable.Key.Type'], keyInfo.type) }
+  //       { getKeyInfoFields() }
+  //     </Row>
+  //
+  //   </Root>
+  // );
 };
 
 CertificateInfo.propTypes = {
-  keyInfo: PropTypes.shape({
-    modulusBits: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-    ]),
-    namedCurve: PropTypes.string,
-    type: PropTypes.string,
-    publicExponent: PropTypes.string,
-  }),
   commonName: PropTypes.string,
   organization: PropTypes.string,
   organizationUnit: PropTypes.string,
   country: PropTypes.string,
   region: PropTypes.string,
   city: PropTypes.string,
+  extensions: PropTypes.oneOfType([
+    PropTypes.array,
+  ]),
+  publicKey: PropTypes.oneOfType([
+    PropTypes.object,
+  ]),
+  version: PropTypes.number,
+  signature: PropTypes.oneOfType([
+    PropTypes.object,
+  ]),
+  serialNumber: PropTypes.string,
 };
 
 CertificateInfo.defaultProps = {
-  keyInfo: {
-    modulusBits: '',
-    namedCurve: '',
-    type: '',
-    publicExponent: '',
-  },
   commonName: '',
   organization: '',
   organizationUnit: '',
   country: '',
   region: '',
   city: '',
+  extensions: [],
+  publicKey: {},
+  version: '',
+  signature: {},
+  serialNumber: '',
 };
 
 export default CertificateInfo;

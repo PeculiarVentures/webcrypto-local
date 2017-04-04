@@ -1,7 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
-import { CertificateCreate } from '../components/certificate_create';
+import CertificateCreate from '../components/certificate_create/index';
 
 const ContentStyled = styled.div`
   height: 100%;

@@ -1,7 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
-import CertificateCreateHeader from './certificate_create_header';
-import CertificateCreateBody from './certificate_create_body';
+import Header from './header';
+import Body from './body';
 import { WSActions } from '../../actions/state';
 import { RoutingActions } from '../../actions/ui';
 
@@ -45,10 +45,10 @@ export default class CertificateCreate extends Component {
     const { dataLoaded, serverStatus } = this.props;
     return (
       <CertificateCreateStyled>
-        <CertificateCreateHeader
+        <Header
           onBack={this.onCancelHandler}
         />
-        <CertificateCreateBody
+        <Body
           onCancel={this.onCancelHandler}
           onCreate={this.onCreateHandler}
           dataLoaded={dataLoaded}

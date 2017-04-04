@@ -1,6 +1,6 @@
 import { Type, Schema } from 'quantizer';
 
-export default new Schema('Certificate', {
+export default new Schema('Request', {
   id: Type.ObjectID,
   _id: Type.ObjectID,
   name: Type.String,
@@ -11,13 +11,12 @@ export default new Schema('Certificate', {
   region: Type.String,
   city: Type.String,
   keyInfo: {
+    modulusBits: Type.Any,
+    namedCurve: Type.Any,
+    publicExponent: Type.Any,
+    type: Type.String,
     algorithm: Type.String,
   },
   selected: Type.Boolean,
   type: Type.String,
-  extensions: Type.List,
-  publicKey: Type.Map,
-  version: Type.Number,
-  signature: Type.Map,
-  serialNumber: Type.String,
 });

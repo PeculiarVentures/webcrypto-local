@@ -23,6 +23,15 @@ export const Row = styled.div`
   }
 `;
 
+export const RowCert = styled.div`
+  margin-top: 24px;
+`;
+
+export const RowCertInfo = styled.div`
+  margin-top: 7px;
+  font-size: 0;
+`;
+
 export const Title = styled.div`
   font-size: 18px;
   font-weight: 600;
@@ -56,6 +65,24 @@ export const Col = styled.div`
     &:nth-child(2n) {
       padding-left: 0 !important;
     }
+  }
+`;
+
+export const ColCert = styled.div`
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  display: inline-block;
+  vertical-align: top;
+  line-height: 18px;
+  color: ${props => props.theme.info.infoTable.valueColor};
+  &:first-child {
+    color: ${props => props.theme.info.infoTable.subTitleColor};
+    width: 25%;
+    padding-right: 10px;
+    font-size: 12px;
+  }
+  &:nth-child(2) {
+    width: 75%;
   }
 `;
 
