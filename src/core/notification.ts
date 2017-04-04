@@ -30,6 +30,7 @@ export class Notification {
                             resolve(false);
                         }
                     });
+                    break;
                 }
                 default: {
                     // Windows, Linux
@@ -59,7 +60,7 @@ export class Notification {
                         timeout: -1,
                         reply: true,
                         // timeout: 30,
-                    } as any, (response: string, metadata: { activationValue: string }) => {
+                    } as any, (err: Error, response: string, metadata: { activationValue: string }) => {
                         try {
                             if (response !== "replied") {
                                 reject(new Error("CryptoLogin timeout"));
@@ -70,6 +71,7 @@ export class Notification {
                             reject(err);
                         }
                     });
+                    break;
                 }
                 default: {
                     // Windows, Linux
