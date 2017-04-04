@@ -19,6 +19,12 @@ const AlgName = styled.div`
   }
 `;
 
+const Size = styled(AlgName)`
+  width: 85px;
+  padding-right: 0;
+  text-align: right;
+`;
+
 const Name = styled.div`
   font-size: 16px;
   line-height: 22px;
@@ -83,6 +89,7 @@ const Certificate = (props, context) => {
     type,
     algorithm,
     selected,
+    size,
   } = props;
   const { dispatch, handleRootAction } = context;
 
@@ -124,6 +131,9 @@ const Certificate = (props, context) => {
           <AlgName>
             { algorithm }
           </AlgName>
+          <Size>
+            { size }
+          </Size>
         </CertDescrStyled>
       </ContainerStyled>
     </CertificateStyled>
@@ -136,6 +146,19 @@ Certificate.propTypes = {
   type: PropTypes.string,
   algorithm: PropTypes.string,
   selected: PropTypes.bool,
+  size: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
+};
+
+Certificate.defaultProps = {
+  id: '',
+  name: '',
+  type: '',
+  algorithm: '',
+  selected: false,
+  size: '',
 };
 
 Certificate.contextTypes = {

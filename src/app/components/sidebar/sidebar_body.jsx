@@ -52,6 +52,7 @@ export default class SidebarBody extends Component {
         type={item.type}
         selected={item.selected}
         algorithm={item.algorithm || item.keyInfo.algorithm}
+        size={item.size || item.keyInfo.modulusBits || item.keyInfo.namedCurve || ''}
       />
     ));
   }

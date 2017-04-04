@@ -7,7 +7,7 @@ export default new Schema('Key', {
   createdAt: Type.String,
   lastUsed: Type.String,
   algorithm: Type.String,
-  size: Type.Number,
+  size: Type.String,
   usages: Type.List,
   selected: Type.Boolean,
 });

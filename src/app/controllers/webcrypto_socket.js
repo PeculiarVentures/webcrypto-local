@@ -50,13 +50,14 @@ export const WSController = {
   },
 
   keyDataHandler: function keyDataHandler(keyData, keyId) {
+    const { algorithm, usages, id } = keyData;
     return {
-      id: keyData.id,
+      id,
       _id: keyId,
-      algorithm: keyData.algorithm.name,
-      usages: keyData.usages,
+      algorithm: algorithm.name,
+      usages,
       name: '',
-      size: keyData.algorithm.modulusLength,
+      size: (algorithm.modulusLength || algorithm.namedCurve).toString(),
       createdAt: '',
       lastUsed: '',
       type: 'key',
@@ -91,6 +92,8 @@ export const WSController = {
       signature,
       keyInfo: {
         algorithm: signature.algorithm.name,
+        modulusBits: publicKey.algorithm.modulusBits,
+        namedCurve: publicKey.algorithm.namedCurve,
       },
       issuer: decodedIssuer,
       subject: decodedSubject,

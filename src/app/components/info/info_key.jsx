@@ -67,7 +67,7 @@ KeyInfo.propTypes = {
   createdAt: PropTypes.string,
   lastUsed: PropTypes.string,
   algorithm: PropTypes.string,
-  size: PropTypes.number,
+  size: PropTypes.string,
   usages: PropTypes.arrayOf(PropTypes.string),
 };
 
