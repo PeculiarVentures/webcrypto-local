@@ -2,6 +2,7 @@
 // import UUID from 'uuid';
 import * as pkijs from 'pkijs';
 import * as asn1js from 'asn1js';
+import moment from 'moment';
 import { SERVER_URL } from '../../../scripts/config';
 
 export const ws = new WebcryptoSocket.SocketProvider();
@@ -63,20 +64,26 @@ export const WSController = {
   },
 
   certDataHandler: function certDataHandler(certDetails, certData, certId) {
+    console.log(certDetails);
     const { id } = certData;
-    const { issuerName, extensions, publicKey, version, signature, serialNumber } = certDetails;
-    const decodedSubject = this.decodeSubjectString(issuerName);
-    return Object.assign({
+    const {
+      issuerName,
+      subjectName,
+      extensions,
+      publicKey,
+      version,
+      signature,
+      serialNumber,
+      notBefore,
+      notAfter,
+    } = certDetails;
+    const decodedIssuer = this.decodeSubjectString(issuerName);
+    const decodedSubject = this.decodeSubjectString(subjectName);
+    return {
       id,
       _id: certId,
       type: 'certificate',
-      name: '',
-      country: '',
-      organization: '',
-      organizationUnit: '',
-      commonName: '',
-      region: '',
-      city: '',
+      name: decodedSubject.name || '',
       serialNumber,
       extensions,
       publicKey,
@@ -85,7 +92,11 @@ export const WSController = {
       keyInfo: {
         algorithm: signature.algorithm.name,
       },
-    }, decodedSubject);
+      issuer: decodedIssuer,
+      subject: decodedSubject,
+      notBefore: notBefore ? moment(notBefore).format('D MMM YYYY') : '',
+      notAfter: notAfter ? moment(notAfter).format('D MMM YYYY') : '',
+    };
   },
 
   requestDataHandler: function requestDataHandler(reqData, reqId) {

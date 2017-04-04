@@ -82,7 +82,6 @@ export default class Button extends Component {
   static defaultProps = {
     primary: false,
     secondary: false,
-    href: '',
     disabled: false,
   };
 

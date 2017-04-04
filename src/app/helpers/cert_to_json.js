@@ -1,3 +1,5 @@
+import { OIDS } from '../constants';
+
 const asn1js = require('asn1js');
 const { Certificate } = require('pkijs');
 
@@ -57,21 +59,6 @@ const OID = {
     short: 'T',
     long: 'Title',
   },
-  '2.5.29.14': {
-    long: 'Subject Key Identifier',
-  },
-  '2.5.29.15': {
-    long: 'Key Usage',
-  },
-  '2.5.29.19': {
-    long: 'Basic Constraints',
-  },
-  '2.5.29.35': {
-    long: 'Authority Key Identifier',
-  },
-  '2.16.840.1.113730.1.1': {
-    long: 'Netscape Certificate Type',
-  },
   '1.2.840.113549.1.9.8': {
     long: 'UnstructuredAddress',
   },
@@ -121,7 +108,7 @@ function prepareAlgorithm(pkiAlg) {
 }
 
 function addSpaceAfterSecondCharset(string) {
-  return string.replace(/(.{2})/g, '$1 ').trim();
+  return string.replace(/(.{2})/g, '$1 ').trim().toUpperCase();
 }
 
 /**
@@ -159,7 +146,7 @@ export default function certToJson(raw) {
 
   for (const item of json.extensions) {
     extensions.push({
-      name: OID[item.extnID] ? OID[item.extnID].long : item.extnID,
+      name: OIDS[item.extnID] || item.extnID,
       critical: item.critical || false,
       value: addSpaceAfterSecondCharset(item.extnValue.valueBlock.valueHex),
     });

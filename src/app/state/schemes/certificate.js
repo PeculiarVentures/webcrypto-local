@@ -4,12 +4,6 @@ export default new Schema('Certificate', {
   id: Type.ObjectID,
   _id: Type.ObjectID,
   name: Type.String,
-  commonName: Type.String,
-  organization: Type.String,
-  organizationUnit: Type.String,
-  country: Type.String,
-  region: Type.String,
-  city: Type.String,
   keyInfo: {
     algorithm: Type.String,
   },
@@ -20,4 +14,8 @@ export default new Schema('Certificate', {
   version: Type.Number,
   signature: Type.Map,
   serialNumber: Type.String,
+  issuer: Type.Map,
+  subject: Type.Map,
+  notBefore: Type.String,
+  notAfter: Type.String,
 });

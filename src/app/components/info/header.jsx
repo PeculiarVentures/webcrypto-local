@@ -189,7 +189,6 @@ export default class Header extends Component {
 
     this.bindedToggleDropdown = ::this.toggleDropdown;
     this.bindedHandleMenu = ::this.handleMenu;
-    this.bindedHandleDownload = ::this.handleDownload;
     this.bindedHandleCopy = ::this.handleCopy;
     this.bindedHandleRemove = ::this.handleRemove;
   }
@@ -205,13 +204,13 @@ export default class Header extends Component {
     }
   }
 
-  handleDownload() {
+  handleDownload = () => {
     const { onDownload } = this.props;
 
     if (onDownload) {
       onDownload();
     }
-  }
+  };
 
   handleCopy() {
     const { onCopy } = this.props;
@@ -284,7 +283,7 @@ export default class Header extends Component {
               isKey
               ? null
               : <DropdownItemContainer>
-                <DropdownItemStyled onClick={this.bindedHandleDownload} secondary>
+                <DropdownItemStyled onClick={this.handleDownload} secondary>
                   <DownloadIconStyled />
                   { enLang['Info.Header.Download'] }
                 </DropdownItemStyled>
@@ -348,7 +347,7 @@ export default class Header extends Component {
           isKey
           ? null
           : <StyledButton
-            onClick={this.bindedHandleDownload}
+            onClick={this.handleDownload}
             secondary
             disabled={!dataLoaded}
           >

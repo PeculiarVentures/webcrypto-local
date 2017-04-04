@@ -4,25 +4,31 @@ import enLang from '../../langs/en.json';
 
 const CertificateInfo = (props) => {
   const {
-    commonName,
-    organization,
-    organizationUnit,
-    country,
-    region,
-    city,
+    subject,
+    issuer,
     extensions,
     publicKey,
     version,
     signature,
     serialNumber,
+    notBefore,
+    notAfter,
   } = props;
 
-  const renderRowContainer = (title, value) => {
-    if (value) {
+  const transformCamelCase = string => (
+    string
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase())
+  );
+
+  const renderRowContainer = (title, value, index) => {
+    if (value && title !== 'name') {
       return (
-        <RowCertInfo>
+        <RowCertInfo
+          key={index}
+        >
           <ColCert>
-            { title }:
+            { transformCamelCase(title) }:
           </ColCert>
           <ColCert>
             { value }
@@ -35,21 +41,38 @@ const CertificateInfo = (props) => {
 
   return (
     <Root>
+
+      <Row>
+        <Title>
+          { enLang['Info.InfoTable.Certificate.Info'] }
+        </Title>
+        <RowCert>
+          { renderRowContainer(enLang['Info.InfoTable.Certificate.SerialNumber'], serialNumber) }
+          { renderRowContainer(enLang['Info.InfoTable.Certificate.Version'], version) }
+          { renderRowContainer(enLang['Info.InfoTable.Certificate.Issued'], notBefore) }
+          { renderRowContainer(enLang['Info.InfoTable.Certificate.Expired'], notAfter) }
+        </RowCert>
+      </Row>
+
+      <Row>
+        <Title>
+          { enLang['Info.InfoTable.Certificate.SubjectName'] }
+        </Title>
+        <RowCert>
+          {
+            Object.keys(subject).map((iss, index) => renderRowContainer(iss, issuer[iss], index))
+          }
+        </RowCert>
+      </Row>
+
       <Row>
         <Title>
           { enLang['Info.InfoTable.Certificate.IssuerName'] }
         </Title>
         <RowCert>
-          { renderRowContainer(enLang['Info.InfoTable.OrganizationUnit'], organizationUnit) }
-          { renderRowContainer(enLang['Info.InfoTable.Organization'], organization) }
-          { renderRowContainer(enLang['Info.InfoTable.CommonName'], commonName) }
-          { renderRowContainer(enLang['Info.InfoTable.Country'], country) }
-          { renderRowContainer(enLang['Info.InfoTable.Region'], region) }
-          { renderRowContainer(enLang['Info.InfoTable.City'], city) }
-        </RowCert>
-        <RowCert>
-          { renderRowContainer(enLang['Info.InfoTable.Certificate.SerialNumber'], serialNumber) }
-          { renderRowContainer(enLang['Info.InfoTable.Certificate.Version'], version) }
+          {
+            Object.keys(issuer).map((iss, index) => renderRowContainer(iss, issuer[iss], index))
+          }
         </RowCert>
       </Row>
 
@@ -82,7 +105,7 @@ const CertificateInfo = (props) => {
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.Certificate.Extension'] }
+          { enLang['Info.InfoTable.Certificate.Extensions'] }
         </Title>
         {
           extensions.map((ext, index) => (
@@ -98,41 +121,9 @@ const CertificateInfo = (props) => {
       </Row>
     </Root>
   );
-
-  // return (
-  //   <Root>
-  //
-  //     <Row>
-  //       <Title>
-  //         { enLang['Info.InfoTable.SubjectInfo'] }
-  //       </Title>
-  //       { renderInfoContainer(enLang['Info.InfoTable.CommonName'], commonName) }
-  //       { renderInfoContainer(enLang['Info.InfoTable.Organization'], organization) }
-  //       { renderInfoContainer(enLang['Info.InfoTable.OrganizationUnit'], organizationUnit) }
-  //       { renderInfoContainer(enLang['Info.InfoTable.Country'], country) }
-  //       { renderInfoContainer(enLang['Info.InfoTable.Region'], region) }
-  //       { renderInfoContainer(enLang['Info.InfoTable.City'], city) }
-  //     </Row>
-  //
-  //     <Row>
-  //       <Title>
-  //         { enLang['Info.InfoTable.Key.Title'] }
-  //       </Title>
-  //       { renderInfoContainer(enLang['Info.InfoTable.Key.Type'], keyInfo.type) }
-  //       { getKeyInfoFields() }
-  //     </Row>
-  //
-  //   </Root>
-  // );
 };
 
 CertificateInfo.propTypes = {
-  commonName: PropTypes.string,
-  organization: PropTypes.string,
-  organizationUnit: PropTypes.string,
-  country: PropTypes.string,
-  region: PropTypes.string,
-  city: PropTypes.string,
   extensions: PropTypes.oneOfType([
     PropTypes.array,
   ]),
@@ -143,21 +134,27 @@ CertificateInfo.propTypes = {
   signature: PropTypes.oneOfType([
     PropTypes.object,
   ]),
+  issuer: PropTypes.oneOfType([
+    PropTypes.object,
+  ]),
+  subject: PropTypes.oneOfType([
+    PropTypes.object,
+  ]),
   serialNumber: PropTypes.string,
+  notAfter: PropTypes.string,
+  notBefore: PropTypes.string,
 };
 
 CertificateInfo.defaultProps = {
-  commonName: '',
-  organization: '',
-  organizationUnit: '',
-  country: '',
-  region: '',
-  city: '',
   extensions: [],
   publicKey: {},
   version: '',
   signature: {},
   serialNumber: '',
+  issuer: {},
+  subject: {},
+  notAfter: '',
+  notBefore: '',
 };
 
 export default CertificateInfo;
