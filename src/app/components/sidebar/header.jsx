@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Button, SelectField, SelectItem, SelectNative } from '../basic';
 import { ImportIcon, CreateIcon } from '../svg';
 import { RoutingActions } from '../../actions/ui';
+import { ProviderActions } from '../../actions/state';
 import { AccessedMimes, AccessedExtentions } from '../../constants/acessed_types';
 import enLang from '../../langs/en.json';
 
@@ -27,7 +28,7 @@ const BtnsContainer = styled.div`
 const SelectContainer = styled.div`
   padding: 24px 25px 8px;
   @media ${props => props.theme.media.mobile} {
-    padding: 0 12px;
+    padding: 13px 12px 5px;
   }
 `;
 
@@ -56,11 +57,11 @@ const InputFileStyled = styled.input`
 `;
 
 const SidebarHeaderStyled = styled.div`
-  height: 165px;
+  height: 164px;
   z-index: 1;
   position: relative;
   @media ${props => props.theme.media.mobile} {
-    height: 56px;
+    height: 122px;
   }
 `;
 
@@ -132,10 +133,19 @@ export default class SidebarHeader extends Component {
     return AccessedExtentions.map(e => `.${e}`).join(', ');
   }
 
+  onSelectHandler = (data) => {
+    const { dispatch } = this.context;
+    dispatch(ProviderActions.select(data.value));
+  };
+
   render() {
     const { dataLoaded, providers } = this.props;
     const { deviceType } = this.context;
     const acceptString = this.getAcceptString();
+    const selectedProvider = providers.filter(obj => obj.selected);
+    const currentProvider = selectedProvider.length
+      ? selectedProvider[0]
+      : false;
 
     return (
       <SidebarHeaderStyled>
@@ -173,17 +183,18 @@ export default class SidebarHeader extends Component {
                   value: item.id,
                   name: item.name,
                 }))}
-                defaultValue={providers[0] ? providers[0].name : ''}
+                defaultValue={providers[0] ? providers[0].id : ''}
               />
               : <SelectField
                 labelText={enLang['CertificateCreate.Provider.Field.Name']}
                 placeholder="Select provider..."
-                defaultSelected={{
-                  name: providers[0] ? providers[0].name : '',
-                  value: providers[0] ? providers[0].id : '',
-                  index: 0,
+                value={{
+                  name: currentProvider ? currentProvider.name : '',
+                  value: currentProvider ? currentProvider.id : '',
+                  index: currentProvider ? (currentProvider.id === 'test_id' ? 1 : 0) : null,
                 }}
                 disabled={!providers.length}
+                onChange={this.onSelectHandler}
               >
                 {
                   providers.map((item, index) => (

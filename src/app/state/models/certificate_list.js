@@ -31,6 +31,10 @@ export default class CertificateList extends State.List {
     return !!cer;
   }
 
+  clearAll() {
+    this.clear();
+  }
+
   remove(id) {
     const cer = this.where({ id });
 

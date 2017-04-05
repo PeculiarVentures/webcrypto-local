@@ -15,6 +15,11 @@ export default function (state, payload) {
       return state;
     }
 
+    case ACTIONS_CONST.CERTIFICATE_CLEAR: {
+      certificates.clearAll();
+      return state;
+    }
+
     case ACTIONS_CONST.CERTIFICATE_REMOVE: {
       certificates.selectNextOrPrev(id);
       certificates.remove(id);

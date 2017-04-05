@@ -43,7 +43,7 @@ const SelectStyled = styled.select`
       borderColor = theme.field.text.borderColorDisabled;
       borderColorActive = borderColor;
     }
-  
+
     return `
       width: 100%;
       font-size: 12px;
@@ -61,7 +61,7 @@ const SelectStyled = styled.select`
       &:focus {
         border-color: ${borderColorActive};
       }
-    `
+    `;
   }}
 `;
 
@@ -129,6 +129,11 @@ export default class SelectNative extends Component {
     if (defaultValue && (nextProps.defaultValue !== selectedValue)) {
       this.setState({
         selectedValue: defaultValue,
+      });
+    }
+    if (defaultValue !== nextProps.defaultValue) {
+      this.setState({
+        selectedValue: nextProps.defaultValue,
       });
     }
   }

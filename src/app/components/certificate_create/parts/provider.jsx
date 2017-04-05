@@ -61,7 +61,7 @@ export default class Provider extends Component {
                     value: item.id,
                     name: item.name,
                   }))}
-                  defaultValue={providers[0] ? providers[0].name : ''}
+                  defaultValue={providers[0] ? providers[0].id : ''}
                 />
                 : <SelectField
                   labelText={enLang['CertificateCreate.Provider.Field.Name']}

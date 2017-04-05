@@ -54,7 +54,6 @@ export function* createCertificate(crypto, data) {
   //     usages: ['sign', 'verify'],
   //   },
   // };
-
   if (crypto) {
     const { algorithm, extractable, usages } = data.keyInfo;
     const algorithmHash = algorithm.hash;

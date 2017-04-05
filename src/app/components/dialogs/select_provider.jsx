@@ -66,7 +66,7 @@ export default class SelectProviderDialog extends Component {
                   value: item.id,
                   name: item.name,
                 }))}
-                defaultValue={providers[0] ? providers[0].name : ''}
+                defaultValue={providers[0] ? providers[0].id : ''}
                 ref={node => (this.selectNode = node)}
                 disabled={!providers.length}
               />

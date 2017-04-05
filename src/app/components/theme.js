@@ -33,6 +33,10 @@ export function getTheme(palette = defaultPalette) {
     borderRadius: 3,
     basicTransition: 300,
     fontName: '"Open Sans", Arial',
+    tooltip: {
+      borderColor: colorManipulator.fade(palette.secondaryButtonColor, 0.5),
+      background: palette.white,
+    },
     button: {
       primary: {
         color: palette.white,

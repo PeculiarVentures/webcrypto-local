@@ -30,3 +30,7 @@ export const copy = id => ({
   type: ACTIONS_CONST.CERTIFICATE_COPY,
   id,
 });
+
+export const clear = () => ({
+  type: ACTIONS_CONST.CERTIFICATE_CLEAR,
+});

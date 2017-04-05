@@ -160,9 +160,14 @@ function* getProviders() {
         id: prv.id,
         name: prv.name,
         index,
+      }, {
+        id: 'test_id',
+        name: 'For test',
+        index,
       })
     ));
     yield put(ProviderActions.updateProviders(_providers));
+    yield put(ProviderActions.select(_providers[0].id));
   } catch (error) {
     yield put(ErrorActions.error(error));
   }

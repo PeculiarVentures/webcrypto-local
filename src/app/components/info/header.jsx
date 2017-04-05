@@ -113,6 +113,7 @@ const StyledButton = styled(Button)`
   display: inline-block;
   width: auto;
   margin-left: 6px;
+  position: relative;
   &:first-child {
     margin-left: 0;
   }

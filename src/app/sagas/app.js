@@ -1,13 +1,13 @@
 import { takeEvery } from 'redux-saga';
 import { select, put } from 'redux-saga/effects';
 import { ACTIONS_CONST } from '../constants';
-import { WSActions } from '../actions/state';
-import { DialogActions } from '../actions/ui';
+import { AppActions, WSActions, CertificateActions } from '../actions/state';
 
 function* selectProvider({ id }) {
   const state = yield select();
   const provider = state.find('providers').where({ id }).get();
-  yield put(DialogActions.close());
+  yield put(AppActions.dataLoaded(false));
+  yield put(CertificateActions.clear());
   yield put(WSActions.getCertificates(provider.index));
 }
 
