@@ -183,7 +183,7 @@ export default class SidebarHeader extends Component {
                   value: item.id,
                   name: item.name,
                 }))}
-                defaultValue={providers[0] ? providers[0].id : ''}
+                value={currentProvider ? currentProvider.id : ''}
               />
               : <SelectField
                 labelText={enLang['CertificateCreate.Provider.Field.Name']}
@@ -191,7 +191,7 @@ export default class SidebarHeader extends Component {
                 value={{
                   name: currentProvider ? currentProvider.name : '',
                   value: currentProvider ? currentProvider.id : '',
-                  index: currentProvider ? (currentProvider.id === 'test_id' ? 1 : 0) : null,
+                  index: currentProvider ? currentProvider.index : null,
                 }}
                 disabled={!providers.length}
                 onChange={this.onSelectHandler}
