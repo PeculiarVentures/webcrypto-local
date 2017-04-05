@@ -65,7 +65,6 @@ export const WSController = {
   },
 
   certDataHandler: function certDataHandler(certDetails, certData, certId) {
-    console.log(certDetails);
     const { id } = certData;
     const {
       issuerName,

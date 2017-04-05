@@ -97,9 +97,9 @@ export function* createCertificate(crypto, data) {
 
       let importCert = '';
       try {
-        importCert = yield crypto.certStorage.importCert('x509', csrBuffer, algorithm, usages);
-      } catch (error) {
         importCert = yield crypto.certStorage.importCert('request', csrBuffer, algorithm, usages);
+      } catch (error) {
+        yield put(ErrorActions.error(error));
       }
 
       const certId = yield crypto.certStorage.setItem(importCert);
