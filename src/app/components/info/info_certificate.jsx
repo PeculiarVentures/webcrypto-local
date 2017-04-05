@@ -44,7 +44,7 @@ const CertificateInfo = (props) => {
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.Certificate.Info'] }
+          { enLang['Info.InfoTable.Certificate.General'] }
         </Title>
         <RowCert>
           { renderRowContainer(enLang['Info.InfoTable.Certificate.SerialNumber'], serialNumber) }

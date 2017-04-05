@@ -83,7 +83,7 @@
   "Info.InfoTable.Certificate.SerialNumber": "Serial Number",
   "Info.InfoTable.Certificate.Version": "Version",
   "Info.InfoTable.Certificate.PublicKeyInfo": "Public Key Info",
-  "Info.InfoTable.Certificate.Info": "Info",
+  "Info.InfoTable.Certificate.General": "General",
   "Info.InfoTable.Certificate.Issued": "Issued",
   "Info.InfoTable.Certificate.Expired": "Expired",
   "Snackbar.Offline.Btn.Get": "Get help",
