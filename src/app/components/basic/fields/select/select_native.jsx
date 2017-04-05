@@ -211,7 +211,7 @@ export default class SelectNative extends Component {
                 key={index}
                 value={opt.value}
               >
-                { opt.value }
+                { opt.name || opt.value }
               </option>
             ))
           }

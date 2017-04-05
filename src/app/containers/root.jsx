@@ -97,7 +97,9 @@ class RootContainer extends Component {
     const { dispatch, certificates, params } = this.props;
     const selectedCertificate = this.getSelectedCertificateProps();
 
-    if (params.id) {
+    if (!certificates.length) {
+      dispatch(RoutingActions.push(''));
+    } else if (params.id) {
       dispatch(CertificateActions.select(params.id));
     } else if (!selectedCertificate.id && certificates.length) {
       dispatch(CertificateActions.select(certificates[0].id));
@@ -137,6 +139,7 @@ class RootContainer extends Component {
       dispatch(RoutingActions.push(`certificate/${firstCertificate.id}`));
     }
 
+    // if remove last certificate
     if (prevCertificatesLength === 1 && !certificatesLength) {
       this.handleRootAction({ type: 'SIDEBAR:OPEN' });
       dispatch(RoutingActions.push(''));
@@ -191,7 +194,7 @@ class RootContainer extends Component {
   }
 
   render() {
-    const { certificates, dataLoaded, serverStatus } = this.props;
+    const { certificates, dataLoaded, serverStatus, providers } = this.props;
     const { sidebarOpen } = this.state;
 
     return (
@@ -201,6 +204,7 @@ class RootContainer extends Component {
           list={certificates}
           dataLoaded={dataLoaded}
           serverStatus={serverStatus}
+          providers={providers}
         />
         <InfoStyled>
           <Info

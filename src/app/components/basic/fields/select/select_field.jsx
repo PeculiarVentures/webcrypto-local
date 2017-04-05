@@ -57,6 +57,7 @@ export default class SelectField extends Component {
       ]),
       index: PropTypes.number,
     }),
+    disabled: PropTypes.bool,
   };
 
   constructor(props) {
@@ -171,7 +172,7 @@ export default class SelectField extends Component {
   }
 
   render() {
-    const { labelText, placeholder, validation, errorText } = this.props;
+    const { labelText, placeholder, validation, errorText, disabled } = this.props;
     const { opened, selectedItemData } = this.state;
 
     return (
@@ -187,6 +188,7 @@ export default class SelectField extends Component {
           validation={validation}
           errorText={errorText}
           ref={node => (this.fieldNode = node)}
+          disabled={disabled}
         />
         <ArrowIconStyled
           opened={opened}
@@ -194,15 +196,5 @@ export default class SelectField extends Component {
         { this.renderDropdown() }
       </SelectFieldContainerStyled>
     );
-    // return (
-    //   <SelectFieldContainerStyled>
-    //     <SelectNative
-    //       placeholder={placeholder}
-    //       labelText={labelText}
-    //       validation={validation}
-    //       errorText={errorText}
-    //     />
-    //   </SelectFieldContainerStyled>
-    // )
   }
 }

@@ -8,11 +8,7 @@ import { RoutingActions } from '../../actions/ui';
 const CertificateCreateStyled = styled.div`
   height: 100%;
   width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
   background: ${props => props.theme.certificateCreate.background};
-  z-index: 15;
 `;
 
 export default class CertificateCreate extends Component {
@@ -20,11 +16,15 @@ export default class CertificateCreate extends Component {
   static propTypes = {
     dataLoaded: PropTypes.bool,
     serverStatus: PropTypes.string,
+    providers: PropTypes.oneOfType([
+      PropTypes.array,
+    ]),
   };
 
   static defaultProps = {
     dataLoaded: false,
     serverStatus: 'seaching',
+    providers: [],
   };
 
   static contextTypes = {
@@ -38,11 +38,11 @@ export default class CertificateCreate extends Component {
 
   onCreateHandler = (data) => {
     const { dispatch } = this.context;
-    dispatch(WSActions.createCertificate(0, data));
+    dispatch(WSActions.createCertificate(data));
   };
 
   render() {
-    const { dataLoaded, serverStatus } = this.props;
+    const { dataLoaded, serverStatus, providers } = this.props;
     return (
       <CertificateCreateStyled>
         <Header
@@ -53,6 +53,7 @@ export default class CertificateCreate extends Component {
           onCreate={this.onCreateHandler}
           dataLoaded={dataLoaded}
           serverStatus={serverStatus}
+          providers={providers}
         />
       </CertificateCreateStyled>
     );

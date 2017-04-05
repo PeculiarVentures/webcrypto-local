@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Button } from '../basic';
 import SubjectInfo from './parts/subject_info';
 import KeyInfo from './parts/key_info';
+import Provider from './parts/provider';
 import enLang from '../../langs/en.json';
 import countriesData from '../../constants/countries.json';
 import parametersData from '../../constants/parameters.json';
@@ -55,6 +56,9 @@ export default class Body extends Component {
     onCreate: PropTypes.func,
     dataLoaded: PropTypes.bool,
     serverStatus: PropTypes.string,
+    providers: PropTypes.oneOfType([
+      PropTypes.array,
+    ]),
   };
 
   static defaultProps = {
@@ -64,6 +68,7 @@ export default class Body extends Component {
     serverStatus: 'seaching',
     onCancel: null,
     onCreate: null,
+    providers: [],
   };
 
   onCreateHandler = () => {
@@ -87,11 +92,14 @@ export default class Body extends Component {
   };
 
   render() {
-    const { countries, parameters, dataLoaded, serverStatus } = this.props;
+    const { countries, parameters, dataLoaded, serverStatus, providers } = this.props;
 
     return (
       <CertificateCreateBodyStyled>
         <Container>
+          <Provider
+            providers={providers}
+          />
           <SubjectInfo
             countries={countries}
             ref={node => (this.subjectNode = node)}

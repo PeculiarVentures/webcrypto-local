@@ -4,4 +4,5 @@ export * as ACTIONS_CONST from './actions';
 export * as CERTIFICATE from './certificate';
 export * as REQUEST from './request';
 export * as KEY from './key';
+export * as PROVIDER from './provider';
 export OIDS from './oids';

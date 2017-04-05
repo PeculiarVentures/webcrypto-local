@@ -5,22 +5,24 @@ import { objectOmitPluck } from './helpers';
 import Routing from './routing';
 import Store from './store';
 import { WSController } from './controllers/webcrypto_socket';
+import { WSActions } from './actions/state';
+import { DialogActions } from './actions/ui';
 
 window.Store = Store;
 
 const wsOnListening = () => {
-  // Store.dispatch({ type: 'WS:GET_KEYS' });
-  Store.dispatch({ type: 'WS:GET_CERTIFICATES' });
-  Store.dispatch({ type: 'WS:STATUS', state: 'online' });
+  Store.dispatch(WSActions.status('online'));
+  Store.dispatch(WSActions.getProviders());
+  Store.dispatch(DialogActions.open('select_provider'));
 };
 
 const wsOnError = (error) => {
   console.log('Connected error', error);
-  Store.dispatch({ type: 'WS:STATUS', state: 'offline' });
+  Store.dispatch(WSActions.status('offline'));
 };
 
 const wsOnClose = () => {
-  Store.dispatch({ type: 'WS:STATUS', state: 'offline' });
+  Store.dispatch(WSActions.status('offline'));
 };
 
 WSController.connect(wsOnListening, wsOnError, wsOnClose);

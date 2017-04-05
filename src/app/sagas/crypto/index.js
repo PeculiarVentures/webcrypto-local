@@ -3,21 +3,23 @@ import { select, put } from 'redux-saga/effects';
 import { ws, WSController } from '../../controllers/webcrypto_socket';
 import { EventChannel } from '../../controllers';
 import { ACTIONS_CONST } from '../../constants';
-import { AppActions, CertificateActions, ErrorActions } from '../../actions/state';
+import { AppActions, CertificateActions, ErrorActions, ProviderActions } from '../../actions/state';
 import { RoutingActions } from '../../actions/ui';
+import { ab2hex, downloadCertFromURI, copyTextToBuffer, certToJson } from '../../helpers';
 import * as Key from './key';
 import * as Certificate from './certificate';
-import { ab2hex, downloadCertFromURI, copyTextToBuffer, certToJson } from '../../helpers';
 
-function* getProviders() {
+function* getProvidersList() {
   const info = yield ws.info();
   return info.providers;
 }
 
-function* getCrypto(providerId = 0) {
+function* getCrypto() {
+  const state = yield select();
+  const selectedProvider = state.find('providers').where({ selected: true }).get();
   try {
-    const providers = yield getProviders();
-    const provider = providers[providerId];
+    const providers = yield getProvidersList();
+    const provider = providers[selectedProvider.index];
     const crypto = yield ws.getCrypto(provider.id);
     const isLoggedIn = yield crypto.isLoggedIn();
     if (!isLoggedIn) {
@@ -30,8 +32,8 @@ function* getCrypto(providerId = 0) {
   return false;
 }
 
-function* getKeys({ providerId }) {
-  const crypto = yield getCrypto(providerId);
+function* getKeys() {
+  const crypto = yield getCrypto();
   const keys = yield Key.getKeys(crypto);
   if (keys.length) {
     // const getKeysArr = [];
@@ -53,12 +55,12 @@ function* getKeys({ providerId }) {
   }
 }
 
-function* getCerificates({ providerId }) {
-  const providers = yield getProviders();
+function* getCerificates() {
+  // const providers = yield getProviders();
 
   // TODO: 'for' created for test
   // for (let i = 0; i < providers.length; i += 1) {
-  const crypto = yield getCrypto(providerId);
+  const crypto = yield getCrypto();
   const certificates = yield Certificate.getCertificates(crypto);
   if (certificates.length) {
     // const getCertificatesArr = [];
@@ -90,8 +92,8 @@ function* getCerificates({ providerId }) {
   yield put(AppActions.dataLoaded(true));
 }
 
-function* createCertificate({ providerId, data }) {
-  const crypto = yield getCrypto(providerId);
+function* createCertificate({ data }) {
+  const crypto = yield getCrypto();
   const certId = yield Certificate.createCertificate(crypto, data);
   if (certId) {
     const item = yield Certificate.getCertificate(crypto, certId);
@@ -101,8 +103,8 @@ function* createCertificate({ providerId, data }) {
   }
 }
 
-function* removeItem({ providerId }) {
-  const crypto = yield getCrypto(providerId);
+function* removeItem() {
+  const crypto = yield getCrypto();
   const state = yield select();
   const certStorage = state.find('certificates').where({ selected: true }).get();
   if (crypto) {
@@ -118,8 +120,8 @@ function* removeItem({ providerId }) {
   }
 }
 
-function* downloadCertificate({ providerId, format }) {
-  const crypto = yield getCrypto(providerId);
+function* downloadCertificate({ format }) {
+  const crypto = yield getCrypto();
   const state = yield select();
   const certStorage = state.find('certificates').where({ selected: true }).get();
   if (crypto) {
@@ -133,8 +135,8 @@ function* downloadCertificate({ providerId, format }) {
   }
 }
 
-function* copyCertificateToBuffer({ providerId, format }) {
-  const crypto = yield getCrypto(providerId);
+function* copyCertificateToBuffer({ format }) {
+  const crypto = yield getCrypto();
   const state = yield select();
   const certStorage = state.find('certificates').where({ selected: true }).get();
   if (crypto) {
@@ -149,6 +151,24 @@ function* copyCertificateToBuffer({ providerId, format }) {
   }
 }
 
+function* getProviders() {
+  try {
+    const providers = yield getProvidersList();
+    const _providers = [];
+    providers.map((prv, index) => (
+      _providers.push({
+        id: prv.id,
+        name: prv.name,
+        index,
+      })
+    ));
+    yield put(ProviderActions.updateProviders(_providers));
+  } catch (error) {
+    yield put(ErrorActions.error(error));
+  }
+  return false;
+}
+
 export default function* () {
   yield [
     takeEvery(ACTIONS_CONST.WS_GET_KEYS, getKeys),
@@ -157,5 +177,6 @@ export default function* () {
     takeEvery(ACTIONS_CONST.WS_REMOVE_ITEM, removeItem),
     takeEvery(ACTIONS_CONST.WS_DOWNLOAD_CERTIFICATE, downloadCertificate),
     takeEvery(ACTIONS_CONST.WS_COPY_CERTIFICATE, copyCertificateToBuffer),
+    takeEvery(ACTIONS_CONST.WS_GET_PROVIDERS, getProviders),
   ];
 }

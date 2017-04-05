@@ -1,8 +1,8 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
-import SidebarHeader from './sidebar_header';
-import SidebarBody from './sidebar_body';
-import SidebarFooter from './sidebar_footer';
+import SidebarHeader from './header';
+import SidebarBody from './body';
+import SidebarFooter from './footer';
 
 const SidebarStyled = styled.div`
   display: inline-block;
@@ -44,7 +44,7 @@ export default class Sidebar extends Component {
   };
 
   render() {
-    const { list, open, dataLoaded, serverStatus } = this.props;
+    const { list, open, dataLoaded, serverStatus, providers } = this.props;
 
     return (
       <SidebarStyled
@@ -52,6 +52,7 @@ export default class Sidebar extends Component {
       >
         <SidebarHeader
           dataLoaded={dataLoaded}
+          providers={providers}
         />
         <SidebarBody
           list={list}

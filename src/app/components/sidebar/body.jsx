@@ -5,7 +5,7 @@ import EmptyBody from '../info/empty_body';
 import Shell from './parts/shell';
 
 const SidebarBodyStyled = styled.div`
-  height: calc(100% - 84px - 44px);
+  height: calc(100% - 164px - 44px);
   overflow: auto;
   @media ${props => props.theme.media.mobile} {
     height: calc(100% - 56px - 34px);

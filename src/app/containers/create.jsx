@@ -1,6 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
+import Overlay from './overlay';
 import CertificateCreate from '../components/certificate_create/index';
 
 const ContentStyled = styled.div`
@@ -13,12 +14,16 @@ class CreateContainer extends Component {
     dispatch: PropTypes.func,
     dataLoaded: PropTypes.bool,
     serverStatus: PropTypes.string,
+    providers: PropTypes.oneOfType([
+      PropTypes.array,
+    ])
   };
 
   static defaultProps = {
     dispatch: null,
     dataLoaded: false,
     serverStatus: 'seaching',
+    providers: [],
   };
 
   static childContextTypes = {
@@ -32,13 +37,15 @@ class CreateContainer extends Component {
   }
 
   render() {
-    const { dataLoaded, serverStatus } = this.props;
+    const { dataLoaded, serverStatus, providers } = this.props;
     return (
       <ContentStyled>
         <CertificateCreate
           dataLoaded={dataLoaded}
           serverStatus={serverStatus}
+          providers={providers}
         />
+        <Overlay {...this.props} />
       </ContentStyled>
     );
   }

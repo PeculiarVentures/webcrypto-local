@@ -1,9 +1,12 @@
 import { ACTIONS_CONST } from '../../constants';
 
-export const createCertificate = (providerId, data) => ({
+export const createCertificate = data => ({
   type: ACTIONS_CONST.WS_CREATE_CSR,
-  providerId,
   data,
+});
+
+export const getCertificates = () => ({
+  type: ACTIONS_CONST.WS_GET_CERTIFICATES,
 });
 
 export const removeItem = () => ({
@@ -23,4 +26,8 @@ export const downloadCertificate = format => ({
 export const copyCertificate = format => ({
   type: ACTIONS_CONST.WS_COPY_CERTIFICATE,
   format,
+});
+
+export const getProviders = () => ({
+  type: ACTIONS_CONST.WS_GET_PROVIDERS,
 });

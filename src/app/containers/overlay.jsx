@@ -4,7 +4,7 @@ import { Taber } from '../helpers';
 import { SegueHandler } from '../components/basic';
 import * as Dialog from '../components/dialogs';
 import { ACTIONS_CONST } from '../constants';
-import { WSActions } from '../actions/state';
+import { WSActions, ProviderActions } from '../actions/state';
 import { DialogActions } from '../actions/ui';
 
 const OverlayStyled = styled.div`
@@ -87,7 +87,7 @@ export default class Overlay extends Component {
   }
 
   handleAction = (payload) => {
-    const { type } = payload;
+    const { type, id } = payload;
     const { dispatch } = this.context;
 
     switch (type) {
@@ -99,13 +99,17 @@ export default class Overlay extends Component {
         return dispatch(DialogActions.close());
       }
 
+      case ACTIONS_CONST.PROVIDER_SELECT: {
+        return dispatch(ProviderActions.select(id));
+      }
+
       default:
         return true;
     }
   };
 
   renderDialog() {
-    const { dialog } = this.props;
+    const { dialog, providers } = this.props;
 
     if (dialog) {
       const selectedCertificateProps = this.getSelectedCertificateProps();
@@ -137,6 +141,16 @@ export default class Overlay extends Component {
             onCancel={() => (
               this.handleAction({
                 type: ACTIONS_CONST.DIALOG_CLOSE,
+              })
+            )}
+          />
+          <Dialog.SelectProviderDialog
+            name="select_provider"
+            providers={providers}
+            onAccept={id => (
+              this.handleAction({
+                type: ACTIONS_CONST.PROVIDER_SELECT,
+                id,
               })
             )}
           />

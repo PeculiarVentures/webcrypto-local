@@ -1,5 +1,5 @@
 import { Type, Schema, is } from 'quantizer';
-import { CertificateList } from '../models';
+import { CertificateList, ProviderList } from '../models';
 
 export default new Schema('UI', {
   modal: Type.String,
@@ -10,6 +10,11 @@ export default new Schema('UI', {
   certificates: new Type({
     name: 'CertificateList',
     instance: CertificateList,
+    validate: is.list,
+  }),
+  providers: new Type({
+    name: 'ProviderList',
+    instance: ProviderList,
     validate: is.list,
   }),
 });
