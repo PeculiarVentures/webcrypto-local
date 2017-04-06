@@ -5,7 +5,7 @@ import CertificateInfo from './info_certificate';
 import RequestInfo from './info_request';
 import KeyInfo from './info_key';
 import EmptyBody from './empty_body';
-import { DialogActions } from '../../actions/ui';
+import { DialogActions, ModalActions } from '../../actions/ui';
 import { WSActions } from '../../actions/state';
 import { InfoShellIcon } from '../svg';
 import StyledAnimatedIcon from '../sidebar/parts/shell.styles';
@@ -65,7 +65,7 @@ export default class Info extends Component {
 
   onCopyHandler = () => {
     const { dispatch } = this.context;
-    dispatch(WSActions.copyCertificate('pem'));
+    dispatch(ModalActions.openModal('copy_certificate'));
   };
 
   onMenuHandler = () => {

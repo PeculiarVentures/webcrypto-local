@@ -91,5 +91,9 @@
   "Snackbar.Offline.Btn.Get": "Get help",
   "Snackbar.Offline.Text": "Server offline or not installed",
   "Snackbar.Copy.Btn.Close": "Close",
-  "Snackbar.Copy.Text": "Certificate copied to your clipboard"
+  "Snackbar.Copy.Text": "Certificate copied to your clipboard",
+  "CopyCertificate.Header.Title": "Get Certificate",
+  "CopyCertificate.Field.Format": "Format name",
+  "CopyCertificate.Field.Certificate": "Certificate",
+  "CopyCertificate.Btn.Copy": "Copy to clipboard"
 }

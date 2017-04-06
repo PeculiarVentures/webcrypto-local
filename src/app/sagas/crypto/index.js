@@ -5,7 +5,7 @@ import { EventChannel } from '../../controllers';
 import { ACTIONS_CONST } from '../../constants';
 import { AppActions, CertificateActions, ErrorActions, ProviderActions } from '../../actions/state';
 import { RoutingActions } from '../../actions/ui';
-import { ab2hex, downloadCertFromURI, copyTextToBuffer, certToJson } from '../../helpers';
+import { ab2hex, downloadCertFromURI, certToJson } from '../../helpers';
 import * as Key from './key';
 import * as Certificate from './certificate';
 
@@ -135,19 +135,23 @@ function* downloadCertificate({ format }) {
   }
 }
 
-function* copyCertificateToBuffer({ format }) {
-  const crypto = yield getCrypto();
-  const state = yield select();
-  const certStorage = state.find('certificates').where({ selected: true }).get();
-  if (crypto) {
-    const cert = yield Certificate.exportCertificate(crypto, certStorage._id, format);
-    if (cert && typeof cert === 'string') {
-      copyTextToBuffer(cert);
-    } else if (cert) {
-      const certHex = ab2hex(cert);
-      copyTextToBuffer(certHex);
+function* openModalForCopy({ value }) {
+  if (value === 'copy_certificate') {
+    const crypto = yield getCrypto();
+    const state = yield select();
+    const certStorage = state.find('certificates').where({ selected: true }).get();
+    if (crypto) {
+      const arrRequest = [
+        Certificate.exportCertificate(crypto, certStorage._id, 'pem'),
+        Certificate.exportCertificate(crypto, certStorage._id, 'raw'),
+      ];
+      const arrFormats = yield arrRequest;
+      const formats = {
+        pem: arrFormats[0],
+        der: ab2hex(arrFormats[1]),
+      };
+      EventChannel.emit(ACTIONS_CONST.CERTIFICATE_COPIED_DATA, formats);
     }
-    EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'copied', 4000);
   }
 }
 
@@ -177,7 +181,7 @@ export default function* () {
     takeEvery(ACTIONS_CONST.WS_CREATE_CSR, createCertificate),
     takeEvery(ACTIONS_CONST.WS_REMOVE_ITEM, removeItem),
     takeEvery(ACTIONS_CONST.WS_DOWNLOAD_CERTIFICATE, downloadCertificate),
-    takeEvery(ACTIONS_CONST.WS_COPY_CERTIFICATE, copyCertificateToBuffer),
+    takeEvery(ACTIONS_CONST.MODAL_OPEN, openModalForCopy),
     takeEvery(ACTIONS_CONST.WS_GET_PROVIDERS, getProviders),
   ];
 }

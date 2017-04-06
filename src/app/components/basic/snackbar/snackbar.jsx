@@ -4,6 +4,7 @@ import { Button } from '../button';
 
 const SnackbarStyled = styled.div`
   position: fixed;
+  z-index: 12;
   width: ${props => props.width};
   left: calc((100% - ${props => props.width}) / 2);
   bottom: ${props => props.origin === 'bottom' ? props.offset : 'auto' };
@@ -18,11 +19,11 @@ const SnackbarStyled = styled.div`
   border-radius: 4px;
   padding: 11px 14px 11px 25px;
   transition: transform ${props => props.animationTime}ms;
-  transform: translate(0, ${props => {
-    return props.origin === 'top' ?
-      `calc(-100% - ${props.offset})` :    
-      `calc(100% + ${props.offset})`    
-  }});
+  transform: translate(0, ${props => (
+    props.origin === 'top'
+      ? `calc(-100% - ${props.offset})`
+      : `calc(100% + ${props.offset})`
+  )});
   @media ${props => props.theme.media.mobile} {
     width: calc(100% - 20px);
     left: 10px;

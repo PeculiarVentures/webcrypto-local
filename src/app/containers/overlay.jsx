@@ -6,6 +6,7 @@ import * as Dialog from '../components/dialogs';
 import { ACTIONS_CONST } from '../constants';
 import { WSActions } from '../actions/state';
 import { DialogActions } from '../actions/ui';
+import CopyCertificate from '../components/copy_certificate';
 
 const OverlayStyled = styled.div`
   width: 100%;
@@ -55,20 +56,20 @@ export default class Overlay extends Component {
   }
 
   renderModal() {
-    // const { modal } = this.props;
+    const { modal } = this.props;
 
-    // if (modal) {
-    //   return (
-    //     <SegueHandler
-    //       query={modal}
-    //       name="Confirms"
-    //     >
-    //       <CertificateCreate
-    //         name="certificate_create"
-    //       />
-    //     </SegueHandler>
-    //   );
-    // }
+    if (modal) {
+      return (
+        <SegueHandler
+          query={modal}
+          name="Confirms"
+        >
+          <CopyCertificate
+            name="copy_certificate"
+          />
+        </SegueHandler>
+      );
+    }
 
     return null;
   }

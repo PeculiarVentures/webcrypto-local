@@ -1,7 +1,10 @@
 import React, { PropTypes, Component } from 'react';
-import uuid from 'uuid';
 import styled from 'styled-components';
 import { validator } from '../../../helpers';
+
+function getRandomNumber() {
+  return parseInt(Math.random() * 10e6, 10);
+}
 
 const FieldLabelStyled = styled.label`
   font-size: 12px;
@@ -73,7 +76,9 @@ const fieldReadyStyles = (props) => {
     &:-ms-input-placeholder {
       color: ${placeholderColor};
     }
-    ${theme.mixins.truncateText}
+    white-space: ${multiline ? 'pre' : 'nowrap'};
+    overflow: ${multiline ? 'visible' : 'hidden'};
+    text-overflow: ellipsis;
   `;
 };
 
@@ -126,7 +131,7 @@ export default class TextField extends Component {
     };
 
     this.supportedTypes = ['text', 'email', 'password', 'date'];
-    this.fieldId = uuid();
+    this.fieldId = `id${getRandomNumber()}`;
     this.FieldStyled = styled[props.multiline ? 'textarea' : 'input']`
       ${p => fieldReadyStyles(p)}
     `;

@@ -37,12 +37,17 @@ export const Btn = styled(Button)`
   top: 24px;
   left: 0;
   @media ${props => props.theme.media.mobile} {
-    display: none !important;
+    top: 12px;
+    ${props => (
+      !props.showOnMobile
+        ? 'display: none !important;'
+        : ''
+    )}
   }
 `;
 
 export const Header = styled.div`
-  height: 85px;
+  height: 84px;
   padding: 0 30px;
   font-size: 0;
   @media ${props => props.theme.media.mobile} {

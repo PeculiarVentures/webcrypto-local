@@ -135,7 +135,11 @@ export default class SidebarHeader extends Component {
 
   onSelectHandler = (data) => {
     const { dispatch } = this.context;
-    dispatch(ProviderActions.select(data.value));
+    if (typeof data === 'string') {
+      dispatch(ProviderActions.select(data));
+    } else {
+      dispatch(ProviderActions.select(data.value));
+    }
   };
 
   render() {
