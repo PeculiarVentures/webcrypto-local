@@ -117,8 +117,7 @@ export class OpenSSLCertificateStorage implements ICertificateStorage {
     protected async certToJson(cert: Certificate) {
         const date = new Date().toISOString();
         return {
-            // TODO: Can be error, check algorithm type
-            algorithm: (cert.publicKey.algorithm as any).toAlgorithm(),
+            algorithm: (cert.publicKey.algorithm as any).toAlgorithm ? (cert.publicKey.algorithm as any).toAlgorithm() : cert.publicKey.algorithm,
             usages: cert.publicKey.usages,
             type: cert.type,
             createdAt: date,
