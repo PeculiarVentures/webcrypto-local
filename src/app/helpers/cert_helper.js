@@ -1,7 +1,7 @@
 import * as asn1js from 'asn1js';
 import * as pkijs from 'pkijs';
 import { OIDS } from '../constants';
-import { regExps } from '../helpers';
+// import { regExps } from '../helpers';
 
 const OID = {
   '2.5.4.3': {
@@ -198,7 +198,7 @@ const CertHelper = {
       value = value.replace(/(-----(BEGIN|END) CERTIFICATE( REQUEST|)-----|\r|\n)/g, '');
       certBuf = this.str2ab(window.atob(value));
     } else {
-      value = this.hex2Array(value);
+      value = this.hex2Array(value.replace(/(\r|\n|\s)/g, ''));
       certBuf = value;
     }
 
@@ -211,7 +211,7 @@ const CertHelper = {
       } catch (error) {
         console.error(error);
         try {
-          cert = new pkijs.Request({ schema: asn1.result });
+          cert = new pkijs.CertificationRequest({ schema: asn1.result });
         } catch (_error) {
           console.error(_error);
           return false;
@@ -232,7 +232,7 @@ const CertHelper = {
         algorithm.namedCurve = json.subjectPublicKeyInfo.crv;
       }
 
-      const signature = this.prepareAlgorithm(json.signature);
+      const signature = this.prepareAlgorithm(json.signature || json.signatureAlgorithm);
 
       const data = {
         algorithm: {

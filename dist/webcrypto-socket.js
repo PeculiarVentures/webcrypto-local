@@ -4398,13 +4398,9 @@ var Rsa = (function (_super) {
         Sha.checkAlgorithm(alg.hash);
     };
     Rsa.checkKeyGenParams = function (alg) {
-        switch (alg.modulusLength) {
-            case 1024:
-            case 2048:
-            case 4096:
-                break;
-            default:
-                throw new RsaKeyGenParamsError(RsaKeyGenParamsError.PARAM_WRONG_VALUE, "modulusLength", "1024, 2048 or 4096");
+        var modulusBits = alg.modulusLength;
+        if (!(modulusBits >= 256 && modulusBits <= 16384 && !(modulusBits % 8))) {
+            throw new RsaKeyGenParamsError(RsaKeyGenParamsError.PARAM_WRONG_VALUE, "modulusLength", " a multiple of 8 bits and >= 256 and <= 16384");
         }
         var pubExp = alg.publicExponent;
         if (!pubExp) {
@@ -6242,7 +6238,7 @@ var SocketProvider = (function (_super) {
                         case 2: return [4 /*yield*/, _c.apply(_b, [_e.sent()])];
                         case 3:
                             tokenProto = _e.sent();
-                            console.log(tokenProto);
+                            this.emit("token", tokenProto);
                             _e.label = 4;
                         case 4: return [2 /*return*/];
                     }

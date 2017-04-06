@@ -44,6 +44,7 @@ export function* importCertificate(crypto, data) {
       } catch (error) {
         importCert = yield crypto.certStorage.importCert('request', raw, algorithm, usages);
       }
+
       return yield crypto.certStorage.setItem(importCert);
     } catch (error) {
       yield put(ErrorActions.error(error));
