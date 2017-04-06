@@ -12,7 +12,7 @@ DIRECTORY=gh-pages-branch
 
 # make a directory to put the gp-pages branch
 cd scripts
-if [ ! -d "$DIRECTORY" ]; then
+if [ -d "$DIRECTORY" ]; then
      rm -rf $DIRECTORY
 fi
 
