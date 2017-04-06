@@ -4,7 +4,17 @@ import Body from './body';
 import { ModalActions } from '../../actions/ui';
 import * as IndexStyled from '../create_certificate/styled/index.styled';
 
-export default class CopyCertificate extends Component {
+export default class ImportCertificate extends Component {
+
+  static propTypes = {
+    providers: PropTypes.oneOfType([
+      PropTypes.array,
+    ]),
+  };
+
+  static defaultProps = {
+    providers: [],
+  };
 
   static contextTypes = {
     dispatch: PropTypes.func,
@@ -16,12 +26,15 @@ export default class CopyCertificate extends Component {
   };
 
   render() {
+    const { providers } = this.props;
     return (
       <IndexStyled.Wrapper>
         <Header
           onBack={this.onBackHandler}
         />
-        <Body />
+        <Body
+          providers={providers}
+        />
       </IndexStyled.Wrapper>
     );
   }

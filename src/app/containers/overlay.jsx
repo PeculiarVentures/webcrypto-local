@@ -7,6 +7,7 @@ import { ACTIONS_CONST } from '../constants';
 import { WSActions } from '../actions/state';
 import { DialogActions } from '../actions/ui';
 import CopyCertificate from '../components/copy_certificate';
+import ImportCertificate from '../components/import_certificate';
 
 const OverlayStyled = styled.div`
   width: 100%;
@@ -56,7 +57,7 @@ export default class Overlay extends Component {
   }
 
   renderModal() {
-    const { modal } = this.props;
+    const { modal, providers } = this.props;
 
     if (modal) {
       return (
@@ -66,6 +67,10 @@ export default class Overlay extends Component {
         >
           <CopyCertificate
             name="copy_certificate"
+          />
+          <ImportCertificate
+            name="import_certificate"
+            providers={providers}
           />
         </SegueHandler>
       );

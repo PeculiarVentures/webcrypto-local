@@ -74,7 +74,7 @@ export function* createCertificate(crypto, data) {
 
       const hash = yield crypto.subtle.digest(
         { name: algorithmHash },
-        pkcs10.subjectPublicKeyInfo.subjectPublicKey.valueBlock.valueHex
+        pkcs10.subjectPublicKeyInfo.subjectPublicKey.valueBlock.valueHex,
       );
       const attribute = new pkijs.Attribute({
         type: '1.2.840.113549.1.9.14',

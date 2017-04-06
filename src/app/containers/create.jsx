@@ -2,7 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import Overlay from './overlay';
-import CertificateCreate from '../components/certificate_create/index';
+import CertificateCreate from '../components/create_certificate';
 
 const ContentStyled = styled.div`
   height: 100%;

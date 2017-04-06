@@ -5,7 +5,7 @@ import { ACTIONS_CONST } from '../../constants';
 import { EventChannel } from '../../controllers';
 import { Button, SelectField, SelectNative, SelectItem, TextField } from '../basic';
 import enLang from '../../langs/en.json';
-import * as BodyStyled from '../certificate_create/styled/body.styled';
+import * as BodyStyled from '../create_certificate/styled/body.styled';
 
 const TextareaContainer = styled.div`
   margin-top: 34px;

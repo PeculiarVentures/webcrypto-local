@@ -95,5 +95,10 @@
   "CopyCertificate.Header.Title": "Get Certificate",
   "CopyCertificate.Field.Format": "Format name",
   "CopyCertificate.Field.Certificate": "Certificate",
-  "CopyCertificate.Btn.Copy": "Copy to clipboard"
+  "CopyCertificate.Btn.Copy": "Copy to clipboard",
+  "ImportCertificate.Header.Title": "Import Certificate",
+  "ImportCertificate.Field.Provider": "Select provider",
+  "ImportCertificate.Field.Certificate": "Certificate",
+  "ImportCertificate.Btn.File": "Browse file",
+  "ImportCertificate.Btn.Import": "Import certificate"
 }

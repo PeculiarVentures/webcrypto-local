@@ -20,7 +20,7 @@ const Header = (props) => {
           { enLang['CertificateCreate.Header.Btn.Back'] }
         </HeaderStyled.Btn>
         <HeaderStyled.Title>
-          { enLang['CopyCertificate.Header.Title'] }
+          { enLang['ImportCertificate.Header.Title'] }
         </HeaderStyled.Title>
       </HeaderStyled.Container>
     </HeaderStyled.Header>

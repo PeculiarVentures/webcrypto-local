@@ -2,9 +2,9 @@ import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
 import { Button, SelectField, SelectItem, SelectNative } from '../basic';
 import { ImportIcon, CreateIcon } from '../svg';
-import { RoutingActions } from '../../actions/ui';
+import { RoutingActions, ModalActions } from '../../actions/ui';
 import { ProviderActions } from '../../actions/state';
-import { AccessedMimes, AccessedExtentions } from '../../constants/acessed_types';
+// import { AccessedMimes, AccessedExtentions } from '../../constants/acessed_types';
 import enLang from '../../langs/en.json';
 
 const CreateIconStyled = styled(CreateIcon)`
@@ -42,20 +42,6 @@ const ButtonStyled = styled(Button)`
   position: relative;
 `;
 
-const InputFileStyled = styled.input`
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  cursor: ${props => (
-    props.disabled
-      ? 'default'
-      : 'pointer'
-  )};
-`;
-
 const SidebarHeaderStyled = styled.div`
   height: 164px;
   z-index: 1;
@@ -89,9 +75,11 @@ export default class SidebarHeader extends Component {
     dispatch(RoutingActions.push('create'));
   };
 
-  onChangeInputFile = (event) => {
-    event.preventDefault();
-    console.log(event.target.files);
+  onClickImportHandler = () => {
+    const { dispatch } = this.context;
+    dispatch(ModalActions.openModal('import_certificate'));
+    // event.preventDefault();
+    // console.log(event.target.files);
     // event.preventDefault();
     // const filesArray = event.target.files;
     // const promises = [];
@@ -125,13 +113,13 @@ export default class SidebarHeader extends Component {
     // });
   };
 
-  getAcceptString() {
-    const { deviceType } = this.context;
-    if (deviceType === 'desktop') {
-      return AccessedMimes.join(',');
-    }
-    return AccessedExtentions.map(e => `.${e}`).join(', ');
-  }
+  // getAcceptString() {
+  //   const { deviceType } = this.context;
+  //   if (deviceType === 'desktop') {
+  //     return AccessedMimes.join(',');
+  //   }
+  //   return AccessedExtentions.map(e => `.${e}`).join(', ');
+  // }
 
   onSelectHandler = (data) => {
     const { dispatch } = this.context;
@@ -145,7 +133,7 @@ export default class SidebarHeader extends Component {
   render() {
     const { dataLoaded, providers } = this.props;
     const { deviceType } = this.context;
-    const acceptString = this.getAcceptString();
+    // const acceptString = this.getAcceptString();
     const selectedProvider = providers.filter(obj => obj.selected);
     const currentProvider = selectedProvider.length
       ? selectedProvider[0]
@@ -157,14 +145,8 @@ export default class SidebarHeader extends Component {
           <ButtonStyled
             disabled={!dataLoaded}
             primary
+            onClick={this.onClickImportHandler}
           >
-            <InputFileStyled
-              type="file"
-              disabled={!dataLoaded}
-              accept={acceptString}
-              multiple
-              onChange={this.onChangeInputFile}
-            />
             <ImportIconStyled />
             { enLang['Sidebar.Header.Btn.Import'] }
           </ButtonStyled>
