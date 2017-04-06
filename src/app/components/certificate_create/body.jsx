@@ -1,5 +1,4 @@
 import React, { PropTypes, Component } from 'react';
-import styled from 'styled-components';
 import { Button } from '../basic';
 import SubjectInfo from './parts/subject_info';
 import KeyInfo from './parts/key_info';
@@ -7,41 +6,7 @@ import Provider from './parts/provider';
 import enLang from '../../langs/en.json';
 import countriesData from '../../constants/countries.json';
 import parametersData from '../../constants/parameters.json';
-
-const BtnsContainer = styled.div`
-  text-align: center;
-  font-size: 0;
-  margin-top: 55px;
-  @media ${props => props.theme.media.mobile} {
-    margin-top: 26px;
-  }
-`;
-
-const ButtonStyled = styled(Button)`
-  margin-left: 10px;
-  @media ${props => props.theme.media.mobile} {
-    margin-left: 8px;
-  }
-`;
-
-const Container = styled.div`
-  max-width: 890px;
-  padding: 0 10px;
-  margin: 0 auto;
-  @media ${props => props.theme.media.mobile} {
-    padding: 0 20px;
-  }
-`;
-
-const CertificateCreateBodyStyled = styled.div`
-  height: calc(100% - 84px);
-  overflow: auto;
-  padding: 75px 0 80px;
-  @media ${props => props.theme.media.mobile} {
-    height: calc(100% - 56px);
-    padding: 36px 0;
-  }
-`;
+import * as BodyStyled from './styled/body.styled';
 
 export default class Body extends Component {
 
@@ -95,8 +60,8 @@ export default class Body extends Component {
     const { countries, parameters, dataLoaded, serverStatus, providers } = this.props;
 
     return (
-      <CertificateCreateBodyStyled>
-        <Container>
+      <BodyStyled.Body>
+        <BodyStyled.Container>
           <Provider
             providers={providers}
           />
@@ -108,22 +73,22 @@ export default class Body extends Component {
             parameters={parameters}
             ref={node => (this.keyNode = node)}
           />
-          <BtnsContainer>
+          <BodyStyled.BtnsContainer>
             <Button
               onClick={this.onCancelHandler}
             >
               { enLang['CertificateCreate.Btn.Cancel'] }
             </Button>
-            <ButtonStyled
+            <BodyStyled.Btn
               primary
               onClick={this.onCreateHandler}
               disabled={!dataLoaded || serverStatus !== 'online'}
             >
               { enLang['CertificateCreate.Btn.Create'] }
-            </ButtonStyled>
-          </BtnsContainer>
-        </Container>
-      </CertificateCreateBodyStyled>
+            </BodyStyled.Btn>
+          </BodyStyled.BtnsContainer>
+        </BodyStyled.Container>
+      </BodyStyled.Body>
     );
   }
 }

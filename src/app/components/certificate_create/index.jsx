@@ -1,15 +1,9 @@
 import React, { PropTypes, Component } from 'react';
-import styled from 'styled-components';
 import Header from './header';
 import Body from './body';
 import { WSActions } from '../../actions/state';
 import { RoutingActions } from '../../actions/ui';
-
-const CertificateCreateStyled = styled.div`
-  height: 100%;
-  width: 100%;
-  background: ${props => props.theme.certificateCreate.background};
-`;
+import * as IndexStyled from './styled/index.styled';
 
 export default class CertificateCreate extends Component {
 
@@ -44,7 +38,7 @@ export default class CertificateCreate extends Component {
   render() {
     const { dataLoaded, serverStatus, providers } = this.props;
     return (
-      <CertificateCreateStyled>
+      <IndexStyled.Wrapper>
         <Header
           onBack={this.onCancelHandler}
         />
@@ -55,7 +49,7 @@ export default class CertificateCreate extends Component {
           serverStatus={serverStatus}
           providers={providers}
         />
-      </CertificateCreateStyled>
+      </IndexStyled.Wrapper>
     );
   }
 }
