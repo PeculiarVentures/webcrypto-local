@@ -150,4 +150,8 @@ export const WSController = {
     }
     return algorithm;
   },
+
+  formatDer: function formatDer(string) {
+    return string.replace(/(.{32})/g, '$1 \n').replace(/(.{4})/g, '$1 ').trim();
+  },
 };

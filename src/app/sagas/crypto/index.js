@@ -129,7 +129,7 @@ function* downloadCertificate({ format }) {
     if (cert && typeof cert === 'string') {
       downloadCertFromURI(`${certStorage.name}_pem`, cert, certStorage.type);
     } else if (cert) {
-      const certHex = ab2hex(cert);
+      const certHex = WSController.formatDer(ab2hex(cert));
       downloadCertFromURI(`${certStorage.name}_der`, certHex, certStorage.type);
     }
   }
@@ -148,7 +148,7 @@ function* openModalForCopy({ value }) {
       const arrFormats = yield arrRequest;
       const formats = {
         pem: arrFormats[0],
-        der: ab2hex(arrFormats[1]),
+        der: WSController.formatDer(ab2hex(arrFormats[1])),
       };
       EventChannel.emit(ACTIONS_CONST.CERTIFICATE_COPIED_DATA, formats);
     }
