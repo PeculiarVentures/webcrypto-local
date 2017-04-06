@@ -1,48 +1,33 @@
 import React, { PropTypes, Component } from 'react';
-import styled from 'styled-components';
-
-const Container = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 10;
-  // opacity: 0;
-  background: ${props => props.theme.tooltip.background};
-  border: 1px solid ${props => props.theme.tooltip.borderColor};
-  box-shadow: 0 4px 15px 0 rgba(112,125,134,0.15);
-  border-radius: 3px;
-  &:before {
-    position: absolute;
-    top: -10px;
-    right: 50%;
-    margin-right: -7px;
-    content: '';
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0 10px 10px 10px;
-    border-color: transparent transparent ${props => props.theme.tooltip.borderColor} transparent;
-  }
-  &:after {
-    position: absolute;
-    top: -8.5px;
-    margin-right: -7px;
-    right: 50%;
-    content: '';
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0 10px 10px 10px;
-    border-color: transparent transparent ${props => props.theme.tooltip.background} transparent;
-  }
-`;
+import { ItemStyled, WrapperStyled, ContainerStyled } from './styled/download_tooltip.styled';
+import enLang from '../../langs/en.json';
 
 export default class DownloadTooltip extends Component {
+
+  static propTypes = {
+    disabled: PropTypes.bool,
+    onClick: PropTypes.func,
+  };
+
+  static defaultProps = {
+    disabled: true,
+    onClick: null,
+  };
+
   render() {
+    const { disabled, onClick } = this.props;
+
     return (
-      <Container>
-        Tooltip
-      </Container>
+      <WrapperStyled disabled={disabled}>
+        <ContainerStyled>
+          <ItemStyled onClick={() => onClick('pem')}>
+            { enLang['Info.Header.Download.Pem'] }
+          </ItemStyled>
+          <ItemStyled onClick={() => onClick('raw')}>
+            { enLang['Info.Header.Download.Der'] }
+          </ItemStyled>
+        </ContainerStyled>
+      </WrapperStyled>
     );
   }
 }

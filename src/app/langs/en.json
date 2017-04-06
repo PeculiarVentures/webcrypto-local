@@ -49,6 +49,8 @@
   "CertificateCreate.Provider.Field.Name": "Name",
   "Info.Header.NoOneCertificate": "No certificate selected",
   "Info.Header.Download": "Download",
+  "Info.Header.Download.Pem": "as PEM",
+  "Info.Header.Download.Der": "as DER",
   "Info.Header.CopyToClipboard": "Copy to Clipboard",
   "Info.Header.Remove": "Remove",
   "Info.InfoTable.Details": "Details",

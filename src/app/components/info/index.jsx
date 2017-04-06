@@ -58,9 +58,9 @@ export default class Info extends Component {
     dispatch(DialogActions.open('remove_certificate'));
   };
 
-  onDownloadhandler = () => {
+  onDownloadhandler = (format = 'pem') => {
     const { dispatch } = this.context;
-    dispatch(WSActions.downloadCertificate('pem'));
+    dispatch(WSActions.downloadCertificate(format));
   };
 
   onCopyHandler = () => {
