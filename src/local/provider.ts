@@ -91,7 +91,7 @@ export class LocalProvider extends EventEmitter {
                         try {
                             this.crypto[item.id] = new pkcs11.WebCrypto({
                                 library: lib,
-                                slot: index,
+                                slot: item.slot,
                                 readWrite: true,
                             });
                             this.info.providers.push(new ProviderCryptoProto(item));
@@ -105,13 +105,33 @@ export class LocalProvider extends EventEmitter {
                         this.clickRefCount(ref, this.info);
                     })
                     .on("token", (info) => {
+                        info.added.forEach((item) => {
+                            // Add new provider
+                            try {
+                                this.crypto[item.id] = new pkcs11.WebCrypto({
+                                    library: lib,
+                                    slot: item.slot,
+                                    readWrite: true,
+                                });
+                                this.info.providers.push(new ProviderCryptoProto(item));
+                            } catch (e) {
+                                this.emit("error", e);
+                            }
+                        });
+                        info.removed.forEach((item) => {
+                            /// Remove provider
+                            delete this.crypto[item.id];
+                            this.info.providers = this.info.providers.filter((provider) => {
+                                return provider.id !== item.id;
+                            });
+                        });
                         this.emit("token", info);
                     })
                     .on("error", (err) => {
                         console.log(err);
                     });
 
-                pkcs11Provider.open();
+                pkcs11Provider.open(true);
             } else {
                 console.log(`Provider by path ${lib} is not found`);
             }

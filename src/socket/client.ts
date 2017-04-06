@@ -43,7 +43,7 @@ export class SocketProvider extends EventEmitter {
                     switch (proto.action) {
                         case ProviderTokenEventProto.ACTION: {
                             const tokenProto = await ProviderTokenEventProto.importProto(await proto.exportProto());
-                            console.log(tokenProto);
+                            this.emit("token", tokenProto);
                         }
                         default:
                     }

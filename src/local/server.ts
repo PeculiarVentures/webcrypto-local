@@ -40,8 +40,6 @@ export class LocalServer extends EventEmitter {
                 console.log("Provider:Token raised");
                 this.sessions.forEach((session) => {
                     if (session.cipher && session.authorized) {
-                        // info.added = info.added.map((item) => new ProviderCryptoProto(item)) || [];
-                        // info.removed = info.removed.map((item) => new ProviderCryptoProto(item)) || [];
                         info.removed.forEach((item, index) => {
                             info.removed[index] = new ProviderCryptoProto(item);
                         });
