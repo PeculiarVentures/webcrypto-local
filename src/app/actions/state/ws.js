@@ -5,6 +5,11 @@ export const createCertificate = data => ({
   data,
 });
 
+export const importCertificate = data => ({
+  type: ACTIONS_CONST.WS_IMPORT_CERTIFICATE,
+  data,
+});
+
 export const getCertificates = () => ({
   type: ACTIONS_CONST.WS_GET_CERTIFICATES,
 });

@@ -1146,6 +1146,7 @@ export default {
   '1.3.6.1.4.1.8231.1': 'Rol Unico Nacional',
   '1.3.6.1.4.1.8301.3.5.1': 'alidity Model Chain',
   '1.3.6.1.4.1.8301.3.5.2': 'alidity Model Shell',
+  '1.3.6.1.4.1.11129.2.4.2': 'Certificate Transparency',
   '1.3.6.1.4.1.11591': 'Gnu',
   '1.3.6.1.4.1.11591.1': 'Gnu Radius',
   '1.3.6.1.4.1.11591.3': 'Gnu Radar',

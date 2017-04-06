@@ -34,6 +34,24 @@ export function* exportCertificate(crypto, certId, format = 'pem') {
   return false;
 }
 
+export function* importCertificate(crypto, data) {
+  if (crypto) {
+    try {
+      const { raw, algorithm, usages } = data;
+      let importCert = '';
+      try {
+        importCert = yield crypto.certStorage.importCert('x509', raw, algorithm, usages);
+      } catch (error) {
+        importCert = yield crypto.certStorage.importCert('request', raw, algorithm, usages);
+      }
+      return yield crypto.certStorage.setItem(importCert);
+    } catch (error) {
+      yield put(ErrorActions.error(error));
+    }
+  }
+  return false;
+}
+
 export function* createCertificate(crypto, data) {
   // const data = {
   //   commonName: 'My cert 6',

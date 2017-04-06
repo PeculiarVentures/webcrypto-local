@@ -3,6 +3,7 @@
 import * as pkijs from 'pkijs';
 import * as asn1js from 'asn1js';
 import moment from 'moment';
+import { CertHelper } from '../helpers';
 import { SERVER_URL } from '../../../scripts/config';
 
 export const ws = new WebcryptoSocket.SocketProvider();
@@ -112,7 +113,7 @@ export const WSController = {
       keyInfo: {
         modulusBits: publicKey.algorithm.modulusLength,
         namedCurve: publicKey.algorithm.namedCurve,
-        type: this.getKeyType(publicKey.algorithm.name),
+        type: CertHelper.getKeyType(publicKey.algorithm.name),
         publicExponent: publicKey.algorithm.publicExponent.byteLength === 3 ? '65537' : '3',
         algorithm: publicKey.algorithm.name,
       },
@@ -139,19 +140,5 @@ export const WSController = {
       return true;
     });
     return subjectObj;
-  },
-
-  getKeyType: function getKeyType(algorithm) {
-    if (algorithm.slice(0, 3) === 'RSA') {
-      return 'RSA';
-    }
-    if (algorithm.slice(0, 2) === 'EC') {
-      return 'EC';
-    }
-    return algorithm;
-  },
-
-  formatDer: function formatDer(string) {
-    return string.replace(/(.{32})/g, '$1 \n').replace(/(.{4})/g, '$1 ').trim();
   },
 };

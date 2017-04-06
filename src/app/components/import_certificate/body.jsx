@@ -1,6 +1,8 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
-import { ACTIONS_CONST } from '../../constants';
+// import { ACTIONS_CONST } from '../../constants';
+import { WSActions } from '../../actions/state';
+import { CertHelper } from '../../helpers';
 import { Button, SelectField, SelectNative, SelectItem, TextField } from '../basic';
 import enLang from '../../langs/en.json';
 import * as BodyStyled from '../create_certificate/styled/body.styled';
@@ -38,6 +40,7 @@ export default class Body extends Component {
 
   static contextTypes = {
     deviceType: PropTypes.string,
+    dispatch: PropTypes.func,
   };
 
   constructor() {
@@ -54,9 +57,15 @@ export default class Body extends Component {
   };
 
   onClickImportHandler = () => {
+    const { dispatch } = this.context;
     const { textarea } = this.fieldNodes;
     const value = textarea.getValue();
-    console.log(value);
+    const preparedCert = CertHelper.prepareCertToImport(value);
+    if (preparedCert) {
+      dispatch(WSActions.importCertificate(preparedCert));
+    } else {
+      console.error('prepare error');
+    }
   };
 
   render() {

@@ -9,6 +9,7 @@ const regExps = {
   text: /^.+$/,
   letters: /^[A-zА-я ]+$/,
   date: /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/,
+  cert: /(-----(BEGIN|END) CERTIFICATE( REQUEST|)-----|\r|\n)/g,
 };
 
 export default regExps;

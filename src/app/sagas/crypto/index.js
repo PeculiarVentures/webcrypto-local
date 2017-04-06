@@ -4,8 +4,8 @@ import { ws, WSController } from '../../controllers/webcrypto_socket';
 import { EventChannel } from '../../controllers';
 import { ACTIONS_CONST } from '../../constants';
 import { AppActions, CertificateActions, ErrorActions, ProviderActions } from '../../actions/state';
-import { RoutingActions } from '../../actions/ui';
-import { ab2hex, downloadCertFromURI, certToJson } from '../../helpers';
+import { RoutingActions, ModalActions } from '../../actions/ui';
+import { downloadCertFromURI, CertHelper } from '../../helpers';
 import * as Key from './key';
 import * as Certificate from './certificate';
 
@@ -79,7 +79,7 @@ function* getCerificates() {
 
       if (item.type === 'x509') {
         const certificateRaw = yield crypto.certStorage.exportCert('raw', item);
-        const certificateDetails = certToJson(certificateRaw);
+        const certificateDetails = CertHelper.certRawToJson(certificateRaw);
         certData = WSController.certDataHandler(certificateDetails, item, certId);
       } else {
         certData = WSController.requestDataHandler(item, certId);
@@ -129,7 +129,7 @@ function* downloadCertificate({ format }) {
     if (cert && typeof cert === 'string') {
       downloadCertFromURI(`${certStorage.name}_pem`, cert, certStorage.type);
     } else if (cert) {
-      const certHex = WSController.formatDer(ab2hex(cert));
+      const certHex = CertHelper.formatDer(CertHelper.ab2hex(cert));
       downloadCertFromURI(`${certStorage.name}_der`, certHex, certStorage.type);
     }
   }
@@ -148,7 +148,7 @@ function* openModalForCopy({ value }) {
       const arrFormats = yield arrRequest;
       const formats = {
         pem: arrFormats[0],
-        der: WSController.formatDer(ab2hex(arrFormats[1])),
+        der: CertHelper.formatDer(CertHelper.ab2hex(arrFormats[1])),
       };
       EventChannel.emit(ACTIONS_CONST.CERTIFICATE_COPIED_DATA, formats);
     }
@@ -174,6 +174,19 @@ function* getProviders() {
   return false;
 }
 
+function* importCertificate({ data }) {
+  const crypto = yield getCrypto();
+  const certId = yield Certificate.importCertificate(crypto, data);
+  if (certId) {
+    const item = yield Certificate.getCertificate(crypto, certId);
+    const certData = WSController.requestDataHandler(item, certId);
+    yield put(CertificateActions.add(certData));
+    yield put(ModalActions.closeModal());
+    // yield put(RoutingActions.push(`certificate/${item.id}`));
+    yield put(CertificateActions.select(item.id));
+  }
+}
+
 export default function* () {
   yield [
     takeEvery(ACTIONS_CONST.WS_GET_KEYS, getKeys),
@@ -183,5 +196,6 @@ export default function* () {
     takeEvery(ACTIONS_CONST.WS_DOWNLOAD_CERTIFICATE, downloadCertificate),
     takeEvery(ACTIONS_CONST.MODAL_OPEN, openModalForCopy),
     takeEvery(ACTIONS_CONST.WS_GET_PROVIDERS, getProviders),
+    takeEvery(ACTIONS_CONST.WS_IMPORT_CERTIFICATE, importCertificate),
   ];
 }
