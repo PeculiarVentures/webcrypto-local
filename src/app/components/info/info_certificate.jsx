@@ -60,7 +60,7 @@ const CertificateInfo = (props) => {
         </Title>
         <RowCert>
           {
-            Object.keys(subject).map((iss, index) => renderRowContainer(iss, issuer[iss], index))
+            Object.keys(subject).map((iss, index) => renderRowContainer(iss, subject[iss], index))
           }
         </RowCert>
       </Row>
