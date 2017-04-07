@@ -51,6 +51,7 @@
     "@types/asn1js": "0.0.1",
     "@types/node-notifier": "0.0.28",
     "@types/websocket": "^0.0.33",
+    "@types/long": "*",
     "asn1js": "^2.0.12",
     "babel-eslint": "^7.2.1",
     "chalk": "^1.1.3",
