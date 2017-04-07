@@ -5,6 +5,7 @@ import * as asn1js from 'asn1js';
 import moment from 'moment';
 import { CertHelper } from '../helpers';
 import { SERVER_URL } from '../../../scripts/config';
+import { OIDS } from '../constants';
 
 export const ws = new WebcryptoSocket.SocketProvider();
 window.ws = ws;
@@ -131,7 +132,7 @@ export const WSController = {
     const arrSubjects = subjectString.split(/, /g);
     arrSubjects.map((sbj) => {
       const arrSubject = sbj.split('=');
-      const subjectName = subjectNames[arrSubject[0]];
+      const subjectName = subjectNames[arrSubject[0]] || OIDS[arrSubject[0]] || arrSubject[0];
       const subjectValue = arrSubject[1];
       subjectObj[subjectName] = subjectValue;
       if (subjectName === 'commonName') {
