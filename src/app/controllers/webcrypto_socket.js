@@ -68,6 +68,7 @@ export const WSController = {
   },
 
   certDataHandler: function certDataHandler(certDetails, certData, certId) {
+    const lang = navigator.language;
     const { id } = certData;
     const {
       issuerName,
@@ -99,8 +100,8 @@ export const WSController = {
       },
       issuer: decodedIssuer,
       subject: decodedSubject,
-      notBefore: notBefore ? moment(notBefore).format('D MMM YYYY') : '',
-      notAfter: notAfter ? moment(notAfter).format('D MMM YYYY') : '',
+      notBefore: notBefore ? moment(notBefore).locale(lang).format('LLLL') : '',
+      notAfter: notAfter ? moment(notAfter).locale(lang).format('LLLL') : '',
     };
   },
 

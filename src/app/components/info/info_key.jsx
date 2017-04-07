@@ -3,6 +3,8 @@ import moment from 'moment';
 import { Root, Row, Title, Col, SubTitle, Value } from './styled/info';
 import enLang from '../../langs/en.json';
 
+const lang = navigator.language;
+
 const KeyInfo = (props) => {
   const {
     createdAt,
@@ -28,8 +30,8 @@ const KeyInfo = (props) => {
     return null;
   };
 
-  const createdAtDate = moment(parseInt(createdAt, 10)).format('D MMM YYYY');
-  const lastUsedDate = moment(parseInt(lastUsed, 10)).format('D MMM YYYY');
+  const createdAtDate = moment(parseInt(createdAt, 10)).locale(lang).format('LLLL');
+  const lastUsedDate = moment(parseInt(lastUsed, 10)).locale(lang).format('LLLL');
 
   return (
     <Root>
