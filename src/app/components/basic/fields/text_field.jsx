@@ -128,7 +128,6 @@ export default class TextField extends Component {
     value: '',
     labelText: '',
     placeholder: '',
-    validation: [],
     capitalize: false,
     readOnly: false,
     errorText: '',
