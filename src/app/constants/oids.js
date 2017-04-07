@@ -1192,7 +1192,7 @@ export default {
   '1.3.6.1.5.5.7.1': 'Private Extension',
   '1.3.6.1.5.5.7.1.1': 'Authority Info Access',
   '1.3.6.1.5.5.7.1.2': 'Biometric Info',
-  '1.3.6.1.5.5.7.1.3': 'Qc Statements',
+  '1.3.6.1.5.5.7.1.3': 'Qualified Certificate Statements',
   '1.3.6.1.5.5.7.1.4': 'Ac Audit Identity',
   '1.3.6.1.5.5.7.1.5': 'Ac Targeting',
   '1.3.6.1.5.5.7.1.6': 'Ac Aa Controls',
