@@ -33,7 +33,8 @@ export class LocalServer extends EventEmitter {
                 // "/usr/local/lib/softhsm/libsofthsm2.so",
                 // "/usr/local/lib/libykcs11.dylib",
                 // "yubico/libykcs11-1.dll",
-                "/Windows/System32/eTPKCS11.dll",
+                // "/Windows/System32/eTPKCS11.dll",
+                "/Library/EstonianIDCard/lib/esteid-pkcs11-onepin.so",
             ],
         })
             .on("token", (info) => {
