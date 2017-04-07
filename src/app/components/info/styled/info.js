@@ -78,6 +78,10 @@ export const ColCert = styled.div`
   vertical-align: top;
   line-height: 18px;
   color: ${props => props.theme.info.infoTable.valueColor};
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+  user-select: auto;
   &:first-child {
     color: ${props => props.theme.info.infoTable.subTitleColor};
     width: 25%;
@@ -99,6 +103,10 @@ export const SubTitle = styled.div`
   font-size: 12px;
   letter-spacing: 0.04em;
   color: ${props => props.theme.info.infoTable.subTitleColor};
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+  user-select: auto;
 `;
 
 export const Value = styled.div`
@@ -107,4 +115,8 @@ export const Value = styled.div`
   line-height: 18px;
   letter-spacing: 0.05em;
   color: ${props => props.theme.info.infoTable.valueColor};
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+  user-select: auto;
 `;
