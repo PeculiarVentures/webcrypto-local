@@ -2,8 +2,10 @@ export const DEFAULT = {
   id: '[[id]]',
   _id: '[[id]]',
   name: '',
-  keyInfo: {
+  publicKeyInfo: {
     algorithm: '',
+    modulusBits: '',
+    namedCurve: '',
   },
   extensions: {},
   publicKey: {},

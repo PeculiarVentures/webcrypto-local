@@ -8,12 +8,17 @@ export const DEFAULT = {
   country: '',
   region: '',
   city: '',
-  keyInfo: {
+  publicKeyInfo: {
     modulusBits: '',
     namedCurve: '',
     type: '',
     publicExponent: '',
     algorithm: '',
+    value: '',
+  },
+  signature: {
+    algorithm: '',
+    hash: '',
   },
   selected: false,
   type: 'request',

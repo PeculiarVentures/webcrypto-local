@@ -10,12 +10,17 @@ export default new Schema('Request', {
   country: Type.String,
   region: Type.String,
   city: Type.String,
-  keyInfo: {
+  publicKeyInfo: {
     modulusBits: Type.Any,
     namedCurve: Type.Any,
     publicExponent: Type.Any,
     type: Type.String,
     algorithm: Type.String,
+    value: Type.String,
+  },
+  signature: {
+    algorithm: Type.String,
+    hash: Type.String,
   },
   selected: Type.Boolean,
   type: Type.String,

@@ -4,8 +4,10 @@ export default new Schema('Certificate', {
   id: Type.ObjectID,
   _id: Type.ObjectID,
   name: Type.String,
-  keyInfo: {
+  publicKeyInfo: {
     algorithm: Type.String,
+    modulusBits: Type.Number,
+    namedCurve: Type.Any,
   },
   selected: Type.Boolean,
   type: Type.String,

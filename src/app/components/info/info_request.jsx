@@ -10,7 +10,8 @@ const RequestInfo = (props) => {
     country,
     region,
     city,
-    keyInfo,
+    publicKeyInfo,
+    signature,
   } = props;
 
   const renderInfoContainer = (title, value) => {
@@ -65,13 +66,23 @@ const RequestInfo = (props) => {
           { enLang['Info.InfoTable.Key.Title'] }
         </Title>
         <RowCert>
-          { renderRowContainer(enLang['Info.InfoTable.Key.Algorithm'], keyInfo.type) }
-          { renderRowContainer(enLang['Info.InfoTable.Key.ModulusBits'], keyInfo.modulusBits) }
-          { renderRowContainer(enLang['Info.InfoTable.Key.PublicExponent'], keyInfo.publicExponent) }
-          { renderRowContainer(enLang['Info.InfoTable.Key.NamedCurve'], keyInfo.namedCurve) }
+          { renderRowContainer(enLang['Info.InfoTable.Key.Algorithm'], publicKeyInfo.type) }
+          { renderRowContainer(enLang['Info.InfoTable.Key.ModulusBits'], publicKeyInfo.modulusBits) }
+          { renderRowContainer(enLang['Info.InfoTable.Key.PublicExponent'], publicKeyInfo.publicExponent) }
+          { renderRowContainer(enLang['Info.InfoTable.Key.NamedCurve'], publicKeyInfo.namedCurve) }
         </RowCert>
         <RowCert>
-          { renderRowContainer(enLang['Info.InfoTable.Key.Value'], keyInfo.value) }
+          { renderRowContainer(enLang['Info.InfoTable.Key.Value'], publicKeyInfo.value) }
+        </RowCert>
+      </Row>
+
+      <Row>
+        <Title>
+          { enLang['Info.InfoTable.Certificate.Signature'] }
+        </Title>
+        <RowCert>
+          { renderRowContainer(enLang['Info.InfoTable.Key.Algorithm'], signature.algorithm) }
+          { renderRowContainer(enLang['Info.InfoTable.Certificate.Hash'], signature.hash) }
         </RowCert>
       </Row>
 
@@ -80,7 +91,7 @@ const RequestInfo = (props) => {
 };
 
 RequestInfo.propTypes = {
-  keyInfo: PropTypes.shape({
+  publicKeyInfo: PropTypes.shape({
     modulusBits: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number,
@@ -88,6 +99,11 @@ RequestInfo.propTypes = {
     namedCurve: PropTypes.string,
     type: PropTypes.string,
     publicExponent: PropTypes.string,
+    value: PropTypes.string,
+  }),
+  signature: PropTypes.shape({
+    algorithm: PropTypes.string,
+    hash: PropTypes.string,
   }),
   commonName: PropTypes.string,
   organization: PropTypes.string,
@@ -98,11 +114,16 @@ RequestInfo.propTypes = {
 };
 
 RequestInfo.defaultProps = {
-  keyInfo: {
+  publicKeyInfo: {
     modulusBits: '',
     namedCurve: '',
     type: '',
     publicExponent: '',
+    value: '',
+  },
+  signature: {
+    algorithm: '',
+    hash: '',
   },
   commonName: '',
   organization: '',

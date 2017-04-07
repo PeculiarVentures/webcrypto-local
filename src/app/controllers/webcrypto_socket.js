@@ -93,7 +93,7 @@ export const WSController = {
       publicKey,
       version,
       signature,
-      keyInfo: {
+      publicKeyInfo: {
         algorithm: signature.algorithm.name,
         modulusBits: publicKey.algorithm.modulusBits,
         namedCurve: publicKey.algorithm.namedCurve,
@@ -113,13 +113,17 @@ export const WSController = {
       _id: reqId,
       name: '',
       type: 'request',
-      keyInfo: {
+      publicKeyInfo: {
         modulusBits: publicKey.algorithm.modulusLength,
         namedCurve: publicKey.algorithm.namedCurve,
         type: CertHelper.getKeyType(publicKey.algorithm.name),
         publicExponent: publicKey.algorithm.publicExponent.byteLength === 3 ? '65537' : '3',
         algorithm: publicKey.algorithm.name,
         value: CertHelper.addSpaceAfterSecondCharset(new Buffer(publicKey.raw).toString('hex')),
+      },
+      signature: {
+        algorithm: publicKey.algorithm.name,
+        hash: publicKey.algorithm.hash.name,
       },
       commonName: '',
       organization: '',
