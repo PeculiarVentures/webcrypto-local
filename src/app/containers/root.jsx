@@ -2,7 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import Info from '../components/info/index';
-import { Sidebar } from '../components/sidebar';
+import Sidebar from '../components/sidebar/index';
 import Overlay from './overlay';
 import { CertificateActions } from '../actions/state';
 import { RoutingActions } from '../actions/ui';
