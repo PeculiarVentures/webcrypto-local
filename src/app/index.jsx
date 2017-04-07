@@ -24,6 +24,10 @@ const wsOnClose = () => {
   Store.dispatch(WSActions.status('offline'));
 };
 
-WSController.connect(wsOnListening, wsOnError, wsOnClose);
+const wsOnToken = () => {
+  Store.dispatch(WSActions.getProviders());
+};
+
+WSController.connect(wsOnListening, wsOnError, wsOnClose, wsOnToken);
 
 ReactDOM.render(<Routing />, document.getElementById('root'));

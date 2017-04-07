@@ -31,11 +31,12 @@ const subjectNames = {
 };
 
 export const WSController = {
-  connect: function connect(onListening, onError, onClose) {
+  connect: function connect(onListening, onError, onClose, onToken) {
     ws.connect(SERVER_URL)
       .on('error', onError)
       .on('listening', onListening)
-      .on('close', onClose);
+      .on('close', onClose)
+      .on('token', onToken);
   },
 
   decoratePkcs10Subject: function decoratePkcs10Subject(pkcs10, data) {
