@@ -30,6 +30,9 @@ export const RowCert = styled.div`
 export const RowCertInfo = styled.div`
   margin-top: 7px;
   font-size: 0;
+  @media ${props => props.theme.media.mobile} {
+    margin-top: 10px;
+  }
 `;
 
 export const Title = styled.div`
@@ -83,6 +86,12 @@ export const ColCert = styled.div`
   }
   &:nth-child(2) {
     width: 75%;
+  }
+  @media ${props => props.theme.media.mobile} {
+    width: 100% !important;
+    &:nth-child(2) {
+      margin-top: 2px;
+    }
   }
 `;
 
