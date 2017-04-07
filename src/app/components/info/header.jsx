@@ -117,7 +117,7 @@ export default class Header extends Component {
 
   toggleDropdown(value) {
     this.setState({
-      dropdown: typeof value === Boolean ? value : !this.state.dropdown,
+      dropdown: typeof value === 'boolean' ? value : !this.state.dropdown,
     });
   }
 
@@ -274,7 +274,7 @@ export default class Header extends Component {
           { name }
         </Title>
         {
-          device === 'desktop'
+          device !== 'mobile'
             ? this.renderButtons()
             : this.renderBurgerButton()
         }
