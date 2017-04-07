@@ -1754,7 +1754,7 @@ export default {
   '2.5.29.34': 'Policy Constraints',
   '2.5.29.35': 'Authority Key Identifier',
   '2.5.29.36': 'Policy Constraints',
-  '2.5.29.37': 'Ext Key Usage',
+  '2.5.29.37': 'Extended Key Usage',
   '2.5.29.37.0': 'Any Extended Key Usage',
   '2.5.29.38': 'Authority Attribute Identifier',
   '2.5.29.39': 'Role Spec Cert Identifier',
