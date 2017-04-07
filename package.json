@@ -23,6 +23,7 @@
     "@types/asn1js": "0.0.1",
     "@types/node-notifier": "0.0.28",
     "@types/websocket": "^0.0.33",
+    "types/@long": "*",
     "idb": "^2.0.0",
     "node-webcrypto-ossl": "^1.0.20",
     "rollup": "^0.41.4",
