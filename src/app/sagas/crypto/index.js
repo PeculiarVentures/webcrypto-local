@@ -179,10 +179,18 @@ function* importCertificate({ data }) {
   const certId = yield Certificate.importCertificate(crypto, data);
   if (certId) {
     const item = yield Certificate.getCertificate(crypto, certId);
-    const certData = WSController.requestDataHandler(item, certId);
+    let certData = '';
+
+    if (item.type === 'x509') {
+      const certificateRaw = yield crypto.certStorage.exportCert('raw', item);
+      const certificateDetails = CertHelper.certRawToJson(certificateRaw);
+      certData = WSController.certDataHandler(certificateDetails, item, certId);
+    } else {
+      certData = WSController.requestDataHandler(item, certId);
+    }
+
     yield put(CertificateActions.add(certData));
     yield put(ModalActions.closeModal());
-    // yield put(RoutingActions.push(`certificate/${item.id}`));
     yield put(CertificateActions.select(item.id));
   }
 }
