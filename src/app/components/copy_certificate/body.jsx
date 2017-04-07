@@ -11,6 +11,7 @@ const TextareaContainer = styled.div`
   margin-top: 34px;
   textarea {
     height: 320px;
+    font-family: Monaco, monospace !important;
   }
 `;
 
