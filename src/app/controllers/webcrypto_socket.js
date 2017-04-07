@@ -119,6 +119,7 @@ export const WSController = {
         type: CertHelper.getKeyType(publicKey.algorithm.name),
         publicExponent: publicKey.algorithm.publicExponent.byteLength === 3 ? '65537' : '3',
         algorithm: publicKey.algorithm.name,
+        value: CertHelper.addSpaceAfterSecondCharset(new Buffer(publicKey.raw).toString('hex')),
       },
       commonName: '',
       organization: '',

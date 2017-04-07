@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Root, Row, Title, Col, SubTitle, Value } from './styled/info';
+import { Root, Row, Title, Col, SubTitle, Value, RowCertInfo, ColCert, RowCert } from './styled/info';
 import enLang from '../../langs/en.json';
 
 const RequestInfo = (props) => {
@@ -29,18 +29,20 @@ const RequestInfo = (props) => {
     return null;
   };
 
-  const getKeyInfoFields = () => {
-    if (keyInfo.type === 'RSA') {
+  const renderRowContainer = (title, value) => {
+    if (value && title !== 'name') {
       return (
-        <span>
-          { renderInfoContainer(enLang['Info.InfoTable.Key.ModulusBits'], keyInfo.modulusBits) }
-          { renderInfoContainer(enLang['Info.InfoTable.Key.PublicExponent'], keyInfo.publicExponent) }
-        </span>
+        <RowCertInfo>
+          <ColCert>
+            { title }:
+          </ColCert>
+          <ColCert>
+            { value }
+          </ColCert>
+        </RowCertInfo>
       );
     }
-    return (
-      renderInfoContainer(enLang['Info.InfoTable.Key.NamedCurve'], keyInfo.namedCurve)
-    );
+    return null;
   };
 
   return (
@@ -62,8 +64,15 @@ const RequestInfo = (props) => {
         <Title>
           { enLang['Info.InfoTable.Key.Title'] }
         </Title>
-        { renderInfoContainer(enLang['Info.InfoTable.Key.Type'], keyInfo.type) }
-        { getKeyInfoFields() }
+        <RowCert>
+          { renderRowContainer(enLang['Info.InfoTable.Key.Algorithm'], keyInfo.type) }
+          { renderRowContainer(enLang['Info.InfoTable.Key.ModulusBits'], keyInfo.modulusBits) }
+          { renderRowContainer(enLang['Info.InfoTable.Key.PublicExponent'], keyInfo.publicExponent) }
+          { renderRowContainer(enLang['Info.InfoTable.Key.NamedCurve'], keyInfo.namedCurve) }
+        </RowCert>
+        <RowCert>
+          { renderRowContainer(enLang['Info.InfoTable.Key.Value'], keyInfo.value) }
+        </RowCert>
       </Row>
 
     </Root>
