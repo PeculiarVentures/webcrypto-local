@@ -118,6 +118,20 @@ export default class TextField extends Component {
     disabled: false,
     multiline: false,
     type: 'text',
+    name: '',
+    onBlur: null,
+    onChange: null,
+    onFocus: null,
+    onKeyUp: null,
+    onClick: null,
+    onDrop: null,
+    value: '',
+    labelText: '',
+    placeholder: '',
+    validation: [],
+    capitalize: false,
+    readOnly: false,
+    errorText: '',
   };
 
   static contextTypes = {
@@ -188,29 +202,13 @@ export default class TextField extends Component {
     const value = this.getValue();
     const valid = this.isValid();
 
+    if (!this.state.valid) {
+      this.validate();
+    }
+
     if (onChange) {
       onChange(value, valid, name);
     }
-  };
-
-  validate = () => {
-    const valid = this.isValid();
-
-    this.setState({
-      valid,
-    });
-  };
-
-  isValid = () => {
-    const { validation } = this.props;
-    const value = this.getValue();
-    let valid = true;
-
-    if (validation) {
-      valid = validator(value, validation);
-    }
-
-    return valid;
   };
 
   onClickHandler = (e) => {
@@ -228,6 +226,26 @@ export default class TextField extends Component {
     if (capitalize) return value.charAt(0).toUpperCase() + value.slice(1);
 
     return value;
+  };
+
+  isValid = () => {
+    const { validation } = this.props;
+    const value = this.getValue();
+    let valid = true;
+
+    if (validation) {
+      valid = validator(value, validation);
+    }
+
+    return valid;
+  };
+
+  validate = () => {
+    const valid = this.isValid();
+
+    this.setState({
+      valid,
+    });
   };
 
   resetValue() {
