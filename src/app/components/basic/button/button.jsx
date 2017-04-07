@@ -1,36 +1,28 @@
-import React, { PropTypes, Component } from 'react';
+import React, { PropTypes } from 'react';
 import { ButtonStyled } from './styled/button.styled';
 
-export default class Button extends Component {
+const Button = props => (
+  <ButtonStyled
+    tabIndex={0}
+    {...props}
+  >
+    { props.children }
+  </ButtonStyled>
+);
 
-  static propTypes = {
-    children: PropTypes.node.isRequired,
-    primary: PropTypes.bool,
-    secondary: PropTypes.bool,
-    href: PropTypes.string,
-    disabled: PropTypes.bool,
-  };
+Button.propTypes = {
+  children: PropTypes.node.isRequired,
+  primary: PropTypes.bool,
+  secondary: PropTypes.bool,
+  href: PropTypes.string,
+  disabled: PropTypes.bool,
+};
 
-  static defaultProps = {
-    primary: false,
-    secondary: false,
-    disabled: false,
-    href: '',
-  };
+Button.defaultProps = {
+  primary: false,
+  secondary: false,
+  disabled: false,
+  href: '',
+};
 
-  render() {
-    const { children } = this.props;
-    // const ButtonStyled = styled[href && !disabled ? 'a' : 'button']`
-    //   ${props => readyStyles(props)}
-    // `;
-
-    return (
-      <ButtonStyled
-        tabIndex={0}
-        {...this.props}
-      >
-        { children }
-      </ButtonStyled>
-    );
-  }
-}
+export default Button;
