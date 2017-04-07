@@ -10,6 +10,8 @@ const regExps = {
   letters: /^[A-zА-я ]+$/,
   date: /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/,
   cert: /(-----(BEGIN|END) CERTIFICATE( REQUEST|)-----|\r|\n)/g,
+  hex: /^\s*(?:[0-9A-Fa-f][0-9A-Fa-f]\s*)+$/,
+  base64: /-----BEGIN [^-]+-----([A-Za-z0-9+\/=\s]+)-----END [^-]+-----|begin-base64[^\n]+\n([A-Za-z0-9+\/=\s]+)====/,
 };
 
 export default regExps;

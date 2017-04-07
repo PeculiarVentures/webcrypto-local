@@ -1,30 +1,16 @@
 import React, { PropTypes, Component } from 'react';
-import styled from 'styled-components';
-// import { ACTIONS_CONST } from '../../constants';
 import { WSActions } from '../../actions/state';
-import { CertHelper } from '../../helpers';
+import { CertHelper, regExps } from '../../helpers';
 import { Button, SelectField, SelectNative, SelectItem, TextField } from '../basic';
 import enLang from '../../langs/en.json';
 import * as BodyStyled from '../create_certificate/styled/body.styled';
-
-const TextareaContainer = styled.div`
-  margin-top: 34px;
-  textarea {
-    height: 320px;
-  }
-`;
-
-const BtnsContainer = styled.div`
-  margin-top: 28px;
-  text-align: right;
-`;
-
-const TextFieldContainer = styled.div`
-  width: calc(33.3% - 16px);
-  @media ${props => props.theme.media.mobile} {
-    width: 100%;
-  }
-`;
+import {
+  TextareaContainer,
+  BtnsContainer,
+  TextFieldContainer,
+  InputFileContainer,
+  LabelStyled,
+} from './styled/body.styled';
 
 export default class Body extends Component {
 
@@ -45,6 +31,10 @@ export default class Body extends Component {
 
   constructor() {
     super();
+
+    this.state = {
+      valid: false,
+    };
 
     this.fieldNodes = {};
   }
@@ -68,8 +58,77 @@ export default class Body extends Component {
     }
   };
 
+  onFileChangeHandler = (e) => {
+    const elem = e.target;
+    const file = elem.files[0];
+    this.fileReaderHandler(file);
+    elem.value = '';
+  };
+
+  onTextareaChangeHandler = (value, valid) => {
+    this.setState({
+      valid,
+    });
+  };
+
+  onDropHandler = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const file = e.dataTransfer.files[0];
+    this.fileReaderHandler(file);
+  };
+
+  fileReaderHandler(file) {
+    const reader = new FileReader();
+    const supportedFileExtension = ['csr', 'cer'];
+
+    if (!file) {
+      return false;
+    }
+
+    const fileExtension = file.name.split('.')[file.name.split('.').length - 1];
+    if (supportedFileExtension.indexOf(fileExtension) === -1) {
+      alert('Not supported file format!');
+      return false;
+    }
+
+    reader.readAsBinaryString(file);
+    reader.onloadend = () => {
+      if (reader.error) {
+        alert(`Your browser couldn't read the specified file (error code ${reader.error.code}).`);
+      } else {
+        this.decodeBinaryString(reader.result);
+      }
+    };
+    return false;
+  }
+
+  decodeBinaryString(str) {
+    const { textarea } = this.fieldNodes;
+    try {
+      let value = '';
+      if (regExps.hex.test(str)) {
+        value = str;
+      } else if (regExps.base64.test(str)) {
+        value = str;
+      } else {
+        value = CertHelper.formatDer(CertHelper.ab2hex(CertHelper.str2ab(str)));
+      }
+
+      textarea.fieldNode.value = value;
+      textarea.validate();
+      this.setState({
+        valid: textarea.isValid(),
+      });
+    } catch (e) {
+      alert('Cannot decode file.');
+    }
+  }
+
   render() {
     const { providers } = this.props;
+    const { valid } = this.state;
     const { deviceType } = this.context;
 
     return (
@@ -117,12 +176,29 @@ export default class Body extends Component {
               labelText={enLang['ImportCertificate.Field.Certificate']}
               multiline
               ref={node => (this.fieldNodes.textarea = node)}
+              validation={['hex', 'base64']}
+              onChange={this.onTextareaChangeHandler}
+              onDrop={this.onDropHandler}
             />
           </TextareaContainer>
           <BtnsContainer>
+            <InputFileContainer>
+              <LabelStyled htmlFor="file_input">
+                { enLang['ImportCertificate.Btn.File'] }
+              </LabelStyled>
+              <input
+                type="file"
+                id="file_input"
+                style={{
+                  display: 'none',
+                }}
+                onChange={this.onFileChangeHandler}
+              />
+            </InputFileContainer>
             <Button
               primary
               onClick={this.onClickImportHandler}
+              disabled={!valid}
             >
               { enLang['ImportCertificate.Btn.Import'] }
             </Button>

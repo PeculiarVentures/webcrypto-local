@@ -127,10 +127,10 @@ function* downloadCertificate({ format }) {
   if (crypto) {
     const cert = yield Certificate.exportCertificate(crypto, certStorage._id, format);
     if (cert && typeof cert === 'string') {
-      downloadCertFromURI(`${certStorage.name}_pem`, cert, certStorage.type);
+      downloadCertFromURI(certStorage.name, cert, certStorage.type);
     } else if (cert) {
       const certHex = CertHelper.formatDer(CertHelper.ab2hex(cert));
-      downloadCertFromURI(`${certStorage.name}_der`, certHex, certStorage.type);
+      downloadCertFromURI(certStorage.name, certHex, certStorage.type);
     }
   }
 }

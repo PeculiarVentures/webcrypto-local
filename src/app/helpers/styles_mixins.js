@@ -33,3 +33,11 @@ export const truncateText = `
   white-space: nowrap;
   text-overflow: ellipsis;
 `;
+
+export const clear = `
+  &:after {
+    content: '';
+    clear: both;
+    display: table;
+  }
+`;

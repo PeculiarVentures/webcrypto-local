@@ -97,6 +97,7 @@ export default class TextField extends Component {
     onFocus: PropTypes.func,
     onKeyUp: PropTypes.func,
     onClick: PropTypes.func,
+    onDrop: PropTypes.func,
     type: PropTypes.string,
     value: PropTypes.oneOfType([
       PropTypes.string,
@@ -245,6 +246,7 @@ export default class TextField extends Component {
       value,
       readOnly,
       errorText,
+      onDrop,
     } = this.props;
     const { valid } = this.state;
     const { deviceType } = this.context;
@@ -274,26 +276,27 @@ export default class TextField extends Component {
           onChange={this.onChangeHandler}
           onKeyUp={this.onKeyUpHandler}
           onClick={this.onClickHandler}
+          onDrop={onDrop}
           readOnly={readOnly}
         />
         {
           type === 'date' && deviceType === 'phone'
           ? <input
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                opacity: 0,
-                width: '100%',
-                height: '100%',
-              }}
-              defaultValue={value}
-              type="date"
-              onBlur={this.onBlurHandler}
-              onChange={(e) => {
-                this.fieldNode.value = e.target.value;
-              }}
-            />
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              opacity: 0,
+              width: '100%',
+              height: '100%',
+            }}
+            defaultValue={value}
+            type="date"
+            onBlur={this.onBlurHandler}
+            onChange={(e) => {
+              this.fieldNode.value = e.target.value;
+            }}
+          />
           : null
         }
         {

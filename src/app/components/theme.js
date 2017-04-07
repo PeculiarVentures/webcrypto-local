@@ -149,5 +149,8 @@ export function getTheme(palette = defaultPalette) {
       borderColorHeader: palette.secondaryTextColor2,
       borderColorBodyGroup: palette.secondaryTextColor2,
     },
+    import: {
+      colorFile: palette.secondaryButtonColor,
+    },
   };
 }

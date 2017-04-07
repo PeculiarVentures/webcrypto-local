@@ -1,7 +1,7 @@
 import * as asn1js from 'asn1js';
 import * as pkijs from 'pkijs';
 import { OIDS } from '../constants';
-// import { regExps } from '../helpers';
+import { regExps } from '../helpers';
 
 const OID = {
   '2.5.4.3': {
@@ -68,7 +68,7 @@ const OID = {
 };
 
 const CertHelper = {
-  ab2hex: function ab2hex(buffer) { // buffer is an ArrayBuffer
+  ab2hex: function ab2hex(buffer) {
     return Array.prototype.map.call(new Uint8Array(buffer), x => (`00${x.toString(16)}`).slice(-2)).join('');
   },
 
@@ -88,6 +88,14 @@ const CertHelper = {
       bufView[i] = str.charCodeAt(i);
     }
     return buf;
+  },
+
+  str2hex: function str2hex(str) {
+    let result = '';
+    for (let i = 0; i < str.length; i += 1) {
+      result += str.charCodeAt(i).toString(16);
+    }
+    return result;
   },
 
   name2str: function name2str(name, splitter) {
@@ -194,7 +202,7 @@ const CertHelper = {
   prepareCertToImport: function prepareCertToImport(value) {
     let certBuf = '';
 
-    if (value.indexOf('CERTIFICATE') !== -1) {
+    if (regExps.base64.test(value)) {
       value = value.replace(/(-----(BEGIN|END) CERTIFICATE( REQUEST|)-----|\r|\n)/g, '');
       certBuf = this.str2ab(window.atob(value));
     } else {
