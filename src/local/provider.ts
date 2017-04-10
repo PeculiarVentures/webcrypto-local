@@ -132,17 +132,23 @@ export class LocalProvider extends EventEmitter {
             });
 
         // SoftHSM
-        // {
-        // const library = "/usr/local/lib/softhsm/libsofthsm2.so";
-        // const crypto = new pkcs11.WebCrypto({
-        //     library,
-        //     slot: 0,
-        //     readWrite: true,
-        // });
-        // const info = getSlotInfo(crypto);
-        // this.info.providers.push(new ProviderCryptoProto(info));
-        // this.crypto[info.id] = crypto;
-        // }
+        {
+            const library = "/usr/local/lib/softhsm/libsofthsm2.so";
+            if (fs.existsSync(library)) {
+                try {
+                    const crypto = new pkcs11.WebCrypto({
+                        library,
+                        slot: 0,
+                        readWrite: true,
+                    });
+                    const info = getSlotInfo(crypto);
+                    this.info.providers.push(new ProviderCryptoProto(info));
+                    this.crypto[info.id] = crypto;
+                } catch (e) {
+                    console.error("SoftHSM: Cannot to init crypto.");
+                }
+            }
+        }
         this.emit("listening", this.getInfo());
     }
 
