@@ -235,6 +235,13 @@ export class CardWatcher extends EventEmitter {
             });
     }
 
+    public on(event: "error", cb: (err: Error) => void): this;
+    public on(event: "insert", cb: (card: Card) => void): this;
+    public on(event: "remove", cb: (card: Card) => void): this;
+    public on(event: string, cb: Function) {
+        return super.on(event, cb);
+    }
+
     /**
      * 
      * 
