@@ -28,15 +28,7 @@ export class LocalServer extends EventEmitter {
         super();
 
         this.server = new Server();
-        this.provider = new LocalProvider({
-            pkcs11: [
-                // "/usr/local/lib/softhsm/libsofthsm2.so",
-                // "/usr/local/lib/libykcs11.dylib",
-                // "yubico/libykcs11-1.dll",
-                // "/Windows/System32/eTPKCS11.dll",
-                "/Library/EstonianIDCard/lib/esteid-pkcs11-onepin.so",
-            ],
-        })
+        this.provider = new LocalProvider()
             .on("token", (info) => {
                 console.log("Provider:Token raised");
                 this.sessions.forEach((session) => {
@@ -110,7 +102,6 @@ export class LocalServer extends EventEmitter {
             // Provider
             case ProviderInfoActionProto.ACTION: {
                 const info = this.provider.info;
-
                 data = await info.exportProto();
                 break;
             }
