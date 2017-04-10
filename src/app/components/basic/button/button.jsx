@@ -22,7 +22,6 @@ Button.defaultProps = {
   primary: false,
   secondary: false,
   disabled: false,
-  href: '',
 };
 
 export default Button;

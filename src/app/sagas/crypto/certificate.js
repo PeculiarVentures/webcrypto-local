@@ -75,6 +75,7 @@ export function* createCertificate(crypto, data) {
   // };
   if (crypto) {
     const { algorithm, extractable, usages } = data.keyInfo;
+    const _algorithm = () => Object.assign({}, algorithm);
     const algorithmHash = algorithm.hash;
     let pkcs10 = new pkijs.CertificationRequest();
 
@@ -82,8 +83,7 @@ export function* createCertificate(crypto, data) {
       const {
         publicKey,
         privateKey,
-      } = yield crypto.subtle.generateKey(algorithm, extractable, usages);
-
+      } = yield crypto.subtle.generateKey(_algorithm(), extractable, usages);
       pkijs.setEngine('Crypto', crypto, crypto.subtle);
       pkcs10.version = 0;
       pkcs10 = WSController.decoratePkcs10Subject(pkcs10, data);
@@ -115,7 +115,7 @@ export function* createCertificate(crypto, data) {
 
       let importCert = '';
       try {
-        importCert = yield crypto.certStorage.importCert('request', csrBuffer, algorithm, usages);
+        importCert = yield crypto.certStorage.importCert('request', csrBuffer, _algorithm(), usages);
       } catch (error) {
         yield put(ErrorActions.error(error));
       }

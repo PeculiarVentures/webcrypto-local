@@ -133,15 +133,15 @@ export class LocalProvider extends EventEmitter {
 
         // SoftHSM
         // {
-        //     const library = "path/to/libsofthsm.so"
-        //     const crypto = new pkcs11.WebCrypto({
-        //         library,
-        //         slot: 0,
-        //         readWrite: true,
-        //     });
-        //     const info = getSlotInfo(crypto);
-        //     this.info.providers.push(new ProviderCryptoProto(info));
-        //     this.crypto[info.id] = crypto;
+        // const library = "/usr/local/lib/softhsm/libsofthsm2.so";
+        // const crypto = new pkcs11.WebCrypto({
+        //     library,
+        //     slot: 0,
+        //     readWrite: true,
+        // });
+        // const info = getSlotInfo(crypto);
+        // this.info.providers.push(new ProviderCryptoProto(info));
+        // this.crypto[info.id] = crypto;
         // }
         this.emit("listening", this.getInfo());
     }
