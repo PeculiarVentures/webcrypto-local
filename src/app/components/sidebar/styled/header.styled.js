@@ -27,11 +27,23 @@ export const SelectContainer = styled.div`
   }
   input, select {
     background: transparent;
-    color: #D6DBDE;
-    border-color: #D6DBDE;
+    color: ${props => (
+      props.disabled
+        ? 'rgba(151, 161, 169, 0.5)'
+        : '#D6DBDE'
+    )};
+    border-color: ${props => (
+      props.disabled
+        ? 'rgba(151, 161, 169, 0.5)'
+        : '#D6DBDE'
+    )};
   }
   svg {
-    fill: #D6DBDE;
+    fill: ${props => (
+      props.disabled
+        ? 'rgba(151, 161, 169, 0.5)'
+        : '#D6DBDE'
+    )};
   }
   @media ${props => props.theme.media.mobile} {
     padding: 13px 12px 5px;

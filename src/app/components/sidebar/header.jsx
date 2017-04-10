@@ -73,7 +73,7 @@ export default class SidebarHeader extends Component {
             { enLang['Sidebar.Header.Btn.Create'] }
           </HeaderStyled.Btn>
         </HeaderStyled.BtnsContainer>
-        <HeaderStyled.SelectContainer>
+        <HeaderStyled.SelectContainer disabled={!providers.length}>
           {
             deviceType === 'phone'
               ? <SelectNative
