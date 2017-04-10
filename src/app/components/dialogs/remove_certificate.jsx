@@ -11,6 +11,10 @@ export default class RemoveCertificateDialog extends Component {
     certificateName: PropTypes.string,
   };
 
+  static defaultProps = {
+    certificateName: '',
+  };
+
   constructor() {
     super();
     this.unbind = () => {};

@@ -56,7 +56,7 @@ export default class Provider extends Component {
               deviceType === 'phone'
                 ? <SelectNative
                   labelText={enLang['CertificateCreate.Provider.Field.Name']}
-                  placeholder="Select provider..."
+                  placeholder={enLang['Select.Label.Provider']}
                   options={providers.map(item => ({
                     value: item.id,
                     name: item.name,
@@ -65,7 +65,7 @@ export default class Provider extends Component {
                 />
                 : <SelectField
                   labelText={enLang['CertificateCreate.Provider.Field.Name']}
-                  placeholder="Select provider..."
+                  placeholder={enLang['Select.Label.Provider']}
                   defaultSelected={{
                     name: providers[0] ? providers[0].name : '',
                     value: providers[0] ? providers[0].id : '',

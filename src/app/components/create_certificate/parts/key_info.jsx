@@ -189,7 +189,7 @@ export default class KeyInfo extends Component {
               deviceType === 'phone'
               ? <SelectNative
                 labelText={enLang['CertificateCreate.KeyInfo.Field.Algorithm']}
-                placeholder="Select algorithm..."
+                placeholder={enLang['Select.Label.Algorithm']}
                 ref={node => (this.fieldNodes.algorithm = node)}
                 options={keyInfoData.map((key) => {
                   key.value = key.name;
@@ -200,9 +200,8 @@ export default class KeyInfo extends Component {
               />
               : <SelectField
                 labelText={enLang['CertificateCreate.KeyInfo.Field.Algorithm']}
-                name="algorithm"
                 ref={node => (this.fieldNodes.algorithm = node)}
-                placeholder="Select algorithm..."
+                placeholder={enLang['Select.Label.Algorithm']}
                 onChange={this.handleChangeAlgorithm}
                 value={algorithmValue}
               >
@@ -223,7 +222,7 @@ export default class KeyInfo extends Component {
               deviceType === 'phone'
               ? <SelectNative
                 labelText={selectSizeLabel}
-                placeholder="Select size..."
+                placeholder={enLang['Select.Label.Size']}
                 ref={node => (this.fieldNodes.size = node)}
                 options={currentAlgorithmData.modulusLength.map(module => ({
                   value: module,
@@ -232,9 +231,8 @@ export default class KeyInfo extends Component {
               />
               : <SelectField
                 labelText={selectSizeLabel}
-                name="size"
                 ref={node => (this.fieldNodes.size = node)}
-                placeholder="Select size..."
+                placeholder={enLang['Select.Label.Size']}
                 defaultSelected={{
                   name: currentAlgorithmData.modulusLength[0],
                   value: currentAlgorithmData.modulusLength[0],
@@ -260,7 +258,7 @@ export default class KeyInfo extends Component {
                 deviceType === 'phone'
                   ? <SelectNative
                     labelText={enLang['CertificateCreate.KeyInfo.Field.PublicExponent']}
-                    placeholder="Select exponent..."
+                    placeholder={enLang['Select.Label.Exponent']}
                     ref={node => (this.fieldNodes.publicExponent = node)}
                     options={currentAlgorithmData.publicExponent.map(module => ({
                       value: module,
@@ -269,9 +267,8 @@ export default class KeyInfo extends Component {
                   />
                   : <SelectField
                     labelText={enLang['CertificateCreate.KeyInfo.Field.PublicExponent']}
-                    name="exponent"
                     ref={node => (this.fieldNodes.publicExponent = node)}
-                    placeholder="Select exponent..."
+                    placeholder={enLang['Select.Label.Exponent']}
                     defaultSelected={{
                       name: currentAlgorithmData.publicExponent[0],
                       value: currentAlgorithmData.publicExponent[0],

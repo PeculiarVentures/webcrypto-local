@@ -44,19 +44,19 @@ const CertificateInfo = (props) => {
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.Certificate.General'] }
+          { enLang['Info.Body.General'] }
         </Title>
         <RowCert>
-          { renderRowContainer(enLang['Info.InfoTable.Certificate.SerialNumber'], serialNumber) }
-          { renderRowContainer(enLang['Info.InfoTable.Certificate.Version'], version) }
-          { renderRowContainer(enLang['Info.InfoTable.Certificate.Issued'], notBefore) }
-          { renderRowContainer(enLang['Info.InfoTable.Certificate.Expired'], notAfter) }
+          { renderRowContainer(enLang['Info.Body.SerialNumber'], serialNumber) }
+          { renderRowContainer(enLang['Info.Body.Version'], version) }
+          { renderRowContainer(enLang['Info.Body.Issued'], notBefore) }
+          { renderRowContainer(enLang['Info.Body.Expired'], notAfter) }
         </RowCert>
       </Row>
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.Certificate.SubjectName'] }
+          { enLang['Info.Body.SubjectName'] }
         </Title>
         <RowCert>
           {
@@ -67,7 +67,7 @@ const CertificateInfo = (props) => {
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.Certificate.IssuerName'] }
+          { enLang['Info.Body.IssuerName'] }
         </Title>
         <RowCert>
           {
@@ -78,43 +78,43 @@ const CertificateInfo = (props) => {
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.Certificate.PublicKeyInfo'] }
+          { enLang['Info.Body.PublicKeyInfo'] }
         </Title>
         <RowCert>
-          { renderRowContainer(enLang['Info.InfoTable.Key.Algorithm'], publicKey.algorithm.name) }
-          { renderRowContainer(enLang['Info.InfoTable.Key.ModulusBits'], publicKey.algorithm.modulusBits) }
-          { renderRowContainer(enLang['Info.InfoTable.Key.PublicExponent'], publicKey.algorithm.publicExponent) }
+          { renderRowContainer(enLang['Info.Body.Algorithm'], publicKey.algorithm.name) }
+          { renderRowContainer(enLang['Info.Body.ModulusBits'], publicKey.algorithm.modulusBits) }
+          { renderRowContainer(enLang['Info.Body.PublicExponent'], publicKey.algorithm.publicExponent) }
         </RowCert>
         <RowCert>
-          { renderRowContainer(enLang['Info.InfoTable.Certificate.Value'], publicKey.value) }
+          { renderRowContainer(enLang['Info.Body.Value'], publicKey.value) }
         </RowCert>
       </Row>
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.Certificate.Signature'] }
+          { enLang['Info.Body.Signature'] }
         </Title>
         <RowCert>
-          { renderRowContainer(enLang['Info.InfoTable.Key.Algorithm'], signature.algorithm.name) }
-          { renderRowContainer(enLang['Info.InfoTable.Certificate.Hash'], signature.algorithm.hash) }
+          { renderRowContainer(enLang['Info.Body.Algorithm'], signature.algorithm.name) }
+          { renderRowContainer(enLang['Info.Body.Hash'], signature.algorithm.hash) }
         </RowCert>
         <RowCert>
-          { renderRowContainer(enLang['Info.InfoTable.Certificate.Value'], signature.value) }
+          { renderRowContainer(enLang['Info.Body.Value'], signature.value) }
         </RowCert>
       </Row>
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.Certificate.Extensions'] }
+          { enLang['Info.Body.Extensions'] }
         </Title>
         {
           extensions.map((ext, index) => (
             <RowCert
               key={index}
             >
-              { renderRowContainer(enLang['Info.InfoTable.Certificate.Name'], ext.name) }
-              { renderRowContainer(enLang['Info.InfoTable.Certificate.Value'], ext.value) }
-              { renderRowContainer(enLang['Info.InfoTable.Certificate.Critical'], ext.critical ? 'yes' : 'no') }
+              { renderRowContainer(enLang['Info.Body.Name'], ext.name) }
+              { renderRowContainer(enLang['Info.Body.Value'], ext.value) }
+              { renderRowContainer(enLang['Info.Body.Critical'], ext.critical ? 'yes' : 'no') }
             </RowCert>
           ))
         }

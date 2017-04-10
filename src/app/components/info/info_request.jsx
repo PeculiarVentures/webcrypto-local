@@ -51,38 +51,38 @@ const RequestInfo = (props) => {
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.SubjectInfo'] }
+          { enLang['Info.Body.SubjectInfo'] }
         </Title>
-        { renderInfoContainer(enLang['Info.InfoTable.CommonName'], commonName) }
-        { renderInfoContainer(enLang['Info.InfoTable.Organization'], organization) }
-        { renderInfoContainer(enLang['Info.InfoTable.OrganizationUnit'], organizationUnit) }
-        { renderInfoContainer(enLang['Info.InfoTable.Country'], country) }
-        { renderInfoContainer(enLang['Info.InfoTable.Region'], region) }
-        { renderInfoContainer(enLang['Info.InfoTable.City'], city) }
+        { renderInfoContainer(enLang['Info.Body.CommonName'], commonName) }
+        { renderInfoContainer(enLang['Info.Body.Organization'], organization) }
+        { renderInfoContainer(enLang['Info.Body.OrganizationUnit'], organizationUnit) }
+        { renderInfoContainer(enLang['Info.Body.Country'], country) }
+        { renderInfoContainer(enLang['Info.Body.Region'], region) }
+        { renderInfoContainer(enLang['Info.Body.City'], city) }
       </Row>
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.Key.Title'] }
+          { enLang['Info.Body.PublicKeyInfo'] }
         </Title>
         <RowCert>
-          { renderRowContainer(enLang['Info.InfoTable.Key.Algorithm'], publicKeyInfo.type) }
-          { renderRowContainer(enLang['Info.InfoTable.Key.ModulusBits'], publicKeyInfo.modulusBits) }
-          { renderRowContainer(enLang['Info.InfoTable.Key.PublicExponent'], publicKeyInfo.publicExponent) }
-          { renderRowContainer(enLang['Info.InfoTable.Key.NamedCurve'], publicKeyInfo.namedCurve) }
+          { renderRowContainer(enLang['Info.Body.Algorithm'], publicKeyInfo.type) }
+          { renderRowContainer(enLang['Info.Body.ModulusBits'], publicKeyInfo.modulusBits) }
+          { renderRowContainer(enLang['Info.Body.PublicExponent'], publicKeyInfo.publicExponent) }
+          { renderRowContainer(enLang['Info.Body.NamedCurve'], publicKeyInfo.namedCurve) }
         </RowCert>
         <RowCert>
-          { renderRowContainer(enLang['Info.InfoTable.Key.Value'], publicKeyInfo.value) }
+          { renderRowContainer(enLang['Info.Body.Value'], publicKeyInfo.value) }
         </RowCert>
       </Row>
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.Certificate.Signature'] }
+          { enLang['Info.Body.Signature'] }
         </Title>
         <RowCert>
-          { renderRowContainer(enLang['Info.InfoTable.Key.Algorithm'], signature.algorithm) }
-          { renderRowContainer(enLang['Info.InfoTable.Certificate.Hash'], signature.hash) }
+          { renderRowContainer(enLang['Info.Body.Algorithm'], signature.algorithm) }
+          { renderRowContainer(enLang['Info.Body.Hash'], signature.hash) }
         </RowCert>
       </Row>
 

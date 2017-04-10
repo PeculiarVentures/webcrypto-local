@@ -76,7 +76,7 @@ export default class SidebarHeader extends Component {
             deviceType === 'phone'
               ? <SelectNative
                 labelText={enLang['CertificateCreate.Provider.Field.Name']}
-                placeholder="Select provider..."
+                placeholder={enLang['Select.Label.Provider']}
                 options={providers.map(item => ({
                   value: item.id,
                   name: item.name,
@@ -85,7 +85,7 @@ export default class SidebarHeader extends Component {
               />
               : <SelectField
                 labelText={enLang['CertificateCreate.Provider.Field.Name']}
-                placeholder="Select provider..."
+                placeholder={enLang['Select.Label.Provider']}
                 value={{
                   name: currentProvider ? currentProvider.name : '',
                   value: currentProvider ? currentProvider.id : '',
