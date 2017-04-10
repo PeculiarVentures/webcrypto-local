@@ -139,7 +139,7 @@ export default class Body extends Component {
               deviceType === 'phone'
                 ? <SelectNative
                   labelText={enLang['ImportCertificate.Field.Provider']}
-                  placeholder="Select provider..."
+                  placeholder={enLang['Select.Label.Provider']}
                   ref={node => (this.fieldNodes.format = node)}
                   options={providers.map(item => ({
                     value: item.id,
@@ -151,7 +151,7 @@ export default class Body extends Component {
                 : <SelectField
                   labelText={enLang['ImportCertificate.Field.Provider']}
                   ref={node => (this.fieldNodes.format = node)}
-                  placeholder="Select provider..."
+                  placeholder={enLang['Select.Label.Provider']}
                   defaultSelected={{
                     name: providers[0].name || '',
                     value: providers[0].id || '',

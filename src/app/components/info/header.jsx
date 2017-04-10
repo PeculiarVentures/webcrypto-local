@@ -154,7 +154,7 @@ export default class Header extends Component {
               : <DropdownItemContainer>
                 <DropdownItemStyled onClick={this.handleDownload} secondary>
                   <DownloadIconStyled />
-                  { enLang['Info.Header.Download'] }
+                  { enLang['Info.Header.Btn.Download'] }
                 </DropdownItemStyled>
               </DropdownItemContainer>
             }
@@ -164,14 +164,14 @@ export default class Header extends Component {
                 : <DropdownItemContainer>
                   <DropdownItemStyled onClick={this.bindedHandleCopy} secondary>
                     <CopyIconStyled />
-                    { enLang['Info.Header.CopyToClipboard'] }
+                    { enLang['Info.Header.Btn.Copy'] }
                   </DropdownItemStyled>
                 </DropdownItemContainer>
             }
             <DropdownItemContainer>
               <DropdownItemStyled onClick={this.bindedHandleRemove} secondary>
                 <RemoveIconStyled />
-                { enLang['Info.Header.Remove'] }
+                { enLang['Info.Header.Btn.Remove'] }
               </DropdownItemStyled>
             </DropdownItemContainer>
           </DropdownItemsWrapper>
@@ -223,7 +223,7 @@ export default class Header extends Component {
               disabled={!dataLoaded}
             >
               <DownloadIconStyled />
-              { enLang['Info.Header.Download'] }
+              { enLang['Info.Header.Btn.Download'] }
             </Button>
             <DownloadTooltip
               disabled={!dataLoaded}
@@ -240,7 +240,7 @@ export default class Header extends Component {
               disabled={!dataLoaded}
             >
               <CopyIconStyled />
-              { enLang['Info.Header.CopyToClipboard'] }
+              { enLang['Info.Header.Btn.Copy'] }
             </StyledButton>
         }
         <StyledButton
@@ -249,7 +249,7 @@ export default class Header extends Component {
           disabled={!dataLoaded}
         >
           <RemoveIconStyled />
-          { enLang['Info.Header.Remove'] }
+          { enLang['Info.Header.Btn.Remove'] }
         </StyledButton>
       </ButtonsContainer>
     );

@@ -38,11 +38,11 @@ const KeyInfo = (props) => {
 
       <Row>
         <Title>
-          { enLang['Info.InfoTable.Key.Title'] }
+          { enLang['Info.Body.PublicKeyInfo'] }
         </Title>
         {
           renderInfoContainer(
-            enLang['Info.InfoTable.Key.CreatedAt'],
+            enLang['Info.Body.CreatedAt'],
             createdAtDate !== 'Invalid date'
               ? createdAtDate
               : createdAt,
@@ -50,15 +50,15 @@ const KeyInfo = (props) => {
         }
         {
           renderInfoContainer(
-            enLang['Info.InfoTable.Key.LastUsed'],
+            enLang['Info.Body.LastUsed'],
             lastUsedDate !== 'Invalid date'
               ? lastUsedDate
               : lastUsed,
           )
         }
-        { renderInfoContainer(enLang['Info.InfoTable.Key.Algorithm'], algorithm) }
-        { renderInfoContainer(enLang['Info.InfoTable.Key.Size'], size) }
-        { renderInfoContainer(enLang['Info.InfoTable.Key.Usages'], usages.join(', ')) }
+        { renderInfoContainer(enLang['Info.Body.Algorithm'], algorithm) }
+        { renderInfoContainer(enLang['Info.Body.Size'], size) }
+        { renderInfoContainer(enLang['Info.Body.Usages'], usages.join(', ')) }
       </Row>
 
     </Root>

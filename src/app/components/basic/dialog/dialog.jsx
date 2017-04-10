@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import styled from 'styled-components';
+import enLang from '../../../langs/en.json';
 import { Button } from '../button';
 
 const ButtonStyled = styled(Button)`
@@ -178,7 +179,7 @@ Dialog.propTypes = {
 };
 
 Dialog.defaultProps = {
-  cancelText: 'Cancel',
+  cancelText: enLang['Dialog.Btn.Cancel'],
 };
 
 export default Dialog;

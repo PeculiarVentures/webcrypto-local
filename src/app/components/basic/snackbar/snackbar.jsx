@@ -1,5 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
+import enLang from '../../../langs/en.json';
 import { Button } from '../button';
 
 const SnackbarStyled = styled.div`
@@ -86,8 +87,8 @@ export default class Snackbar extends Component {
     width: '37%',
     offset: '16px',
     origin: 'bottom',
-    type: 'info', // info error
-    buttonText: 'Cancel',
+    type: 'info', // info, error
+    buttonText: enLang['Snackbar.Btn.Cancel'],
     animationTime: 300,
     animation: true,
     onMouseOver: null,

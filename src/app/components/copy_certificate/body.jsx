@@ -122,7 +122,7 @@ export default class Body extends Component {
               deviceType === 'phone'
                 ? <SelectNative
                   labelText={enLang['CopyCertificate.Field.Format']}
-                  placeholder="Select format..."
+                  placeholder={enLang['Select.Label.Format']}
                   ref={node => (this.fieldNodes.format = node)}
                   options={formats.map(f => ({
                     value: f.value,
@@ -134,7 +134,7 @@ export default class Body extends Component {
                 : <SelectField
                   labelText={enLang['CopyCertificate.Field.Format']}
                   ref={node => (this.fieldNodes.format = node)}
-                  placeholder="Select format..."
+                  placeholder={enLang['Select.Label.Format']}
                   defaultSelected={formats[0]}
                   onChange={this.onFormatChange}
                 >

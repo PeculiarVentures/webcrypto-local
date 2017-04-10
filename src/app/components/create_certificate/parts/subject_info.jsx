@@ -96,7 +96,6 @@ export default class SubjectInfo extends Component {
           <TextFieldContainer>
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.CommonName']}
-              name="hostName"
               ref={node => (this.fieldNodes.commonName = node)}
               validation={['text']}
               errorText={enLang['CertificateCreate.Subject.Field.CommonName.Error']}
@@ -105,14 +104,12 @@ export default class SubjectInfo extends Component {
           <TextFieldContainer>
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.Organization']}
-              name="organization"
               ref={node => (this.fieldNodes.organization = node)}
             />
           </TextFieldContainer>
           <TextFieldContainer>
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.OrganizationUnit']}
-              name="organizationUnit"
               ref={node => (this.fieldNodes.organizationUnit = node)}
             />
           </TextFieldContainer>
@@ -121,14 +118,13 @@ export default class SubjectInfo extends Component {
               deviceType === 'phone'
                 ? <SelectNative
                   labelText={enLang['CertificateCreate.Subject.Field.Country']}
-                  placeholder="Select country..."
+                  placeholder={enLang['Select.Label.Country']}
                   ref={node => (this.fieldNodes.country = node)}
                   options={countries}
                 />
                 : <SelectField
                   labelText={enLang['CertificateCreate.Subject.Field.Country']}
-                  placeholder="Select country..."
-                  name="country"
+                  placeholder={enLang['Select.Label.Country']}
                   ref={node => (this.fieldNodes.country = node)}
                 >
                   {
@@ -146,14 +142,12 @@ export default class SubjectInfo extends Component {
           <TextFieldContainer>
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.Region']}
-              name="region"
               ref={node => (this.fieldNodes.state = node)}
             />
           </TextFieldContainer>
           <TextFieldContainer>
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.City']}
-              name="city"
               ref={node => (this.fieldNodes.locality = node)}
             />
           </TextFieldContainer>
