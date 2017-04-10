@@ -27,6 +27,7 @@ const subjectNames = {
   OU: 'organizationUnit',
   L: 'city',
   ST: 'region',
+  E: 'email',
   '1.3.6.1.2.1.1.5': 'hostName',
 };
 
