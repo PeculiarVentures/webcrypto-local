@@ -57,6 +57,7 @@ export const WSController = {
 
   keyDataHandler: function keyDataHandler(keyData, keyId) {
     const { algorithm, usages, id } = keyData;
+
     return {
       id,
       _id: keyId,
@@ -84,8 +85,10 @@ export const WSController = {
       notBefore,
       notAfter,
     } = certDetails;
+
     const decodedIssuer = this.decodeSubjectString(issuerName);
     const decodedSubject = this.decodeSubjectString(subjectName);
+
     return {
       id,
       _id: certId,
@@ -110,23 +113,30 @@ export const WSController = {
 
   requestDataHandler: function requestDataHandler(reqData, reqId) {
     const { publicKey, id, subjectName } = reqData;
+    const { algorithm, raw } = publicKey;
+
     const decodedSubject = this.decodeSubjectString(subjectName);
+    let publicExponent = '';
+    if (algorithm.publicExponent.byteLength) {
+      publicExponent = algorithm.publicExponent.byteLength === 3 ? '65537' : '3';
+    }
+
     return Object.assign({
       id,
       _id: reqId,
       name: '',
       type: 'request',
       publicKeyInfo: {
-        modulusBits: publicKey.algorithm.modulusLength,
-        namedCurve: publicKey.algorithm.namedCurve,
-        type: CertHelper.getKeyType(publicKey.algorithm.name),
-        publicExponent: publicKey.algorithm.publicExponent.byteLength === 3 ? '65537' : '3',
-        algorithm: publicKey.algorithm.name,
-        value: CertHelper.addSpaceAfterSecondCharset(new Buffer(publicKey.raw).toString('hex')),
+        modulusBits: algorithm.modulusLength,
+        namedCurve: algorithm.namedCurve,
+        type: CertHelper.getKeyType(algorithm.name),
+        publicExponent,
+        algorithm: algorithm.name,
+        value: CertHelper.addSpaceAfterSecondCharset(new Buffer(raw).toString('hex')),
       },
       signature: {
-        algorithm: publicKey.algorithm.name,
-        hash: publicKey.algorithm.hash.name,
+        algorithm: algorithm.name,
+        hash: algorithm.hash.name,
       },
       commonName: '',
       organization: '',
@@ -140,6 +150,7 @@ export const WSController = {
   decodeSubjectString: function decodeSubjectString(subjectString) {
     const subjectObj = {};
     const arrSubjects = subjectString.split(/, /g);
+
     arrSubjects.map((sbj) => {
       const arrSubject = sbj.split('=');
       const subjectName = subjectNames[arrSubject[0]] || OIDS[arrSubject[0]] || arrSubject[0];
@@ -150,6 +161,7 @@ export const WSController = {
       }
       return true;
     });
+
     return subjectObj;
   },
 };
