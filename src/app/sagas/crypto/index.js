@@ -56,40 +56,37 @@ function* getKeys() {
 }
 
 function* getCerificates() {
-  // const providers = yield getProviders();
-
-  // TODO: 'for' created for test
-  // for (let i = 0; i < providers.length; i += 1) {
   const crypto = yield getCrypto();
-  const certificates = yield Certificate.getCertificates(crypto);
-  if (certificates.length) {
-    // const getCertificatesArr = [];
-    // for (const certId of certificates) {
-    //   getCertificatesArr.push(Certificate.getCertificate(crypto, certId));
-    // }
-    //
-    // const certificatesArr = yield getCertificatesArr;
-    // for (const certificate of certificatesArr) {
-    //   const certData = WSController.certDataHandler(certificate);
-    //   yield put(CertificateActions.add(certData));
-    // }
-    for (const certId of certificates) {
-      const item = yield Certificate.getCertificate(crypto, certId);
-      let certData = '';
+  if (crypto) {
+    const certificates = yield Certificate.getCertificates(crypto);
+    if (certificates.length) {
+      // const getCertificatesArr = [];
+      // for (const certId of certificates) {
+      //   getCertificatesArr.push(Certificate.getCertificate(crypto, certId));
+      // }
+      //
+      // const certificatesArr = yield getCertificatesArr;
+      // for (const certificate of certificatesArr) {
+      //   const certData = WSController.certDataHandler(certificate);
+      //   yield put(CertificateActions.add(certData));
+      // }
+      for (const certId of certificates) {
+        const item = yield Certificate.getCertificate(crypto, certId);
+        let certData = '';
 
-      if (item.type === 'x509') {
-        const certificateRaw = yield crypto.certStorage.exportCert('raw', item);
-        const certificateDetails = CertHelper.certRawToJson(certificateRaw);
-        certData = WSController.certDataHandler(certificateDetails, item, certId);
-      } else {
-        certData = WSController.requestDataHandler(item, certId);
+        if (item.type === 'x509') {
+          const certificateRaw = yield crypto.certStorage.exportCert('raw', item);
+          const certificateDetails = CertHelper.certRawToJson(certificateRaw);
+          certData = WSController.certDataHandler(certificateDetails, item, certId);
+        } else {
+          certData = WSController.requestDataHandler(item, certId);
+        }
+
+        yield put(CertificateActions.add(certData));
       }
-
-      yield put(CertificateActions.add(certData));
     }
+    yield put(AppActions.dataLoaded(true));
   }
-  // }
-  yield put(AppActions.dataLoaded(true));
 }
 
 function* createCertificate({ data }) {

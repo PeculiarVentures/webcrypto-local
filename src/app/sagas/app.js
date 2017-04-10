@@ -9,7 +9,7 @@ function* selectProvider({ id }) {
   yield put(AppActions.dataLoaded(false));
   yield put(AppActions.readState(provider.readOnly));
   yield put(CertificateActions.clear());
-  yield put(WSActions.getCertificates(provider.index));
+  yield put(WSActions.getCertificates());
 }
 
 export default function* () {

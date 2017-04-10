@@ -105,6 +105,11 @@ export default class Overlay extends Component {
         return dispatch(DialogActions.close());
       }
 
+      case 'TRY_AGAIN_PIN': {
+        dispatch(WSActions.getCertificates());
+        return dispatch(DialogActions.close());
+      }
+
       default:
         return true;
     }
@@ -143,6 +148,22 @@ export default class Overlay extends Component {
             onCancel={() => (
               this.handleAction({
                 type: ACTIONS_CONST.DIALOG_CLOSE,
+              })
+            )}
+          />
+          <Dialog.IncorrectPinDialog
+            name="incorrect_pin"
+            onAccept={() => (
+              this.handleAction({
+                type: 'TRY_AGAIN_PIN',
+              })
+            )}
+          />
+          <Dialog.TimeoutPinDialog
+            name="timeout_pin"
+            onAccept={() => (
+              this.handleAction({
+                type: 'TRY_AGAIN_PIN',
               })
             )}
           />
