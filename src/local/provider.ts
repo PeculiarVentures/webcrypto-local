@@ -11,7 +11,7 @@ import * as graphene from "graphene-pk11";
 
 const CARD_CONFIG_PATH = "./json/card.json";
 
-type LocalProviderTokenHandler = (info: { removed: IProvider[], added: IProvider[] }) => void;
+type LocalProviderTokenHandler = (info: { removed: IProvider[], added: IProvider[], error: Error }) => void;
 type LocalProviderListeningHandler = (info: IModule[]) => void;
 type LocalProviderErrorHandler = (e: Error) => void;
 type LocalProviderStopHandler = () => void;
@@ -77,11 +77,19 @@ export class LocalProvider extends EventEmitter {
         this.cards.start(CARD_CONFIG_PATH);
         this.cards
             .on("error", (error) => {
-                this.emit("error", error);
+                return this.emit("token", {
+                        added: [],
+                        removed: [],
+                        error: error.message,
+                    });
             })
             .on("insert", (card) => {
                 if (!fs.existsSync(card.library)) {
-                    return this.emit("error", new Error(`Cannot find PKCS#11 library ${card.library}`));
+                    return this.emit("token", {
+                        added: [],
+                        removed: [],
+                        error: `Cannot find PKCS#11 library ${card.library}`,
+                    });
                 }
                 try {
                     const crypto = new pkcs11.WebCrypto({

@@ -15,6 +15,11 @@ export class ProviderCryptoProto extends BaseProto implements IProvider {
     @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, required: true, type: "string" })
     public name: string;
 
+    @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, type: "bool", defaultValue: false })
+    public readOnly: boolean;
+
+    public library?: string;
+
     @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, repeated: true, type: "string" })
     public algorithms: string[];
 
@@ -78,11 +83,14 @@ export class ProviderTokenEventProto extends ActionProto {
     public static INDEX = ActionProto.INDEX;
     public static ACTION = "provider/event/token";
 
-    @ProtobufProperty({ name: "added", id: ProviderTokenEventProto.INDEX++, repeated: true, parser: ProviderCryptoProto })
+    @ProtobufProperty({ id: ProviderTokenEventProto.INDEX++, repeated: true, parser: ProviderCryptoProto })
     public added: ProviderCryptoProto[];
 
-    @ProtobufProperty({ name: "removed", id: ProviderTokenEventProto.INDEX++, repeated: true, parser: ProviderCryptoProto })
+    @ProtobufProperty({ id: ProviderTokenEventProto.INDEX++, repeated: true, parser: ProviderCryptoProto })
     public removed: ProviderCryptoProto[];
+
+    @ProtobufProperty({ id: ProviderTokenEventProto.INDEX++, type: "string" })
+    public error: string;
 
     constructor(data?: { added: IProvider[], removed: IProvider[] }) {
         super();
