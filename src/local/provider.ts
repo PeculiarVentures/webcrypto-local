@@ -78,10 +78,10 @@ export class LocalProvider extends EventEmitter {
         this.cards
             .on("error", (error) => {
                 return this.emit("token", {
-                        added: [],
-                        removed: [],
-                        error: error.message,
-                    });
+                    added: [],
+                    removed: [],
+                    error: error.message,
+                });
             })
             .on("insert", (card) => {
                 if (!fs.existsSync(card.library)) {
@@ -130,6 +130,19 @@ export class LocalProvider extends EventEmitter {
                     this.emit("token", info);
                 }
             });
+
+        // SoftHSM
+        // {
+        //     const library = "path/to/libsofthsm.so"
+        //     const crypto = new pkcs11.WebCrypto({
+        //         library,
+        //         slot: 0,
+        //         readWrite: true,
+        //     });
+        //     const info = getSlotInfo(crypto);
+        //     this.info.providers.push(new ProviderCryptoProto(info));
+        //     this.crypto[info.id] = crypto;
+        // }
         this.emit("listening", this.getInfo());
     }
 
