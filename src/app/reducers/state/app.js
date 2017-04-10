@@ -24,6 +24,11 @@ export default function (state, payload) {
       break;
     }
 
+    case ACTIONS_CONST.APP_READ_STATE: {
+      state.merge({ readOnly: payload.state });
+      break;
+    }
+
     default:
       return state;
   }

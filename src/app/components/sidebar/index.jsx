@@ -34,6 +34,10 @@ export default class Sidebar extends Component {
     open: PropTypes.bool,
     dataLoaded: PropTypes.bool,
     serverStatus: PropTypes.string,
+    readOnly: PropTypes.bool,
+    providers: PropTypes.oneOfType([
+      PropTypes.array,
+    ]),
   };
 
   static defaultProps = {
@@ -41,10 +45,12 @@ export default class Sidebar extends Component {
     open: false,
     dataLoaded: false,
     serverStatus: 'seaching',
+    readOnly: false,
+    providers: [],
   };
 
   render() {
-    const { list, open, dataLoaded, serverStatus, providers } = this.props;
+    const { list, open, dataLoaded, serverStatus, providers, readOnly } = this.props;
 
     return (
       <SidebarStyled
@@ -53,6 +59,7 @@ export default class Sidebar extends Component {
         <SidebarHeader
           dataLoaded={dataLoaded}
           providers={providers}
+          readOnly={readOnly}
         />
         <SidebarBody
           list={list}

@@ -19,3 +19,8 @@ export const dataLoaded = state => ({
   type: ACTIONS_CONST.APP_DATA_LOADED,
   state,
 });
+
+export const readState = state => ({
+  type: ACTIONS_CONST.APP_READ_STATE,
+  state,
+});

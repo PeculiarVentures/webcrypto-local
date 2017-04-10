@@ -46,11 +46,13 @@ export default class Info extends Component {
     certificate: PropTypes.oneOfType([
       PropTypes.object,
     ]),
+    readOnly: PropTypes.bool,
   };
 
   static defaultProps = {
     certificate: {},
     dataLoaded: false,
+    readOnly: false,
   };
 
   onRemoveHandler = () => {
@@ -101,7 +103,7 @@ export default class Info extends Component {
   }
 
   render() {
-    const { certificate, dataLoaded } = this.props;
+    const { certificate, dataLoaded, readOnly } = this.props;
 
     switch (true) {
       case !dataLoaded:
@@ -132,6 +134,7 @@ export default class Info extends Component {
           <RootStyled>
             <HeaderContainer>
               <Header
+                readOnly={readOnly}
                 dataLoaded={dataLoaded}
                 name={certificate.name}
                 isKey={certificate.type === 'key'}

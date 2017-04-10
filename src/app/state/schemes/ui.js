@@ -17,4 +17,5 @@ export default new Schema('UI', {
     instance: ProviderList,
     validate: is.list,
   }),
+  readOnly: Type.Boolean,
 });

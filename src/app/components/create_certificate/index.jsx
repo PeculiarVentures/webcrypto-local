@@ -13,12 +13,14 @@ export default class CertificateCreate extends Component {
     providers: PropTypes.oneOfType([
       PropTypes.array,
     ]),
+    readOnly: PropTypes.bool,
   };
 
   static defaultProps = {
     dataLoaded: false,
     serverStatus: 'seaching',
     providers: [],
+    readOnly: false,
   };
 
   static contextTypes = {
@@ -36,7 +38,7 @@ export default class CertificateCreate extends Component {
   };
 
   render() {
-    const { dataLoaded, serverStatus, providers } = this.props;
+    const { dataLoaded, serverStatus, providers, readOnly } = this.props;
     return (
       <IndexStyled.Wrapper>
         <Header
@@ -48,6 +50,7 @@ export default class CertificateCreate extends Component {
           dataLoaded={dataLoaded}
           serverStatus={serverStatus}
           providers={providers}
+          readOnly={readOnly}
         />
       </IndexStyled.Wrapper>
     );

@@ -6,4 +6,5 @@ export const DEFAULT = {
   serverStatus: 'seaching',
   certificates: [],
   providers: [],
+  readOnly: false,
 };

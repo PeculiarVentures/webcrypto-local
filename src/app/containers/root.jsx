@@ -28,24 +28,26 @@ class RootContainer extends Component {
     params: PropTypes.oneOfType([
       PropTypes.object,
     ]),
-    location: PropTypes.oneOfType([
-      PropTypes.object,
-    ]),
     dispatch: PropTypes.func,
     certificates: PropTypes.oneOfType([
       PropTypes.array,
     ]),
     dataLoaded: PropTypes.bool,
     serverStatus: PropTypes.string,
+    providers: PropTypes.oneOfType([
+      PropTypes.array,
+    ]),
+    readOnly: PropTypes.bool,
   };
 
   static defaultProps = {
     params: {},
-    location: {},
     dispatch: () => {},
     certificates: [],
     dataLoaded: false,
     serverStatus: 'seaching',
+    providers: [],
+    readOnly: false,
   };
 
   static childContextTypes = {
@@ -194,7 +196,7 @@ class RootContainer extends Component {
   }
 
   render() {
-    const { certificates, dataLoaded, serverStatus, providers } = this.props;
+    const { certificates, dataLoaded, serverStatus, providers, readOnly } = this.props;
     const { sidebarOpen } = this.state;
 
     return (
@@ -205,10 +207,12 @@ class RootContainer extends Component {
           dataLoaded={dataLoaded}
           serverStatus={serverStatus}
           providers={providers}
+          readOnly={readOnly}
         />
         <InfoStyled>
           <Info
             dataLoaded={dataLoaded}
+            readOnly={readOnly}
             certificate={this.getSelectedCertificateProps()}
           />
         </InfoStyled>

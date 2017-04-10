@@ -33,6 +33,7 @@ export default class Header extends Component {
     onMenu: PropTypes.func,
     dataLoaded: PropTypes.bool,
     isKey: PropTypes.bool,
+    readOnly: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -43,6 +44,7 @@ export default class Header extends Component {
     onRemove: () => {},
     onMenu: () => {},
     isKey: false,
+    readOnly: false,
   };
 
   static contextTypes = {
@@ -208,7 +210,7 @@ export default class Header extends Component {
   }
 
   renderButtons() {
-    const { dataLoaded, isKey } = this.props;
+    const { dataLoaded, isKey, readOnly } = this.props;
 
     return (
       <ButtonsContainer>
@@ -216,8 +218,8 @@ export default class Header extends Component {
           isKey
           ? null
           : <BtnContainerStyled
-              disabled={!dataLoaded}
-            >
+            disabled={!dataLoaded}
+          >
             <Button
               secondary
               disabled={!dataLoaded}
@@ -246,7 +248,7 @@ export default class Header extends Component {
         <StyledButton
           onClick={this.bindedHandleRemove}
           secondary
-          disabled={!dataLoaded}
+          disabled={!dataLoaded || readOnly}
         >
           <RemoveIconStyled />
           { enLang['Info.Header.Btn.Remove'] }

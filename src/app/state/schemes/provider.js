@@ -5,4 +5,5 @@ export default new Schema('Provider', {
   name: Type.String,
   index: Type.Number,
   selected: Type.Boolean,
+  read: Type.Boolean,
 });

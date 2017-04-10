@@ -12,11 +12,13 @@ export default class SidebarHeader extends Component {
     providers: PropTypes.oneOfType([
       PropTypes.array,
     ]),
+    readOnly: PropTypes.bool,
   };
 
   static defaultProps = {
     dataLoaded: false,
     providers: [],
+    readOnly: false,
   };
 
   static contextTypes = {
@@ -44,7 +46,7 @@ export default class SidebarHeader extends Component {
   };
 
   render() {
-    const { dataLoaded, providers } = this.props;
+    const { dataLoaded, providers, readOnly } = this.props;
     const { deviceType } = this.context;
     const selectedProvider = providers.filter(obj => obj.selected);
     const currentProvider = selectedProvider.length
@@ -55,7 +57,7 @@ export default class SidebarHeader extends Component {
       <HeaderStyled.SidebarHeader>
         <HeaderStyled.BtnsContainer>
           <HeaderStyled.Btn
-            disabled={!dataLoaded}
+            disabled={!dataLoaded || readOnly}
             primary
             onClick={this.onClickImportHandler}
           >
@@ -63,7 +65,7 @@ export default class SidebarHeader extends Component {
             { enLang['Sidebar.Header.Btn.Import'] }
           </HeaderStyled.Btn>
           <HeaderStyled.Btn
-            disabled={!dataLoaded}
+            disabled={!dataLoaded || readOnly}
             primary
             onClick={this.onClickCreateHandler}
           >

@@ -24,6 +24,7 @@ export default class Body extends Component {
     providers: PropTypes.oneOfType([
       PropTypes.array,
     ]),
+    readOnly: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -34,6 +35,7 @@ export default class Body extends Component {
     onCancel: null,
     onCreate: null,
     providers: [],
+    readOnly: false,
   };
 
   onCreateHandler = () => {
@@ -57,7 +59,7 @@ export default class Body extends Component {
   };
 
   render() {
-    const { countries, parameters, dataLoaded, serverStatus, providers } = this.props;
+    const { countries, parameters, dataLoaded, serverStatus, providers, readOnly } = this.props;
 
     return (
       <BodyStyled.Body>
@@ -82,7 +84,7 @@ export default class Body extends Component {
             <BodyStyled.Btn
               primary
               onClick={this.onCreateHandler}
-              disabled={!dataLoaded || serverStatus !== 'online'}
+              disabled={!dataLoaded || serverStatus !== 'online' || readOnly}
             >
               { enLang['CertificateCreate.Btn.Create'] }
             </BodyStyled.Btn>

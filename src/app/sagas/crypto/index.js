@@ -163,6 +163,7 @@ function* getProviders() {
       _providers.push({
         id: prv.id,
         name: prv.name,
+        readOnly: prv.readOnly,
         index,
       })
     ));

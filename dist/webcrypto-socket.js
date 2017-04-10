@@ -3391,6 +3391,9 @@ __decorate([
     ProtobufProperty({ id: ProviderCryptoProto_1.INDEX++, required: true, type: "string" })
 ], ProviderCryptoProto.prototype, "name", void 0);
 __decorate([
+    ProtobufProperty({ id: ProviderCryptoProto_1.INDEX++, type: "bool", defaultValue: false })
+], ProviderCryptoProto.prototype, "readOnly", void 0);
+__decorate([
     ProtobufProperty({ id: ProviderCryptoProto_1.INDEX++, repeated: true, type: "string" })
 ], ProviderCryptoProto.prototype, "algorithms", void 0);
 ProviderCryptoProto = ProviderCryptoProto_1 = __decorate([
@@ -3466,11 +3469,14 @@ var ProviderTokenEventProto = ProviderTokenEventProto_1 = (function (_super) {
 ProviderTokenEventProto.INDEX = ActionProto.INDEX;
 ProviderTokenEventProto.ACTION = "provider/event/token";
 __decorate([
-    ProtobufProperty({ name: "added", id: ProviderTokenEventProto_1.INDEX++, repeated: true, parser: ProviderCryptoProto })
+    ProtobufProperty({ id: ProviderTokenEventProto_1.INDEX++, repeated: true, parser: ProviderCryptoProto })
 ], ProviderTokenEventProto.prototype, "added", void 0);
 __decorate([
-    ProtobufProperty({ name: "removed", id: ProviderTokenEventProto_1.INDEX++, repeated: true, parser: ProviderCryptoProto })
+    ProtobufProperty({ id: ProviderTokenEventProto_1.INDEX++, repeated: true, parser: ProviderCryptoProto })
 ], ProviderTokenEventProto.prototype, "removed", void 0);
+__decorate([
+    ProtobufProperty({ id: ProviderTokenEventProto_1.INDEX++, type: "string" })
+], ProviderTokenEventProto.prototype, "error", void 0);
 ProviderTokenEventProto = ProviderTokenEventProto_1 = __decorate([
     ProtobufElement({ name: "ProviderTokenEvent" })
 ], ProviderTokenEventProto);

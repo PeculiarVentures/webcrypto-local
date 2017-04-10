@@ -16,7 +16,8 @@ class CreateContainer extends Component {
     serverStatus: PropTypes.string,
     providers: PropTypes.oneOfType([
       PropTypes.array,
-    ])
+    ]),
+    readOnly: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -24,6 +25,7 @@ class CreateContainer extends Component {
     dataLoaded: false,
     serverStatus: 'seaching',
     providers: [],
+    readOnly: false,
   };
 
   static childContextTypes = {
@@ -37,13 +39,14 @@ class CreateContainer extends Component {
   }
 
   render() {
-    const { dataLoaded, serverStatus, providers } = this.props;
+    const { dataLoaded, serverStatus, providers, readOnly } = this.props;
     return (
       <ContentStyled>
         <CertificateCreate
           dataLoaded={dataLoaded}
           serverStatus={serverStatus}
           providers={providers}
+          readOnly={readOnly}
         />
         <Overlay {...this.props} />
       </ContentStyled>

@@ -3,4 +3,5 @@ export const DEFAULT = {
   name: '',
   index: 0,
   selected: false,
+  readOnly: false,
 };
