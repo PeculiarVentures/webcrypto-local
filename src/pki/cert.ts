@@ -1,6 +1,8 @@
 
 import { Convert } from "pvtsutils";
 
+const crypto: Crypto = new (require("node-webcrypto-ossl"))();
+
 export interface CertificateConstructor<T> {
     new (): T;
 }
@@ -35,12 +37,13 @@ export abstract class Certificate implements CryptoCertificate {
     public async importCert(provider: Crypto, rawData: BufferSource, algorithm?: Algorithm, keyUsages?: string[]) {
         this.importRaw(rawData);
         this.publicKey = await this.exportKey(provider, algorithm, keyUsages);
-        this.id = await this.getID(provider, "SHA-256");
+        this.id = await this.getID(provider, "SHA-1");
     }
 
     public async getID(provider: Crypto, algorithm: string) {
         const hash = await provider.subtle.digest(algorithm, this.raw);
-        return `${this.type}-${Convert.ToHex(hash)}`;
+        const rnd = crypto.getRandomValues(new Uint8Array(4));
+        return `${this.type}-${Convert.ToHex(rnd)}-${Convert.ToHex(hash)}`;
     }
 
 }

@@ -94,7 +94,7 @@ export class OpenSSLKeyStorage implements IKeyStorage {
         let id: BufferSource;
         switch (key.type) {
             case "secret": {
-                id = await crypto.getRandomValues(new Uint8Array(32));
+                id = await crypto.getRandomValues(new Uint8Array(20));
                 break;
             }
             case "private":
@@ -113,8 +113,9 @@ export class OpenSSLKeyStorage implements IKeyStorage {
             default:
                 throw new Error(`Unsupported type of CryptoKey '${key.type}'`);
         }
-        const hash = await crypto.subtle.digest("SHA-256", id);
-        return `${key.type}-${Convert.ToHex(hash)}`;
+        const hash = await crypto.subtle.digest("SHA-1", id);
+        const rnd = crypto.getRandomValues(new Uint8Array(4));
+        return `${key.type}-${Convert.ToHex(rnd)}-${Convert.ToHex(hash)}`;
     }
 
     protected keyToJson(key: CryptoKey): Promise<IJsonOpenSSLKey> {

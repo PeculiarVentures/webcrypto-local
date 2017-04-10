@@ -6,7 +6,6 @@ const { CertificationRequest } = require("pkijs");
 
 export declare type DigestAlgorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
 
-
 export class X509CertificateRequest extends Certificate implements CryptoX509CertificateRequest {
 
     public type = "request";

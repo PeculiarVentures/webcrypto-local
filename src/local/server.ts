@@ -117,7 +117,6 @@ export class LocalServer extends EventEmitter {
                 const params = await IsLoggedInActionProto.importProto(action);
 
                 const crypto = await this.provider.getCrypto(params.providerID);
-
                 data = new Uint8Array([crypto.isLoggedIn ? 1 : 0]).buffer;
                 break;
             }
