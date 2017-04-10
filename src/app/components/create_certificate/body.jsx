@@ -38,6 +38,14 @@ export default class Body extends Component {
     readOnly: false,
   };
 
+  constructor() {
+    super();
+
+    this.state = {
+      createDisabled: false,
+    };
+  }
+
   onCreateHandler = () => {
     const { onCreate } = this.props;
     const { subjectNode, keyNode } = this;
@@ -50,6 +58,8 @@ export default class Body extends Component {
       const data = Object.assign(subjectInfoData, keyInfoData);
 
       if (onCreate) onCreate(data);
+    } else {
+      this.createDisabledHandler(true);
     }
   };
 
@@ -58,8 +68,22 @@ export default class Body extends Component {
     if (onCancel) onCancel();
   };
 
+  onValidateHandler = () => {
+    const { subjectNode } = this;
+    const subjectInfoValid = subjectNode.isValidFields();
+    this.createDisabledHandler(!subjectInfoValid);
+  };
+
+  createDisabledHandler = (status) => {
+    this.setState({
+      createDisabled: status,
+    });
+  };
+
   render() {
     const { countries, parameters, dataLoaded, serverStatus, providers, readOnly } = this.props;
+    const { createDisabled } = this.state;
+    const btnCreateDisabled = !dataLoaded || serverStatus !== 'online' || readOnly || createDisabled;
 
     return (
       <BodyStyled.Body>
@@ -70,6 +94,7 @@ export default class Body extends Component {
           <SubjectInfo
             countries={countries}
             ref={node => (this.subjectNode = node)}
+            onValidate={this.onValidateHandler}
           />
           <KeyInfo
             parameters={parameters}
@@ -84,7 +109,7 @@ export default class Body extends Component {
             <BodyStyled.Btn
               primary
               onClick={this.onCreateHandler}
-              disabled={!dataLoaded || serverStatus !== 'online' || readOnly}
+              disabled={btnCreateDisabled}
             >
               { enLang['CertificateCreate.Btn.Create'] }
             </BodyStyled.Btn>

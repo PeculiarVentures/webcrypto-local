@@ -31,6 +31,12 @@ export default class SubjectInfo extends Component {
     countries: PropTypes.oneOfType([
       PropTypes.array,
     ]),
+    onValidate: PropTypes.func,
+  };
+
+  static defaultProps = {
+    countries: [],
+    onValidate: null,
   };
 
   static contextTypes = {
@@ -84,7 +90,7 @@ export default class SubjectInfo extends Component {
   }
 
   render() {
-    const { countries } = this.props;
+    const { countries, onValidate } = this.props;
     const { deviceType } = this.context;
 
     return (
@@ -99,6 +105,8 @@ export default class SubjectInfo extends Component {
               ref={node => (this.fieldNodes.commonName = node)}
               validation={['text']}
               errorText={enLang['CertificateCreate.Subject.Field.CommonName.Error']}
+              onChange={onValidate}
+              onBlur={onValidate}
             />
           </TextFieldContainer>
           <TextFieldContainer>
