@@ -29,6 +29,7 @@ const subjectNames = {
   ST: 'region',
   E: 'email',
   G: 'givenName',
+  SN: 'surname',
   '1.3.6.1.2.1.1.5': 'hostName',
 };
 
