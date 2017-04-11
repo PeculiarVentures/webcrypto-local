@@ -98,6 +98,7 @@ export class LocalServer extends EventEmitter {
         const resultProto = new ResultProto(action);
 
         let data: ArrayBuffer | undefined;
+        console.log("Action:", action.action);
         switch (action.action) {
             // Provider
             case ProviderInfoActionProto.ACTION: {
@@ -153,10 +154,10 @@ export class LocalServer extends EventEmitter {
                     const keyPair = keys as CryptoKeyPair;
                     // CryptoKeyPair
                     console.log("CryptoKeyPair");
-                    const thumbprint = await GetIdentity(keyPair.publicKey, crypto);
+                    // const thumbprint = await GetIdentity(keyPair.publicKey, crypto);
                     console.log("Identity");
-                    const publicKey = new ServiceCryptoItem(thumbprint, keyPair.publicKey, params.providerID);
-                    const privateKey = new ServiceCryptoItem(thumbprint, keyPair.privateKey, params.providerID);
+                    const publicKey = new ServiceCryptoItem(getHandle(), keyPair.publicKey, params.providerID);
+                    const privateKey = new ServiceCryptoItem(getHandle(), keyPair.privateKey, params.providerID);
                     this.memoryStorage.push(publicKey);
                     this.memoryStorage.push(privateKey);
 
@@ -168,8 +169,8 @@ export class LocalServer extends EventEmitter {
                 } else {
                     // CryptoKey
                     const key: CryptoKey = keys as any;
-                    const thumbprint = await GetIdentity(key, crypto);
-                    const secretKey = new ServiceCryptoItem(thumbprint, key, params.providerID);
+                    // const thumbprint = await GetIdentity(key, crypto);
+                    const secretKey = new ServiceCryptoItem(getHandle(), key, params.providerID);
                     this.memoryStorage.push(secretKey);
 
                     keyProto = secretKey.toProto();
@@ -240,8 +241,8 @@ export class LocalServer extends EventEmitter {
                 const derivedKey = await crypto.subtle.deriveKey(alg, key, params.derivedKeyType, params.extractable, params.usage);
 
                 // put key to memory storage
-                const thumbprint = await GetIdentity(derivedKey, crypto);
-                const resKey = new ServiceCryptoItem(thumbprint, derivedKey, params.providerID);
+                // const thumbprint = await GetIdentity(derivedKey, crypto);
+                const resKey = new ServiceCryptoItem(getHandle(), derivedKey, params.providerID);
                 this.memoryStorage.push(resKey);
 
                 data = await resKey.toProto().exportProto();
@@ -279,8 +280,8 @@ export class LocalServer extends EventEmitter {
                 );
 
                 // put key to memory storage
-                const thumbprint = await GetIdentity(key, crypto);
-                const resKey = new ServiceCryptoItem(thumbprint, key, params.providerID);
+                // const thumbprint = await GetIdentity(key, crypto);
+                const resKey = new ServiceCryptoItem(getHandle(), key, params.providerID);
                 this.memoryStorage.push(resKey);
 
                 data = await resKey.toProto().exportProto();
@@ -328,8 +329,8 @@ export class LocalServer extends EventEmitter {
                 );
 
                 // put key to memory storage
-                const thumbprint = await GetIdentity(key, crypto);
-                const resKey = new ServiceCryptoItem(thumbprint, key, params.providerID);
+                // const thumbprint = await GetIdentity(key, crypto);
+                const resKey = new ServiceCryptoItem(getHandle(), key, params.providerID);
                 this.memoryStorage.push(resKey);
 
                 data = await resKey.toProto().exportProto();
@@ -353,8 +354,8 @@ export class LocalServer extends EventEmitter {
                     if (!key) {
                         throw new Error(`Cannot get key by identity '${params.key}'`);
                     }
-                    const thumbprint = await GetIdentity(key, crypto);
-                    const cryptoKey = new ServiceCryptoItem(thumbprint, key, params.providerID);
+                    // const thumbprint = await GetIdentity(key, crypto);
+                    const cryptoKey = new ServiceCryptoItem(getHandle(), key, params.providerID);
                     this.memoryStorage.push(cryptoKey);
 
                     data = await cryptoKey.toProto().exportProto();
@@ -432,11 +433,11 @@ export class LocalServer extends EventEmitter {
 
                 if (item) {
                     // add key to memory storage
-                    const thumbprint = await GetIdentity(item.publicKey, crypto);
-                    const cryptoKey = new ServiceCryptoItem(thumbprint, item.publicKey, params.providerID);
+                    // const thumbprint = await GetIdentity(item.publicKey, crypto);
+                    const cryptoKey = new ServiceCryptoItem(getHandle(), item.publicKey, params.providerID);
                     this.memoryStorage.push(cryptoKey);
                     // add cert to memory storage
-                    const cryptoCert = new ServiceCryptoItem(thumbprint, item, params.providerID);
+                    const cryptoCert = new ServiceCryptoItem(getHandle(), item, params.providerID);
                     this.memoryStorage.push(cryptoCert);
 
                     // create Cert proto
@@ -471,11 +472,11 @@ export class LocalServer extends EventEmitter {
                 // do operation
                 const item = await crypto.certStorage.importCert(params.type, params.data, params.algorithm, params.keyUsages);
                 // add key to memory storage
-                const thumbprint = await GetIdentity(item.publicKey, crypto);
-                const cryptoKey = new ServiceCryptoItem(thumbprint, item.publicKey, params.providerID);
+                // const thumbprint = await GetIdentity(item.publicKey, crypto);
+                const cryptoKey = new ServiceCryptoItem(getHandle(), item.publicKey, params.providerID);
                 this.memoryStorage.push(cryptoKey);
                 // add cert to memory storage
-                const cryptoCert = new ServiceCryptoItem(thumbprint, item, params.providerID);
+                const cryptoCert = new ServiceCryptoItem(getHandle(), item, params.providerID);
                 this.memoryStorage.push(cryptoCert);
                 // result
                 data = await cryptoCert.toProto().exportProto();
@@ -561,15 +562,19 @@ export class LocalServer extends EventEmitter {
 
 }
 
-async function GetIdentity(key: CryptoKey, provider: Crypto) {
-    if (key.type !== "public") {
-        const rndBytes = crypto.getRandomValues(new Uint8Array(32)) as Uint8Array;
-        return Convert.ToHex(rndBytes);
-    } else {
-        const jwk = await provider.subtle.exportKey("jwk", key); // INFO: Not all crypto implementations support spki
-        const osslKey = await crypto.subtle.importKey("jwk", jwk, key.algorithm as any, true, key.usages);
-        const raw = await crypto.subtle.exportKey("spki", osslKey);
-        const thumbprint = await crypto.subtle.digest("SHA-256", raw);
-        return Convert.ToHex(thumbprint);
-    }
+// async function GetIdentity(key: CryptoKey, provider: Crypto) {
+//     if (key.type !== "public") {
+//         return getHandle(32);
+//     } else {
+//         const jwk = await provider.subtle.exportKey("jwk", key); // INFO: Not all crypto implementations support spki
+//         const osslKey = await crypto.subtle.importKey("jwk", jwk, key.algorithm as any, true, key.usages);
+//         const raw = await crypto.subtle.exportKey("spki", osslKey);
+//         const thumbprint = await crypto.subtle.digest("SHA-256", raw);
+//         return Convert.ToHex(thumbprint);
+//     }
+// }
+
+function getHandle(size = 20) {
+    const rndBytes = crypto.getRandomValues(new Uint8Array(size)) as Uint8Array;
+    return Convert.ToHex(rndBytes);
 }

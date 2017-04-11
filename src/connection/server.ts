@@ -211,7 +211,7 @@ export class Server extends EventEmitter {
                     console.log("Received Message: " + message.utf8Data);
                     console.log(message.utf8Data);
                 } else if (message.type === "binary") {
-                    console.log("Received Binary Message of " + message.binaryData.length + " bytes");
+                    // console.log("Received Binary Message of " + message.binaryData.length + " bytes");
                     // connection.sendBytes(message.binaryData);
                     // console.log(message.binaryData.toString("binary"));
                     // this.onMessage(connection, message.binaryData);
@@ -274,8 +274,7 @@ export class Server extends EventEmitter {
                                 if (!session.authorized) {
                                     throw new Error("404: Not authorized");
                                 }
-                                const emit = this.emit("message", new ServerMessageEvent(this, session, actionProto, resolve, reject));
-                                console.log("Emit message:", emit);
+                                this.emit("message", new ServerMessageEvent(this, session, actionProto, resolve, reject));
                             }
                         })
                             .then((answer: ResultProto) => {
@@ -316,6 +315,7 @@ export class Server extends EventEmitter {
         // encrypt data
         const encryptedData = await session.cipher.encrypt(buf);
         buf = await encryptedData.exportProto();
+        console.log("Server:Send answer");
         session.connection.sendBytes(new Buffer(buf));
     }
 
