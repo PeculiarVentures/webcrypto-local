@@ -266,16 +266,13 @@ const CertHelper = {
 
       const signature = this.prepareAlgorithm(json.signature || json.signatureAlgorithm);
 
-      const data = {
+      return {
+        raw: certBuf,
+        usages: ['verify'],
         algorithm: {
           ...algorithm,
           ...signature,
-        },
-        usages: ['verify'],
-      };
-      return {
-        raw: certBuf,
-        ...data,
+        }
       };
     }
     console.error('asn1 fromBER error');
