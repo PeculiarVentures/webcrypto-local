@@ -109,8 +109,8 @@ export function* createCertificate(crypto, data) {
         })).toSchema()],
       });
 
-      yield pkcs10.attributes.push(attribute);
-      yield pkcs10.sign(privateKey);
+      pkcs10.attributes.push(attribute);
+      yield pkcs10.sign(privateKey, privateKey.algorithm.hash ? privateKey.algorithm.hash.name : "SHA-1");
 
       const csrBuffer = pkcs10.toSchema().toBER(false);
 
