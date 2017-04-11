@@ -4,4 +4,5 @@ export const DEFAULT = {
   index: 0,
   selected: false,
   readOnly: false,
+  logged: true,
 };

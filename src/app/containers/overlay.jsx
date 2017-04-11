@@ -105,8 +105,8 @@ export default class Overlay extends Component {
         return dispatch(DialogActions.close());
       }
 
-      case 'TRY_AGAIN_PIN': {
-        dispatch(WSActions.getCertificates());
+      case 'TRY_AGAIN_LOGIN': {
+        dispatch(WSActions.login());
         return dispatch(DialogActions.close());
       }
 
@@ -139,31 +139,16 @@ export default class Overlay extends Component {
               })
             )}
           />
-          <Dialog.FortifyAuthorizationDialog
-            name="fortify_authorization"
-            numbers={[2, 2, 2, 2, 2, 2]}
-            onAccept={() => (
-              console.log('accept')
-            )}
-            onCancel={() => (
-              this.handleAction({
-                type: ACTIONS_CONST.DIALOG_CLOSE,
-              })
-            )}
-          />
           <Dialog.IncorrectPinDialog
             name="incorrect_pin"
             onAccept={() => (
               this.handleAction({
-                type: 'TRY_AGAIN_PIN',
+                type: 'TRY_AGAIN_LOGIN',
               })
             )}
-          />
-          <Dialog.TimeoutPinDialog
-            name="timeout_pin"
-            onAccept={() => (
+            onCancel={() => (
               this.handleAction({
-                type: 'TRY_AGAIN_PIN',
+                type: ACTIONS_CONST.DIALOG_CLOSE,
               })
             )}
           />

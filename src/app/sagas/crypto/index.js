@@ -1,5 +1,5 @@
 import { takeEvery } from 'redux-saga';
-import { select, put } from 'redux-saga/effects';
+import { select, put, spawn } from 'redux-saga/effects';
 import { ws } from '../../controllers/webcrypto_socket';
 import { EventChannel } from '../../controllers';
 import { ACTIONS_CONST } from '../../constants';
@@ -8,6 +8,21 @@ import { RoutingActions, ModalActions } from '../../actions/ui';
 import { downloadCertFromURI, CertHelper } from '../../helpers';
 import * as Key from './key';
 import * as Certificate from './certificate';
+
+
+function* cryptoLogin(crypto) {
+  try {
+    yield crypto.login();
+    const state = yield select();
+    const selectedProvider = state.find('providers').where({ selected: true }).get();
+    yield put(ProviderActions.add({
+      id: selectedProvider.id,
+      logged: true,
+    }));
+  } catch (error) {
+    yield put(ErrorActions.error(error));
+  }
+}
 
 function* getProvidersList() {
   const info = yield ws.info();
@@ -23,7 +38,7 @@ function* getCrypto() {
     const crypto = yield ws.getCrypto(provider.id);
     const isLoggedIn = yield crypto.isLoggedIn();
     if (!isLoggedIn) {
-      yield crypto.login();
+      yield spawn(cryptoLogin, crypto);
     }
     return crypto;
   } catch (error) {
@@ -156,14 +171,18 @@ function* getProviders() {
   try {
     const providers = yield getProvidersList();
     const _providers = [];
-    providers.map((prv, index) => (
+    for (const prv of providers) {
+      const crypto = yield ws.getCrypto(prv.id);
+      const isLoggedIn = yield crypto.isLoggedIn();
+
       _providers.push({
         id: prv.id,
         name: prv.name,
         readOnly: prv.readOnly,
-        index,
-      })
-    ));
+        index: _providers.length,
+        logged: isLoggedIn,
+      });
+    }
     yield put(ProviderActions.updateProviders(_providers));
     yield put(ProviderActions.select(_providers[0].id));
   } catch (error) {
@@ -193,6 +212,24 @@ function* importCertificate({ data }) {
   }
 }
 
+function* login() {
+  const crypto = yield getCrypto();
+  const isLoggedIn = yield crypto.isLoggedIn();
+  if (!isLoggedIn) {
+    try {
+      yield crypto.login();
+      const state = yield select();
+      const selectedProvider = state.find('providers').where({ selected: true }).get();
+      yield put(ProviderActions.add({
+        id: selectedProvider.id,
+        logged: true,
+      }));
+    } catch (error) {
+      yield put(ErrorActions.error(error));
+    }
+  }
+}
+
 export default function* () {
   yield [
     takeEvery(ACTIONS_CONST.WS_GET_KEYS, getKeys),
@@ -203,5 +240,6 @@ export default function* () {
     takeEvery(ACTIONS_CONST.MODAL_OPEN, openModalForCopy),
     takeEvery(ACTIONS_CONST.WS_GET_PROVIDERS, getProviders),
     takeEvery(ACTIONS_CONST.WS_IMPORT_CERTIFICATE, importCertificate),
+    takeEvery(ACTIONS_CONST.WS_LOGIN, login),
   ];
 }

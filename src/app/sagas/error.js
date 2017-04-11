@@ -12,10 +12,10 @@ function* errorHandler(error) {
     } else {
       switch (message) {
 
-        case 'CryptoLogin timeout': {
-          yield put(DialogActions.open('timeout_pin'));
-          break;
-        }
+        // case 'CryptoLogin timeout': {
+        //   yield put(DialogActions.open('timeout_pin'));
+        //   break;
+        // }
 
         case '404: Not authorized': {
           yield put(DialogActions.open('unauthorize_pin'));

@@ -36,3 +36,7 @@ export const copyCertificate = format => ({
 export const getProviders = () => ({
   type: ACTIONS_CONST.WS_GET_PROVIDERS,
 });
+
+export const login = () => ({
+  type: ACTIONS_CONST.WS_LOGIN,
+});
