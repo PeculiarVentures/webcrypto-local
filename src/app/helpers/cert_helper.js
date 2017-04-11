@@ -199,12 +199,14 @@ const CertHelper = {
     // Extensions
     const extensions = [];
 
-    for (const item of json.extensions) {
-      extensions.push({
-        name: OIDS[item.extnID] || item.extnID,
-        critical: item.critical || false,
-        value: this.addSpaceAfterSecondCharset(item.extnValue.valueBlock.valueHex),
-      });
+    if (json.extensions) {
+      for (const item of json.extensions) {
+        extensions.push({
+          name: OIDS[item.extnID] || item.extnID,
+          critical: item.critical || false,
+          value: this.addSpaceAfterSecondCharset(item.extnValue.valueBlock.valueHex),
+        });
+      }
     }
 
     return {
