@@ -70,7 +70,7 @@
     "moment": "^2.18.0",
     "node-notifier": "^5.0.2",
     "node-webcrypto-ossl": "^1.0.21",
-    "node-webcrypto-p11": "^1.1.1",
+    "node-webcrypto-p11": "^1.1.6",
     "pcsclite": "^0.5.0",
     "pkijs": "^2.0.55",
     "quantizer": "^2.1.0",
