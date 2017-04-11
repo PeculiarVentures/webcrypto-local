@@ -354,7 +354,7 @@ const CertHelper = {
 
     const decodedSubject = this.decodeSubjectString(subjectName);
     let publicExponent = '';
-    if (algorithm.publicExponent.byteLength) {
+    if (algorithm.publicExponent && algorithm.publicExponent.byteLength) {
       publicExponent = algorithm.publicExponent.byteLength === 3 ? '65537' : '3';
     }
 
