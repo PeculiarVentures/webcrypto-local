@@ -167,6 +167,12 @@ export default class Overlay extends Component {
               })
             )}
           />
+          <Dialog.UnauthorizePinDialog
+            name="unauthorize_pin"
+            onAccept={() => (
+              console.log('need action handler!!!!!')
+            )}
+          />
         </SegueHandler>
       );
     }

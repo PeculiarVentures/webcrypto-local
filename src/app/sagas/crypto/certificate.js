@@ -2,7 +2,7 @@ import { put } from 'redux-saga/effects';
 import * as pkijs from 'pkijs';
 import * as asn1js from 'asn1js';
 import { ErrorActions } from '../../actions/state';
-import { WSController } from '../../controllers/webcrypto_socket';
+import { CertHelper } from '../../helpers';
 
 export function* getCertificates(crypto) {
   if (crypto) {
@@ -86,7 +86,7 @@ export function* createCertificate(crypto, data) {
       } = yield crypto.subtle.generateKey(_algorithm(), extractable, usages);
       pkijs.setEngine('Crypto', crypto, crypto.subtle);
       pkcs10.version = 0;
-      pkcs10 = WSController.decoratePkcs10Subject(pkcs10, data);
+      pkcs10 = CertHelper.decoratePkcs10Subject(pkcs10, data);
       pkcs10.attributes = [];
 
       yield pkcs10.subjectPublicKeyInfo.importKey(publicKey);

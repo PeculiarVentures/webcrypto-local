@@ -1,6 +1,6 @@
 import { takeEvery } from 'redux-saga';
 import { select, put } from 'redux-saga/effects';
-import { ws, WSController } from '../../controllers/webcrypto_socket';
+import { ws } from '../../controllers/webcrypto_socket';
 import { EventChannel } from '../../controllers';
 import { ACTIONS_CONST } from '../../constants';
 import { AppActions, CertificateActions, ErrorActions, ProviderActions } from '../../actions/state';
@@ -48,7 +48,7 @@ function* getKeys() {
     // }
     for (const keyId of keys) {
       const key = yield Key.getKey(crypto, keyId);
-      const keyData = WSController.keyDataHandler(key, keyId);
+      const keyData = CertHelper.keyDataHandler(key, keyId);
       yield put(CertificateActions.add(keyData));
     }
     yield put(AppActions.dataLoaded(true));
@@ -67,7 +67,7 @@ function* getCerificates() {
       //
       // const certificatesArr = yield getCertificatesArr;
       // for (const certificate of certificatesArr) {
-      //   const certData = WSController.certDataHandler(certificate);
+      //   const certData = CertHelper.certDataHandler(certificate);
       //   yield put(CertificateActions.add(certData));
       // }
       for (const certId of certificates) {
@@ -77,9 +77,9 @@ function* getCerificates() {
         if (item.type === 'x509') {
           const certificateRaw = yield crypto.certStorage.exportCert('raw', item);
           const certificateDetails = CertHelper.certRawToJson(certificateRaw);
-          certData = WSController.certDataHandler(certificateDetails, item, certId);
+          certData = CertHelper.certDataHandler(certificateDetails, item, certId);
         } else {
-          certData = WSController.requestDataHandler(item, certId);
+          certData = CertHelper.requestDataHandler(item, certId);
         }
 
         yield put(CertificateActions.add(certData));
@@ -94,7 +94,7 @@ function* createCertificate({ data }) {
   const certId = yield Certificate.createCertificate(crypto, data);
   if (certId) {
     const item = yield Certificate.getCertificate(crypto, certId);
-    const certData = WSController.requestDataHandler(item, certId);
+    const certData = CertHelper.requestDataHandler(item, certId);
     yield put(CertificateActions.add(certData));
     yield put(RoutingActions.push(`certificate/${item.id}`));
   }
@@ -182,9 +182,9 @@ function* importCertificate({ data }) {
     if (item.type === 'x509') {
       const certificateRaw = yield crypto.certStorage.exportCert('raw', item);
       const certificateDetails = CertHelper.certRawToJson(certificateRaw);
-      certData = WSController.certDataHandler(certificateDetails, item, certId);
+      certData = CertHelper.certDataHandler(certificateDetails, item, certId);
     } else {
-      certData = WSController.requestDataHandler(item, certId);
+      certData = CertHelper.requestDataHandler(item, certId);
     }
 
     yield put(CertificateActions.add(certData));

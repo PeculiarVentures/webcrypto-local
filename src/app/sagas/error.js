@@ -6,22 +6,26 @@ import { DialogActions } from '../actions/ui';
 function* errorHandler(error) {
   if ({}.hasOwnProperty.call(error.data, 'message')) {
     const { message } = error.data;
-    switch (message) {
 
-      // TODO: need update this message name
-      case 'CKR_PIN_INCORRECT:160\n    at Error (native) C_Login:354': {
-        yield put(DialogActions.open('incorrect_pin'));
-        break;
+    if (/CKR_PIN_INCORRECT/.test(message)) {
+      yield put(DialogActions.open('incorrect_pin'));
+    } else {
+      switch (message) {
+
+        case 'CryptoLogin timeout': {
+          yield put(DialogActions.open('timeout_pin'));
+          break;
+        }
+
+        case '404: Not authorized': {
+          yield put(DialogActions.open('unauthorize_pin'));
+          break;
+        }
+
+        default:
+          console.error(error);
+
       }
-
-      case 'CryptoLogin timeout': {
-        yield put(DialogActions.open('timeout_pin'));
-        break;
-      }
-
-      default:
-        console.error(error);
-
     }
   } else {
     console.error(error);

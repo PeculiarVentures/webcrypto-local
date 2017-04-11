@@ -11,6 +11,8 @@
   "Dialog.IncorrectPin.Btn.Accept": "Try again",
   "Dialog.TimeoutPin.Title": "Enter pin timeout",
   "Dialog.TimeoutPin.Btn.Accept": "Try again",
+  "Dialog.UnauthorizePin.Title": "Unauthorized pin",
+  "Dialog.UnauthorizePin.Btn.Accept": "Try again",
   "Sidebar.Footer.Status.Online": "Server is online",
   "Sidebar.Footer.Status.Offline": "Server is offline",
   "Sidebar.Footer.Status.Seaching": "Seaching for server",

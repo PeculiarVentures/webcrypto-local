@@ -1089,17 +1089,17 @@ var Curve = (function () {
                     case 0:
                         name = type;
                         usage = type === "ECDSA" ? ["sign", "verify"] : ["deriveKey", "deriveBits"];
-                        return [4 /*yield*/, crypto.subtle.generateKey({ name: name, namedCurve: this.NAMED_CURVE }, false, usage)];
+                        return [4, crypto.subtle.generateKey({ name: name, namedCurve: this.NAMED_CURVE }, false, usage)];
                     case 1:
                         keys = _a.sent();
-                        return [4 /*yield*/, ECPublicKey.create(keys.publicKey)];
+                        return [4, ECPublicKey.create(keys.publicKey)];
                     case 2:
                         publicKey = _a.sent();
                         res = {
                             publicKey: publicKey,
                             privateKey: keys.privateKey,
                         };
-                        return [2 /*return*/, res];
+                        return [2, res];
                 }
             });
         });
@@ -1113,7 +1113,7 @@ var Curve = (function () {
     Curve.sign = function (signingKey, message) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, crypto.subtle.sign({ name: "ECDSA", hash: this.DIGEST_ALGORITHM }, signingKey, message)];
+                return [2, crypto.subtle.sign({ name: "ECDSA", hash: this.DIGEST_ALGORITHM }, signingKey, message)];
             });
         });
     };
@@ -1127,8 +1127,8 @@ var Curve = (function () {
                             privateKey: key.privateKey,
                             publicKey: key.publicKey.key
                         };
-                        return [4 /*yield*/, key.publicKey.thumbprint()];
-                    case 1: return [2 /*return*/, (_a.thumbprint = _b.sent(),
+                        return [4, key.publicKey.thumbprint()];
+                    case 1: return [2, (_a.thumbprint = _b.sent(),
                             _a)];
                 }
             });
@@ -1143,8 +1143,8 @@ var Curve = (function () {
                         _a = {
                             privateKey: keys.privateKey
                         };
-                        return [4 /*yield*/, ECPublicKey.create(keys.publicKey)];
-                    case 1: return [2 /*return*/, (_a.publicKey = _b.sent(),
+                        return [4, ECPublicKey.create(keys.publicKey)];
+                    case 1: return [2, (_a.publicKey = _b.sent(),
                             _a)];
                 }
             });
@@ -1184,8 +1184,8 @@ var Secret = (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, crypto.subtle.sign({ name: HMAC_NAME, hash: HASH_NAME }, key, data)];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 0: return [4, crypto.subtle.sign({ name: HMAC_NAME, hash: HASH_NAME }, key, data)];
+                    case 1: return [2, _a.sent()];
                 }
             });
         });
@@ -1198,34 +1198,34 @@ var Secret = (function () {
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
-                        if (!!salt) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this.importHMAC(new Uint8Array(32).buffer)];
+                        if (!!salt) return [3, 2];
+                        return [4, this.importHMAC(new Uint8Array(32).buffer)];
                     case 1:
                         salt = _c.sent();
                         _c.label = 2;
-                    case 2: return [4 /*yield*/, this.sign(salt, IKM)];
+                    case 2: return [4, this.sign(salt, IKM)];
                     case 3:
                         PRKBytes = _c.sent();
                         infoBuffer = new ArrayBuffer(32 + info.byteLength + 1);
                         infoArray = new Uint8Array(infoBuffer);
-                        return [4 /*yield*/, this.importHMAC(PRKBytes)];
+                        return [4, this.importHMAC(PRKBytes)];
                     case 4:
                         PRK = _c.sent();
                         T = [new ArrayBuffer(0)];
                         i = 0;
                         _c.label = 5;
                     case 5:
-                        if (!(i < keysCount)) return [3 /*break*/, 8];
+                        if (!(i < keysCount)) return [3, 8];
                         _a = T;
                         _b = i + 1;
-                        return [4 /*yield*/, this.sign(PRK, combine(T[i], info, new Uint8Array([i + 1]).buffer))];
+                        return [4, this.sign(PRK, combine(T[i], info, new Uint8Array([i + 1]).buffer))];
                     case 6:
                         _a[_b] = _c.sent();
                         _c.label = 7;
                     case 7:
                         i++;
-                        return [3 /*break*/, 5];
-                    case 8: return [2 /*return*/, T.slice(1)];
+                        return [3, 5];
+                    case 8: return [2, T.slice(1)];
                 }
             });
         });
@@ -1252,7 +1252,7 @@ var ECPublicKey = (function () {
                             throw new Error("Error: Expected key type to be public but it was not.");
                         }
                         res.key = publicKey;
-                        return [4 /*yield*/, crypto.subtle.exportKey("jwk", publicKey)];
+                        return [4, crypto.subtle.exportKey("jwk", publicKey)];
                     case 1:
                         jwk = _b.sent();
                         x = Convert.FromBase64Url(jwk.x);
@@ -1260,10 +1260,10 @@ var ECPublicKey = (function () {
                         xy = Convert.ToBinary(x) + Convert.ToBinary(y);
                         res.serialized = Convert.FromBinary(xy);
                         _a = res;
-                        return [4 /*yield*/, res.thumbprint()];
+                        return [4, res.thumbprint()];
                     case 2:
                         _a.id = _b.sent();
-                        return [2 /*return*/, res];
+                        return [2, res];
                 }
             });
         });
@@ -1283,14 +1283,14 @@ var ECPublicKey = (function () {
                             y: y,
                         };
                         usage = (type === "ECDSA" ? ["verify"] : []);
-                        return [4 /*yield*/, crypto.subtle
+                        return [4, crypto.subtle
                                 .importKey("jwk", jwk, { name: type, namedCurve: Curve.NAMED_CURVE }, true, usage)];
                     case 1:
                         key = _a.sent();
-                        return [4 /*yield*/, ECPublicKey.create(key)];
+                        return [4, ECPublicKey.create(key)];
                     case 2:
                         res = _a.sent();
-                        return [2 /*return*/, res];
+                        return [2, res];
                 }
             });
         });
@@ -1303,13 +1303,13 @@ var ECPublicKey = (function () {
             var bytes, thumbprint;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.serialize()];
+                    case 0: return [4, this.serialize()];
                     case 1:
                         bytes = _a.sent();
-                        return [4 /*yield*/, Secret.digest("SHA-256", bytes)];
+                        return [4, Secret.digest("SHA-256", bytes)];
                     case 2:
                         thumbprint = _a.sent();
-                        return [2 /*return*/, Convert.ToHex(thumbprint)];
+                        return [2, Convert.ToHex(thumbprint)];
                 }
             });
         });
@@ -1318,9 +1318,9 @@ var ECPublicKey = (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 if (!(other && other instanceof ECPublicKey)) {
-                    return [2 /*return*/, false];
+                    return [2, false];
                 }
-                return [2 /*return*/, isEqual(this.serialized, other.serialized)];
+                return [2, isEqual(this.serialized, other.serialized)];
             });
         });
     };
@@ -1340,18 +1340,18 @@ var Identity = (function () {
             var signingKey, exchangeKey, res;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, Curve.ecKeyPairFromJson(obj.signingKey)];
+                    case 0: return [4, Curve.ecKeyPairFromJson(obj.signingKey)];
                     case 1:
                         signingKey = _a.sent();
-                        return [4 /*yield*/, Curve.ecKeyPairFromJson(obj.exchangeKey)];
+                        return [4, Curve.ecKeyPairFromJson(obj.exchangeKey)];
                     case 2:
                         exchangeKey = _a.sent();
                         res = new this(obj.id, signingKey, exchangeKey);
                         res.createdAt = new Date(obj.createdAt);
-                        return [4 /*yield*/, res.fromJSON(obj)];
+                        return [4, res.fromJSON(obj)];
                     case 3:
                         _a.sent();
-                        return [2 /*return*/, res];
+                        return [2, res];
                 }
             });
         });
@@ -1360,144 +1360,144 @@ var Identity = (function () {
         if (signedPreKeyAmount === void 0) { signedPreKeyAmount = 0; }
         if (preKeyAmount === void 0) { preKeyAmount = 0; }
         return __awaiter(this, void 0, void 0, function () {
-            var signingKey, exchangeKey, res, i, _a, _b, _c, i, _d, _e, _f;
-            return __generator(this, function (_g) {
-                switch (_g.label) {
-                    case 0: return [4 /*yield*/, Curve.generateKeyPair(SIGN_ALGORITHM_NAME)];
+            var signingKey, exchangeKey, res, i, _a, _b, i, _c, _d;
+            return __generator(this, function (_e) {
+                switch (_e.label) {
+                    case 0: return [4, Curve.generateKeyPair(SIGN_ALGORITHM_NAME)];
                     case 1:
-                        signingKey = _g.sent();
-                        return [4 /*yield*/, Curve.generateKeyPair(DH_ALGORITHM_NAME)];
+                        signingKey = _e.sent();
+                        return [4, Curve.generateKeyPair(DH_ALGORITHM_NAME)];
                     case 2:
-                        exchangeKey = _g.sent();
+                        exchangeKey = _e.sent();
                         res = new Identity(id, signingKey, exchangeKey);
                         res.createdAt = new Date();
                         i = 0;
-                        _g.label = 3;
+                        _e.label = 3;
                     case 3:
-                        if (!(i < preKeyAmount)) return [3 /*break*/, 6];
+                        if (!(i < preKeyAmount)) return [3, 6];
                         _b = (_a = res.preKeys).push;
-                        return [4 /*yield*/, Curve.generateKeyPair("ECDH")];
+                        return [4, Curve.generateKeyPair("ECDH")];
                     case 4:
-                        _b.apply(_a, [_g.sent()]);
-                        _g.label = 5;
+                        _b.apply(_a, [_e.sent()]);
+                        _e.label = 5;
                     case 5:
                         i++;
-                        return [3 /*break*/, 3];
+                        return [3, 3];
                     case 6:
                         i = 0;
-                        _g.label = 7;
+                        _e.label = 7;
                     case 7:
-                        if (!(i < signedPreKeyAmount)) return [3 /*break*/, 10];
-                        _e = (_d = res.signedPreKeys).push;
-                        return [4 /*yield*/, Curve.generateKeyPair("ECDH")];
+                        if (!(i < signedPreKeyAmount)) return [3, 10];
+                        _d = (_c = res.signedPreKeys).push;
+                        return [4, Curve.generateKeyPair("ECDH")];
                     case 8:
-                        _e.apply(_d, [_g.sent()]);
-                        _g.label = 9;
+                        _d.apply(_c, [_e.sent()]);
+                        _e.label = 9;
                     case 9:
                         i++;
-                        return [3 /*break*/, 7];
-                    case 10: return [2 /*return*/, res];
+                        return [3, 7];
+                    case 10: return [2, res];
                 }
             });
         });
     };
     Identity.prototype.toJSON = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var preKeys, signedPreKeys, _i, _a, key, _b, _c, _d, _e, _f, key, _g, _h, _j, _k;
-            return __generator(this, function (_l) {
-                switch (_l.label) {
+            var preKeys, signedPreKeys, _i, _a, key, _b, _c, _d, _e, key, _f, _g, _h;
+            return __generator(this, function (_j) {
+                switch (_j.label) {
                     case 0:
                         preKeys = [];
                         signedPreKeys = [];
                         _i = 0, _a = this.preKeys;
-                        _l.label = 1;
+                        _j.label = 1;
                     case 1:
-                        if (!(_i < _a.length)) return [3 /*break*/, 4];
+                        if (!(_i < _a.length)) return [3, 4];
                         key = _a[_i];
                         _c = (_b = preKeys).push;
-                        return [4 /*yield*/, Curve.ecKeyPairToJson(key)];
+                        return [4, Curve.ecKeyPairToJson(key)];
                     case 2:
-                        _c.apply(_b, [_l.sent()]);
-                        _l.label = 3;
+                        _c.apply(_b, [_j.sent()]);
+                        _j.label = 3;
                     case 3:
                         _i++;
-                        return [3 /*break*/, 1];
+                        return [3, 1];
                     case 4:
-                        _e = 0, _f = this.signedPreKeys;
-                        _l.label = 5;
+                        _d = 0, _e = this.signedPreKeys;
+                        _j.label = 5;
                     case 5:
-                        if (!(_e < _f.length)) return [3 /*break*/, 8];
-                        key = _f[_e];
-                        _h = (_g = signedPreKeys).push;
-                        return [4 /*yield*/, Curve.ecKeyPairToJson(key)];
+                        if (!(_d < _e.length)) return [3, 8];
+                        key = _e[_d];
+                        _g = (_f = signedPreKeys).push;
+                        return [4, Curve.ecKeyPairToJson(key)];
                     case 6:
-                        _h.apply(_g, [_l.sent()]);
-                        _l.label = 7;
+                        _g.apply(_f, [_j.sent()]);
+                        _j.label = 7;
                     case 7:
-                        _e++;
-                        return [3 /*break*/, 5];
+                        _d++;
+                        return [3, 5];
                     case 8:
-                        _k = {
+                        _h = {
                             id: this.id
                         };
-                        return [4 /*yield*/, Curve.ecKeyPairToJson(this.signingKey)];
+                        return [4, Curve.ecKeyPairToJson(this.signingKey)];
                     case 9:
-                        _k.signingKey = _l.sent();
-                        return [4 /*yield*/, Curve.ecKeyPairToJson(this.exchangeKey)];
-                    case 10: return [2 /*return*/, (_k.exchangeKey = _l.sent(),
-                            _k.preKeys = preKeys,
-                            _k.signedPreKeys = signedPreKeys,
-                            _k.createdAt = this.createdAt.toISOString(),
-                            _k)];
+                        _h.signingKey = _j.sent();
+                        return [4, Curve.ecKeyPairToJson(this.exchangeKey)];
+                    case 10: return [2, (_h.exchangeKey = _j.sent(),
+                            _h.preKeys = preKeys,
+                            _h.signedPreKeys = signedPreKeys,
+                            _h.createdAt = this.createdAt.toISOString(),
+                            _h)];
                 }
             });
         });
     };
     Identity.prototype.fromJSON = function (obj) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, _b, _i, _c, key, _d, _e, _f, _g, _h, key, _j, _k, _l;
-            return __generator(this, function (_m) {
-                switch (_m.label) {
+            var _a, _b, _i, _c, key, _d, _e, _f, _g, key, _h, _j;
+            return __generator(this, function (_k) {
+                switch (_k.label) {
                     case 0:
                         this.id = obj.id;
                         _a = this;
-                        return [4 /*yield*/, Curve.ecKeyPairFromJson(obj.signingKey)];
+                        return [4, Curve.ecKeyPairFromJson(obj.signingKey)];
                     case 1:
-                        _a.signingKey = _m.sent();
+                        _a.signingKey = _k.sent();
                         _b = this;
-                        return [4 /*yield*/, Curve.ecKeyPairFromJson(obj.exchangeKey)];
+                        return [4, Curve.ecKeyPairFromJson(obj.exchangeKey)];
                     case 2:
-                        _b.exchangeKey = _m.sent();
+                        _b.exchangeKey = _k.sent();
                         this.preKeys = [];
                         _i = 0, _c = obj.preKeys;
-                        _m.label = 3;
+                        _k.label = 3;
                     case 3:
-                        if (!(_i < _c.length)) return [3 /*break*/, 6];
+                        if (!(_i < _c.length)) return [3, 6];
                         key = _c[_i];
                         _e = (_d = this.preKeys).push;
-                        return [4 /*yield*/, Curve.ecKeyPairFromJson(key)];
+                        return [4, Curve.ecKeyPairFromJson(key)];
                     case 4:
-                        _e.apply(_d, [_m.sent()]);
-                        _m.label = 5;
+                        _e.apply(_d, [_k.sent()]);
+                        _k.label = 5;
                     case 5:
                         _i++;
-                        return [3 /*break*/, 3];
+                        return [3, 3];
                     case 6:
                         this.signedPreKeys = [];
-                        _g = 0, _h = obj.signedPreKeys;
-                        _m.label = 7;
+                        _f = 0, _g = obj.signedPreKeys;
+                        _k.label = 7;
                     case 7:
-                        if (!(_g < _h.length)) return [3 /*break*/, 10];
-                        key = _h[_g];
-                        _k = (_j = this.signedPreKeys).push;
-                        return [4 /*yield*/, Curve.ecKeyPairFromJson(key)];
+                        if (!(_f < _g.length)) return [3, 10];
+                        key = _g[_f];
+                        _j = (_h = this.signedPreKeys).push;
+                        return [4, Curve.ecKeyPairFromJson(key)];
                     case 8:
-                        _k.apply(_j, [_m.sent()]);
-                        _m.label = 9;
+                        _j.apply(_h, [_k.sent()]);
+                        _k.label = 9;
                     case 9:
-                        _g++;
-                        return [3 /*break*/, 7];
-                    case 10: return [2 /*return*/];
+                        _f++;
+                        return [3, 7];
+                    case 10: return [2];
                 }
             });
         });
@@ -1520,10 +1520,10 @@ var RemoteIdentity = (function () {
                 switch (_a.label) {
                     case 0:
                         res = new this();
-                        return [4 /*yield*/, res.fromJSON(obj)];
+                        return [4, res.fromJSON(obj)];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/, res];
+                        return [2, res];
                 }
             });
         });
@@ -1546,14 +1546,14 @@ var RemoteIdentity = (function () {
                         _a = {
                             id: this.id
                         };
-                        return [4 /*yield*/, this.signingKey.thumbprint()];
+                        return [4, this.signingKey.thumbprint()];
                     case 1:
                         _a.thumbprint = _b.sent();
-                        return [4 /*yield*/, this.signingKey.key];
+                        return [4, this.signingKey.key];
                     case 2:
                         _a.signingKey = _b.sent();
-                        return [4 /*yield*/, this.exchangeKey.key];
-                    case 3: return [2 /*return*/, (_a.exchangeKey = _b.sent(),
+                        return [4, this.exchangeKey.key];
+                    case 3: return [2, (_a.exchangeKey = _b.sent(),
                             _a.signature = this.signature,
                             _a.createdAt = this.createdAt.toISOString(),
                             _a)];
@@ -1570,21 +1570,21 @@ var RemoteIdentity = (function () {
                         this.id = obj.id;
                         this.signature = obj.signature;
                         _a = this;
-                        return [4 /*yield*/, ECPublicKey.create(obj.signingKey)];
+                        return [4, ECPublicKey.create(obj.signingKey)];
                     case 1:
                         _a.signingKey = _c.sent();
                         _b = this;
-                        return [4 /*yield*/, ECPublicKey.create(obj.exchangeKey)];
+                        return [4, ECPublicKey.create(obj.exchangeKey)];
                     case 2:
                         _b.exchangeKey = _c.sent();
                         this.createdAt = new Date(obj.createdAt);
-                        return [4 /*yield*/, this.verify()];
+                        return [4, this.verify()];
                     case 3:
                         ok = _c.sent();
                         if (!ok) {
                             throw new Error("Error: Wrong signature for RemoteIdentity");
                         }
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
@@ -1612,14 +1612,14 @@ var ECDSAPublicKeyConverter = (function () {
     ECDSAPublicKeyConverter.set = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Uint8Array(value.serialize())];
+                return [2, new Uint8Array(value.serialize())];
             });
         });
     };
     ECDSAPublicKeyConverter.get = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, ECPublicKey.importKey(value.buffer, "ECDSA")];
+                return [2, ECPublicKey.importKey(value.buffer, "ECDSA")];
             });
         });
     };
@@ -1632,14 +1632,14 @@ var ECDHPublicKeyConverter = (function () {
     ECDHPublicKeyConverter.set = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Uint8Array(value.serialize())];
+                return [2, new Uint8Array(value.serialize())];
             });
         });
     };
     ECDHPublicKeyConverter.get = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, ECPublicKey.importKey(value.buffer, "ECDH")];
+                return [2, ECPublicKey.importKey(value.buffer, "ECDH")];
             });
         });
     };
@@ -1652,14 +1652,14 @@ var DateConverter = (function () {
     DateConverter.set = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Uint8Array(Convert.FromString(value.toISOString()))];
+                return [2, new Uint8Array(Convert.FromString(value.toISOString()))];
             });
         });
     };
     DateConverter.get = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Date(Convert.ToString(value))];
+                return [2, new Date(Convert.ToString(value))];
             });
         });
     };
@@ -1679,10 +1679,10 @@ var IdentityProtocol = IdentityProtocol_1 = (function (_super) {
                 switch (_a.label) {
                     case 0:
                         res = new IdentityProtocol_1();
-                        return [4 /*yield*/, res.fill(identity)];
+                        return [4, res.fill(identity)];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/, res];
+                        return [2, res];
                 }
             });
         });
@@ -1694,10 +1694,10 @@ var IdentityProtocol = IdentityProtocol_1 = (function (_super) {
                 switch (_b.label) {
                     case 0:
                         _a = this;
-                        return [4 /*yield*/, Curve.sign(key, this.exchangeKey.serialize())];
+                        return [4, Curve.sign(key, this.exchangeKey.serialize())];
                     case 1:
                         _a.signature = _b.sent();
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
@@ -1706,8 +1706,8 @@ var IdentityProtocol = IdentityProtocol_1 = (function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, Curve.verify(this.signingKey, this.exchangeKey.serialize(), this.signature)];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 0: return [4, Curve.verify(this.signingKey, this.exchangeKey.serialize(), this.signature)];
+                    case 1: return [2, _a.sent()];
                 }
             });
         });
@@ -1720,10 +1720,10 @@ var IdentityProtocol = IdentityProtocol_1 = (function (_super) {
                         this.signingKey = identity.signingKey.publicKey;
                         this.exchangeKey = identity.exchangeKey.publicKey;
                         this.createdAt = identity.createdAt;
-                        return [4 /*yield*/, this.sign(identity.signingKey.privateKey)];
+                        return [4, this.sign(identity.signingKey.privateKey)];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
@@ -1782,10 +1782,10 @@ var MessageSignedProtocol = (function (_super) {
                 switch (_b.label) {
                     case 0:
                         _a = this;
-                        return [4 /*yield*/, this.signHMAC(hmacKey)];
+                        return [4, this.signHMAC(hmacKey)];
                     case 1:
                         _a.signature = _b.sent();
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
@@ -1795,10 +1795,10 @@ var MessageSignedProtocol = (function (_super) {
             var signature;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.signHMAC(hmacKey)];
+                    case 0: return [4, this.signHMAC(hmacKey)];
                     case 1:
                         signature = _a.sent();
-                        return [2 /*return*/, isEqual(signature, this.signature)];
+                        return [2, isEqual(signature, this.signature)];
                 }
             });
         });
@@ -1811,11 +1811,11 @@ var MessageSignedProtocol = (function (_super) {
                     case 0:
                         receiverKey = this.receiverKey.serialize();
                         senderKey = this.senderKey.serialize();
-                        return [4 /*yield*/, this.message.exportProto()];
+                        return [4, this.message.exportProto()];
                     case 1:
                         message = _a.sent();
                         data = combine(receiverKey, senderKey, message);
-                        return [2 /*return*/, data];
+                        return [2, data];
                 }
             });
         });
@@ -1825,13 +1825,13 @@ var MessageSignedProtocol = (function (_super) {
             var data, signature;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.getSignedRaw()];
+                    case 0: return [4, this.getSignedRaw()];
                     case 1:
                         data = _a.sent();
-                        return [4 /*yield*/, Secret.sign(macKey, data)];
+                        return [4, Secret.sign(macKey, data)];
                     case 2:
                         signature = _a.sent();
-                        return [2 /*return*/, signature];
+                        return [2, signature];
                 }
             });
         });
@@ -1909,10 +1909,10 @@ var PreKeySignedProtocol = (function (_super) {
                 switch (_b.label) {
                     case 0:
                         _a = this;
-                        return [4 /*yield*/, Curve.sign(key, this.key.serialize())];
+                        return [4, Curve.sign(key, this.key.serialize())];
                     case 1:
                         _a.signature = _b.sent();
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
@@ -1980,25 +1980,25 @@ var Stack = (function () {
     };
     Stack.prototype.toJSON = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var res, _i, _a, item, _b, _c, _d;
-            return __generator(this, function (_e) {
-                switch (_e.label) {
+            var res, _i, _a, item, _b, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
                         res = [];
                         _i = 0, _a = this.items;
-                        _e.label = 1;
+                        _d.label = 1;
                     case 1:
-                        if (!(_i < _a.length)) return [3 /*break*/, 4];
+                        if (!(_i < _a.length)) return [3, 4];
                         item = _a[_i];
                         _c = (_b = res).push;
-                        return [4 /*yield*/, item.toJSON()];
+                        return [4, item.toJSON()];
                     case 2:
-                        _c.apply(_b, [_e.sent()]);
-                        _e.label = 3;
+                        _c.apply(_b, [_d.sent()]);
+                        _d.label = 3;
                     case 3:
                         _i++;
-                        return [3 /*break*/, 1];
-                    case 4: return [2 /*return*/, res];
+                        return [3, 1];
+                    case 4: return [2, res];
                 }
             });
         });
@@ -2007,7 +2007,7 @@ var Stack = (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 this.items = obj;
-                return [2 /*return*/];
+                return [2];
             });
         });
     };
@@ -2027,14 +2027,14 @@ var SymmetricRatchet = (function () {
             return __generator(this, function (_a) {
                 res = new this(obj.rootKey);
                 res.fromJSON(obj);
-                return [2 /*return*/, res];
+                return [2, res];
             });
         });
     };
     SymmetricRatchet.prototype.toJSON = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, {
+                return [2, {
                         counter: this.counter,
                         rootKey: this.rootKey,
                     }];
@@ -2046,7 +2046,7 @@ var SymmetricRatchet = (function () {
             return __generator(this, function (_a) {
                 this.counter = obj.counter;
                 this.rootKey = obj.rootKey;
-                return [2 /*return*/];
+                return [2];
             });
         });
     };
@@ -2055,19 +2055,19 @@ var SymmetricRatchet = (function () {
             var cipherKeyBytes, nextRootKeyBytes, res, _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, Secret.sign(rootKey, CIPHER_KEY_KDF_INPUT)];
+                    case 0: return [4, Secret.sign(rootKey, CIPHER_KEY_KDF_INPUT)];
                     case 1:
                         cipherKeyBytes = _b.sent();
-                        return [4 /*yield*/, Secret.sign(rootKey, ROOT_KEY_KDF_INPUT)];
+                        return [4, Secret.sign(rootKey, ROOT_KEY_KDF_INPUT)];
                     case 2:
                         nextRootKeyBytes = _b.sent();
                         _a = {};
-                        return [4 /*yield*/, Secret.importHMAC(nextRootKeyBytes)];
+                        return [4, Secret.importHMAC(nextRootKeyBytes)];
                     case 3:
                         res = (_a.rootKey = _b.sent(),
                             _a.cipher = cipherKeyBytes,
                             _a);
-                        return [2 /*return*/, res];
+                        return [2, res];
                 }
             });
         });
@@ -2079,12 +2079,12 @@ var SymmetricRatchet = (function () {
                 switch (_a.label) {
                     case 0:
                         rootKey = this.rootKey;
-                        return [4 /*yield*/, this.calculateKey(rootKey)];
+                        return [4, this.calculateKey(rootKey)];
                     case 1:
                         res = _a.sent();
                         this.rootKey = res.rootKey;
                         this.counter++;
-                        return [2 /*return*/, res.cipher];
+                        return [2, res.cipher];
                 }
             });
         });
@@ -2101,23 +2101,23 @@ var SendingRatchet = (function (_super) {
             var cipherKey, keys, aesKey, hmacKey, iv, cipherText;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.click()];
+                    case 0: return [4, this.click()];
                     case 1:
                         cipherKey = _a.sent();
-                        return [4 /*yield*/, Secret.HKDF(cipherKey, 3, void 0, INFO_MESSAGE_KEYS)];
+                        return [4, Secret.HKDF(cipherKey, 3, void 0, INFO_MESSAGE_KEYS)];
                     case 2:
                         keys = _a.sent();
-                        return [4 /*yield*/, Secret.importAES(keys[0])];
+                        return [4, Secret.importAES(keys[0])];
                     case 3:
                         aesKey = _a.sent();
-                        return [4 /*yield*/, Secret.importHMAC(keys[1])];
+                        return [4, Secret.importHMAC(keys[1])];
                     case 4:
                         hmacKey = _a.sent();
                         iv = keys[2].slice(0, 16);
-                        return [4 /*yield*/, Secret.encrypt(aesKey, message, iv)];
+                        return [4, Secret.encrypt(aesKey, message, iv)];
                     case 5:
                         cipherText = _a.sent();
-                        return [2 /*return*/, {
+                        return [2, {
                                 hmacKey: hmacKey,
                                 cipherText: cipherText,
                             }];
@@ -2139,11 +2139,11 @@ var ReceivingRatchet = (function (_super) {
             var res;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, _super.prototype.toJSON.call(this)];
+                    case 0: return [4, _super.prototype.toJSON.call(this)];
                     case 1:
                         res = (_a.sent());
                         res.keys = this.keys;
-                        return [2 /*return*/, res];
+                        return [2, res];
                 }
             });
         });
@@ -2152,11 +2152,11 @@ var ReceivingRatchet = (function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, _super.prototype.fromJSON.call(this, obj)];
+                    case 0: return [4, _super.prototype.fromJSON.call(this, obj)];
                     case 1:
                         _a.sent();
                         this.keys = obj.keys;
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
@@ -2166,23 +2166,23 @@ var ReceivingRatchet = (function (_super) {
             var cipherKey, keys, aesKey, hmacKey, iv, cipherText;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.getKey(counter)];
+                    case 0: return [4, this.getKey(counter)];
                     case 1:
                         cipherKey = _a.sent();
-                        return [4 /*yield*/, Secret.HKDF(cipherKey, 3, void 0, INFO_MESSAGE_KEYS)];
+                        return [4, Secret.HKDF(cipherKey, 3, void 0, INFO_MESSAGE_KEYS)];
                     case 2:
                         keys = _a.sent();
-                        return [4 /*yield*/, Secret.importAES(keys[0])];
+                        return [4, Secret.importAES(keys[0])];
                     case 3:
                         aesKey = _a.sent();
-                        return [4 /*yield*/, Secret.importHMAC(keys[1])];
+                        return [4, Secret.importHMAC(keys[1])];
                     case 4:
                         hmacKey = _a.sent();
                         iv = keys[2].slice(0, 16);
-                        return [4 /*yield*/, Secret.decrypt(aesKey, message, iv)];
+                        return [4, Secret.decrypt(aesKey, message, iv)];
                     case 5:
                         cipherText = _a.sent();
-                        return [2 /*return*/, {
+                        return [2, {
                                 hmacKey: hmacKey,
                                 cipherText: cipherText,
                             }];
@@ -2196,15 +2196,15 @@ var ReceivingRatchet = (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!(this.counter <= counter)) return [3 /*break*/, 2];
-                        return [4 /*yield*/, this.click()];
+                        if (!(this.counter <= counter)) return [3, 2];
+                        return [4, this.click()];
                     case 1:
                         cipherKey = _a.sent();
                         this.keys.push(cipherKey);
-                        return [3 /*break*/, 0];
+                        return [3, 0];
                     case 2:
                         key = this.keys[counter];
-                        return [2 /*return*/, key];
+                        return [2, key];
                 }
             });
         });
@@ -2217,18 +2217,18 @@ function authenticate(flag, IKa, EKa, IKb, SPKb, OPKb) {
         var DH1, DH2, DH3, DH4, DH, F, KM, keys;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, Curve.deriveBytes(IKa.exchangeKey.privateKey, SPKb)];
+                case 0: return [4, Curve.deriveBytes(IKa.exchangeKey.privateKey, SPKb)];
                 case 1:
                     DH1 = _a.sent();
-                    return [4 /*yield*/, Curve.deriveBytes(EKa.privateKey, IKb)];
+                    return [4, Curve.deriveBytes(EKa.privateKey, IKb)];
                 case 2:
                     DH2 = _a.sent();
-                    return [4 /*yield*/, Curve.deriveBytes(EKa.privateKey, SPKb)];
+                    return [4, Curve.deriveBytes(EKa.privateKey, SPKb)];
                 case 3:
                     DH3 = _a.sent();
                     DH4 = new ArrayBuffer(0);
-                    if (!OPKb) return [3 /*break*/, 5];
-                    return [4 /*yield*/, Curve.deriveBytes(EKa.privateKey, OPKb)];
+                    if (!OPKb) return [3, 5];
+                    return [4, Curve.deriveBytes(EKa.privateKey, OPKb)];
                 case 4:
                     DH4 = _a.sent();
                     _a.label = 5;
@@ -2236,11 +2236,11 @@ function authenticate(flag, IKa, EKa, IKb, SPKb, OPKb) {
                     DH = flag ? combine(DH1, DH2) : combine(DH2, DH1);
                     F = new Uint8Array(32).map(function () { return 0xff; }).buffer;
                     KM = combine(F, DH, DH3, DH4);
-                    return [4 /*yield*/, Secret.HKDF(KM, 1, void 0, INFO_TEXT)];
+                    return [4, Secret.HKDF(KM, 1, void 0, INFO_TEXT)];
                 case 6:
                     keys = _a.sent();
-                    return [4 /*yield*/, Secret.importHMAC(keys[0])];
-                case 7: return [2 /*return*/, _a.sent()];
+                    return [4, Secret.importHMAC(keys[0])];
+                case 7: return [2, _a.sent()];
             }
         });
     });
@@ -2262,19 +2262,19 @@ var AsymmetricRatchet = (function (_super) {
                 switch (_b.label) {
                     case 0:
                         ratchet = new AsymmetricRatchet();
-                        if (!(protocol instanceof PreKeyBundleProtocol)) return [3 /*break*/, 5];
-                        return [4 /*yield*/, protocol.identity.verify()];
+                        if (!(protocol instanceof PreKeyBundleProtocol)) return [3, 5];
+                        return [4, protocol.identity.verify()];
                     case 1:
                         if (!(_b.sent())) {
                             throw new Error("Error: Remote client's identity key is invalid.");
                         }
-                        return [4 /*yield*/, protocol.preKeySigned.verify(protocol.identity.signingKey)];
+                        return [4, protocol.preKeySigned.verify(protocol.identity.signingKey)];
                     case 2:
                         if (!(_b.sent())) {
                             throw new Error("Error: Remote client's signed prekey is invalid.");
                         }
                         _a = ratchet;
-                        return [4 /*yield*/, ratchet.generateRatchetKey()];
+                        return [4, ratchet.generateRatchetKey()];
                     case 3:
                         _a.currentRatchetKey = _b.sent();
                         ratchet.currentStep.remoteRatchetKey = protocol.preKeySigned.key;
@@ -2282,11 +2282,11 @@ var AsymmetricRatchet = (function (_super) {
                         ratchet.remoteIdentity.id = protocol.registrationId;
                         ratchet.remotePreKeyId = protocol.preKey.id;
                         ratchet.remotePreKeySignedId = protocol.preKeySigned.id;
-                        return [4 /*yield*/, authenticate(true, identity, ratchet.currentRatchetKey, protocol.identity.exchangeKey, protocol.preKeySigned.key, protocol.preKey.key)];
+                        return [4, authenticate(true, identity, ratchet.currentRatchetKey, protocol.identity.exchangeKey, protocol.preKeySigned.key, protocol.preKey.key)];
                     case 4:
                         rootKey = _b.sent();
-                        return [3 /*break*/, 8];
-                    case 5: return [4 /*yield*/, protocol.identity.verify()];
+                        return [3, 8];
+                    case 5: return [4, protocol.identity.verify()];
                     case 6:
                         if (!(_b.sent())) {
                             throw new Error("Error: Remote client's identity key is invalid.");
@@ -2301,7 +2301,7 @@ var AsymmetricRatchet = (function (_super) {
                         }
                         ratchet.remoteIdentity = RemoteIdentity.fill(protocol.identity);
                         ratchet.currentRatchetKey = signedPreKey;
-                        return [4 /*yield*/, authenticate(false, identity, ratchet.currentRatchetKey, protocol.identity.exchangeKey, protocol.signedMessage.message.senderRatchetKey, preKey && preKey.publicKey)];
+                        return [4, authenticate(false, identity, ratchet.currentRatchetKey, protocol.identity.exchangeKey, protocol.signedMessage.message.senderRatchetKey, preKey && preKey.publicKey)];
                     case 7:
                         rootKey = _b.sent();
                         _b.label = 8;
@@ -2309,7 +2309,7 @@ var AsymmetricRatchet = (function (_super) {
                         ratchet.identity = identity;
                         ratchet.id = identity.id;
                         ratchet.rootKey = rootKey;
-                        return [2 /*return*/, ratchet];
+                        return [2, ratchet];
                 }
             });
         });
@@ -2323,10 +2323,10 @@ var AsymmetricRatchet = (function (_super) {
                         res = new AsymmetricRatchet();
                         res.identity = identity;
                         res.remoteIdentity = remote;
-                        return [4 /*yield*/, res.fromJSON(obj)];
+                        return [4, res.fromJSON(obj)];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/, res];
+                        return [2, res];
                 }
             });
         });
@@ -2341,7 +2341,7 @@ var AsymmetricRatchet = (function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.queuePromise("decrypt", function () { return __awaiter(_this, void 0, void 0, function () {
+                return [2, this.queuePromise("decrypt", function () { return __awaiter(_this, void 0, void 0, function () {
                         var remoteRatchetKey, message, step, ratchetStep, _a, decryptedMessage;
                         return __generator(this, function (_b) {
                             switch (_b.label) {
@@ -2359,24 +2359,24 @@ var AsymmetricRatchet = (function (_super) {
                                         this.currentStep = ratchetStep;
                                         step = ratchetStep;
                                     }
-                                    if (!!step.receivingChain) return [3 /*break*/, 2];
+                                    if (!!step.receivingChain) return [3, 2];
                                     _a = step;
-                                    return [4 /*yield*/, this.createChain(this.currentRatchetKey.privateKey, remoteRatchetKey, ReceivingRatchet)];
+                                    return [4, this.createChain(this.currentRatchetKey.privateKey, remoteRatchetKey, ReceivingRatchet)];
                                 case 1:
                                     _a.receivingChain = _b.sent();
                                     _b.label = 2;
-                                case 2: return [4 /*yield*/, step.receivingChain.decrypt(message.cipherText, message.counter)];
+                                case 2: return [4, step.receivingChain.decrypt(message.cipherText, message.counter)];
                                 case 3:
                                     decryptedMessage = _b.sent();
                                     this.update();
                                     protocol.senderKey = this.remoteIdentity.signingKey;
                                     protocol.receiverKey = this.identity.signingKey.publicKey;
-                                    return [4 /*yield*/, protocol.verify(decryptedMessage.hmacKey)];
+                                    return [4, protocol.verify(decryptedMessage.hmacKey)];
                                 case 4:
                                     if (!(_b.sent())) {
                                         throw new Error("Error: The Message did not successfully verify!");
                                     }
-                                    return [2 /*return*/, decryptedMessage.cipherText];
+                                    return [2, decryptedMessage.cipherText];
                             }
                         });
                     }); })];
@@ -2387,38 +2387,38 @@ var AsymmetricRatchet = (function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.queuePromise("encrypt", function () { return __awaiter(_this, void 0, void 0, function () {
+                return [2, this.queuePromise("encrypt", function () { return __awaiter(_this, void 0, void 0, function () {
                         var _a, _b, encryptedMessage, preKeyMessage, signedMessage;
                         return __generator(this, function (_c) {
                             switch (_c.label) {
                                 case 0:
-                                    if (!(this.currentStep.receivingChain && !this.currentStep.sendingChain)) return [3 /*break*/, 2];
+                                    if (!(this.currentStep.receivingChain && !this.currentStep.sendingChain)) return [3, 2];
                                     this.counter++;
                                     _a = this;
-                                    return [4 /*yield*/, this.generateRatchetKey()];
+                                    return [4, this.generateRatchetKey()];
                                 case 1:
                                     _a.currentRatchetKey = _c.sent();
                                     _c.label = 2;
                                 case 2:
-                                    if (!!this.currentStep.sendingChain) return [3 /*break*/, 4];
+                                    if (!!this.currentStep.sendingChain) return [3, 4];
                                     _b = this.currentStep;
-                                    return [4 /*yield*/, this.createChain(this.currentRatchetKey.privateKey, this.currentStep.remoteRatchetKey, SendingRatchet)];
+                                    return [4, this.createChain(this.currentRatchetKey.privateKey, this.currentStep.remoteRatchetKey, SendingRatchet)];
                                 case 3:
                                     _b.sendingChain = _c.sent();
                                     _c.label = 4;
-                                case 4: return [4 /*yield*/, this.currentStep.sendingChain.encrypt(message)];
+                                case 4: return [4, this.currentStep.sendingChain.encrypt(message)];
                                 case 5:
                                     encryptedMessage = _c.sent();
                                     this.update();
                                     if (!(this.steps.length === 0 &&
                                         !this.currentStep.receivingChain &&
-                                        this.currentStep.sendingChain.counter === 1)) return [3 /*break*/, 7];
+                                        this.currentStep.sendingChain.counter === 1)) return [3, 7];
                                     preKeyMessage = new PreKeyMessageProtocol();
                                     preKeyMessage.registrationId = this.identity.id;
                                     preKeyMessage.preKeyId = this.remotePreKeyId;
                                     preKeyMessage.preKeySignedId = this.remotePreKeySignedId;
                                     preKeyMessage.baseKey = this.currentRatchetKey.publicKey;
-                                    return [4 /*yield*/, preKeyMessage.identity.fill(this.identity)];
+                                    return [4, preKeyMessage.identity.fill(this.identity)];
                                 case 6:
                                     _c.sent();
                                     _c.label = 7;
@@ -2430,17 +2430,17 @@ var AsymmetricRatchet = (function (_super) {
                                     signedMessage.message.counter = this.currentStep.sendingChain.counter - 1;
                                     signedMessage.message.previousCounter = this.counter;
                                     signedMessage.message.senderRatchetKey = this.currentRatchetKey.publicKey;
-                                    return [4 /*yield*/, signedMessage.sign(encryptedMessage.hmacKey)];
+                                    return [4, signedMessage.sign(encryptedMessage.hmacKey)];
                                 case 8:
                                     _c.sent();
                                     if (preKeyMessage) {
                                         preKeyMessage.signedMessage = signedMessage;
-                                        return [2 /*return*/, preKeyMessage];
+                                        return [2, preKeyMessage];
                                     }
                                     else {
-                                        return [2 /*return*/, signedMessage];
+                                        return [2, signedMessage];
                                     }
-                                    return [2 /*return*/];
+                                    return [2];
                             }
                         });
                     }); })];
@@ -2453,11 +2453,11 @@ var AsymmetricRatchet = (function (_super) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        if (!!(key instanceof ECPublicKey)) return [3 /*break*/, 2];
-                        return [4 /*yield*/, ECPublicKey.create(key)];
+                        if (!!(key instanceof ECPublicKey)) return [3, 2];
+                        return [4, ECPublicKey.create(key)];
                     case 1:
                         ecKey = _b.sent();
-                        return [3 /*break*/, 3];
+                        return [3, 3];
                     case 2:
                         ecKey = key;
                         _b.label = 3;
@@ -2465,18 +2465,18 @@ var AsymmetricRatchet = (function (_super) {
                         _i = 0, _a = this.steps.items;
                         _b.label = 4;
                     case 4:
-                        if (!(_i < _a.length)) return [3 /*break*/, 7];
+                        if (!(_i < _a.length)) return [3, 7];
                         item = _a[_i];
-                        return [4 /*yield*/, item.remoteRatchetKey.isEqual(ecKey)];
+                        return [4, item.remoteRatchetKey.isEqual(ecKey)];
                     case 5:
                         if (_b.sent()) {
-                            return [2 /*return*/, true];
+                            return [2, true];
                         }
                         _b.label = 6;
                     case 6:
                         _i++;
-                        return [3 /*break*/, 4];
-                    case 7: return [2 /*return*/, false];
+                        return [3, 4];
+                    case 7: return [2, false];
                 }
             });
         });
@@ -2488,16 +2488,16 @@ var AsymmetricRatchet = (function (_super) {
                 switch (_b.label) {
                     case 0:
                         _a = {};
-                        return [4 /*yield*/, this.remoteIdentity.signingKey.thumbprint()];
+                        return [4, this.remoteIdentity.signingKey.thumbprint()];
                     case 1:
                         _a.remoteIdentity = _b.sent();
-                        return [4 /*yield*/, Curve.ecKeyPairToJson(this.currentRatchetKey)];
+                        return [4, Curve.ecKeyPairToJson(this.currentRatchetKey)];
                     case 2:
                         _a.ratchetKey = _b.sent(),
                             _a.counter = this.counter,
                             _a.rootKey = this.rootKey;
-                        return [4 /*yield*/, this.steps.toJSON()];
-                    case 3: return [2 /*return*/, (_a.steps = _b.sent(),
+                        return [4, this.steps.toJSON()];
+                    case 3: return [2, (_a.steps = _b.sent(),
                             _a)];
                 }
             });
@@ -2510,7 +2510,7 @@ var AsymmetricRatchet = (function (_super) {
                 switch (_d.label) {
                     case 0:
                         _a = this;
-                        return [4 /*yield*/, Curve.ecKeyPairFromJson(obj.ratchetKey)];
+                        return [4, Curve.ecKeyPairFromJson(obj.ratchetKey)];
                     case 1:
                         _a.currentRatchetKey = _d.sent();
                         this.counter = obj.counter;
@@ -2518,18 +2518,18 @@ var AsymmetricRatchet = (function (_super) {
                         _i = 0, _b = obj.steps;
                         _d.label = 2;
                     case 2:
-                        if (!(_i < _b.length)) return [3 /*break*/, 5];
+                        if (!(_i < _b.length)) return [3, 5];
                         step = _b[_i];
                         _c = this;
-                        return [4 /*yield*/, DHRatchetStep.fromJSON(step)];
+                        return [4, DHRatchetStep.fromJSON(step)];
                     case 3:
                         _c.currentStep = _d.sent();
                         this.steps.push(this.currentStep);
                         _d.label = 4;
                     case 4:
                         _i++;
-                        return [3 /*break*/, 2];
-                    case 5: return [2 /*return*/];
+                        return [3, 2];
+                    case 5: return [2];
                 }
             });
         });
@@ -2545,21 +2545,21 @@ var AsymmetricRatchet = (function (_super) {
             var derivedBytes, keys, rootKey, chainKey, chain;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, Curve.deriveBytes(ourRatchetKey, theirRatchetKey)];
+                    case 0: return [4, Curve.deriveBytes(ourRatchetKey, theirRatchetKey)];
                     case 1:
                         derivedBytes = _a.sent();
-                        return [4 /*yield*/, Secret.HKDF(derivedBytes, 2, this.rootKey, INFO_RATCHET)];
+                        return [4, Secret.HKDF(derivedBytes, 2, this.rootKey, INFO_RATCHET)];
                     case 2:
                         keys = _a.sent();
-                        return [4 /*yield*/, Secret.importHMAC(keys[0])];
+                        return [4, Secret.importHMAC(keys[0])];
                     case 3:
                         rootKey = _a.sent();
-                        return [4 /*yield*/, Secret.importHMAC(keys[1])];
+                        return [4, Secret.importHMAC(keys[1])];
                     case 4:
                         chainKey = _a.sent();
                         chain = new ratchetClass(chainKey);
                         this.rootKey = rootKey;
-                        return [2 /*return*/, chain];
+                        return [2, chain];
                 }
             });
         });
@@ -2587,10 +2587,10 @@ var DHRatchetStep = (function () {
                 switch (_a.label) {
                     case 0:
                         res = new this();
-                        return [4 /*yield*/, res.fromJSON(obj)];
+                        return [4, res.fromJSON(obj)];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/, res];
+                        return [2, res];
                 }
             });
         });
@@ -2605,20 +2605,20 @@ var DHRatchetStep = (function () {
                         if (this.remoteRatchetKey) {
                             res.remoteRatchetKey = this.remoteRatchetKey.key;
                         }
-                        if (!this.sendingChain) return [3 /*break*/, 2];
+                        if (!this.sendingChain) return [3, 2];
                         _a = res;
-                        return [4 /*yield*/, this.sendingChain.toJSON()];
+                        return [4, this.sendingChain.toJSON()];
                     case 1:
                         _a.sendingChain = _c.sent();
                         _c.label = 2;
                     case 2:
-                        if (!this.receivingChain) return [3 /*break*/, 4];
+                        if (!this.receivingChain) return [3, 4];
                         _b = res;
-                        return [4 /*yield*/, this.receivingChain.toJSON()];
+                        return [4, this.receivingChain.toJSON()];
                     case 3:
                         _b.receivingChain = _c.sent();
                         _c.label = 4;
-                    case 4: return [2 /*return*/, res];
+                    case 4: return [2, res];
                 }
             });
         });
@@ -2629,27 +2629,27 @@ var DHRatchetStep = (function () {
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
-                        if (!obj.remoteRatchetKey) return [3 /*break*/, 2];
+                        if (!obj.remoteRatchetKey) return [3, 2];
                         _a = this;
-                        return [4 /*yield*/, ECPublicKey.create(obj.remoteRatchetKey)];
+                        return [4, ECPublicKey.create(obj.remoteRatchetKey)];
                     case 1:
                         _a.remoteRatchetKey = _d.sent();
                         _d.label = 2;
                     case 2:
-                        if (!obj.sendingChain) return [3 /*break*/, 4];
+                        if (!obj.sendingChain) return [3, 4];
                         _b = this;
-                        return [4 /*yield*/, SendingRatchet.fromJSON(obj.sendingChain)];
+                        return [4, SendingRatchet.fromJSON(obj.sendingChain)];
                     case 3:
                         _b.sendingChain = _d.sent();
                         _d.label = 4;
                     case 4:
-                        if (!obj.receivingChain) return [3 /*break*/, 6];
+                        if (!obj.receivingChain) return [3, 6];
                         _c = this;
-                        return [4 /*yield*/, ReceivingRatchet.fromJSON(obj.receivingChain)];
+                        return [4, ReceivingRatchet.fromJSON(obj.receivingChain)];
                     case 5:
                         _c.receivingChain = _d.sent();
                         _d.label = 6;
-                    case 6: return [2 /*return*/];
+                    case 6: return [2];
                 }
             });
         });
@@ -2688,14 +2688,14 @@ var DateConverter$1 = (function () {
     DateConverter.set = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Uint8Array(Convert.FromUtf8String(value.toISOString()))];
+                return [2, new Uint8Array(Convert.FromUtf8String(value.toISOString()))];
             });
         });
     };
     DateConverter.get = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Date(Convert.ToUtf8String(value))];
+                return [2, new Date(Convert.ToUtf8String(value))];
             });
         });
     };
@@ -2707,7 +2707,7 @@ var HexStringConverter = (function () {
     HexStringConverter.set = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Uint8Array(Convert.FromHex(value))];
+                return [2, new Uint8Array(Convert.FromHex(value))];
             });
         });
     };
@@ -2715,7 +2715,7 @@ var HexStringConverter = (function () {
     HexStringConverter.get = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, Convert.ToHex(value)];
+                return [2, Convert.ToHex(value)];
             });
         });
     };
@@ -2973,14 +2973,14 @@ var BrowserStorage = (function () {
             var db;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, idb.open(this.STORAGE_NAME, 1, function (updater) {
+                    case 0: return [4, idb.open(this.STORAGE_NAME, 1, function (updater) {
                             updater.createObjectStore(_this.SESSION_STORAGE);
                             updater.createObjectStore(_this.IDENTITY_STORAGE);
                             updater.createObjectStore(_this.REMOTE_STORAGE);
                         })];
                     case 1:
                         db = _a.sent();
-                        return [2 /*return*/, new BrowserStorage(db)];
+                        return [2, new BrowserStorage(db)];
                 }
             });
         });
@@ -2990,17 +2990,17 @@ var BrowserStorage = (function () {
             var json, res;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.db.transaction(BrowserStorage.IDENTITY_STORAGE)
+                    case 0: return [4, this.db.transaction(BrowserStorage.IDENTITY_STORAGE)
                             .objectStore(BrowserStorage.IDENTITY_STORAGE).get("identity")];
                     case 1:
                         json = _a.sent();
                         res = null;
-                        if (!json) return [3 /*break*/, 3];
-                        return [4 /*yield*/, Identity.fromJSON(json)];
+                        if (!json) return [3, 3];
+                        return [4, Identity.fromJSON(json)];
                     case 2:
                         res = _a.sent();
                         _a.label = 3;
-                    case 3: return [2 /*return*/, res];
+                    case 3: return [2, res];
                 }
             });
         });
@@ -3010,12 +3010,12 @@ var BrowserStorage = (function () {
             var json, tx;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, value.toJSON()];
+                    case 0: return [4, value.toJSON()];
                     case 1:
                         json = _a.sent();
                         tx = this.db.transaction(BrowserStorage.IDENTITY_STORAGE, "readwrite");
                         tx.objectStore(BrowserStorage.IDENTITY_STORAGE).put(json, "identity");
-                        return [2 /*return*/, tx.complete];
+                        return [2, tx.complete];
                 }
             });
         });
@@ -3025,17 +3025,17 @@ var BrowserStorage = (function () {
             var json, res;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.db.transaction(BrowserStorage.REMOTE_STORAGE)
+                    case 0: return [4, this.db.transaction(BrowserStorage.REMOTE_STORAGE)
                             .objectStore(BrowserStorage.REMOTE_STORAGE).get(key)];
                     case 1:
                         json = _a.sent();
                         res = null;
-                        if (!json) return [3 /*break*/, 3];
-                        return [4 /*yield*/, RemoteIdentity.fromJSON(json)];
+                        if (!json) return [3, 3];
+                        return [4, RemoteIdentity.fromJSON(json)];
                     case 2:
                         res = _a.sent();
                         _a.label = 3;
-                    case 3: return [2 /*return*/, res];
+                    case 3: return [2, res];
                 }
             });
         });
@@ -3045,12 +3045,12 @@ var BrowserStorage = (function () {
             var json, tx;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, value.toJSON()];
+                    case 0: return [4, value.toJSON()];
                     case 1:
                         json = _a.sent();
                         tx = this.db.transaction(BrowserStorage.REMOTE_STORAGE, "readwrite");
                         tx.objectStore(BrowserStorage.REMOTE_STORAGE).put(json, key);
-                        return [2 /*return*/, tx.complete];
+                        return [2, tx.complete];
                 }
             });
         });
@@ -3060,29 +3060,29 @@ var BrowserStorage = (function () {
             var json, res, identity, remoteIdentity;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.db.transaction(BrowserStorage.SESSION_STORAGE)
+                    case 0: return [4, this.db.transaction(BrowserStorage.SESSION_STORAGE)
                             .objectStore(BrowserStorage.SESSION_STORAGE).get(key)];
                     case 1:
                         json = _a.sent();
                         res = null;
-                        if (!json) return [3 /*break*/, 5];
-                        return [4 /*yield*/, this.loadIdentity()];
+                        if (!json) return [3, 5];
+                        return [4, this.loadIdentity()];
                     case 2:
                         identity = _a.sent();
                         if (!identity) {
                             throw new Error("Identity is empty");
                         }
-                        return [4 /*yield*/, this.loadRemoteIdentity(key)];
+                        return [4, this.loadRemoteIdentity(key)];
                     case 3:
                         remoteIdentity = _a.sent();
                         if (!remoteIdentity) {
                             throw new Error("Remote identity is not found");
                         }
-                        return [4 /*yield*/, AsymmetricRatchet.fromJSON(identity, remoteIdentity, json)];
+                        return [4, AsymmetricRatchet.fromJSON(identity, remoteIdentity, json)];
                     case 4:
                         res = _a.sent();
                         _a.label = 5;
-                    case 5: return [2 /*return*/, res];
+                    case 5: return [2, res];
                 }
             });
         });
@@ -3092,12 +3092,12 @@ var BrowserStorage = (function () {
             var json, tx;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, value.toJSON()];
+                    case 0: return [4, value.toJSON()];
                     case 1:
                         json = _a.sent();
                         tx = this.db.transaction(BrowserStorage.SESSION_STORAGE, "readwrite");
                         tx.objectStore(BrowserStorage.SESSION_STORAGE).put(json, key);
-                        return [2 /*return*/, tx.complete];
+                        return [2, tx.complete];
                 }
             });
         });
@@ -3203,31 +3203,31 @@ var Client = (function (_super) {
                     var storage, identity, remoteIdentityId, bundle, _a;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
-                            case 0: return [4 /*yield*/, BrowserStorage.create()];
+                            case 0: return [4, BrowserStorage.create()];
                             case 1:
                                 storage = _b.sent();
-                                return [4 /*yield*/, storage.loadIdentity()];
+                                return [4, storage.loadIdentity()];
                             case 2:
                                 identity = _b.sent();
-                                if (!!identity) return [3 /*break*/, 5];
+                                if (!!identity) return [3, 5];
                                 console.info("Generates new identity");
-                                return [4 /*yield*/, Identity.create(1)];
+                                return [4, Identity.create(1)];
                             case 3:
                                 identity = _b.sent();
-                                return [4 /*yield*/, storage.saveIdentity(identity)];
+                                return [4, storage.saveIdentity(identity)];
                             case 4:
                                 _b.sent();
                                 _b.label = 5;
                             case 5:
                                 remoteIdentityId = "0";
-                                return [4 /*yield*/, PreKeyBundleProtocol.importProto(Convert.FromBase64(info.preKey))];
+                                return [4, PreKeyBundleProtocol.importProto(Convert.FromBase64(info.preKey))];
                             case 6:
                                 bundle = _b.sent();
                                 _a = this;
-                                return [4 /*yield*/, AsymmetricRatchet.create(identity, bundle)];
+                                return [4, AsymmetricRatchet.create(identity, bundle)];
                             case 7:
                                 _a.cipher = _b.sent();
-                                return [4 /*yield*/, storage.saveRemoteIdentity(remoteIdentityId, this.cipher.remoteIdentity)];
+                                return [4, storage.saveRemoteIdentity(remoteIdentityId, this.cipher.remoteIdentity)];
                             case 8:
                                 _b.sent();
                                 this.cipher.on("update", function () {
@@ -3246,11 +3246,11 @@ var Client = (function (_super) {
                                             if (data && !(new Uint8Array(data)[0])) {
                                             }
                                             this.emit("listening", new ClientListeningEvent(this, address));
-                                            return [2 /*return*/];
+                                            return [2];
                                         });
                                     }); })();
                                 });
-                                return [2 /*return*/];
+                                return [2];
                         }
                     });
                 }); })().catch(function (error) { return _this.emit("error", new ClientErrorEvent(_this, error)); });
@@ -3337,21 +3337,21 @@ var Client = (function (_super) {
     };
     Client.prototype.onMessage = function (message) {
         return __awaiter(this, void 0, void 0, function () {
-            var proto, promise, messageProto, _a, _b, _c;
-            return __generator(this, function (_d) {
-                switch (_d.label) {
-                    case 0: return [4 /*yield*/, ActionProto.importProto(message)];
+            var proto, promise, messageProto, _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0: return [4, ActionProto.importProto(message)];
                     case 1:
-                        proto = _d.sent();
+                        proto = _c.sent();
                         console.info("Action:", proto.action);
                         promise = this.stack[proto.actionId];
-                        if (!promise) return [3 /*break*/, 4];
+                        if (!promise) return [3, 4];
                         delete this.stack[proto.actionId];
                         _b = (_a = ResultProto).importProto;
-                        return [4 /*yield*/, proto.exportProto()];
-                    case 2: return [4 /*yield*/, _b.apply(_a, [_d.sent()])];
+                        return [4, proto.exportProto()];
+                    case 2: return [4, _b.apply(_a, [_c.sent()])];
                     case 3:
-                        messageProto = _d.sent();
+                        messageProto = _c.sent();
                         if (messageProto.error) {
                             console.error("Error action:", messageProto.action);
                             console.error(messageProto.error);
@@ -3360,11 +3360,11 @@ var Client = (function (_super) {
                         else {
                             promise.resolve(messageProto.data);
                         }
-                        return [3 /*break*/, 5];
+                        return [3, 5];
                     case 4:
                         this.emit("event", proto);
-                        _d.label = 5;
-                    case 5: return [2 /*return*/];
+                        _c.label = 5;
+                    case 5: return [2];
                 }
             });
         });
@@ -5138,10 +5138,10 @@ var SocketCertificateStorage = (function () {
                         proto = new CertificateStorageIndexOfActionProto();
                         proto.providerID = this.service.id;
                         proto.item = item;
-                        return [4 /*yield*/, this.service.client.send(proto)];
+                        return [4, this.service.client.send(proto)];
                     case 1:
                         result = _a.sent();
-                        return [2 /*return*/, result ? Convert.ToUtf8String(result) : null];
+                        return [2, result ? Convert.ToUtf8String(result) : null];
                 }
             });
         });
@@ -5156,11 +5156,11 @@ var SocketCertificateStorage = (function () {
                         proto.providerID = this.service.id;
                         proto.format = "raw";
                         proto.item = item;
-                        return [4 /*yield*/, this.service.client.send(proto)];
+                        return [4, this.service.client.send(proto)];
                     case 1:
                         result = _a.sent();
                         if (format === "raw") {
-                            return [2 /*return*/, result];
+                            return [2, result];
                         }
                         else {
                             header = "";
@@ -5192,9 +5192,9 @@ var SocketCertificateStorage = (function () {
                                 res.push(raw);
                             }
                             res.push("-----END " + header + "-----");
-                            return [2 /*return*/, res.join("\r\n")];
+                            return [2, res.join("\r\n")];
                         }
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
@@ -5212,13 +5212,13 @@ var SocketCertificateStorage = (function () {
                         proto.data = data;
                         proto.algorithm.fromAlgorithm(alg);
                         proto.keyUsages = keyUsages;
-                        return [4 /*yield*/, this.service.client.send(proto)];
+                        return [4, this.service.client.send(proto)];
                     case 1:
                         result = _a.sent();
-                        return [4 /*yield*/, CryptoCertificateProto.importProto(result)];
+                        return [4, CryptoCertificateProto.importProto(result)];
                     case 2:
                         certItem = _a.sent();
-                        return [2 /*return*/, prepareCertItem(certItem)];
+                        return [2, prepareCertItem(certItem)];
                 }
             });
         });
@@ -5231,14 +5231,14 @@ var SocketCertificateStorage = (function () {
                     case 0:
                         proto = new CertificateStorageKeysActionProto();
                         proto.providerID = this.service.id;
-                        return [4 /*yield*/, this.service.client.send(proto)];
+                        return [4, this.service.client.send(proto)];
                     case 1:
                         result = _a.sent();
                         if (result) {
                             keys = Convert.ToUtf8String(result).split(",");
-                            return [2 /*return*/, keys];
+                            return [2, keys];
                         }
-                        return [2 /*return*/, []];
+                        return [2, []];
                 }
             });
         });
@@ -5257,15 +5257,15 @@ var SocketCertificateStorage = (function () {
                             proto.algorithm.fromAlgorithm(alg);
                             proto.keyUsages = keyUsages;
                         }
-                        return [4 /*yield*/, this.service.client.send(proto)];
+                        return [4, this.service.client.send(proto)];
                     case 1:
                         result = _a.sent();
-                        if (!(result && result.byteLength)) return [3 /*break*/, 3];
-                        return [4 /*yield*/, CryptoCertificateProto.importProto(result)];
+                        if (!(result && result.byteLength)) return [3, 3];
+                        return [4, CryptoCertificateProto.importProto(result)];
                     case 2:
                         certItem = _a.sent();
-                        return [2 /*return*/, prepareCertItem(certItem)];
-                    case 3: return [2 /*return*/, null];
+                        return [2, prepareCertItem(certItem)];
+                    case 3: return [2, null];
                 }
             });
         });
@@ -5279,10 +5279,10 @@ var SocketCertificateStorage = (function () {
                         proto = new CertificateStorageSetItemActionProto();
                         proto.providerID = this.service.id;
                         proto.item = value;
-                        return [4 /*yield*/, this.service.client.send(proto)];
+                        return [4, this.service.client.send(proto)];
                     case 1:
                         data = _a.sent();
-                        return [2 /*return*/, Convert.ToUtf8String(data)];
+                        return [2, Convert.ToUtf8String(data)];
                 }
             });
         });
@@ -5296,10 +5296,10 @@ var SocketCertificateStorage = (function () {
                         proto = new CertificateStorageRemoveItemActionProto();
                         proto.providerID = this.service.id;
                         proto.key = key;
-                        return [4 /*yield*/, this.service.client.send(proto)];
+                        return [4, this.service.client.send(proto)];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
@@ -5312,10 +5312,10 @@ var SocketCertificateStorage = (function () {
                     case 0:
                         proto = new CertificateStorageClearActionProto();
                         proto.providerID = this.service.id;
-                        return [4 /*yield*/, this.service.client.send(proto)];
+                        return [4, this.service.client.send(proto)];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
@@ -5327,19 +5327,19 @@ function prepareCertItem(item) {
         var raw, _a;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, item.exportProto()];
+                case 0: return [4, item.exportProto()];
                 case 1:
                     raw = _b.sent();
                     _a = item.type;
                     switch (_a) {
-                        case "x509": return [3 /*break*/, 2];
-                        case "request": return [3 /*break*/, 4];
+                        case "x509": return [3, 2];
+                        case "request": return [3, 4];
                     }
-                    return [3 /*break*/, 6];
-                case 2: return [4 /*yield*/, CryptoX509CertificateProto.importProto(raw)];
-                case 3: return [2 /*return*/, _b.sent()];
-                case 4: return [4 /*yield*/, CryptoX509CertificateRequestProto.importProto(raw)];
-                case 5: return [2 /*return*/, _b.sent()];
+                    return [3, 6];
+                case 2: return [4, CryptoX509CertificateProto.importProto(raw)];
+                case 3: return [2, _b.sent()];
+                case 4: return [4, CryptoX509CertificateRequestProto.importProto(raw)];
+                case 5: return [2, _b.sent()];
                 case 6: throw new Error("Unsupported CertificateItem type '" + item.type + "'");
             }
         });
@@ -5453,14 +5453,14 @@ var SocketKeyStorage = (function () {
                     case 0:
                         proto = new KeyStorageKeysActionProto();
                         proto.providerID = this.service.id;
-                        return [4 /*yield*/, this.service.client.send(proto)];
+                        return [4, this.service.client.send(proto)];
                     case 1:
                         result = _a.sent();
                         if (result) {
                             keys = Convert.ToUtf8String(result).split(",");
-                            return [2 /*return*/, keys];
+                            return [2, keys];
                         }
-                        return [2 /*return*/, []];
+                        return [2, []];
                 }
             });
         });
@@ -5474,10 +5474,10 @@ var SocketKeyStorage = (function () {
                         proto = new KeyStorageIndexOfActionProto();
                         proto.providerID = this.service.id;
                         proto.item = item;
-                        return [4 /*yield*/, this.service.client.send(proto)];
+                        return [4, this.service.client.send(proto)];
                     case 1:
                         result = _a.sent();
-                        return [2 /*return*/, result ? Convert.ToUtf8String(result) : null];
+                        return [2, result ? Convert.ToUtf8String(result) : null];
                 }
             });
         });
@@ -5496,17 +5496,17 @@ var SocketKeyStorage = (function () {
                             proto.algorithm.fromAlgorithm(preparedAlgorithm);
                             proto.keyUsages = usages;
                         }
-                        return [4 /*yield*/, this.service.client.send(proto)];
+                        return [4, this.service.client.send(proto)];
                     case 1:
                         result = _a.sent();
                         socketKey = null;
-                        if (!(result && result.byteLength)) return [3 /*break*/, 3];
-                        return [4 /*yield*/, CryptoKeyProto.importProto(result)];
+                        if (!(result && result.byteLength)) return [3, 3];
+                        return [4, CryptoKeyProto.importProto(result)];
                     case 2:
                         keyProto = _a.sent();
                         socketKey = keyProto;
                         _a.label = 3;
-                    case 3: return [2 /*return*/, socketKey];
+                    case 3: return [2, socketKey];
                 }
             });
         });
@@ -5520,10 +5520,10 @@ var SocketKeyStorage = (function () {
                         proto = new KeyStorageSetItemActionProto();
                         proto.providerID = this.service.id;
                         proto.item = value;
-                        return [4 /*yield*/, this.service.client.send(proto)];
+                        return [4, this.service.client.send(proto)];
                     case 1:
                         data = _a.sent();
-                        return [2 /*return*/, Convert.ToUtf8String(data)];
+                        return [2, Convert.ToUtf8String(data)];
                 }
             });
         });
@@ -5537,10 +5537,10 @@ var SocketKeyStorage = (function () {
                         proto = new KeyStorageRemoveItemActionProto();
                         proto.providerID = this.service.id;
                         proto.key = key;
-                        return [4 /*yield*/, this.service.client.send(proto)];
+                        return [4, this.service.client.send(proto)];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
@@ -5553,10 +5553,10 @@ var SocketKeyStorage = (function () {
                     case 0:
                         proto = new KeyStorageClearActionProto();
                         proto.providerID = this.service.id;
-                        return [4 /*yield*/, this.service.client.send(proto)];
+                        return [4, this.service.client.send(proto)];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
@@ -5834,14 +5834,14 @@ var SocketSubtleCrypto = (function (_super) {
     SocketSubtleCrypto.prototype.encrypt = function (algorithm, key, data) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.encryptData(algorithm, key, data, "encrypt")];
+                return [2, this.encryptData(algorithm, key, data, "encrypt")];
             });
         });
     };
     SocketSubtleCrypto.prototype.decrypt = function (algorithm, key, data) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.encryptData(algorithm, key, data, "decrypt")];
+                return [2, this.encryptData(algorithm, key, data, "decrypt")];
             });
         });
     };
@@ -5854,22 +5854,22 @@ var SocketSubtleCrypto = (function (_super) {
                         alg = PrepareAlgorithm(algorithm);
                         algProto = new AlgorithmProto();
                         algProto.fromAlgorithm(alg);
-                        return [4 /*yield*/, _super.prototype.deriveBits.call(this, algorithm, baseKey, length)];
+                        return [4, _super.prototype.deriveBits.call(this, algorithm, baseKey, length)];
                     case 1:
                         _b.sent();
                         action = new DeriveBitsActionProto();
                         action.providerID = this.service.id;
                         action.algorithm = algProto;
                         _a = action.algorithm;
-                        return [4 /*yield*/, alg.public.exportProto()];
+                        return [4, alg.public.exportProto()];
                     case 2:
                         _a.public = _b.sent();
                         action.key = baseKey;
                         action.length = length;
-                        return [4 /*yield*/, this.service.client.send(action)];
+                        return [4, this.service.client.send(action)];
                     case 3:
                         result = _b.sent();
-                        return [2 /*return*/, result];
+                        return [2, result];
                 }
             });
         });
@@ -5879,7 +5879,7 @@ var SocketSubtleCrypto = (function (_super) {
             var alg, algKeyType, action, _a, result;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, _super.prototype.deriveKey.call(this, algorithm, baseKey, derivedKeyType, extractable, keyUsages)];
+                    case 0: return [4, _super.prototype.deriveKey.call(this, algorithm, baseKey, derivedKeyType, extractable, keyUsages)];
                     case 1:
                         _b.sent();
                         alg = PrepareAlgorithm(algorithm);
@@ -5888,18 +5888,18 @@ var SocketSubtleCrypto = (function (_super) {
                         action.providerID = this.service.id;
                         action.algorithm.fromAlgorithm(alg);
                         _a = action.algorithm;
-                        return [4 /*yield*/, alg.public.exportProto()];
+                        return [4, alg.public.exportProto()];
                     case 2:
                         _a.public = _b.sent();
                         action.derivedKeyType.fromAlgorithm(algKeyType);
                         action.key = baseKey;
                         action.extractable = extractable;
                         action.usage = keyUsages;
-                        return [4 /*yield*/, this.service.client.send(action)];
+                        return [4, this.service.client.send(action)];
                     case 3:
                         result = _b.sent();
-                        return [4 /*yield*/, CryptoKeyProto.importProto(result)];
-                    case 4: return [2 /*return*/, _b.sent()];
+                        return [4, CryptoKeyProto.importProto(result)];
+                    case 4: return [2, _b.sent()];
                 }
             });
         });
@@ -5912,7 +5912,7 @@ var SocketSubtleCrypto = (function (_super) {
                     case 0:
                         alg = PrepareAlgorithm(algorithm);
                         buffer = PrepareData(data, "data");
-                        return [4 /*yield*/, _super.prototype.digest.call(this, alg, buffer)];
+                        return [4, _super.prototype.digest.call(this, alg, buffer)];
                     case 1:
                         _a.sent();
                         algProto = new AlgorithmProto();
@@ -5921,10 +5921,10 @@ var SocketSubtleCrypto = (function (_super) {
                         action.algorithm = algProto;
                         action.data = buffer.buffer;
                         action.providerID = this.service.id;
-                        return [4 /*yield*/, this.service.client.send(action)];
+                        return [4, this.service.client.send(action)];
                     case 2:
                         result = _a.sent();
-                        return [2 /*return*/, result];
+                        return [2, result];
                 }
             });
         });
@@ -5936,7 +5936,7 @@ var SocketSubtleCrypto = (function (_super) {
                 switch (_a.label) {
                     case 0:
                         alg = PrepareAlgorithm(algorithm);
-                        return [4 /*yield*/, _super.prototype.generateKey.call(this, alg, extractable, keyUsages)];
+                        return [4, _super.prototype.generateKey.call(this, alg, extractable, keyUsages)];
                     case 1:
                         _a.sent();
                         algProto = new AlgorithmProto();
@@ -5947,19 +5947,19 @@ var SocketSubtleCrypto = (function (_super) {
                         action.extractable = extractable;
                         action.usage = keyUsages;
                         console.log(action);
-                        return [4 /*yield*/, this.service.client.send(action)];
+                        return [4, this.service.client.send(action)];
                     case 2:
                         result = _a.sent();
                         _a.label = 3;
                     case 3:
                         _a.trys.push([3, 5, , 7]);
-                        return [4 /*yield*/, CryptoKeyPairProto.importProto(result)];
-                    case 4: return [2 /*return*/, _a.sent()];
+                        return [4, CryptoKeyPairProto.importProto(result)];
+                    case 4: return [2, _a.sent()];
                     case 5:
                         e_1 = _a.sent();
-                        return [4 /*yield*/, CryptoKeyProto.importProto(result)];
-                    case 6: return [2 /*return*/, _a.sent()];
-                    case 7: return [2 /*return*/];
+                        return [4, CryptoKeyProto.importProto(result)];
+                    case 6: return [2, _a.sent()];
+                    case 7: return [2];
                 }
             });
         });
@@ -5969,23 +5969,23 @@ var SocketSubtleCrypto = (function (_super) {
             var action, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, _super.prototype.exportKey.call(this, format, key)];
+                    case 0: return [4, _super.prototype.exportKey.call(this, format, key)];
                     case 1:
                         _a.sent();
                         action = new ExportKeyActionProto();
                         action.providerID = this.service.id;
                         action.format = format;
                         action.key = key;
-                        return [4 /*yield*/, this.service.client.send(action)];
+                        return [4, this.service.client.send(action)];
                     case 2:
                         result = _a.sent();
                         if (format === "jwk") {
-                            return [2 /*return*/, JSON.parse(Convert.ToBinary(result))];
+                            return [2, JSON.parse(Convert.ToBinary(result))];
                         }
                         else {
-                            return [2 /*return*/, result];
+                            return [2, result];
                         }
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
@@ -5995,7 +5995,7 @@ var SocketSubtleCrypto = (function (_super) {
             var alg, preparedKeyData, action, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, _super.prototype.importKey.call(this, format, keyData, algorithm, extractable, keyUsages)];
+                    case 0: return [4, _super.prototype.importKey.call(this, format, keyData, algorithm, extractable, keyUsages)];
                     case 1:
                         _a.sent();
                         alg = PrepareAlgorithm(algorithm);
@@ -6012,11 +6012,11 @@ var SocketSubtleCrypto = (function (_super) {
                         action.format = format;
                         action.extractable = extractable;
                         action.keyUsages = keyUsages;
-                        return [4 /*yield*/, this.service.client.send(action)];
+                        return [4, this.service.client.send(action)];
                     case 2:
                         result = _a.sent();
-                        return [4 /*yield*/, CryptoKeyProto.importProto(result)];
-                    case 3: return [2 /*return*/, _a.sent()];
+                        return [4, CryptoKeyProto.importProto(result)];
+                    case 3: return [2, _a.sent()];
                 }
             });
         });
@@ -6031,7 +6031,7 @@ var SocketSubtleCrypto = (function (_super) {
                         algProto = new AlgorithmProto();
                         algProto.fromAlgorithm(alg);
                         buffer = PrepareData(data, "data");
-                        return [4 /*yield*/, _super.prototype.sign.call(this, algorithm, key, buffer)];
+                        return [4, _super.prototype.sign.call(this, algorithm, key, buffer)];
                     case 1:
                         _a.sent();
                         action = new SignActionProto();
@@ -6039,10 +6039,10 @@ var SocketSubtleCrypto = (function (_super) {
                         action.algorithm = algProto;
                         action.key = key;
                         action.data = buffer.buffer;
-                        return [4 /*yield*/, this.service.client.send(action)];
+                        return [4, this.service.client.send(action)];
                     case 2:
                         result = _a.sent();
-                        return [2 /*return*/, result];
+                        return [2, result];
                 }
             });
         });
@@ -6052,7 +6052,7 @@ var SocketSubtleCrypto = (function (_super) {
             var alg, algProto, buffer, signatureBytes, action, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, _super.prototype.verify.call(this, algorithm, key, signature, signature)];
+                    case 0: return [4, _super.prototype.verify.call(this, algorithm, key, signature, signature)];
                     case 1:
                         _a.sent();
                         alg = PrepareAlgorithm(algorithm);
@@ -6066,10 +6066,10 @@ var SocketSubtleCrypto = (function (_super) {
                         action.key = key;
                         action.data = buffer.buffer;
                         action.signature = signatureBytes.buffer;
-                        return [4 /*yield*/, this.service.client.send(action)];
+                        return [4, this.service.client.send(action)];
                     case 2:
                         result = _a.sent();
-                        return [2 /*return*/, !!(new Uint8Array(result)[0])];
+                        return [2, !!(new Uint8Array(result)[0])];
                 }
             });
         });
@@ -6079,7 +6079,7 @@ var SocketSubtleCrypto = (function (_super) {
             var algWrap, action, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, _super.prototype.wrapKey.call(this, format, key, wrappingKey, wrapAlgorithm)];
+                    case 0: return [4, _super.prototype.wrapKey.call(this, format, key, wrappingKey, wrapAlgorithm)];
                     case 1:
                         _a.sent();
                         algWrap = PrepareAlgorithm(wrapAlgorithm);
@@ -6089,10 +6089,10 @@ var SocketSubtleCrypto = (function (_super) {
                         action.key = key;
                         action.wrappingKey = wrappingKey;
                         action.format = format;
-                        return [4 /*yield*/, this.service.client.send(action)];
+                        return [4, this.service.client.send(action)];
                     case 2:
                         result = _a.sent();
-                        return [2 /*return*/, result];
+                        return [2, result];
                 }
             });
         });
@@ -6102,7 +6102,7 @@ var SocketSubtleCrypto = (function (_super) {
             var algUnwrap, algUnwrappedKey, wrappedKeyBytes, action, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, _super.prototype.unwrapKey.call(this, format, wrappedKey, unwrappingKey, unwrapAlgorithm, unwrappedKeyAlgorithm, extractable, keyUsages)];
+                    case 0: return [4, _super.prototype.unwrapKey.call(this, format, wrappedKey, unwrappingKey, unwrapAlgorithm, unwrappedKeyAlgorithm, extractable, keyUsages)];
                     case 1:
                         _a.sent();
                         algUnwrap = PrepareAlgorithm(unwrapAlgorithm);
@@ -6118,11 +6118,11 @@ var SocketSubtleCrypto = (function (_super) {
                         action.format = format;
                         action.extractable = extractable;
                         action.keyUsage = keyUsages;
-                        return [4 /*yield*/, this.service.client.send(action)];
+                        return [4, this.service.client.send(action)];
                     case 2:
                         result = _a.sent();
-                        return [4 /*yield*/, CryptoKeyProto.importProto(result)];
-                    case 3: return [2 /*return*/, _a.sent()];
+                        return [4, CryptoKeyProto.importProto(result)];
+                    case 3: return [2, _a.sent()];
                 }
             });
         });
@@ -6145,7 +6145,7 @@ var SocketSubtleCrypto = (function (_super) {
                             encrypt = _super.prototype.decrypt;
                             ActionClass = DecryptActionProto;
                         }
-                        return [4 /*yield*/, encrypt(algorithm, key, buffer)];
+                        return [4, encrypt(algorithm, key, buffer)];
                     case 1:
                         _a.sent();
                         action = new ActionClass();
@@ -6153,10 +6153,10 @@ var SocketSubtleCrypto = (function (_super) {
                         action.algorithm = algProto;
                         action.key = key;
                         action.data = buffer.buffer;
-                        return [4 /*yield*/, this.service.client.send(action)];
+                        return [4, this.service.client.send(action)];
                     case 2:
                         result = _a.sent();
-                        return [2 /*return*/, result];
+                        return [2, result];
                 }
             });
         });
@@ -6181,7 +6181,7 @@ var SocketCrypto = (function () {
             return __generator(this, function (_a) {
                 action = new LoginActionProto();
                 action.providerID = this.id;
-                return [2 /*return*/, this.client.send(action)];
+                return [2, this.client.send(action)];
             });
         });
     };
@@ -6193,10 +6193,10 @@ var SocketCrypto = (function () {
                     case 0:
                         action = new IsLoggedInActionProto();
                         action.providerID = this.id;
-                        return [4 /*yield*/, this.client.send(action)];
+                        return [4, this.client.send(action)];
                     case 1:
                         res = _a.sent();
-                        return [2 /*return*/, !!(new Uint8Array(res)[0])];
+                        return [2, !!(new Uint8Array(res)[0])];
                 }
             });
         });
@@ -6220,6 +6220,7 @@ var SocketProvider = (function (_super) {
     });
     SocketProvider.prototype.connect = function (address) {
         var _this = this;
+        this.client.removeAllListeners();
         this.client.connect(address)
             .on("error", function (e) {
             console.log("Client:Error");
@@ -6229,24 +6230,24 @@ var SocketProvider = (function (_super) {
             .on("event", function (proto) {
             console.log("Client:Event", proto.action);
             (function () { return __awaiter(_this, void 0, void 0, function () {
-                var _a, tokenProto, _b, _c, _d;
-                return __generator(this, function (_e) {
-                    switch (_e.label) {
+                var _a, tokenProto, _b, _c;
+                return __generator(this, function (_d) {
+                    switch (_d.label) {
                         case 0:
                             _a = proto.action;
                             switch (_a) {
-                                case ProviderTokenEventProto.ACTION: return [3 /*break*/, 1];
+                                case ProviderTokenEventProto.ACTION: return [3, 1];
                             }
-                            return [3 /*break*/, 4];
+                            return [3, 4];
                         case 1:
                             _c = (_b = ProviderTokenEventProto).importProto;
-                            return [4 /*yield*/, proto.exportProto()];
-                        case 2: return [4 /*yield*/, _c.apply(_b, [_e.sent()])];
+                            return [4, proto.exportProto()];
+                        case 2: return [4, _c.apply(_b, [_d.sent()])];
                         case 3:
-                            tokenProto = _e.sent();
+                            tokenProto = _d.sent();
                             this.emit("token", tokenProto);
-                            _e.label = 4;
-                        case 4: return [2 /*return*/];
+                            _d.label = 4;
+                        case 4: return [2];
                     }
                 });
             }); })();
@@ -6277,13 +6278,13 @@ var SocketProvider = (function (_super) {
                 switch (_a.label) {
                     case 0:
                         proto = new ProviderInfoActionProto();
-                        return [4 /*yield*/, this.client.send(proto)];
+                        return [4, this.client.send(proto)];
                     case 1:
                         result = _a.sent();
-                        return [4 /*yield*/, ProviderInfoProto.importProto(result)];
+                        return [4, ProviderInfoProto.importProto(result)];
                     case 2:
                         infoProto = _a.sent();
-                        return [2 /*return*/, infoProto];
+                        return [2, infoProto];
                 }
             });
         });
@@ -6296,10 +6297,10 @@ var SocketProvider = (function (_super) {
                     case 0:
                         actionProto = new ProviderGetCryptoActionProto();
                         actionProto.cryptoID = cryptoID;
-                        return [4 /*yield*/, this.client.send(actionProto)];
+                        return [4, this.client.send(actionProto)];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/, new SocketCrypto(this.client, cryptoID)];
+                        return [2, new SocketCrypto(this.client, cryptoID)];
                 }
             });
         });
