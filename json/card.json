@@ -72,12 +72,12 @@
 		"atr": "3BFC180000813180459067464A00642D70C172FEE0FE",
 		"name": "PivKey T800",
 		"readOnly": true,
-		"driver": "993988460d8f49a2ac519a2935f11533"
+		"driver": "993988460d8f49a2ac519a2935f00533"
 	}, {
 		"atr": "3B9F958131FE9F006646530510001171DF000000000002",
 		"name": "PivKey T600",
 		"readOnly": true,
-		"driver": "993988460d8f49a2ac519a2935f11533"
+		"driver": "993988460d8f49a2ac519a2935f00533"
 	}],
 	"drivers": [{
 		"id": "39b3d7a3662c4b48bb120d008dd18648",
@@ -103,7 +103,7 @@
 		"id": "993988460d8f49a2ac519a2935f11533",
 		"name": "OpenSC PIV driver",
 		"file": {
-			"osx": "/Library/OpenSC/lib/opensc-pkcs11.so"
+			"osx": "/Library/OpenSC/lib/pkcs11/opensc-pkcs11.so"
 		}
 	}]
 }
