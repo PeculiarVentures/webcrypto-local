@@ -26,6 +26,7 @@ const Title = styled.div`
   letter-spacing: 0.036em;
   color: ${props => props.theme.dialog.color};
   line-height: 24px;
+  white-space: pre-line;
   @media ${props => props.theme.media.mobile} {
     font-size: 15px;
     line-height: 21px;

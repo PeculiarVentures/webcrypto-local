@@ -110,7 +110,7 @@ export function* createCertificate(crypto, data) {
       });
 
       pkcs10.attributes.push(attribute);
-      yield pkcs10.sign(privateKey, privateKey.algorithm.hash ? privateKey.algorithm.hash.name : "SHA-1");
+      yield pkcs10.sign(privateKey, privateKey.algorithm.hash ? privateKey.algorithm.hash.name : 'SHA-1');
 
       const csrBuffer = pkcs10.toSchema().toBER(false);
 
@@ -118,7 +118,7 @@ export function* createCertificate(crypto, data) {
       try {
         importCert = yield crypto.certStorage.importCert('request', csrBuffer, _algorithm(), usages);
       } catch (error) {
-        yield put(ErrorActions.error(error));
+        yield put(ErrorActions.error(error, 'request_create'));
       }
 
       const certId = yield crypto.certStorage.setItem(importCert);
@@ -126,7 +126,7 @@ export function* createCertificate(crypto, data) {
       yield crypto.keyStorage.setItem(publicKey);
       return certId;
     } catch (error) {
-      yield put(ErrorActions.error(error));
+      yield put(ErrorActions.error(error, 'request_create'));
     }
   }
   return false;

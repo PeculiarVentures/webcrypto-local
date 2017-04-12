@@ -169,6 +169,14 @@ export default class Overlay extends Component {
           <Dialog.NotSupportedLocalhostDialog
             name="not_supported_localhost"
           />
+          <Dialog.RequestCreateErrorDialog
+            name="request_create_error"
+            onAccept={() => {
+              this.handleAction({
+                type: ACTIONS_CONST.DIALOG_CLOSE,
+              });
+            }}
+          />
         </SegueHandler>
       );
     }

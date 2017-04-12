@@ -4,10 +4,23 @@ import { ACTIONS_CONST } from '../constants';
 import { DialogActions } from '../actions/ui';
 import { WSActions } from '../actions/state';
 import { WSController } from '../controllers/webcrypto_socket';
+import { EventChannel } from '../controllers';
 
-function* errorHandler(error) {
-  if ({}.hasOwnProperty.call(error.data, 'message')) {
-    const { message, stack } = error.data;
+function* errorHandler({ data, action }) {
+  if (action) {
+    switch (action) {
+      case 'request_create':
+        yield put(DialogActions.open('request_create_error'));
+        EventChannel.emit('REQUEST_CREATE_ERROR_MESSAGE', data.message);
+        return true;
+
+      default:
+        return true;
+    }
+  }
+
+  if ({}.hasOwnProperty.call(data, 'message')) {
+    const { message, stack } = data;
 
     if (/CKR_PIN_INCORRECT/.test(message)) { // incorrent pin
       yield put(DialogActions.open('incorrect_pin'));
@@ -30,13 +43,14 @@ function* errorHandler(error) {
         }
 
         default:
-          console.error(error);
+          console.error(data);
 
       }
     }
   } else {
-    console.error(error);
+    console.error(data);
   }
+  return true;
 }
 
 export default function* () {

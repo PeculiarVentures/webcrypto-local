@@ -1,6 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
 import { SelectField, SelectItem, SelectNative } from '../../basic';
+import { ProviderActions } from '../../../actions/state';
 import { Title, GroupContainer, GroupPart } from './styles';
 import enLang from '../../../langs/en.json';
 
@@ -39,11 +40,36 @@ export default class Provider extends Component {
 
   static contextTypes = {
     deviceType: PropTypes.string,
+    dispatch: PropTypes.func,
   };
+
+  onSelectHandler = (data) => {
+    const { dispatch } = this.context;
+    if (typeof data === 'string') {
+      dispatch(ProviderActions.select(data));
+    } else {
+      dispatch(ProviderActions.select(data.value));
+    }
+  };
+
+  getSelectedProviderProps() {
+    const { providers } = this.props;
+    let provider = false;
+
+    providers.map((prv) => {
+      if (prv.selected) {
+        provider = prv;
+      }
+      return true;
+    });
+
+    return provider;
+  }
 
   render() {
     const { providers } = this.props;
     const { deviceType } = this.context;
+    const selectedProvider = this.getSelectedProviderProps();
 
     return (
       <GroupContainer>
@@ -61,17 +87,19 @@ export default class Provider extends Component {
                     value: item.id,
                     name: item.name,
                   }))}
-                  defaultValue={providers[0] ? providers[0].id : ''}
+                  defaultValue={selectedProvider ? selectedProvider.id : ''}
+                  onChange={this.onSelectHandler}
                 />
                 : <SelectField
                   labelText={enLang['CertificateCreate.Provider.Field.Name']}
                   placeholder={enLang['Select.Label.Provider']}
                   defaultSelected={{
-                    name: providers[0] ? providers[0].name : '',
-                    value: providers[0] ? providers[0].id : '',
-                    index: 0,
+                    name: selectedProvider ? selectedProvider.name : '',
+                    value: selectedProvider ? selectedProvider.id : '',
+                    index: selectedProvider ? selectedProvider.index : 0,
                   }}
                   disabled={!providers.length}
+                  onChange={this.onSelectHandler}
                 >
                   {
                     providers.map((item, index) => (
