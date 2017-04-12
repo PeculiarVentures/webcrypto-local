@@ -11,7 +11,7 @@ const DescrStyled = styled.div`
   color: ${props => props.theme.dialog.colorDescr};
 `;
 
-export default class RequestCreateErrorDialog extends Component {
+export default class CertificateImportErrorDialog extends Component {
 
   static propTypes = {
     onAccept: PropTypes.func.isRequired,
@@ -24,7 +24,7 @@ export default class RequestCreateErrorDialog extends Component {
       message: '',
     };
 
-    EventChannel.once('REQUEST_CREATE_ERROR_MESSAGE', this.onSetMessage);
+    EventChannel.once('CERTIFICATE_IMPORT_ERROR_MESSAGE', this.onSetMessage);
   }
 
   onSetMessage = (message) => {
@@ -41,8 +41,8 @@ export default class RequestCreateErrorDialog extends Component {
 
     return (
       <Dialog
-        title={enLang['Dialog.RequestCreateError.Title']}
-        acceptText={enLang['Dialog.RequestCreateError.Btn.Accept']}
+        title={enLang['Dialog.CertificateImportError.Title']}
+        acceptText={enLang['Dialog.CertificateImportError.Btn.Accept']}
         cancelText=""
         onAccept={onAccept}
       >

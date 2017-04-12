@@ -16,6 +16,8 @@
   "Dialog.NotSupportedLocalhost.Title": "Unfortunately, your browser doesn't allow connections to localhost.\n Please try a different browser",
   "Dialog.RequestCreateError.Title": "An error occurred creating your certificate request.\n Please try your request again",
   "Dialog.RequestCreateError.Btn.Accept": "Try again",
+  "Dialog.CertificateImportError.Title": "An error occurred import action.\n Please try your request again",
+  "Dialog.CertificateImportError.Btn.Accept": "Try again",
   "Sidebar.Footer.Status.Online": "Server is online",
   "Sidebar.Footer.Status.Offline": "Server is offline",
   "Sidebar.Footer.Status.Seaching": "Seaching for server",

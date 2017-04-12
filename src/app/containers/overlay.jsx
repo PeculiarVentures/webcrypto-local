@@ -177,6 +177,14 @@ export default class Overlay extends Component {
               });
             }}
           />
+          <Dialog.CertificateImportErrorDialog
+            name="certificate_import_error"
+            onAccept={() => {
+              this.handleAction({
+                type: ACTIONS_CONST.DIALOG_CLOSE,
+              });
+            }}
+          />
         </SegueHandler>
       );
     }

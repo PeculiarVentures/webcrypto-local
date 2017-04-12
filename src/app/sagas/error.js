@@ -14,6 +14,11 @@ function* errorHandler({ data, action }) {
         EventChannel.emit('REQUEST_CREATE_ERROR_MESSAGE', data.message);
         return true;
 
+      case 'import_certificate':
+        yield put(DialogActions.open('certificate_import_error'));
+        EventChannel.emit('CERTIFICATE_IMPORT_ERROR_MESSAGE', data.message);
+        return true;
+
       default:
         return true;
     }
