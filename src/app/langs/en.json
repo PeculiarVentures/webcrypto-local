@@ -13,6 +13,8 @@
   "Dialog.TimeoutPin.Btn.Accept": "Try again",
   "Dialog.UnauthorizePin.Title": "Unauthorized pin",
   "Dialog.UnauthorizePin.Btn.Accept": "Try again",
+  "Dialog.NotSupportedLocalhost.Title": "Unfortunately, your browser doesn't allow connections to localhost.",
+  "Dialog.NotSupportedLocalhost.Description": "Please try a different browser.",
   "Sidebar.Footer.Status.Online": "Server is online",
   "Sidebar.Footer.Status.Offline": "Server is offline",
   "Sidebar.Footer.Status.Seaching": "Seaching for server",

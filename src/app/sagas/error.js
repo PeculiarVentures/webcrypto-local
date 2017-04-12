@@ -2,13 +2,20 @@ import { takeEvery } from 'redux-saga';
 import { put } from 'redux-saga/effects';
 import { ACTIONS_CONST } from '../constants';
 import { DialogActions } from '../actions/ui';
+import { WSActions } from '../actions/state';
+import { WSController } from '../controllers/webcrypto_socket';
 
 function* errorHandler(error) {
   if ({}.hasOwnProperty.call(error.data, 'message')) {
-    const { message } = error.data;
+    const { message, stack } = error.data;
 
-    if (/CKR_PIN_INCORRECT/.test(message)) {
+    if (/CKR_PIN_INCORRECT/.test(message)) { // incorrent pin
       yield put(DialogActions.open('incorrect_pin'));
+    } else if (/XMLHttpRequest.xmlHttp/.test(stack)) { // offline
+      WSController.checkConnect();
+      yield put(WSActions.status('offline'));
+    } else if (/Client.prototype.getServerInfo/.test(stack)) { // not supported localhost
+      yield put(DialogActions.open('not_supported_localhost'));
     } else {
       switch (message) {
 

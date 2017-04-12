@@ -1,7 +1,7 @@
 /* eslint no-undef: 0 */
 import { SERVER_URL } from '../../../scripts/config';
 import Store from '../store';
-import { WSActions } from '../actions/state';
+import { WSActions, ErrorActions } from '../actions/state';
 
 export const ws = new WebcryptoSocket.SocketProvider();
 window.ws = ws;
@@ -16,12 +16,9 @@ export const WSController = {
 
     ws.connect(SERVER_URL)
       .on('error', (error) => {
-        console.log('Connected error', error.message);
-        if (error.message === 'Cannot GET response') {
-          clearInterval(this.interval);
-          this.checkConnect();
-        }
-        Store.dispatch(WSActions.status('offline'));
+        clearInterval(this.interval);
+        Store.dispatch(ErrorActions.error(error));
+        console.log('WebcryptoSocket connected error: ', error.message);
       })
       .on('listening', () => {
         clearInterval(this.interval);

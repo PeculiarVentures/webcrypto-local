@@ -158,6 +158,9 @@ export default class Overlay extends Component {
               console.log('need action handler!!!!!')
             )}
           />
+          <Dialog.NotSupportedLocalhostDialog
+            name="not_supported_localhost"
+          />
         </SegueHandler>
       );
     }
