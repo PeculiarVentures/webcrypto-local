@@ -228,10 +228,10 @@ const CertHelper = {
   prepareCertToImport: function prepareCertToImport(value) {
     let certBuf = '';
 
-    if (regExps.base64.test(value)) {
+    if (regExps.base64.test(value)) { // check pem
       value = value.replace(/(-----(BEGIN|END) CERTIFICATE( REQUEST|)-----|\r|\n)/g, '');
       certBuf = this.str2ab(window.atob(value));
-    } else {
+    } else { // else der
       value = this.hex2Array(value.replace(/(\r|\n|\s)/g, ''));
       certBuf = value;
     }
@@ -239,15 +239,17 @@ const CertHelper = {
     const asn1 = asn1js.fromBER(certBuf);
     if (asn1.offset > 0) {
       let cert = '';
+      let type = '';
 
       try {
         cert = new pkijs.Certificate({ schema: asn1.result });
-      } catch (error) {
-        console.error(error);
+        type = 'certificate';
+      } catch (_error) {
         try {
           cert = new pkijs.CertificationRequest({ schema: asn1.result });
-        } catch (_error) {
-          console.error(_error);
+          type = 'request';
+        } catch (error) {
+          console.error(error);
           return false;
         }
       }
@@ -269,12 +271,13 @@ const CertHelper = {
       const signature = this.prepareAlgorithm(json.signature || json.signatureAlgorithm);
 
       return {
+        type,
         raw: certBuf,
         usages: ['verify'],
         algorithm: {
           ...algorithm,
           ...signature,
-        }
+        },
       };
     }
     console.error('asn1 fromBER error');

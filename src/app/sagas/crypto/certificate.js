@@ -37,13 +37,22 @@ export function* exportCertificate(crypto, certId, format = 'pem') {
 export function* importCertificate(crypto, data) {
   if (crypto) {
     try {
-      const { raw, usages } = data;
+      const { raw, usages, type } = data;
       const algorithm = () => Object.assign({}, data.algorithm);
       let importCert = '';
-      try {
-        importCert = yield crypto.certStorage.importCert('x509', raw, algorithm(), usages);
-      } catch (error) {
-        importCert = yield crypto.certStorage.importCert('request', raw, algorithm(), usages);
+
+      if (type === 'request') { // check certificate request data
+        try {
+          importCert = yield crypto.certStorage.importCert('request', raw, algorithm(), usages);
+        } catch (error) {
+          yield put(ErrorActions.error(error));
+        }
+      } else { // else certificate
+        try {
+          importCert = yield crypto.certStorage.importCert('x509', raw, algorithm(), usages);
+        } catch (error) {
+          yield put(ErrorActions.error(error));
+        }
       }
 
       return yield crypto.certStorage.setItem(importCert);

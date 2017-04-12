@@ -55,8 +55,6 @@ export default class Body extends Component {
     const preparedCert = CertHelper.prepareCertToImport(value);
     if (preparedCert) {
       dispatch(WSActions.importCertificate(preparedCert));
-    } else {
-      console.error('prepare error');
     }
   };
 
