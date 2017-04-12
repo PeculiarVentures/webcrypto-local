@@ -94,5 +94,11 @@
 			"linux": "/usr/local/lib/libykcs11.so",
 			"windows": "/Windows/System/libykcs11-1.dll"
 		}
+	}, {
+		"id": "993988460d8f49a2ac519a2935f00533",
+		"name": "YubiKey",
+		"file": {
+			"osx": "/Library/OpenSC/lib/opensc-pkcs11.so"
+		}
 	}]
 }
