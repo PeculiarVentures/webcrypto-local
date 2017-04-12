@@ -107,32 +107,6 @@ export const MobileButtonStyled = styled.div`
   cursor: pointer;
 `;
 
-export const BtnContainerStyled = styled.div`
-  display: inline-block;
-  width: auto;
-  margin-left: 6px;
-  position: relative;
-  &:first-child {
-    margin-left: 0;
-  }
-  button {
-    cursor: default;
-  }
-  &:hover {
-    button {
-      opacity: ${props => (
-        props.disabled
-          ? 1
-          : 0.2
-      )};
-    }
-    > div {
-      opacity: 1;
-      visibility: visible;
-    }
-  }
-`;
-
 export const StyledButton = styled(Button)`
   display: inline-block;
   width: auto;

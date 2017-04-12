@@ -1,5 +1,5 @@
 import React, { PropTypes, Component } from 'react';
-import { Button } from '../basic';
+import { SplitButton } from '../basic';
 import enLang from '../../langs/en.json';
 import {
   StyledShellTitle,
@@ -13,15 +13,12 @@ import {
   ArrowBackIconStyled,
   TripleDotIconStyled,
   MobileButtonStyled,
-  BtnContainerStyled,
   StyledButton,
   DropdownMenu,
   DropdownItemsWrapper,
   DropdownItemContainer,
   DropdownItemStyled,
 } from './styled/header.styled';
-import DownloadTooltip from './download_tooltip';
-
 
 export default class Header extends Component {
 
@@ -79,7 +76,7 @@ export default class Header extends Component {
     const { onDownload } = this.props;
 
     if (onDownload) {
-      onDownload(format);
+      onDownload(format === 'pem' ? 'pem' : 'raw');
     }
   };
 
@@ -217,21 +214,16 @@ export default class Header extends Component {
         {
           isKey
           ? null
-          : <BtnContainerStyled
+          : <SplitButton
+            secondary
             disabled={!dataLoaded}
+            onClick={() => this.handleDownload('pem')}
+            onSelect={value => this.handleDownload(value.toLowerCase())}
+            list={['PEM', 'DER']}
           >
-            <Button
-              secondary
-              disabled={!dataLoaded}
-            >
-              <DownloadIconStyled />
-              { enLang['Info.Header.Btn.Download'] }
-            </Button>
-            <DownloadTooltip
-              disabled={!dataLoaded}
-              onClick={this.handleDownload}
-            />
-          </BtnContainerStyled>
+            <DownloadIconStyled />
+            { enLang['Info.Header.Btn.Download'] }
+          </SplitButton>
         }
         {
           isKey
