@@ -8,6 +8,7 @@ import { WSActions } from '../actions/state';
 import { DialogActions } from '../actions/ui';
 import CopyCertificate from '../components/copy_certificate';
 import ImportCertificate from '../components/import_certificate';
+import { WSController } from '../controllers/webcrypto_socket';
 
 const OverlayStyled = styled.div`
   width: 100%;
@@ -110,6 +111,11 @@ export default class Overlay extends Component {
         return dispatch(DialogActions.close());
       }
 
+      case 'TRY_AGAIN_PIN': {
+        WSController.connect();
+        return dispatch(DialogActions.close());
+      }
+
       default:
         return true;
     }
@@ -155,7 +161,9 @@ export default class Overlay extends Component {
           <Dialog.UnauthorizePinDialog
             name="unauthorize_pin"
             onAccept={() => (
-              console.log('need action handler!!!!!')
+              this.handleAction({
+                type: 'TRY_AGAIN_PIN',
+              })
             )}
           />
           <Dialog.NotSupportedLocalhostDialog

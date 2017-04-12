@@ -9,19 +9,17 @@ window.ws = ws;
 export const WSController = {
   interval: null,
   connect: function connect() {
-    ws.removeAllListeners('error');
-    ws.removeAllListeners('listening');
-    ws.removeAllListeners('close');
-    ws.removeAllListeners('token');
+    clearTimeout(this.interval);
+    ws.removeAllListeners();
 
     ws.connect(SERVER_URL)
       .on('error', (error) => {
-        clearInterval(this.interval);
+        clearTimeout(this.interval);
         Store.dispatch(ErrorActions.error(error));
         console.log('WebcryptoSocket connected error: ', error.message);
       })
       .on('listening', () => {
-        clearInterval(this.interval);
+        clearTimeout(this.interval);
         Store.dispatch(WSActions.status('online'));
         Store.dispatch(WSActions.getProviders());
       })
@@ -30,13 +28,13 @@ export const WSController = {
         this.checkConnect();
       })
       .on('token', () => {
-        clearInterval(this.interval);
+        clearTimeout(this.interval);
         Store.dispatch(WSActions.getProviders());
       });
   },
 
   checkConnect: function checkConnect() {
-    this.interval = setInterval(() => {
+    this.interval = setTimeout(() => {
       this.connect();
     }, 4000);
   },
