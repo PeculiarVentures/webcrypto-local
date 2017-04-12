@@ -1,5 +1,5 @@
 import React, { PropTypes, Component } from 'react';
-import { WSActions } from '../../actions/state';
+import { WSActions, ProviderActions } from '../../actions/state';
 import { CertHelper, regExps } from '../../helpers';
 import { Button, SelectField, SelectNative, SelectItem, TextField } from '../basic';
 import enLang from '../../langs/en.json';
@@ -40,10 +40,12 @@ export default class Body extends Component {
   }
 
   onSelectChange = (data) => {
-    console.log(data);
-    // if (typeof data === 'string') {
-    // } else {
-    // }
+    const { dispatch } = this.context;
+    if (typeof data === 'string') {
+      dispatch(ProviderActions.select(data));
+    } else {
+      dispatch(ProviderActions.select(data.value));
+    }
   };
 
   onClickImportHandler = () => {
@@ -79,6 +81,42 @@ export default class Body extends Component {
     this.fileReaderHandler(file);
   };
 
+  getSelectedProviderProps() {
+    const { providers } = this.props;
+    let provider = false;
+
+    providers.map((prv) => {
+      if (prv.selected) {
+        provider = prv;
+      }
+      return true;
+    });
+
+    return provider;
+  }
+
+  decodeBinaryString(str) {
+    const { textarea } = this.fieldNodes;
+    try {
+      let value = '';
+      if (regExps.hex.test(str)) {
+        value = str;
+      } else if (regExps.base64.test(str)) {
+        value = str;
+      } else {
+        value = CertHelper.formatDer(CertHelper.ab2hex(CertHelper.str2ab(str)));
+      }
+
+      textarea.fieldNode.value = value;
+      textarea.validate();
+      this.setState({
+        valid: textarea.isValid(),
+      });
+    } catch (e) {
+      alert('Cannot decode file.');
+    }
+  }
+
   fileReaderHandler(file) {
     const reader = new FileReader();
     const supportedFileExtension = ['csr', 'cer'];
@@ -104,32 +142,11 @@ export default class Body extends Component {
     return false;
   }
 
-  decodeBinaryString(str) {
-    const { textarea } = this.fieldNodes;
-    try {
-      let value = '';
-      if (regExps.hex.test(str)) {
-        value = str;
-      } else if (regExps.base64.test(str)) {
-        value = str;
-      } else {
-        value = CertHelper.formatDer(CertHelper.ab2hex(CertHelper.str2ab(str)));
-      }
-
-      textarea.fieldNode.value = value;
-      textarea.validate();
-      this.setState({
-        valid: textarea.isValid(),
-      });
-    } catch (e) {
-      alert('Cannot decode file.');
-    }
-  }
-
   render() {
     const { providers } = this.props;
     const { valid } = this.state;
     const { deviceType } = this.context;
+    const selectedProvider = this.getSelectedProviderProps();
 
     return (
       <BodyStyled.Body>
@@ -140,22 +157,20 @@ export default class Body extends Component {
                 ? <SelectNative
                   labelText={enLang['ImportCertificate.Field.Provider']}
                   placeholder={enLang['Select.Label.Provider']}
-                  ref={node => (this.fieldNodes.format = node)}
                   options={providers.map(item => ({
                     value: item.id,
                     name: item.name,
                   }))}
-                  defaultValue={providers[0].id || ''}
+                  defaultValue={selectedProvider ? selectedProvider.id : ''}
                   onChange={this.onSelectChange}
                 />
                 : <SelectField
                   labelText={enLang['ImportCertificate.Field.Provider']}
-                  ref={node => (this.fieldNodes.format = node)}
                   placeholder={enLang['Select.Label.Provider']}
                   defaultSelected={{
-                    name: providers[0].name || '',
-                    value: providers[0].id || '',
-                    index: 0,
+                    name: selectedProvider ? selectedProvider.name : '',
+                    value: selectedProvider ? selectedProvider.id : '',
+                    index: selectedProvider ? selectedProvider.index : 0,
                   }}
                   onChange={this.onSelectChange}
                 >
