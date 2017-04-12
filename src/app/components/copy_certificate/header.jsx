@@ -13,7 +13,6 @@ const Header = (props) => {
     <HeaderStyled.Header>
       <HeaderStyled.Container>
         <HeaderStyled.Btn
-          showOnMobile
           onClick={onClickhandler}
         >
           <HeaderStyled.IconStyled />

@@ -9,12 +9,14 @@ export const Title = styled.div`
   font-weight: 600;
   letter-spacing: -0.008em;
   width: 100%;
-  max-width: 870px;
+  max-width: 880px;
   margin: 0 auto;
-  @media ${props => props.theme.media.mobile} {
-    font-size: 18px;
-    line-height: 56px;
+  @media (max-width: 1200px) {
     text-align: center;
+  }
+  @media ${props => props.theme.media.mobile} {
+    font-size: 16px;
+    line-height: 56px;
   }
 `;
 
@@ -38,11 +40,11 @@ export const Btn = styled(Button)`
   left: 0;
   @media ${props => props.theme.media.mobile} {
     top: 12px;
-    ${props => (
-      !props.showOnMobile
-        ? 'display: none !important;'
-        : ''
-    )}
+    font-size: 0;
+    padding: 0 13px;
+    svg {
+        margin-right: 0;
+    }
   }
 `;
 
