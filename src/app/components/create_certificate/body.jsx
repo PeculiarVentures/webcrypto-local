@@ -95,6 +95,7 @@ export default class Body extends Component {
             countries={countries}
             ref={node => (this.subjectNode = node)}
             onValidate={this.onValidateHandler}
+            onCreate={this.onCreateHandler}
           />
           <KeyInfo
             parameters={parameters}

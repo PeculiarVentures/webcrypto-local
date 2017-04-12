@@ -32,11 +32,13 @@ export default class SubjectInfo extends Component {
       PropTypes.array,
     ]),
     onValidate: PropTypes.func,
+    onCreate: PropTypes.func,
   };
 
   static defaultProps = {
     countries: [],
     onValidate: null,
+    onCreate: null,
   };
 
   static contextTypes = {
@@ -90,7 +92,7 @@ export default class SubjectInfo extends Component {
   }
 
   render() {
-    const { countries, onValidate } = this.props;
+    const { countries, onValidate, onCreate } = this.props;
     const { deviceType } = this.context;
 
     return (
@@ -107,18 +109,21 @@ export default class SubjectInfo extends Component {
               errorText={enLang['CertificateCreate.Subject.Field.CommonName.Error']}
               onChange={onValidate}
               onBlur={onValidate}
+              onEnter={onCreate}
             />
           </TextFieldContainer>
           <TextFieldContainer>
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.Organization']}
               ref={node => (this.fieldNodes.organization = node)}
+              onEnter={onCreate}
             />
           </TextFieldContainer>
           <TextFieldContainer>
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.OrganizationUnit']}
               ref={node => (this.fieldNodes.organizationUnit = node)}
+              onEnter={onCreate}
             />
           </TextFieldContainer>
           <TextFieldContainer>
@@ -151,12 +156,14 @@ export default class SubjectInfo extends Component {
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.Region']}
               ref={node => (this.fieldNodes.state = node)}
+              onEnter={onCreate}
             />
           </TextFieldContainer>
           <TextFieldContainer>
             <TextField
               labelText={enLang['CertificateCreate.Subject.Field.City']}
               ref={node => (this.fieldNodes.locality = node)}
+              onEnter={onCreate}
             />
           </TextFieldContainer>
         </GroupPart>

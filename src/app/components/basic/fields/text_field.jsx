@@ -96,6 +96,7 @@ export default class TextField extends Component {
     onChange: PropTypes.func,
     onFocus: PropTypes.func,
     onKeyUp: PropTypes.func,
+    onEnter: PropTypes.func,
     onClick: PropTypes.func,
     onDrop: PropTypes.func,
     type: PropTypes.string,
@@ -123,6 +124,7 @@ export default class TextField extends Component {
     onChange: null,
     onFocus: null,
     onKeyUp: null,
+    onEnter: null,
     onClick: null,
     onDrop: null,
     value: '',
@@ -192,8 +194,9 @@ export default class TextField extends Component {
   };
 
   onKeyUpHandler = (e) => {
-    const { onKeyUp } = this.props;
+    const { onKeyUp, onEnter } = this.props;
     if (onKeyUp) onKeyUp(e);
+    if (onEnter && e.keyCode === 13) onEnter(e);
   };
 
   onChangeHandler = () => {
