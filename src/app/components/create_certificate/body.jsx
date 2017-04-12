@@ -42,7 +42,7 @@ export default class Body extends Component {
     super();
 
     this.state = {
-      createDisabled: false,
+      createDisabled: true,
     };
   }
 
