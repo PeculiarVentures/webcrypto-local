@@ -107,6 +107,15 @@
                 "linux": "/usr/local/lib/libykcs11.so",
                 "windows": "/Windows/System/libykcs11-1.dll"
             }
+        },
+                {
+            "id": "3BFC180000813180459067464A00642D70C172FEE0FE",
+            "name": "PivKey",
+            "file": {
+                "osx": "/usr/local/lib/libykcs11.dylib",
+                "linux": "/usr/local/lib/libykcs11.so",
+                "windows": "/Windows/System/libykcs11-1.dll"
+            }
         }
     ]
 }
