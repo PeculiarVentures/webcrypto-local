@@ -137,6 +137,16 @@ export default class Snackbars extends React.Component {
           onButtonClick={() => EventChannel.emit(ACTIONS_CONST.SNACKBAR_HIDE)}
           text={enLang['Snackbar.Copy.Text']}
         />
+        <Snackbar
+          name="card_removed"
+          text={enLang['Snackbar.CardRemoved.Text']}
+          buttonText=""
+        />
+        <Snackbar
+          name="card_inserted"
+          text={enLang['Snackbar.CardInserted.Text']}
+          buttonText=""
+        />
       </SegueHandler>
     );
   }

@@ -88,6 +88,8 @@
   "Snackbar.Copy.Btn.Close": "Close",
   "Snackbar.Copy.Text": "Certificate copied to your clipboard",
   "Snackbar.Btn.Cancel": "Cancel",
+  "Snackbar.CardRemoved.Text": "Smart card or security token was removed",
+  "Snackbar.CardInserted.Text": "Smart card or security token was inserted",
 
   "CopyCertificate.Header.Title": "Get Certificate",
   "CopyCertificate.Field.Format": "Format name",

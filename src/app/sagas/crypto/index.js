@@ -7,6 +7,7 @@ import { RoutingActions, ModalActions } from '../../actions/ui';
 import { downloadCertFromURI, CertHelper } from '../../helpers';
 import * as Key from './key';
 import * as Certificate from './certificate';
+import { EventChannel } from '../../controllers';
 
 function* cryptoLogin(crypto) {
   try {
@@ -160,7 +161,8 @@ function* getProviders() {
 
   try {
     const providers = yield getProvidersList();
-    const update = stateProviders.length > providers.length;
+    const isRemoved = stateProviders.length > providers.length;
+    const isInserted = stateProviders.length < providers.length;
     const _providers = [];
 
     for (const prv of providers) {
@@ -176,8 +178,14 @@ function* getProviders() {
       });
     }
 
+    if (isRemoved) {
+      EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'card_removed', 3000);
+    }
+    if (isInserted) {
+      EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'card_inserted', 3000);
+    }
     yield put(ProviderActions.updateProviders(_providers));
-    yield put(ProviderActions.select(_providers[0].id, update));
+    yield put(ProviderActions.select(_providers[0].id, isRemoved));
   } catch (error) {
     yield put(ErrorActions.error(error));
   }

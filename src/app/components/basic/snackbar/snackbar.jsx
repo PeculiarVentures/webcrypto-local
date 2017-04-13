@@ -200,14 +200,18 @@ export default class Snackbar extends Component {
         <TextStyled>
           { text }
         </TextStyled>
-        <ButtonsWrapperStyled>
-          <ButtonStyled
-            onClick={this.bindedOnButtonClick}
-            primary
-          >
-            { buttonText }
-          </ButtonStyled>
-        </ButtonsWrapperStyled>
+        {
+          buttonText
+            ? <ButtonsWrapperStyled>
+              <ButtonStyled
+                onClick={this.bindedOnButtonClick}
+                primary
+              >
+                { buttonText }
+              </ButtonStyled>
+            </ButtonsWrapperStyled>
+            : null
+        }
       </SnackbarContentStyled>
     );
   }
