@@ -1,14 +1,17 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
 import Header from './header';
+import { ACTIONS_CONST } from '../../constants';
 import CertificateInfo from './info_certificate';
 import RequestInfo from './info_request';
 import KeyInfo from './info_key';
 import EmptyBody from './empty_body';
-import { DialogActions, ModalActions } from '../../actions/ui';
+import { DialogActions } from '../../actions/ui';
 import { WSActions } from '../../actions/state';
 import { InfoShellIcon } from '../svg';
 import StyledAnimatedIcon from '../sidebar/parts/shell.styles';
+import { EventChannel } from '../../controllers';
+import { copyToClipboard } from '../../helpers';
 
 const StyledShellInfo = StyledAnimatedIcon(InfoShellIcon, 'i_gradient');
 
@@ -66,8 +69,10 @@ export default class Info extends Component {
   };
 
   onCopyHandler = () => {
-    const { dispatch } = this.context;
-    dispatch(ModalActions.openModal('copy_certificate'));
+    const { certificate } = this.props;
+
+    copyToClipboard(certificate.pem);
+    EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'copied', 3000);
   };
 
   onMenuHandler = () => {

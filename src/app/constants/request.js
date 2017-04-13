@@ -22,4 +22,5 @@ export const DEFAULT = {
   },
   selected: false,
   type: 'request',
+  pem: '',
 };

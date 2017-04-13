@@ -12,3 +12,4 @@ export isEqual from './is_equal';
 export downloadURI from './download_uri';
 export downloadCertFromURI from './download_cert_from_uri';
 export CertHelper from './cert_helper';
+export copyToClipboard from './copy_to_clipboard';

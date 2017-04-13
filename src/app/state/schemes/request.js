@@ -24,4 +24,5 @@ export default new Schema('Request', {
   },
   selected: Type.Boolean,
   type: Type.String,
+  pem: Type.String,
 });

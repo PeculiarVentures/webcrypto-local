@@ -313,7 +313,7 @@ const CertHelper = {
     };
   },
 
-  certDataHandler: function certDataHandler(certDetails, certData, certId) {
+  certDataHandler: function certDataHandler(certDetails, certData, certId, pem) {
     const lang = navigator.language;
     const { id } = certData;
     const {
@@ -350,10 +350,11 @@ const CertHelper = {
       subject: decodedSubject,
       notBefore: notBefore ? moment(notBefore).locale(lang).format('LLLL') : '',
       notAfter: notAfter ? moment(notAfter).locale(lang).format('LLLL') : '',
+      pem,
     };
   },
 
-  requestDataHandler: function requestDataHandler(reqData, reqId) {
+  requestDataHandler: function requestDataHandler(reqData, reqId, pem) {
     const { publicKey, id, subjectName } = reqData;
     const { algorithm, raw } = publicKey;
 
@@ -386,6 +387,7 @@ const CertHelper = {
       country: '',
       region: '',
       city: '',
+      pem,
     }, decodedSubject);
   },
 

@@ -1,14 +1,12 @@
 import { takeEvery } from 'redux-saga';
 import { select, put, spawn } from 'redux-saga/effects';
 import { ws } from '../../controllers/webcrypto_socket';
-import { EventChannel } from '../../controllers';
 import { ACTIONS_CONST } from '../../constants';
 import { AppActions, CertificateActions, ErrorActions, ProviderActions } from '../../actions/state';
 import { RoutingActions, ModalActions } from '../../actions/ui';
 import { downloadCertFromURI, CertHelper } from '../../helpers';
 import * as Key from './key';
 import * as Certificate from './certificate';
-
 
 function* cryptoLogin(crypto) {
   try {
@@ -76,27 +74,33 @@ function* getKeys() {
 
 function* getCerificates() {
   const crypto = yield getCrypto();
+
   if (crypto) {
     const certificates = yield Certificate.getCertificates(crypto);
+
     if (certificates.length) {
       const getCertificatesArr = [];
+      let index = 0;
+
       for (const certId of certificates) {
         getCertificatesArr.push(Certificate.getCertificate(crypto, certId));
       }
 
       const certificatesArr = yield getCertificatesArr;
-      let index = 0;
 
       for (const item of certificatesArr) {
+        const pem = yield crypto.certStorage.exportCert('pem', item);
         let certData = '';
 
         if (item.type === 'x509') {
           const certificateRaw = yield crypto.certStorage.exportCert('raw', item);
           const certificateDetails = CertHelper.certRawToJson(certificateRaw);
-          certData = CertHelper.certDataHandler(certificateDetails, item, certificates[index]);
+
+          certData = CertHelper.certDataHandler(certificateDetails, item, certificates[index], pem);
         } else {
-          certData = CertHelper.requestDataHandler(item, certificates[index]);
+          certData = CertHelper.requestDataHandler(item, certificates[index], pem);
         }
+
         index += 1;
         yield put(CertificateActions.add(certData));
       }
@@ -110,7 +114,9 @@ function* createCertificate({ data }) {
   const certId = yield Certificate.createCertificate(crypto, data);
   if (certId) {
     const item = yield Certificate.getCertificate(crypto, certId);
-    const certData = CertHelper.requestDataHandler(item, certId);
+    const pem = yield crypto.certStorage.exportCert('pem', item);
+    const certData = CertHelper.requestDataHandler(item, certId, pem);
+
     yield put(CertificateActions.add(certData));
     yield put(RoutingActions.push(`certificate/${item.id}`));
   }
@@ -144,26 +150,6 @@ function* downloadCertificate({ format }) {
     } else if (cert) {
       const certHex = CertHelper.formatDer(CertHelper.ab2hex(cert));
       downloadCertFromURI(certStorage.name, certHex, certStorage.type);
-    }
-  }
-}
-
-function* openModalForCopy({ value }) {
-  if (value === 'copy_certificate') {
-    const crypto = yield getCrypto();
-    const state = yield select();
-    const certStorage = state.find('certificates').where({ selected: true }).get();
-    if (crypto) {
-      const arrRequest = [
-        Certificate.exportCertificate(crypto, certStorage._id, 'pem'),
-        Certificate.exportCertificate(crypto, certStorage._id, 'raw'),
-      ];
-      const arrFormats = yield arrRequest;
-      const formats = {
-        pem: arrFormats[0],
-        der: CertHelper.formatDer(CertHelper.ab2hex(arrFormats[1])),
-      };
-      EventChannel.emit(ACTIONS_CONST.CERTIFICATE_COPIED_DATA, formats);
     }
   }
 }
@@ -203,14 +189,15 @@ function* importCertificate({ data }) {
   const certId = yield Certificate.importCertificate(crypto, data);
   if (certId) {
     const item = yield Certificate.getCertificate(crypto, certId);
+    const pem = yield crypto.certStorage.exportCert('pem', item);
     let certData = '';
 
     if (item.type === 'x509') {
       const certificateRaw = yield crypto.certStorage.exportCert('raw', item);
       const certificateDetails = CertHelper.certRawToJson(certificateRaw);
-      certData = CertHelper.certDataHandler(certificateDetails, item, certId);
+      certData = CertHelper.certDataHandler(certificateDetails, item, certId, pem);
     } else {
-      certData = CertHelper.requestDataHandler(item, certId);
+      certData = CertHelper.requestDataHandler(item, certId, pem);
     }
 
     yield put(CertificateActions.add(certData));
@@ -244,7 +231,6 @@ export default function* () {
     takeEvery(ACTIONS_CONST.WS_CREATE_CSR, createCertificate),
     takeEvery(ACTIONS_CONST.WS_REMOVE_ITEM, removeItem),
     takeEvery(ACTIONS_CONST.WS_DOWNLOAD_CERTIFICATE, downloadCertificate),
-    takeEvery(ACTIONS_CONST.MODAL_OPEN, openModalForCopy),
     takeEvery(ACTIONS_CONST.WS_GET_PROVIDERS, getProviders),
     takeEvery(ACTIONS_CONST.WS_IMPORT_CERTIFICATE, importCertificate),
     takeEvery(ACTIONS_CONST.WS_LOGIN, login),

@@ -6,7 +6,6 @@ import * as Dialog from '../components/dialogs';
 import { ACTIONS_CONST } from '../constants';
 import { WSActions } from '../actions/state';
 import { DialogActions } from '../actions/ui';
-import CopyCertificate from '../components/copy_certificate';
 import ImportCertificate from '../components/import_certificate';
 import { WSController } from '../controllers/webcrypto_socket';
 
@@ -66,9 +65,6 @@ export default class Overlay extends Component {
           query={modal}
           name="Confirms"
         >
-          <CopyCertificate
-            name="copy_certificate"
-          />
           <ImportCertificate
             name="import_certificate"
             providers={providers}

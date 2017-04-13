@@ -18,4 +18,5 @@ export const DEFAULT = {
   notAfter: '',
   selected: false,
   type: 'certificate',
+  pem: '',
 };

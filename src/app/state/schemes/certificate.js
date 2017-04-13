@@ -20,4 +20,5 @@ export default new Schema('Certificate', {
   subject: Type.Map,
   notBefore: Type.String,
   notAfter: Type.String,
+  pem: Type.String,
 });
