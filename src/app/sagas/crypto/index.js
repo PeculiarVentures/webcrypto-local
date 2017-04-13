@@ -25,8 +25,14 @@ function* cryptoLogin(crypto) {
 }
 
 function* getProvidersList() {
-  const info = yield ws.info();
-  return info.providers;
+  let info = [];
+  try {
+    info = yield ws.info();
+    info = info.providers;
+  } catch (error) {
+    yield put(ErrorActions.error(error));
+  }
+  return info;
 }
 
 function* getCrypto() {
@@ -163,9 +169,14 @@ function* openModalForCopy({ value }) {
 }
 
 function* getProviders() {
+  const state = yield select();
+  const stateProviders = state.find('providers').get();
+
   try {
     const providers = yield getProvidersList();
+    const update = stateProviders.length < providers.length;
     const _providers = [];
+
     for (const prv of providers) {
       const crypto = yield ws.getCrypto(prv.id);
       const isLoggedIn = yield crypto.isLoggedIn();
@@ -178,8 +189,9 @@ function* getProviders() {
         logged: isLoggedIn,
       });
     }
+
     yield put(ProviderActions.updateProviders(_providers));
-    yield put(ProviderActions.select(_providers[0].id));
+    yield put(ProviderActions.select(_providers[0].id, !update));
   } catch (error) {
     yield put(ErrorActions.error(error));
   }
