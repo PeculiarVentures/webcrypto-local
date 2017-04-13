@@ -51,21 +51,19 @@ function* getKeys() {
   const crypto = yield getCrypto();
   const keys = yield Key.getKeys(crypto);
   if (keys.length) {
-    // const getKeysArr = [];
-    // for (const keyId of keys) {
-    //   getKeysArr.push(Key.getKey(crypto, keyId));
-    // }
-    //
-    // const keysArr = yield getKeysArr;
-    // for (const key of keysArr) {
-    //   const keyData = keyDataHandler(key);
-    //   yield put(CertificateActions.add(keyData));
-    // }
+    const getKeysArr = [];
     for (const keyId of keys) {
-      const key = yield Key.getKey(crypto, keyId);
-      const keyData = CertHelper.keyDataHandler(key, keyId);
-      yield put(CertificateActions.add(keyData));
+      getKeysArr.push(Key.getKey(crypto, keyId));
     }
+
+    let index = 0;
+    const keysArr = yield getKeysArr;
+    for (const key of keysArr) {
+      const keyData = CertHelper.keyDataHandler(key, keys[index]);
+      yield put(CertificateActions.add(keyData));
+      index += 1;
+    }
+
     yield put(AppActions.dataLoaded(true));
   }
 }
@@ -75,28 +73,25 @@ function* getCerificates() {
   if (crypto) {
     const certificates = yield Certificate.getCertificates(crypto);
     if (certificates.length) {
-      // const getCertificatesArr = [];
-      // for (const certId of certificates) {
-      //   getCertificatesArr.push(Certificate.getCertificate(crypto, certId));
-      // }
-      //
-      // const certificatesArr = yield getCertificatesArr;
-      // for (const certificate of certificatesArr) {
-      //   const certData = CertHelper.certDataHandler(certificate);
-      //   yield put(CertificateActions.add(certData));
-      // }
+      const getCertificatesArr = [];
       for (const certId of certificates) {
-        const item = yield Certificate.getCertificate(crypto, certId);
+        getCertificatesArr.push(Certificate.getCertificate(crypto, certId));
+      }
+
+      const certificatesArr = yield getCertificatesArr;
+      let index = 0;
+
+      for (const item of certificatesArr) {
         let certData = '';
 
         if (item.type === 'x509') {
           const certificateRaw = yield crypto.certStorage.exportCert('raw', item);
           const certificateDetails = CertHelper.certRawToJson(certificateRaw);
-          certData = CertHelper.certDataHandler(certificateDetails, item, certId);
+          certData = CertHelper.certDataHandler(certificateDetails, item, certificates[index]);
         } else {
-          certData = CertHelper.requestDataHandler(item, certId);
+          certData = CertHelper.requestDataHandler(item, certificates[index]);
         }
-
+        index += 1;
         yield put(CertificateActions.add(certData));
       }
     }

@@ -2341,7 +2341,7 @@ var AsymmetricRatchet = (function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2, this.queuePromise("decrypt", function () { return __awaiter(_this, void 0, void 0, function () {
+                return [2, this.queuePromise("encrypt", function () { return __awaiter(_this, void 0, void 0, function () {
                         var remoteRatchetKey, message, step, ratchetStep, _a, decryptedMessage;
                         return __generator(this, function (_b) {
                             switch (_b.label) {

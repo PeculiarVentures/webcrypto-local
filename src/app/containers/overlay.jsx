@@ -185,6 +185,9 @@ export default class Overlay extends Component {
               });
             }}
           />
+          <Dialog.LoadDialog
+            name="load"
+          />
         </SegueHandler>
       );
     }
