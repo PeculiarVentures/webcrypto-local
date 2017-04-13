@@ -6,7 +6,7 @@ import { AppActions, WSActions, CertificateActions } from '../actions/state';
 function* selectProvider({ id, update }) {
   const state = yield select();
   const provider = state.find('providers').where({ id }).get();
-  if (update !== false) {
+  if (!update) {
     yield put(AppActions.dataLoaded(false));
   }
   yield put(AppActions.readState(provider.readOnly));

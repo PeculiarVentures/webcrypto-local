@@ -174,7 +174,7 @@ function* getProviders() {
 
   try {
     const providers = yield getProvidersList();
-    const update = stateProviders.length < providers.length;
+    const update = stateProviders.length > providers.length;
     const _providers = [];
 
     for (const prv of providers) {
@@ -191,7 +191,7 @@ function* getProviders() {
     }
 
     yield put(ProviderActions.updateProviders(_providers));
-    yield put(ProviderActions.select(_providers[0].id, !update));
+    yield put(ProviderActions.select(_providers[0].id, update));
   } catch (error) {
     yield put(ErrorActions.error(error));
   }
