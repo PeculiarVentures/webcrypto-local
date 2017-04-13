@@ -157,6 +157,7 @@ function* downloadCertificate({ format }) {
 
 function* getProviders() {
   const state = yield select();
+  const isLoad = state.find('dataLoaded').get();
   const stateProviders = state.find('providers').get();
 
   try {
@@ -178,10 +179,10 @@ function* getProviders() {
       });
     }
 
-    if (isRemoved) {
+    if (isRemoved && isLoad) {
       EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'card_removed', 3000);
     }
-    if (isInserted) {
+    if (isInserted && isLoad) {
       EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'card_inserted', 3000);
     }
     yield put(ProviderActions.updateProviders(_providers));
