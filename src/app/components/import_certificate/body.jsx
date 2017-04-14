@@ -1,4 +1,5 @@
 import React, { PropTypes, Component } from 'react';
+import { Convert } from 'pvtsutils';
 import { WSActions, ProviderActions } from '../../actions/state';
 import { CertHelper, regExps } from '../../helpers';
 import { Button, SelectField, SelectNative, SelectItem, TextField } from '../basic';
@@ -102,7 +103,7 @@ export default class Body extends Component {
       } else if (regExps.base64.test(str)) {
         value = str;
       } else {
-        value = CertHelper.formatDer(CertHelper.ab2hex(CertHelper.str2ab(str)));
+        value = CertHelper.formatDer(Convert.ToHex(Convert.FromBinary(str)));
       }
 
       textarea.fieldNode.value = value;

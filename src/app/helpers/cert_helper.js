@@ -1,6 +1,7 @@
 import * as asn1js from 'asn1js';
 import * as pkijs from 'pkijs';
 import moment from 'moment';
+import { Convert } from 'pvtsutils';
 import { OIDS } from '../constants';
 import { regExps } from '../helpers';
 
@@ -92,36 +93,6 @@ const subjectNames = {
 };
 
 const CertHelper = {
-  ab2hex: function ab2hex(buffer) {
-    return Array.prototype.map.call(new Uint8Array(buffer), x => (`00${x.toString(16)}`).slice(-2)).join('');
-  },
-
-  hex2Array: function hex2Array(hexString) {
-    const res = new Uint8Array(hexString.length / 2);
-    for (let i = 0; i < hexString.length; i += 2) {
-      const c = hexString.slice(i, i + 2);
-      res[i / 2] = parseInt(c, 16);
-    }
-    return res.buffer;
-  },
-
-  str2ab: function str2ab(str) {
-    const buf = new ArrayBuffer(str.length);
-    const bufView = new Uint8Array(buf);
-    for (let i = 0; i < str.length; i += 1) {
-      bufView[i] = str.charCodeAt(i);
-    }
-    return buf;
-  },
-
-  str2hex: function str2hex(str) {
-    let result = '';
-    for (let i = 0; i < str.length; i += 1) {
-      result += str.charCodeAt(i).toString(16);
-    }
-    return result;
-  },
-
   name2str: function name2str(name, splitter) {
     splitter = splitter || ',';
     const res = [];
@@ -182,7 +153,9 @@ const CertHelper = {
       algorithm: {
         name: json.subjectPublicKeyInfo.kty,
       },
-      value: this.addSpaceAfterSecondCharset(new Buffer(x509.subjectPublicKeyInfo.subjectPublicKey.valueBeforeDecode).toString('hex')),
+      value: this.addSpaceAfterSecondCharset(
+        Convert.ToHex(x509.subjectPublicKeyInfo.subjectPublicKey.valueBeforeDecode)
+      ),
     };
 
     const { modulus, publicExponent } = x509.subjectPublicKeyInfo.parsedKey;
@@ -230,9 +203,9 @@ const CertHelper = {
 
     if (regExps.base64.test(value)) { // check pem
       value = value.replace(/(-----(BEGIN|END) CERTIFICATE( REQUEST|)-----|\r|\n)/g, '');
-      certBuf = this.str2ab(window.atob(value));
+      certBuf = Convert.FromBinary(window.atob(value));
     } else { // else der
-      value = this.hex2Array(value.replace(/(\r|\n|\s)/g, ''));
+      value = Convert.FromHex(value.replace(/(\r|\n|\s)/g, ''));
       certBuf = value;
     }
 
@@ -375,7 +348,7 @@ const CertHelper = {
         type: this.getKeyType(algorithm.name),
         publicExponent,
         algorithm: algorithm.name,
-        value: this.addSpaceAfterSecondCharset(new Buffer(raw).toString('hex')),
+        value: this.addSpaceAfterSecondCharset(Convert.ToHex(raw)),
       },
       signature: {
         algorithm: algorithm.name,

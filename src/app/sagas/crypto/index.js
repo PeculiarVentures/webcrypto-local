@@ -1,5 +1,6 @@
 import { takeEvery } from 'redux-saga';
 import { select, put, spawn } from 'redux-saga/effects';
+import { Convert } from 'pvtsutils';
 import { ws } from '../../controllers/webcrypto_socket';
 import { ACTIONS_CONST } from '../../constants';
 import { AppActions, CertificateActions, ErrorActions, ProviderActions } from '../../actions/state';
@@ -151,8 +152,7 @@ function* downloadCertificate({ format }) {
     if (cert && typeof cert === 'string') {
       downloadCertFromURI(certStorage.name, cert, certStorage.type);
     } else if (cert) {
-      const certHex = CertHelper.formatDer(CertHelper.ab2hex(cert));
-      downloadCertFromURI(certStorage.name, certHex, certStorage.type);
+      downloadCertFromURI(certStorage.name, Convert.ToBinary(cert), certStorage.type);
     }
   }
 }
