@@ -23,12 +23,12 @@ export const ArrowBtn = styled(ButtonStyled)`
   border-radius: 0 ${props => props.theme.borderRadius}px ${props => props.theme.borderRadius}px 0;
   width: 30px;
   padding: 0;
+  border-left: none;
 `;
 
 export const ArrowBtnContainer = styled.div`
   display: inline-block;
   vertical-align: top;
-  margin-left: 1px;
 `;
 
 export const DropdownWrapper = styled.div`
