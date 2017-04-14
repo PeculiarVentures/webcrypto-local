@@ -3,7 +3,7 @@ import { select, put, spawn } from 'redux-saga/effects';
 import { ws } from '../../controllers/webcrypto_socket';
 import { ACTIONS_CONST } from '../../constants';
 import { AppActions, CertificateActions, ErrorActions, ProviderActions } from '../../actions/state';
-import { RoutingActions, ModalActions } from '../../actions/ui';
+import { RoutingActions, ModalActions, DialogActions } from '../../actions/ui';
 import { downloadCertFromURI, CertHelper } from '../../helpers';
 import * as Key from './key';
 import * as Certificate from './certificate';
@@ -111,6 +111,7 @@ function* getCerificates() {
 }
 
 function* createCertificate({ data }) {
+  yield put(DialogActions.open('load'));
   const crypto = yield getCrypto();
   const certId = yield Certificate.createCertificate(crypto, data);
   if (certId) {
@@ -121,6 +122,7 @@ function* createCertificate({ data }) {
     yield put(CertificateActions.add(certData));
     yield put(RoutingActions.push(`certificate/${item.id}`));
   }
+  yield put(DialogActions.close());
 }
 
 function* removeItem() {
@@ -194,8 +196,10 @@ function* getProviders() {
 }
 
 function* importCertificate({ data }) {
+  yield put(DialogActions.open('load'));
   const crypto = yield getCrypto();
   const certId = yield Certificate.importCertificate(crypto, data);
+
   if (certId) {
     const item = yield Certificate.getCertificate(crypto, certId);
     const pem = yield crypto.certStorage.exportCert('pem', item);
@@ -211,6 +215,7 @@ function* importCertificate({ data }) {
 
     yield put(CertificateActions.add(certData));
     yield put(ModalActions.closeModal());
+    yield put(DialogActions.close());
     yield put(CertificateActions.select(item.id));
   }
 }
@@ -218,6 +223,7 @@ function* importCertificate({ data }) {
 function* login() {
   const crypto = yield getCrypto();
   const isLoggedIn = yield crypto.isLoggedIn();
+
   if (!isLoggedIn) {
     try {
       yield crypto.login();
