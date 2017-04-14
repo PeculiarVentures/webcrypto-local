@@ -117,7 +117,7 @@ export default class Body extends Component {
 
   fileReaderHandler(file) {
     const reader = new FileReader();
-    const supportedFileExtension = ['csr', 'cer'];
+    const supportedFileExtension = ['csr', 'cer', 'req'];
 
     if (!file) {
       return false;
