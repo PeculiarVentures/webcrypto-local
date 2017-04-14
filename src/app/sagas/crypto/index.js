@@ -121,8 +121,8 @@ function* createCertificate({ data }) {
 
     yield put(CertificateActions.add(certData));
     yield put(RoutingActions.push(`certificate/${item.id}`));
+    yield put(DialogActions.close());
   }
-  yield put(DialogActions.close());
 }
 
 function* removeItem() {

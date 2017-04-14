@@ -8,6 +8,7 @@ import { WSActions } from '../actions/state';
 import { DialogActions } from '../actions/ui';
 import ImportCertificate from '../components/import_certificate';
 import { WSController } from '../controllers/webcrypto_socket';
+import { EventChannel } from '../controllers';
 
 const OverlayStyled = styled.div`
   width: 100%;
@@ -34,6 +35,16 @@ export default class Overlay extends Component {
     return dialog || modal;
   }
 
+  constructor() {
+    super();
+
+    this.state = {
+      message: '',
+    };
+
+    EventChannel.on('DIALOG:SET_MESSAGE', this.onSetMessage);
+  }
+
   componentDidMount() {
     if (Overlay.checkNeedRender(this.props)) {
       this.initTaber();
@@ -48,7 +59,17 @@ export default class Overlay extends Component {
         this.initTaber();
       }
     }
+
+    if (prevProps.dialog !== this.props.dialog) {
+      this.onSetMessage('');
+    }
   }
+
+  onSetMessage = (message) => {
+    this.setState({
+      message,
+    });
+  };
 
   initTaber() {
     return new Taber({
@@ -119,6 +140,7 @@ export default class Overlay extends Component {
 
   renderDialog() {
     const { dialog } = this.props;
+    const { message } = this.state;
 
     if (dialog) {
       const selectedCertificateProps = this.getSelectedCertificateProps();
@@ -167,6 +189,7 @@ export default class Overlay extends Component {
           />
           <Dialog.RequestCreateErrorDialog
             name="request_create_error"
+            message={message}
             onAccept={() => {
               this.handleAction({
                 type: ACTIONS_CONST.DIALOG_CLOSE,
@@ -174,6 +197,7 @@ export default class Overlay extends Component {
             }}
           />
           <Dialog.CertificateImportErrorDialog
+            message={message}
             name="certificate_import_error"
             onAccept={() => {
               this.handleAction({

@@ -11,12 +11,12 @@ function* errorHandler({ data, action }) {
     switch (action) {
       case 'request_create':
         yield put(DialogActions.open('request_create_error'));
-        EventChannel.emit('REQUEST_CREATE_ERROR_MESSAGE', data.message);
+        EventChannel.emit('DIALOG:SET_MESSAGE', data.message);
         return true;
 
       case 'import_certificate':
         yield put(DialogActions.open('certificate_import_error'));
-        EventChannel.emit('CERTIFICATE_IMPORT_ERROR_MESSAGE', data.message);
+        EventChannel.emit('DIALOG:SET_MESSAGE', data.message);
         return true;
 
       default:
