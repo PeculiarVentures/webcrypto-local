@@ -152,7 +152,7 @@ function* downloadCertificate({ format }) {
     if (cert && typeof cert === 'string') {
       downloadCertFromURI(certStorage.name, cert, certStorage.type);
     } else if (cert) {
-      downloadCertFromURI(certStorage.name, Convert.ToBinary(cert), certStorage.type);
+      downloadCertFromURI(certStorage.name, [cert], certStorage.type, true);
     }
   }
 }

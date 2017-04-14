@@ -5,6 +5,8 @@ import { Convert } from 'pvtsutils';
 import { OIDS } from '../constants';
 import { regExps } from '../helpers';
 
+window.Convert = Convert;
+
 const OID = {
   '2.5.4.3': {
     short: 'CN',
