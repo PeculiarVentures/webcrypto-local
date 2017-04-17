@@ -288,7 +288,7 @@ const CertHelper = {
     };
   },
 
-  certDataHandler: function certDataHandler(certDetails, certData, certId, pem) {
+  certDataHandler: function certDataHandler(certDetails, certData, certId, pem, thumbprint) {
     const lang = navigator.language;
     const { id } = certData;
     const {
@@ -321,6 +321,7 @@ const CertHelper = {
         modulusBits: publicKey.algorithm.modulusBits,
         namedCurve: publicKey.algorithm.namedCurve,
       },
+      thumbprint: this.addSpaceAfterSecondCharset(Convert.ToHex(thumbprint)),
       issuer: decodedIssuer,
       subject: decodedSubject,
       notBefore: notBefore ? moment(notBefore).locale(lang).format('LLLL') : '',

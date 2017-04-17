@@ -19,4 +19,5 @@ export const DEFAULT = {
   selected: false,
   type: 'certificate',
   pem: '',
+  thumbprint: '',
 };

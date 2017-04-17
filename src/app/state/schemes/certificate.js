@@ -21,4 +21,5 @@ export default new Schema('Certificate', {
   notBefore: Type.String,
   notAfter: Type.String,
   pem: Type.String,
+  thumbprint: Type.String,
 });

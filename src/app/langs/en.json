@@ -86,6 +86,7 @@
   "Info.Body.Issued": "Issued",
   "Info.Body.Expired": "Expired",
   "Info.Body.None": "None",
+  "Info.Body.Thumbprint": "Thumbprint (SHA2)",
 
   "Snackbar.Offline.Btn.Get": "Get help",
   "Snackbar.Offline.Text": "Server offline or not installed",

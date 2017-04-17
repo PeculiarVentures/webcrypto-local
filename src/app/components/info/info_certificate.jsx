@@ -13,6 +13,7 @@ const CertificateInfo = (props) => {
     serialNumber,
     notBefore,
     notAfter,
+    thumbprint,
   } = props;
 
   const transformCamelCase = string => (
@@ -21,14 +22,14 @@ const CertificateInfo = (props) => {
       .replace(/^./, str => str.toUpperCase())
   );
 
-  const renderRowContainer = (title, value, index) => {
+  const renderRowContainer = (title, value, index, transform) => {
     if (value && title !== 'name') {
       return (
         <RowCertInfo
           key={index}
         >
           <ColCert>
-            { transformCamelCase(title) }{title === 'None' ? '' : ':'}
+            { transform === false ? title : transformCamelCase(title) }{title === 'None' ? '' : ':'}
           </ColCert>
           <ColCert>
             { value }
@@ -51,6 +52,9 @@ const CertificateInfo = (props) => {
           { renderRowContainer(enLang['Info.Body.Version'], version) }
           { renderRowContainer(enLang['Info.Body.Issued'], notBefore) }
           { renderRowContainer(enLang['Info.Body.Expired'], notAfter) }
+          <RowCert>
+            { renderRowContainer(enLang['Info.Body.Thumbprint'], thumbprint, '', false) }
+          </RowCert>
         </RowCert>
       </Row>
 
@@ -147,6 +151,7 @@ CertificateInfo.propTypes = {
   serialNumber: PropTypes.string,
   notAfter: PropTypes.string,
   notBefore: PropTypes.string,
+  thumbprint: PropTypes.string,
 };
 
 CertificateInfo.defaultProps = {
@@ -159,6 +164,7 @@ CertificateInfo.defaultProps = {
   subject: {},
   notAfter: '',
   notBefore: '',
+  thumbprint: '',
 };
 
 export default CertificateInfo;

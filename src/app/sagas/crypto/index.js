@@ -96,9 +96,16 @@ function* getCerificates() {
 
         if (item.type === 'x509') {
           const certificateRaw = yield crypto.certStorage.exportCert('raw', item);
+          const thumbprint = yield crypto.subtle.digest('SHA-256', certificateRaw);
           const certificateDetails = CertHelper.certRawToJson(certificateRaw);
 
-          certData = CertHelper.certDataHandler(certificateDetails, item, certificates[index], pem);
+          certData = CertHelper.certDataHandler(
+            certificateDetails,
+            item,
+            certificates[index],
+            pem,
+            thumbprint,
+          );
         } else {
           certData = CertHelper.requestDataHandler(item, certificates[index], pem);
         }
