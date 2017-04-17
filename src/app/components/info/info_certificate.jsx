@@ -6,8 +6,8 @@ const CertificateInfo = (props) => {
   const {
     subject,
     issuer,
-    extensions,
     publicKey,
+    extensions,
     version,
     signature,
     serialNumber,
@@ -28,7 +28,7 @@ const CertificateInfo = (props) => {
           key={index}
         >
           <ColCert>
-            { transformCamelCase(title) }:
+            { transformCamelCase(title) }{title === 'None' ? '' : ':'}
           </ColCert>
           <ColCert>
             { value }
@@ -108,7 +108,8 @@ const CertificateInfo = (props) => {
           { enLang['Info.Body.Extensions'] }
         </Title>
         {
-          extensions.map((ext, index) => (
+          extensions.length
+          ? extensions.map((ext, index) => (
             <RowCert
               key={index}
             >
@@ -117,6 +118,9 @@ const CertificateInfo = (props) => {
               { renderRowContainer(enLang['Info.Body.Critical'], ext.critical ? 'yes' : 'no') }
             </RowCert>
           ))
+          : <RowCert>
+            { renderRowContainer(enLang['Info.Body.None'], ' ') }
+          </RowCert>
         }
       </Row>
     </Root>

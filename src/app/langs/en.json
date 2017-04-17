@@ -85,6 +85,7 @@
   "Info.Body.General": "General",
   "Info.Body.Issued": "Issued",
   "Info.Body.Expired": "Expired",
+  "Info.Body.None": "None",
 
   "Snackbar.Offline.Btn.Get": "Get help",
   "Snackbar.Offline.Text": "Server offline or not installed",
