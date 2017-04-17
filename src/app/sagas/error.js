@@ -5,8 +5,14 @@ import { DialogActions } from '../actions/ui';
 import { WSActions } from '../actions/state';
 import { WSController } from '../controllers/webcrypto_socket';
 import { EventChannel } from '../controllers';
+import { browserInfo } from '../helpers';
 
 function* errorHandler({ data, action }) {
+  if (browserInfo() === 'Safari') {
+    yield put(DialogActions.open('not_supported_localhost'));
+    return true;
+  }
+
   if (action) {
     switch (action) {
       case 'request_create':
@@ -32,7 +38,7 @@ function* errorHandler({ data, action }) {
     } else if (/XMLHttpRequest.xmlHttp/.test(stack)) { // offline
       WSController.checkConnect();
       yield put(WSActions.status('offline'));
-    } else if (/Client.prototype.getServerInfo/.test(stack)) { // not supported localhost
+    } else if (/Client.prototype.getServerInfo/.test(stack)) { // not supported localhost (Firefox)
       yield put(DialogActions.open('not_supported_localhost'));
     } else {
       switch (message) {
