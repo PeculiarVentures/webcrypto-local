@@ -13,9 +13,81 @@
 	<style>
 		*{margin:0;padding:0;border:0;border-radius:0;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-size-adjust:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-text-size-adjust:none;-webkit-tap-highlight-color:transparent;word-break:break-word;}*,:after,:before{box-sizing:border-box}:focus{outline:none}a{text-decoration:none}textarea{resize:none}input,textarea{-webkit-appearance:none!important;-moz-appearance:none;-ms-appearance:none;appearance:none!important;font-family:'Open Sans',Arial!important;}input:focus,textarea:focus{outline:none}body,html{width:100%;height:100%;font-family:'Open Sans',Arial,sans-serif;}body.not_selectable_text *,html.not_selectable_text *{-webkit-user-select:none!important;-moz-user-select:none!important;-ms-user-select:none!important;user-select:none!important}body{overflow:hidden; font-size: 0;}table{cellspacing:0!important;cellpadding:0!important;border-spacing:0!important}#root{display:block;width:100%;height:100%;overflow:hidden;min-width:1024px}@media(max-width:1024px){body{overflow:auto}}@media(max-width:736px){body{overflow:hidden}#root{min-width:320px}}
 	</style>
+	<style>
+		@keyframes eebBXt {
+			0% {
+				transform: rotate(360deg);
+			}
+			100% {
+				transform: rotate(1800deg);
+			}
+		}
+		@keyframes dcmzSb {
+			0% {
+				stroke-dasharray: 0, 150.79644737231007;
+				stroke-dashoffset: 0;
+				transition: 0ms;
+			}
+			50% {
+				stroke-dasharray: 105.55751316061705, 150.79644737231007;
+				stroke-dashoffset: -45.23893421169302;
+				transition: 750ms;
+			}
+			100% {
+				stroke-dasharray: 105.55751316061705, 150.79644737231007;
+				stroke-dashoffset: -150.79644737231007;
+				transition: 850ms;
+			}
+		}
+		.loader {
+			width: 100%;
+			height: 100%;
+			text-align: center;
+			background: #ffffff;
+			position: relative;
+		}
+		.loader:before {
+			content: '';
+			display: inline-block;
+			vertical-align: middle;
+			height: 100%;
+			width: 0;
+		}
+		.loader_svg {
+			width: 50px;
+			display: inline-block;
+			vertical-align: middle;
+			font-size: 0;
+			animation: eebBXt 10s linear infinite both;
+			-webkit-animation: eebBXt 10s linear infinite both;
+		}
+		.loader_circle {
+			animation: dcmzSb 1333ms ease-in-out infinite both;
+			-webkit-animation: dcmzSb 1333ms ease-in-out infinite both;
+		}
+	</style>
 </head>
 <body>
-	<div id="root"></div>
+	<div id="root">
+		<div class="loader">
+			<svg
+				viewBox="0 0 50 50"
+				class="loader_svg"
+			>
+				<circle
+					cx="25"
+					cy="25"
+					r="24"
+					fill="none"
+					stroke-width="2"
+					stroke-miterlimit="20"
+					stroke="#282E32"
+					size="50"
+					class="loader_circle"
+				></circle>
+			</svg>
+		</div>
+	</div>
 	<script src="https://cdn.rawgit.com/dcodeIO/protobuf.js/6.6.0/dist/protobuf.min.js"></script>
 	<script src="https://cdn.rawgit.com/jakearchibald/idb/97e4e878/lib/idb.js"></script>
 	<script>
