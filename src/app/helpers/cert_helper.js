@@ -355,6 +355,7 @@ const CertHelper = {
       signature: {
         algorithm: algorithm.name,
         hash: algorithm.hash.name,
+        value: this.addSpaceAfterSecondCharset(Convert.ToHex(algorithm.raw)),
       },
       commonName: '',
       organization: '',

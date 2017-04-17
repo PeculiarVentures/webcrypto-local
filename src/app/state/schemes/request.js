@@ -21,6 +21,7 @@ export default new Schema('Request', {
   signature: {
     algorithm: Type.String,
     hash: Type.String,
+    value: Type.String,
   },
   selected: Type.Boolean,
   type: Type.String,

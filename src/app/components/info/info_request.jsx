@@ -84,6 +84,9 @@ const RequestInfo = (props) => {
           { renderRowContainer(enLang['Info.Body.Algorithm'], signature.algorithm) }
           { renderRowContainer(enLang['Info.Body.Hash'], signature.hash) }
         </RowCert>
+        <RowCert>
+          { renderRowContainer(enLang['Info.Body.Value'], signature.value) }
+        </RowCert>
       </Row>
 
     </Root>

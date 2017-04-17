@@ -19,6 +19,7 @@ export const DEFAULT = {
   signature: {
     algorithm: '',
     hash: '',
+    value: '',
   },
   selected: false,
   type: 'request',
