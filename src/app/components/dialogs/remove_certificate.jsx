@@ -9,10 +9,12 @@ export default class RemoveCertificateDialog extends Component {
     onAccept: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     certificateName: PropTypes.string,
+    certificateType: PropTypes.string,
   };
 
   static defaultProps = {
     certificateName: '',
+    certificateType: '',
   };
 
   constructor() {
@@ -33,12 +35,30 @@ export default class RemoveCertificateDialog extends Component {
     this.unbind();
   }
 
+  getTypeText() {
+    const { certificateType } = this.props;
+
+    switch (certificateType) {
+      case 'certificate':
+        return enLang['Dialog.RemoveCertificate.Type.Certificate'];
+
+      case 'request':
+        return enLang['Dialog.RemoveCertificate.Type.Request'];
+
+      case 'key':
+        return enLang['Dialog.RemoveCertificate.Type.Key'];
+
+      default:
+        return null;
+    }
+  }
+
   render() {
     const { onAccept, onCancel, certificateName } = this.props;
 
     return (
       <Dialog
-        title={`${enLang['Dialog.RemoveCertificate.Title']} "${certificateName}"?`}
+        title={`${enLang['Dialog.RemoveCertificate.Title']} ${this.getTypeText()} "${certificateName}"?`}
         acceptText={enLang['Dialog.RemoveCertificate.Btn.Accept']}
         cancelText={enLang['Dialog.RemoveCertificate.Btn.Cancel']}
         onAccept={onAccept}

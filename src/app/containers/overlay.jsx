@@ -152,6 +152,7 @@ export default class Overlay extends Component {
           <Dialog.RemoveCertificateDialog
             name="remove_certificate"
             certificateName={selectedCertificateProps.name}
+            certificateType={selectedCertificateProps.type}
             onAccept={() => (
               this.handleAction({
                 type: ACTIONS_CONST.WS_REMOVE_ITEM,

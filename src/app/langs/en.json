@@ -1,8 +1,11 @@
 {
   "Dialog.Btn.Cancel": "Cancel",
-  "Dialog.RemoveCertificate.Title": "Do you realy want to remove",
+  "Dialog.RemoveCertificate.Title": "Do you really want to remove the",
   "Dialog.RemoveCertificate.Btn.Cancel": "Cancel",
   "Dialog.RemoveCertificate.Btn.Accept": "Remove",
+  "Dialog.RemoveCertificate.Type.Certificate": "certificate",
+  "Dialog.RemoveCertificate.Type.Request": "request",
+  "Dialog.RemoveCertificate.Type.Key": "key",
   "Dialog.FortifyAuthorization.Title": "Fortify Authorization",
   "Dialog.FortifyAuthorization.Btn.Cancel": "Cancel",
   "Dialog.FortifyAuthorization.Btn.Accept": "Authorize",
