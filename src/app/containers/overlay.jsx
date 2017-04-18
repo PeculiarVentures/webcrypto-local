@@ -114,6 +114,7 @@ export default class Overlay extends Component {
   }
 
   handleAction = (payload) => {
+    const { provider } = this.props;
     const { type } = payload;
     const { dispatch } = this.context;
 
@@ -127,7 +128,7 @@ export default class Overlay extends Component {
       }
 
       case 'TRY_AGAIN_LOGIN': {
-        dispatch(WSActions.login());
+        dispatch(WSActions.login(provider.id));
         return dispatch(DialogActions.close());
       }
 

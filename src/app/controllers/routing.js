@@ -89,6 +89,7 @@ class RoutingController extends State.Map {
     this.merge({ chuncks: [] });
     const certificate = this.get('certificate');
     const request = this.get('request');
+    const key = this.get('key');
 
     if (certificate) {
       this.pushChunk(`certificate/${certificate}`);
@@ -96,6 +97,10 @@ class RoutingController extends State.Map {
     }
     if (request) {
       this.pushChunk(`request/${request}`);
+      return this.getPath();
+    }
+    if (key) {
+      this.pushChunk(`key/${key}`);
       return this.getPath();
     }
 

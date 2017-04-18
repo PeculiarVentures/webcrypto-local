@@ -29,18 +29,19 @@ function* errorHandler({ data, action }) {
   //       return true;
   //   }
   // }
-  //
+
   if ({}.hasOwnProperty.call(data, 'message')) {
     const { message, stack } = data;
-  //
-  //   if (/CKR_PIN_INCORRECT/.test(message)) { // incorrent pin
-  //     yield put(DialogActions.open('incorrect_pin'));
-  //   } else if (/XMLHttpRequest.xmlHttp/.test(stack)) { // offline
+
+    if (/CKR_PIN_INCORRECT/.test(message)) { // incorrent pin
+      yield put(DialogActions.open('incorrect_pin'));
+    }
+    // else if (/XMLHttpRequest.xmlHttp/.test(stack)) { // offline
   //     WSController.checkConnect();
   //     yield put(WSActions.status('offline'));
   //   } else if (/Client.prototype.getServerInfo/.test(stack)) { // not supported localhost (Firefox)
   //     yield put(DialogActions.open('not_supported_localhost'));
-  //   } else {
+    else {
       switch (message) {
   //
   //       // case 'CryptoLogin timeout': {
@@ -57,7 +58,7 @@ function* errorHandler({ data, action }) {
           console.error(data);
 
       }
-    // }
+    }
   } else {
     console.error(data);
   }

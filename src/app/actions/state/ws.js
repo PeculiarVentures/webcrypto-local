@@ -37,8 +37,9 @@ export const getProviders = () => ({
   type: ACTIONS_CONST.WS_GET_PROVIDERS,
 });
 
-export const login = () => ({
+export const login = id => ({
   type: ACTIONS_CONST.WS_LOGIN,
+  id,
 });
 
 export const onListening = () => ({

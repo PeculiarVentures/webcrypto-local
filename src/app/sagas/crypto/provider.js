@@ -10,7 +10,6 @@ export function* providerGetList() {
     yield put(ErrorActions.error(error));
     return [];
   }
-  return [];
 }
 
 export function* providerIsLogged(crypto) {
@@ -28,7 +27,8 @@ export function* providerIsLogged(crypto) {
 export function* providerLogin(crypto) {
   if (crypto) {
     try {
-      return yield crypto.login();
+      yield crypto.login();
+      return true;
     } catch (error) {
       yield put(ErrorActions.error(error));
       return false;
@@ -37,13 +37,19 @@ export function* providerLogin(crypto) {
   return false;
 }
 
+export function* cryptoGet(id) {
+  try {
+    return yield ws.getCrypto(id);
+  } catch (error) {
+    yield put(ErrorActions.error(error));
+    return false;
+  }
+}
+
 export function* providerGet(id) {
   try {
-    const provider = yield ws.getCrypto(id);
+    const provider = yield cryptoGet(id);
     const isLogged = yield providerIsLogged(provider);
-    // if (!isLoggedIn) {
-    //   yield spawn(providerLogin, crypto);
-    // }
     return {
       provider,
       isLogged,

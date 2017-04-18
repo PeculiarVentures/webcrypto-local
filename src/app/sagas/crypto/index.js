@@ -351,17 +351,36 @@ function* webcryptoOnListening() {
   );
 
   yield put(ProviderActions.select(initState.params.provider));
-
-  // yield [getProviderCertificates(), getProviderKeys()];
-  yield [getProviderCertificates()];
-  yield put(ItemActions.select());
   yield put(AppActions.loaded(true));
-  yield put(ProviderActions.update({ loaded: true }));
+}
+
+function* providerLogin({ id }) {
+  const crypto = yield Provider.cryptoGet(id);
+  const logged = yield Provider.providerLogin(crypto);
+  if (logged) {
+    yield put(ProviderActions.update({ logged }));
+  }
+}
+
+function* providerSelect({ id }) {
+  const state = yield select();
+  const providers = state.find('providers');
+  const provider = providers.where({ id }).get();
+  if (!provider.loaded) {
+    yield [getProviderCertificates()];
+    yield put(ItemActions.select());
+    yield put(ProviderActions.update({ loaded: true }));
+  }
+  if (!provider.logged) {
+    yield put(WSActions.login(provider.id));
+  }
 }
 
 export default function* () {
   yield [
     takeEvery(ACTIONS_CONST.WS_ON_LISTENING, webcryptoOnListening),
+    takeEvery(ACTIONS_CONST.PROVIDER_SELECT, providerSelect),
+    takeEvery(ACTIONS_CONST.WS_LOGIN, providerLogin),
   ];
   // yield [
   //   takeEvery(ACTIONS_CONST.WS_GET_KEYS, getKeys),

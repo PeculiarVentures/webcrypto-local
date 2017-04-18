@@ -100,9 +100,9 @@ RequestInfo.propTypes = {
   publicKey: PropTypes.shape({
     algorithm: PropTypes.string,
     hash: PropTypes.string,
-    modulusBits: PropTypes.number,
-    namedCurve: PropTypes.string,
-    publicExponent: PropTypes.number,
+    modulusBits: PropTypes.any,
+    namedCurve: PropTypes.any,
+    publicExponent: PropTypes.any,
     value: PropTypes.string,
   }),
   signature: PropTypes.shape({

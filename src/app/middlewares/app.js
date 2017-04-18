@@ -17,7 +17,7 @@ export default store => next => (payload) => {
     //   next(CertificateActions.select(id));
     //   break;
     // }
-    //
+
     case ACTIONS_CONST.ITEM_ADD: {
       const itemId = result.id || UUID();
       const data = Object.assign({}, result, {
@@ -57,7 +57,7 @@ export default store => next => (payload) => {
       next(ItemActions.select(_id));
       break;
     }
-    //
+
     // case ACTIONS_CONST.CERTIFICATE_REMOVE: {
     //   next(DialogActions.close());
     //   next(CertificateActions.remove(id));

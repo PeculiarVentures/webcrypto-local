@@ -1,7 +1,6 @@
 /* eslint no-undef: 0 */
 import { SERVER_URL } from '../../../scripts/config';
 import Store from '../store';
-// import { WSActions, ErrorActions } from '../actions/state';
 import { WSActions, ErrorActions } from '../actions/state';
 import { DialogActions } from '../actions/ui';
 import { EventChannel } from '../controllers';
