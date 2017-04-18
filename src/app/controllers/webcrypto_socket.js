@@ -23,17 +23,13 @@ export const WSController = {
       .on('listening', () => {
         clearTimeout(this.interval);
         this.isLogged();
-        // Store.dispatch(WSActions.onListening());
-        // Store.dispatch(WSActions.status('online'));
-        // Store.dispatch(WSActions.getProviders());
       })
       .on('close', () => {
-        // Store.dispatch(WSActions.status('offline'));
         this.checkConnect();
       })
-      .on('token', () => {
+      .on('token', (info) => {
+        console.warn('TOKEN', info);
         clearTimeout(this.interval);
-        // Store.dispatch(WSActions.getProviders());
       });
   },
 
