@@ -28,7 +28,15 @@ export const WSController = {
         this.checkConnect();
       })
       .on('token', (info) => {
-        console.warn('TOKEN', info);
+        if (info.added.length) {
+          console.log('TOKEN added:', info.added);
+        }
+        if (info.removed.length) {
+          console.log('TOKEN removed:', info.removed);
+        }
+        if (info.error) {
+          console.log('TOKEN:', info.error);
+        }
         clearTimeout(this.interval);
       });
   },
