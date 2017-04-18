@@ -5,8 +5,8 @@ export const createCertificate = data => ({
   data,
 });
 
-export const importCertificate = data => ({
-  type: ACTIONS_CONST.WS_IMPORT_CERTIFICATE,
+export const importItem = data => ({
+  type: ACTIONS_CONST.WS_IMPORT_ITEM,
   data,
 });
 

@@ -310,13 +310,14 @@ const CertHelper = {
       id,
       thumbprint,
       pem,
+      addedId,
     } = data;
 
     const decodedIssuer = this.decodeSubjectString(issuerName);
     const decodedSubject = this.decodeSubjectString(subjectName);
 
     return {
-      id: UUID(),
+      id: addedId || UUID(),
       _id: id,
       type: 'certificate',
       name: decodedSubject['Common Name'] || '',
@@ -347,7 +348,7 @@ const CertHelper = {
   },
 
   requestDataHandler: function requestDataHandler(data) {
-    const { _publicKey, id, _subjectName, pem } = data;
+    const { _publicKey, id, _subjectName, pem, addedId } = data;
     const { algorithm, raw } = _publicKey;
 
     const decodedSubject = this.decodeSubjectString(_subjectName);
@@ -358,7 +359,7 @@ const CertHelper = {
     }
 
     return {
-      id: UUID(),
+      id: addedId || UUID(),
       _id: id,
       name: decodedSubject['Common Name'] || '',
       type: 'request',

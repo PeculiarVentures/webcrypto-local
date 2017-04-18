@@ -1,5 +1,6 @@
 import { takeEvery } from 'redux-saga';
 import { select, put } from 'redux-saga/effects';
+import UUID from 'uuid';
 // import { Convert } from 'pvtsutils';
 // import { ws } from '../../controllers/webcrypto_socket';
 import { ACTIONS_CONST } from '../../constants';
@@ -10,7 +11,7 @@ import {
   ItemActions,
   AppActions,
 } from '../../actions/state';
-import { DialogActions } from '../../actions/ui';
+import { DialogActions, ModalActions } from '../../actions/ui';
 // import { RoutingActions, ModalActions, DialogActions } from '../../actions/ui';
 // import { downloadCertFromURI, CertHelper } from '../../helpers';
 import { CertHelper, downloadCertFromURI } from '../../helpers';
@@ -425,6 +426,51 @@ function* removeItem() {
   }
 }
 
+function* importItem({ data }) {
+  yield put(DialogActions.open('load'));
+
+  const state = yield select();
+  const selectedProvider = state.find('providers').where({ selected: true });
+  const crypto = yield Provider.cryptoGet(selectedProvider.get().id);
+
+  if (crypto) {
+    const imported = yield Certificate.certificateImport(crypto, data);
+
+    if (imported) {
+      const item = yield Certificate.certificateGet(crypto, imported);
+      const pem = yield Certificate.certificateExport(crypto, item, 'pem');
+      const addedId = UUID();
+      let certData = '';
+
+      if (item.type === 'x509') {
+        const raw = yield Certificate.certificateExport(crypto, item, 'raw');
+        const thumbprint = yield Certificate.certificateThumbprint(crypto, raw);
+        const certificateDetails = CertHelper.certRawToJson(raw);
+
+        certData = CertHelper.certDataHandler({
+          ...certificateDetails,
+          id: imported,
+          pem,
+          thumbprint,
+          addedId,
+        });
+      } else {
+        certData = CertHelper.requestDataHandler({
+          ...item,
+          id: imported,
+          pem,
+          addedId,
+        });
+      }
+
+      yield put(ItemActions.add(certData, selectedProvider.get().id));
+      yield put(ModalActions.close());
+      yield put(DialogActions.close());
+      yield put(ItemActions.select(addedId));
+    }
+  }
+}
+
 export default function* () {
   yield [
     takeEvery(ACTIONS_CONST.WS_ON_LISTENING, webcryptoOnListening),
@@ -432,6 +478,7 @@ export default function* () {
     takeEvery(ACTIONS_CONST.WS_LOGIN, providerLogin),
     takeEvery(ACTIONS_CONST.WS_DOWNLOAD_ITEM, downloadItem),
     takeEvery(ACTIONS_CONST.WS_REMOVE_ITEM, removeItem),
+    takeEvery(ACTIONS_CONST.WS_IMPORT_ITEM, importItem),
   ];
   // yield [
   //   takeEvery(ACTIONS_CONST.WS_GET_KEYS, getKeys),

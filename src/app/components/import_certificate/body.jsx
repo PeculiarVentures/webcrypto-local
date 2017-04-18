@@ -42,11 +42,11 @@ export default class Body extends Component {
 
   onSelectChange = (data) => {
     const { dispatch } = this.context;
-    if (typeof data === 'string') {
-      dispatch(ProviderActions.select(data));
-    } else {
-      dispatch(ProviderActions.select(data.value));
-    }
+    // if (typeof data === 'string') {
+    //   dispatch(ProviderActions.select(data));
+    // } else {
+    //   dispatch(ProviderActions.select(data.value));
+    // }
   };
 
   onClickImportHandler = () => {
@@ -55,7 +55,7 @@ export default class Body extends Component {
     const value = textarea.getValue();
     const preparedCert = CertHelper.prepareCertToImport(value);
     if (preparedCert) {
-      dispatch(WSActions.importCertificate(preparedCert));
+      dispatch(WSActions.importItem(preparedCert));
     }
   };
 

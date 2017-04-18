@@ -50,7 +50,7 @@ export const WS_STATUS = 'WS:STATUS';
 export const WS_DOWNLOAD_ITEM = 'WS:DOWNLOAD_ITEM';
 export const WS_COPY_CERTIFICATE = 'WS:COPY_CERTIFICATE';
 export const WS_GET_PROVIDERS = 'WS:GET_PROVIDERS';
-export const WS_IMPORT_CERTIFICATE = 'WS:IMPORT_CERTIFICATE';
+export const WS_IMPORT_ITEM = 'WS:IMPORT_ITEM';
 export const WS_LOGIN = 'WS:LOGIN';
 
 // Error
