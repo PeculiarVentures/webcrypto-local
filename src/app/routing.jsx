@@ -39,6 +39,8 @@ export default class Routing extends Component {
           <Router history={browserHistory}>
             <Route path={getAppPath()} component={RootContainer} />
             <Route path={`${getAppPath()}certificate/:id`} component={RootContainer} />
+            <Route path={`${getAppPath()}request/:id`} component={RootContainer} />
+            <Route path={`${getAppPath()}key/:id`} component={RootContainer} />
             <Route path={`${getAppPath()}create`} component={CreateContainer} />
           </Router>
         </ThemeProvider>

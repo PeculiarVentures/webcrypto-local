@@ -28,6 +28,7 @@ class RoutingController extends State.Map {
       certificate: false,
       key: false,
       request: false,
+      chuncks: [],
       params: {
         provider: false,
       },
@@ -38,7 +39,7 @@ class RoutingController extends State.Map {
       window.location.pathname,
       window.location.search,
     );
-    this.find('params').merge(this.filterParams(this.initialState.params));
+    this.merge(this.initialState);
   }
 
   filterParams(params) {
@@ -53,12 +54,12 @@ class RoutingController extends State.Map {
   }
 
   changeFromState(state) {
-    this.set({
-      certificate: false,
-      key: false,
-      request: false,
-      params: this.get('params'),
-    });
+    // this.set({
+    //   certificate: false,
+    //   key: false,
+    //   request: false,
+    //   params: this.get('params'),
+    // });
     const providers = state.find('providers');
     const selectedProvider = providers.where({ selected: true });
 
@@ -70,13 +71,17 @@ class RoutingController extends State.Map {
   }
 
   compose() {
-    // console.log(this.get());
-    // const provider = this.get('provider');
-    // if (provider) {
-    //   this.pushChunk(`/provider/${request}`);
-    //   return this.getPath();
-    // }
+    this.merge({ chuncks: [] });
+    const certificate = this.get('certificate');
+    if (certificate) {
+      this.pushChunk(`certificate/${certificate}`);
+      return this.getPath();
+    }
     return `${this.joinParams()}`;
+  }
+
+  getPath() {
+    return `${this.joinPath()}${this.joinParams()}`;
   }
 
   joinParams() {
@@ -92,10 +97,17 @@ class RoutingController extends State.Map {
     return params;
   }
 
+  joinPath() {
+    return this
+      .get('chuncks')
+      .join('');
+  }
+
   middleware() {
     return (store) => (next) => (payload) => {
       next(payload);
       let res = this.changeFromState(store.getState());
+      // console.log(res);
       // if (payload.type === ACTIONS_CONST.PROVIDER_SELECT) {
       // res = this.changeFromState(store.getState());
       // }
@@ -104,23 +116,28 @@ class RoutingController extends State.Map {
     };
   }
 
+  pushChunk(str) {
+    this
+      .find('chuncks')
+      .push(str);
+
+    return this;
+  }
+
   parseInitState(k, path) {
     const initWith = k.split('/');
     initWith.splice(0, 1);
     const result = { params: {} };
     result.params = parseSearch(path);
-    // console.log(result);
-    // if (initWith[0] === 'request') {
-    //   result.request = initWith[1] ? initWith[1] : null;
-    //   result.document = initWith[2] ? initWith[1] : null;
-    // }
-    // if (initWith[0] === 'envelope') {
-    //   result.envelope = initWith[1] ? initWith[1] : null;
-    //   result.document = initWith[2] ? initWith[2] : null;
-    // }
-    // if (initWith[0] === 'document') {
-    //   result.document = initWith[1] ? initWith[1] : null;
-    // }
+    if (initWith[0] === 'certificate') {
+      result.certificate = initWith[1] ? initWith[1] : null;
+    }
+    if (initWith[0] === 'request') {
+      result.request = initWith[1] ? initWith[1] : null;
+    }
+    if (initWith[0] === 'key') {
+      result.key = initWith[1] ? initWith[1] : null;
+    }
     this.initialState = result;
     return result;
   }

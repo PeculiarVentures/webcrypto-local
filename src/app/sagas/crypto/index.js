@@ -11,6 +11,7 @@ import { CertHelper } from '../../helpers';
 import * as Key from './key';
 import * as Provider from './provider';
 import * as Certificate from './certificate';
+import { RoutingController } from '../../controllers';
 // import { EventChannel } from '../../controllers';
 
 // function* cryptoLogin(crypto) {
@@ -326,16 +327,16 @@ function* getProviderCertificates() {
 }
 
 function* webcryptoOnListening() {
-  const search = window.location.search;
+  // const search = window.location.search;
   const providers = yield Provider.providerGetList();
-  const searchedProviderId = window.decodeURIComponent(search).split('=')[1];
+  // const searchedProviderId = window.decodeURIComponent(search).split('=')[1];
   let index = 0;
-  let selected = false;
+  // let selected = false;
 
   yield put(WSActions.status('online'));
   for (const prv of providers) {
     const provider = yield Provider.providerGet(prv.id);
-    selected = selected || searchedProviderId === prv.id;
+    // selected = selected || searchedProviderId === prv.id;
 
     yield put(ProviderActions.add({
       id: prv.id,
@@ -343,19 +344,28 @@ function* webcryptoOnListening() {
       readOnly: prv.readOnly,
       index,
       logged: provider.isLogged,
-      selected: searchedProviderId === prv.id,
+      selected: false,
     }));
     index += 1;
   }
 
-  if (!selected) {
-    yield put(ProviderActions.select(providers[0].id));
+  const initState = RoutingController.parseInitState(
+    window.location.pathname,
+    window.location.search,
+  );
+
+  if (initState.params.provider) {
+    yield put(ProviderActions.select(initState.params.provider));
   }
 
+  // if (!selected) {
+  //   yield put(ProviderActions.select(providers[0].id));
+  // }
+
   // yield [getProviderCertificates(), getProviderKeys()];
-  yield [getProviderCertificates()];
-  yield put(AppActions.loaded(true));
-  yield put(ProviderActions.update({ loaded: true }));
+  // yield [getProviderCertificates()];
+  // yield put(AppActions.loaded(true));
+  // yield put(ProviderActions.update({ loaded: true }));
 }
 
 export default function* () {
