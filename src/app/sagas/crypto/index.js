@@ -4,7 +4,13 @@ import { select, put } from 'redux-saga/effects';
 // import { ws } from '../../controllers/webcrypto_socket';
 import { ACTIONS_CONST } from '../../constants';
 // import { AppActions, CertificateActions, ErrorActions, ProviderActions } from '../../actions/state';
-import { ProviderActions, WSActions, ItemActions, AppActions } from '../../actions/state';
+import {
+  ProviderActions,
+  WSActions,
+  ItemActions,
+  AppActions,
+} from '../../actions/state';
+import { DialogActions } from '../../actions/ui';
 // import { RoutingActions, ModalActions, DialogActions } from '../../actions/ui';
 // import { downloadCertFromURI, CertHelper } from '../../helpers';
 import { CertHelper, downloadCertFromURI } from '../../helpers';
@@ -274,7 +280,7 @@ function* getProviderKeys() {
         id: keyIDs[index],
       });
       index += 1;
-      yield put(ItemActions.add(keyData, currentProvider.index));
+      yield put(ItemActions.add(keyData, currentProvider.id));
     }
   }
 }
@@ -321,7 +327,7 @@ function* getProviderCertificates() {
       }
 
       index += 1;
-      yield put(ItemActions.add(certData, currentProvider.index));
+      yield put(ItemActions.add(certData, currentProvider.id));
     }
   }
 }
@@ -398,12 +404,34 @@ function* downloadItem({ format }) {
   }
 }
 
+function* removeItem() {
+  const state = yield select();
+  const selectedProvider = state.find('providers').where({ selected: true });
+  const crypto = yield Provider.cryptoGet(selectedProvider.get().id);
+
+  if (crypto) {
+    const selectedItem = selectedProvider.find('items').where({ selected: true }).get();
+    let remove = '';
+
+    if (selectedItem.type === 'key') {
+      remove = yield Key.keyRemove(crypto, selectedItem._id);
+    } else {
+      remove = yield Certificate.certificateRemove(crypto, selectedItem._id);
+    }
+    if (remove) {
+      yield put(ItemActions.remove(selectedItem.id));
+      yield put(DialogActions.close());
+    }
+  }
+}
+
 export default function* () {
   yield [
     takeEvery(ACTIONS_CONST.WS_ON_LISTENING, webcryptoOnListening),
     takeEvery(ACTIONS_CONST.PROVIDER_SELECT, providerSelect),
     takeEvery(ACTIONS_CONST.WS_LOGIN, providerLogin),
     takeEvery(ACTIONS_CONST.WS_DOWNLOAD_ITEM, downloadItem),
+    takeEvery(ACTIONS_CONST.WS_REMOVE_ITEM, removeItem),
   ];
   // yield [
   //   takeEvery(ACTIONS_CONST.WS_GET_KEYS, getKeys),

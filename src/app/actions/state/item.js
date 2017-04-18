@@ -11,10 +11,10 @@ export const update = (id, result) => ({
   result,
 });
 
-export const add = (result, index) => ({
+export const add = (result, id) => ({
   type: ACTIONS_CONST.ITEM_ADD,
   result,
-  index,
+  id,
 });
 
 export const remove = id => ({

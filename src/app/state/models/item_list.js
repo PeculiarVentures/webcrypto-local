@@ -30,4 +30,12 @@ export default class ItemListModel extends State.List {
       return true;
     });
   }
+
+  remove(id) {
+    const item = this.where({ id });
+
+    if (item) {
+      super.remove(item);
+    }
+  }
 }

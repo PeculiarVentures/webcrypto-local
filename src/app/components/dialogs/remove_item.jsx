@@ -3,7 +3,7 @@ import { Dialog } from '../basic';
 import { QShortcuts } from '../../controllers';
 import enLang from '../../langs/en.json';
 
-export default class RemoveCertificateDialog extends Component {
+export default class RemoveItemDialog extends Component {
 
   static propTypes = {
     onAccept: PropTypes.func.isRequired,

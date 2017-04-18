@@ -1,12 +1,12 @@
 import { ACTIONS_CONST } from '../../constants';
 
 export default function (state, payload) {
-  const { type, result, id, index } = payload;
+  const { type, result, id } = payload;
   const providers = state.find('providers');
   switch (type) {
 
     case ACTIONS_CONST.ITEM_ADD: {
-      const items = providers.where({ index }).find('items');
+      const items = providers.where({ id }).find('items');
       items.add(result);
       return state;
     }
@@ -16,17 +16,17 @@ export default function (state, payload) {
       items.select(id);
       return state;
     }
-    //
+
     // case ACTIONS_CONST.CERTIFICATE_CLEAR: {
     //   certificates.clearAll();
     //   return state;
     // }
-    //
-    // case ACTIONS_CONST.CERTIFICATE_REMOVE: {
-    //   certificates.selectNextOrPrev(id);
-    //   certificates.remove(id);
-    //   return state;
-    // }
+
+    case ACTIONS_CONST.ITEM_REMOVE: {
+      const items = providers.where({ selected: true }).find('items');
+      items.remove(id);
+      return state;
+    }
 
     default:
       return state;

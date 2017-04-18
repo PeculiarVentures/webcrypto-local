@@ -60,8 +60,8 @@ export default class Info extends Component {
   };
 
   onRemoveHandler = () => {
-    // const { dispatch } = this.context;
-    // dispatch(DialogActions.open('remove_certificate'));
+    const { dispatch } = this.context;
+    dispatch(DialogActions.open('remove_item'));
   };
 
   onDownloadhandler = (format = 'pem') => {

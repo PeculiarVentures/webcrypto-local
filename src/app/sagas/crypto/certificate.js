@@ -163,12 +163,14 @@ export function* certificateCreate(crypto, data) {
   return false;
 }
 
-export function* removeCertificate(crypto, certId) {
+export function* certificateRemove(crypto, id) {
   if (crypto) {
     try {
-      return yield crypto.certStorage.removeItem(certId);
+      yield crypto.certStorage.removeItem(id);
+      return true;
     } catch (error) {
       yield put(ErrorActions.error(error));
+      return false;
     }
   }
   return false;

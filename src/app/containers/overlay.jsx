@@ -153,8 +153,8 @@ export default class Overlay extends Component {
           query={dialog}
           name="Confirms"
         >
-          <Dialog.RemoveCertificateDialog
-            name="remove_certificate"
+          <Dialog.RemoveItemDialog
+            name="remove_item"
             certificateName={selectedItemProps.name}
             certificateType={selectedItemProps.type}
             onAccept={() => (
