@@ -356,9 +356,13 @@ function* webcryptoOnListening() {
 
 function* providerLogin({ id }) {
   const crypto = yield Provider.cryptoGet(id);
-  const logged = yield Provider.providerLogin(crypto);
-  if (logged) {
+  const isLogged = yield Provider.providerIsLogged(crypto);
+
+  if (!isLogged) {
+    const logged = yield Provider.providerLogin(crypto);
     yield put(ProviderActions.update({ logged }));
+  } else {
+    yield put(ProviderActions.update({ logged: true }));
   }
 }
 

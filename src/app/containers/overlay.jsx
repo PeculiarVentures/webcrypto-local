@@ -213,6 +213,9 @@ export default class Overlay extends Component {
           <Dialog.LoadDialog
             name="load"
           />
+          <Dialog.ServerOfflineDialog
+            name="server_offline"
+          />
           <Dialog.FortifyAuthorizationDialog
             name="fortify_authorization"
             message={message}

@@ -17,7 +17,7 @@ export const WSController = {
     ws.connect(SERVER_URL)
       .on('error', (error) => {
         clearTimeout(this.interval);
-        // Store.dispatch(ErrorActions.error(error));
+        Store.dispatch(ErrorActions.error(error));
         console.log('WebcryptoSocket connected error: ', error.message);
       })
       .on('listening', () => {

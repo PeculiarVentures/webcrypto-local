@@ -6,3 +6,4 @@ export RequestCreateErrorDialog from './request_create_error';
 export CertificateImportErrorDialog from './certificate_import_error';
 export LoadDialog from './load';
 export FortifyAuthorizationDialog from './fortify_authorization';
+export ServerOfflineDialog from './server_offline';
