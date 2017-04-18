@@ -7,7 +7,7 @@ import { ACTIONS_CONST } from '../../constants';
 import { ProviderActions, WSActions, ItemActions, AppActions } from '../../actions/state';
 // import { RoutingActions, ModalActions, DialogActions } from '../../actions/ui';
 // import { downloadCertFromURI, CertHelper } from '../../helpers';
-import { CertHelper } from '../../helpers';
+import { CertHelper, downloadCertFromURI } from '../../helpers';
 import * as Key from './key';
 import * as Provider from './provider';
 import * as Certificate from './certificate';
@@ -380,11 +380,30 @@ function* providerSelect({ id }) {
   }
 }
 
+function* downloadItem({ format }) {
+  const state = yield select();
+  const selectedProvider = state.find('providers').where({ selected: true });
+  const crypto = yield Provider.cryptoGet(selectedProvider.get().id);
+
+  if (crypto) {
+    const selectedItem = selectedProvider.find('items').where({ selected: true }).get();
+    const item = yield Certificate.certificateGet(crypto, selectedItem._id);
+    const exported = yield Certificate.certificateExport(crypto, item, format);
+
+    if (exported && typeof exported === 'string') {
+      downloadCertFromURI(selectedItem.name, exported, selectedItem.type);
+    } else if (exported) {
+      downloadCertFromURI(selectedItem.name, [exported], selectedItem.type, true);
+    }
+  }
+}
+
 export default function* () {
   yield [
     takeEvery(ACTIONS_CONST.WS_ON_LISTENING, webcryptoOnListening),
     takeEvery(ACTIONS_CONST.PROVIDER_SELECT, providerSelect),
     takeEvery(ACTIONS_CONST.WS_LOGIN, providerLogin),
+    takeEvery(ACTIONS_CONST.WS_DOWNLOAD_ITEM, downloadItem),
   ];
   // yield [
   //   takeEvery(ACTIONS_CONST.WS_GET_KEYS, getKeys),

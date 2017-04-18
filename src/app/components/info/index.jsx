@@ -65,15 +65,15 @@ export default class Info extends Component {
   };
 
   onDownloadhandler = (format = 'pem') => {
-    // const { dispatch } = this.context;
-    // dispatch(WSActions.downloadCertificate(format));
+    const { dispatch } = this.context;
+    dispatch(WSActions.downloadItem(format));
   };
 
   onCopyHandler = () => {
-    // const { certificate } = this.props;
-    //
-    // copyToClipboard(certificate.pem);
-    // EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'copied', 3000);
+    const selectedItem = this.getSelectedItemProps();
+
+    copyToClipboard(selectedItem.pem);
+    EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'copied', 3000);
   };
 
   onMenuHandler = () => {
@@ -100,7 +100,6 @@ export default class Info extends Component {
   }
 
   renderInfoContent(type, item) {
-
     switch (type) {
       case 'certificate':
         return (

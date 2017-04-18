@@ -23,8 +23,8 @@ export const status = state => ({
   state,
 });
 
-export const downloadCertificate = format => ({
-  type: ACTIONS_CONST.WS_DOWNLOAD_CERTIFICATE,
+export const downloadItem = format => ({
+  type: ACTIONS_CONST.WS_DOWNLOAD_ITEM,
   format,
 });
 
