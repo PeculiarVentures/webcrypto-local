@@ -155,7 +155,11 @@ export class Client extends EventEmitter {
                                 return this.send(new AuthRequestProto())
                                     .then((data) => {
                                         return (async () => {
-                                            this.emit("listening", new ClientListeningEvent(this, address));
+                                            if (data && new Uint8Array(data)[0]) {
+                                                this.emit("listening", new ClientListeningEvent(this, address));
+                                            } else {
+                                                this.close();
+                                            }
                                         })();
                                     });
                             });
