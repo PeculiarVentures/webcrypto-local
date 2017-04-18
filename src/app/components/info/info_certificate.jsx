@@ -4,32 +4,28 @@ import enLang from '../../langs/en.json';
 
 const CertificateInfo = (props) => {
   const {
+    general,
     subject,
     issuer,
     publicKey,
-    extensions,
-    version,
     signature,
-    serialNumber,
-    notBefore,
-    notAfter,
-    thumbprint,
+    extensions,
   } = props;
 
-  const transformCamelCase = string => (
-    string
-      .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, str => str.toUpperCase())
-  );
+  // const transformCamelCase = string => (
+  //   string
+  //     .replace(/([A-Z])/g, ' $1')
+  //     .replace(/^./, str => str.toUpperCase())
+  // );
 
-  const renderRowContainer = (title, value, index, transform) => {
+  const renderRowContainer = (title, value, index) => {
     if (value && title !== 'name') {
       return (
         <RowCertInfo
           key={index}
         >
           <ColCert>
-            { transform === false ? title : transformCamelCase(title) }{title === 'None' ? '' : ':'}
+            { title }{title === 'None' ? '' : ':'}
           </ColCert>
           <ColCert>
             { value }
@@ -48,12 +44,12 @@ const CertificateInfo = (props) => {
           { enLang['Info.Body.General'] }
         </Title>
         <RowCert>
-          { renderRowContainer(enLang['Info.Body.SerialNumber'], serialNumber) }
-          { renderRowContainer(enLang['Info.Body.Version'], version) }
-          { renderRowContainer(enLang['Info.Body.Issued'], notBefore) }
-          { renderRowContainer(enLang['Info.Body.Expired'], notAfter) }
+          { renderRowContainer(enLang['Info.Body.SerialNumber'], general.serialNumber) }
+          { renderRowContainer(enLang['Info.Body.Version'], general.version) }
+          { renderRowContainer(enLang['Info.Body.Issued'], general.notBefore) }
+          { renderRowContainer(enLang['Info.Body.Expired'], general.notAfter) }
           <RowCert>
-            { renderRowContainer(enLang['Info.Body.Thumbprint'], thumbprint, '', false) }
+            { renderRowContainer(enLang['Info.Body.Thumbprint'], general.thumbprint) }
           </RowCert>
         </RowCert>
       </Row>
@@ -85,9 +81,10 @@ const CertificateInfo = (props) => {
           { enLang['Info.Body.PublicKeyInfo'] }
         </Title>
         <RowCert>
-          { renderRowContainer(enLang['Info.Body.Algorithm'], publicKey.algorithm.name) }
-          { renderRowContainer(enLang['Info.Body.ModulusBits'], publicKey.algorithm.modulusBits) }
-          { renderRowContainer(enLang['Info.Body.PublicExponent'], publicKey.algorithm.publicExponent) }
+          { renderRowContainer(enLang['Info.Body.Algorithm'], publicKey.algorithm) }
+          { renderRowContainer(enLang['Info.Body.ModulusBits'], publicKey.modulusBits) }
+          { renderRowContainer(enLang['Info.Body.PublicExponent'], publicKey.publicExponent) }
+          { renderRowContainer(enLang['Info.Body.NamedCurve'], publicKey.namedCurve) }
         </RowCert>
         <RowCert>
           { renderRowContainer(enLang['Info.Body.Value'], publicKey.value) }
@@ -99,8 +96,8 @@ const CertificateInfo = (props) => {
           { enLang['Info.Body.Signature'] }
         </Title>
         <RowCert>
-          { renderRowContainer(enLang['Info.Body.Algorithm'], signature.algorithm.name) }
-          { renderRowContainer(enLang['Info.Body.Hash'], signature.algorithm.hash) }
+          { renderRowContainer(enLang['Info.Body.Algorithm'], signature.algorithm) }
+          { renderRowContainer(enLang['Info.Body.Hash'], signature.hash) }
         </RowCert>
         <RowCert>
           { renderRowContainer(enLang['Info.Body.Value'], signature.value) }
@@ -132,39 +129,59 @@ const CertificateInfo = (props) => {
 };
 
 CertificateInfo.propTypes = {
-  extensions: PropTypes.oneOfType([
-    PropTypes.array,
-  ]),
-  publicKey: PropTypes.oneOfType([
-    PropTypes.object,
-  ]),
-  version: PropTypes.number,
-  signature: PropTypes.oneOfType([
+  general: PropTypes.shape({
+    serialNumber: PropTypes.string,
+    version: PropTypes.number,
+    notBefore: PropTypes.string,
+    notAfter: PropTypes.string,
+    thumbprint: PropTypes.string,
+  }),
+  subject: PropTypes.oneOfType([
     PropTypes.object,
   ]),
   issuer: PropTypes.oneOfType([
     PropTypes.object,
   ]),
-  subject: PropTypes.oneOfType([
-    PropTypes.object,
+  publicKey: PropTypes.shape({
+    modulusBits: PropTypes.any,
+    namedCurve: PropTypes.any,
+    publicExponent: PropTypes.any,
+    algorithm: PropTypes.string,
+    value: PropTypes.string,
+  }),
+  signature: PropTypes.shape({
+    algorithm: PropTypes.string,
+    hash: PropTypes.string,
+    value: PropTypes.string,
+  }),
+  extensions: PropTypes.oneOfType([
+    PropTypes.array,
   ]),
-  serialNumber: PropTypes.string,
-  notAfter: PropTypes.string,
-  notBefore: PropTypes.string,
-  thumbprint: PropTypes.string,
 };
 
 CertificateInfo.defaultProps = {
-  extensions: [],
-  publicKey: {},
-  version: '',
-  signature: {},
-  serialNumber: '',
-  issuer: {},
+  general: {
+    serialNumber: '',
+    version: '',
+    notBefore: '',
+    notAfter: '',
+    thumbprint: '',
+  },
   subject: {},
-  notAfter: '',
-  notBefore: '',
-  thumbprint: '',
+  issuer: {},
+  publicKey: {
+    modulusBits: '',
+    namedCurve: '',
+    publicExponent: '',
+    algorithm: '',
+    value: '',
+  },
+  signature: {
+    algorithm: '',
+    hash: '',
+    value: '',
+  },
+  extensions: [],
 };
 
 export default CertificateInfo;

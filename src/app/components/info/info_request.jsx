@@ -4,13 +4,8 @@ import enLang from '../../langs/en.json';
 
 const RequestInfo = (props) => {
   const {
-    commonName,
-    organization,
-    organizationUnit,
-    country,
-    region,
-    city,
-    publicKeyInfo,
+    subject,
+    publicKey,
     signature,
   } = props;
 
@@ -53,12 +48,12 @@ const RequestInfo = (props) => {
         <Title>
           { enLang['Info.Body.SubjectInfo'] }
         </Title>
-        { renderInfoContainer(enLang['Info.Body.CommonName'], commonName) }
-        { renderInfoContainer(enLang['Info.Body.Organization'], organization) }
-        { renderInfoContainer(enLang['Info.Body.OrganizationUnit'], organizationUnit) }
-        { renderInfoContainer(enLang['Info.Body.Country'], country) }
-        { renderInfoContainer(enLang['Info.Body.Region'], region) }
-        { renderInfoContainer(enLang['Info.Body.City'], city) }
+        { renderInfoContainer(enLang['Info.Body.CommonName'], subject['Common Name']) }
+        { renderInfoContainer(enLang['Info.Body.Organization'], subject.Organization) }
+        { renderInfoContainer(enLang['Info.Body.OrganizationUnit'], subject['Organization Unit']) }
+        { renderInfoContainer(enLang['Info.Body.Country'], subject.Country) }
+        { renderInfoContainer(enLang['Info.Body.Region'], subject.Region) }
+        { renderInfoContainer(enLang['Info.Body.City'], subject.City) }
       </Row>
 
       <Row>
@@ -66,13 +61,13 @@ const RequestInfo = (props) => {
           { enLang['Info.Body.PublicKeyInfo'] }
         </Title>
         <RowCert>
-          { renderRowContainer(enLang['Info.Body.Algorithm'], publicKeyInfo.type) }
-          { renderRowContainer(enLang['Info.Body.ModulusBits'], publicKeyInfo.modulusBits) }
-          { renderRowContainer(enLang['Info.Body.PublicExponent'], publicKeyInfo.publicExponent) }
-          { renderRowContainer(enLang['Info.Body.NamedCurve'], publicKeyInfo.namedCurve) }
+          { renderRowContainer(enLang['Info.Body.Algorithm'], publicKey.type) }
+          { renderRowContainer(enLang['Info.Body.ModulusBits'], publicKey.modulusBits) }
+          { renderRowContainer(enLang['Info.Body.PublicExponent'], publicKey.publicExponent) }
+          { renderRowContainer(enLang['Info.Body.NamedCurve'], publicKey.namedCurve) }
         </RowCert>
         <RowCert>
-          { renderRowContainer(enLang['Info.Body.Value'], publicKeyInfo.value) }
+          { renderRowContainer(enLang['Info.Body.Value'], publicKey.value) }
         </RowCert>
       </Row>
 
@@ -94,46 +89,51 @@ const RequestInfo = (props) => {
 };
 
 RequestInfo.propTypes = {
-  publicKeyInfo: PropTypes.shape({
-    modulusBits: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-    ]),
+  subject: PropTypes.shape({
+    'Common Name': PropTypes.string,
+    City: PropTypes.string,
+    Country: PropTypes.string,
+    Organization: PropTypes.string,
+    'Organization Unit': PropTypes.string,
+    Region: PropTypes.string,
+  }),
+  publicKey: PropTypes.shape({
+    algorithm: PropTypes.string,
+    hash: PropTypes.string,
+    modulusBits: PropTypes.number,
     namedCurve: PropTypes.string,
-    type: PropTypes.string,
-    publicExponent: PropTypes.string,
+    publicExponent: PropTypes.number,
     value: PropTypes.string,
   }),
   signature: PropTypes.shape({
     algorithm: PropTypes.string,
     hash: PropTypes.string,
+    value: PropTypes.string,
   }),
-  commonName: PropTypes.string,
-  organization: PropTypes.string,
-  organizationUnit: PropTypes.string,
-  country: PropTypes.string,
-  region: PropTypes.string,
-  city: PropTypes.string,
 };
 
 RequestInfo.defaultProps = {
-  publicKeyInfo: {
+  subject: {
+    'Common Name': '',
+    City: '',
+    Country: '',
+    Organization: '',
+    'Organization Unit': '',
+    Region: '',
+  },
+  publicKey: {
+    algorithm: '',
+    hash: '',
     modulusBits: '',
     namedCurve: '',
-    type: '',
     publicExponent: '',
     value: '',
   },
   signature: {
     algorithm: '',
     hash: '',
+    value: '',
   },
-  commonName: '',
-  organization: '',
-  organizationUnit: '',
-  country: '',
-  region: '',
-  city: '',
 };
 
 export default RequestInfo;

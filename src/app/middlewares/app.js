@@ -1,5 +1,5 @@
 import UUID from 'uuid';
-import { ItemActions } from '../actions/state';
+import { ItemActions, ProviderActions } from '../actions/state';
 // import { DialogActions } from '../actions/ui';
 import { ACTIONS_CONST } from '../constants';
 // import { RoutingController } from '../controllers';
@@ -27,6 +27,34 @@ export default store => next => (payload) => {
       const itemIndex = index || state.find('providers').where({ selected: true }).get().index;
 
       next(ItemActions.add(data, itemIndex));
+      break;
+    }
+
+    case ACTIONS_CONST.PROVIDER_SELECT: {
+      const providers = state.find('providers');
+      const provider = providers.where({ id });
+      let _id = id;
+
+      if (!provider) {
+        _id = providers.get()[0].id;
+      }
+
+      next(ProviderActions.select(_id));
+      break;
+    }
+
+    case ACTIONS_CONST.ITEM_SELECT: {
+      const providers = state.find('providers');
+      const provider = providers.where({ selected: true });
+      const items = provider.find('items');
+      const item = items.where({ id });
+      let _id = id;
+
+      if (!item) {
+        _id = items.get()[0].id;
+      }
+
+      next(ItemActions.select(_id));
       break;
     }
     //

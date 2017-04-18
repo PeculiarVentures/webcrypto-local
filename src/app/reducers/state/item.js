@@ -11,10 +11,11 @@ export default function (state, payload) {
       return state;
     }
 
-    // case ACTIONS_CONST.CERTIFICATE_SELECT: {
-    //   certificates.select(id);
-    //   return state;
-    // }
+    case ACTIONS_CONST.ITEM_SELECT: {
+      const items = providers.where({ selected: true }).find('items');
+      items.select(id);
+      return state;
+    }
     //
     // case ACTIONS_CONST.CERTIFICATE_CLEAR: {
     //   certificates.clearAll();

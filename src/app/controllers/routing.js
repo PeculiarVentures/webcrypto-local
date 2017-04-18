@@ -54,17 +54,32 @@ class RoutingController extends State.Map {
   }
 
   changeFromState(state) {
-    // this.set({
-    //   certificate: false,
-    //   key: false,
-    //   request: false,
-    //   params: this.get('params'),
-    // });
+    this.set({
+      chuncks: [],
+      certificate: false,
+      key: false,
+      request: false,
+      params: this.get('params'),
+    });
     const providers = state.find('providers');
     const selectedProvider = providers.where({ selected: true });
 
     if (selectedProvider) {
-      this.merge({ params: { provider: selectedProvider.get().id } });
+      this.merge({
+        params: {
+          provider: selectedProvider.get().id,
+        },
+      });
+
+      const items = selectedProvider.find('items');
+      const selectedItem = items.where({ selected: true });
+
+      if (selectedItem) {
+        const item = selectedItem.get();
+        this.merge({
+          [`${item.type}`]: item.id,
+        });
+      }
     }
 
     return this.compose();
@@ -73,10 +88,17 @@ class RoutingController extends State.Map {
   compose() {
     this.merge({ chuncks: [] });
     const certificate = this.get('certificate');
+    const request = this.get('request');
+
     if (certificate) {
       this.pushChunk(`certificate/${certificate}`);
       return this.getPath();
     }
+    if (request) {
+      this.pushChunk(`request/${request}`);
+      return this.getPath();
+    }
+
     return `${this.joinParams()}`;
   }
 
@@ -106,7 +128,7 @@ class RoutingController extends State.Map {
   middleware() {
     return (store) => (next) => (payload) => {
       next(payload);
-      let res = this.changeFromState(store.getState());
+      const res = this.changeFromState(store.getState());
       // console.log(res);
       // if (payload.type === ACTIONS_CONST.PROVIDER_SELECT) {
       // res = this.changeFromState(store.getState());

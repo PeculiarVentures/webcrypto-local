@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import styled from 'styled-components';
-import { CertificateActions } from '../../../actions/state';
+import { ItemActions } from '../../../actions/state';
 import { DocCertIcon, DocRequestIcon, DocKeyIcon } from '../../svg';
 
 const AlgName = styled.div`
@@ -98,7 +98,7 @@ const Item = (props, context) => {
       type: 'SIDEBAR:CLOSE',
     });
     if (!selected) {
-      dispatch(CertificateActions.select(id));
+      dispatch(ItemActions.select(id));
     }
   };
 

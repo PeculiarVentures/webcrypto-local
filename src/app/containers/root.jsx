@@ -206,7 +206,7 @@ class RootContainer extends Component {
         <InfoStyled>
           <Info
             loaded={loaded}
-            item={selectedProviderProps.items}
+            provider={selectedProviderProps}
           />
         </InfoStyled>
         <Snackbars />

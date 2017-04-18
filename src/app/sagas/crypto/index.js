@@ -327,16 +327,13 @@ function* getProviderCertificates() {
 }
 
 function* webcryptoOnListening() {
-  // const search = window.location.search;
+  yield put(AppActions.loaded(false));
   const providers = yield Provider.providerGetList();
-  // const searchedProviderId = window.decodeURIComponent(search).split('=')[1];
   let index = 0;
-  // let selected = false;
 
   yield put(WSActions.status('online'));
   for (const prv of providers) {
     const provider = yield Provider.providerGet(prv.id);
-    // selected = selected || searchedProviderId === prv.id;
 
     yield put(ProviderActions.add({
       id: prv.id,
@@ -344,7 +341,6 @@ function* webcryptoOnListening() {
       readOnly: prv.readOnly,
       index,
       logged: provider.isLogged,
-      selected: false,
     }));
     index += 1;
   }
@@ -354,18 +350,13 @@ function* webcryptoOnListening() {
     window.location.search,
   );
 
-  if (initState.params.provider) {
-    yield put(ProviderActions.select(initState.params.provider));
-  }
-
-  // if (!selected) {
-  //   yield put(ProviderActions.select(providers[0].id));
-  // }
+  yield put(ProviderActions.select(initState.params.provider));
 
   // yield [getProviderCertificates(), getProviderKeys()];
-  // yield [getProviderCertificates()];
-  // yield put(AppActions.loaded(true));
-  // yield put(ProviderActions.update({ loaded: true }));
+  yield [getProviderCertificates()];
+  yield put(ItemActions.select());
+  yield put(AppActions.loaded(true));
+  yield put(ProviderActions.update({ loaded: true }));
 }
 
 export default function* () {

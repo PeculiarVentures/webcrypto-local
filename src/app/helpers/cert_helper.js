@@ -354,7 +354,7 @@ const CertHelper = {
     let publicExponent = '';
 
     if (algorithm.publicExponent && algorithm.publicExponent.byteLength) {
-      publicExponent = algorithm.publicExponent.byteLength === 3 ? '65537' : '3';
+      publicExponent = algorithm.publicExponent.byteLength === 3 ? 65537 : 3;
     }
 
     return {
