@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
 import { Client } from "../connection/client";
-import { ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderInfoProto, ProviderTokenEventProto } from "../core/protos/provider";
+import { ProviderAuthorizedEventProto, ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderInfoProto, ProviderTokenEventProto } from "../core/protos/provider";
 import { SocketCrypto } from "./crypto";
 
 /**
@@ -46,9 +46,17 @@ export class SocketProvider extends EventEmitter {
                             const tokenProto = await ProviderTokenEventProto.importProto(await proto.exportProto());
                             this.emit("token", tokenProto);
                         }
+                        case ProviderAuthorizedEventProto.ACTION: {
+                            const authProto = await ProviderAuthorizedEventProto.importProto(await proto.exportProto());
+                            this.emit("auth", authProto);
+                        }
                         default:
                     }
                 })();
+            })
+            .on("pin", (pin) => {
+                console.info("Client:Pin", pin);
+                this.emit("pin", pin);
             })
             .on("listening", (e) => {
                 console.info("Client:Listening", e.address);
