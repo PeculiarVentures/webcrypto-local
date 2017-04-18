@@ -3,6 +3,7 @@ import { EventEmitter } from "events";
 import { Convert } from "pvtsutils";
 import { ActionProto, Event, ServerInfo } from "../core";
 import { AuthRequestProto, ResultProto } from "../core";
+import { challenge } from "./challenge";
 // import { challenge } from "./challenge";
 import { SERVER_WELL_KNOWN } from "./const";
 import { BrowserStorage } from "./storages/browser";
@@ -145,14 +146,18 @@ export class Client extends EventEmitter {
                         });
 
                         // authenticate
-                        this.send(new AuthRequestProto())
-                            .then((data) => {
-                                return (async () => {
-                                    if (data && !(new Uint8Array(data)[0])) {
-                                        // alert(`PIN: ${await challenge(this.cipher.remoteIdentity.signingKey, identity.signingKey.publicKey)}`);
-                                    }
-                                    this.emit("listening", new ClientListeningEvent(this, address));
-                                })();
+                        Promise.resolve()
+                            .then(() => {
+                                return challenge(this.cipher.remoteIdentity.signingKey, identity.signingKey.publicKey);
+                            })
+                            .then((pin) => {
+                                this.emit("pin", pin);
+                                return this.send(new AuthRequestProto())
+                                    .then((data) => {
+                                        return (async () => {
+                                            this.emit("listening", new ClientListeningEvent(this, address));
+                                        })();
+                                    });
                             });
                     })().catch((error) => this.emit("error", new ClientErrorEvent(this, error)));
                 };
@@ -191,6 +196,7 @@ export class Client extends EventEmitter {
 
     public on(event: "event", listener: (e: ActionProto) => void): this;
     public on(event: "listening", listener: (e: ClientListeningEvent) => void): this;
+    public on(event: "pin", listener: (pin: string) => void): this;
     public on(event: "close", listener: (e: ClientCloseEvent) => void): this;
     public on(event: "error", listener: (e: ClientErrorEvent) => void): this;
     public on(event: string | symbol, listener: Function) {
@@ -198,6 +204,7 @@ export class Client extends EventEmitter {
     }
 
     public once(event: "listening", listener: (e: ClientListeningEvent) => void): this;
+    public once(event: "pin", listener: (pin: string) => void): this;
     public once(event: "close", listener: (e: ClientCloseEvent) => void): this;
     public once(event: "error", listener: (e: ClientErrorEvent) => void): this;
     public once(event: string | symbol, listener: Function): this;
