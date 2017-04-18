@@ -54,10 +54,6 @@ export class SocketProvider extends EventEmitter {
                     }
                 })();
             })
-            .on("pin", (pin) => {
-                console.info("Client:Pin", pin);
-                this.emit("pin", pin);
-            })
             .on("listening", (e) => {
                 console.info("Client:Listening", e.address);
                 this.emit("listening", address);
@@ -91,6 +87,18 @@ export class SocketProvider extends EventEmitter {
 
         const infoProto = await ProviderInfoProto.importProto(result);
         return infoProto;
+    }
+
+    public async challenge() {
+        return this.client.challenge();
+    }
+
+    public async isLoggedIn() {
+        return this.client.isLoggedIn();
+    }
+
+    public async login() {
+        return this.client.login();
     }
 
     public async getCrypto(cryptoID: string) {

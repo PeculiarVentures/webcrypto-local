@@ -6,9 +6,7 @@ import { assign, Convert } from "pvtsutils";
 import { ObjectProto } from "tsprotobuf";
 import * as url from "url";
 import * as WebSocket from "websocket";
-import { ActionProto, AuthRequestProto, Event, ResultProto } from "../core";
-import { Notification } from "../core/notification";
-import { challenge } from "./challenge";
+import { ActionProto, Event, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core";
 import { SERVER_WELL_KNOWN } from "./const";
 import { OpenSSLStorage } from "./storages/ossl";
 
@@ -123,10 +121,11 @@ export class Server extends EventEmitter {
         ],
     };
 
+    public identity: Identity;
+    public storage: OpenSSLStorage;
+
     protected httpServer: http.Server;
     protected socketServer: WebSocket.server;
-    protected identity: Identity;
-    protected storage: OpenSSLStorage;
 
     public on(event: "auth", listener: (session: Session) => void): this;
     public on(event: "listening", listener: (e: ServerListeningEvent) => void): this;
@@ -250,31 +249,16 @@ export class Server extends EventEmitter {
                         const actionProto = await ActionProto.importProto(decryptedMessage);
 
                         return new Promise((resolve, reject) => {
-                            if (actionProto.action === AuthRequestProto.ACTION) {
-                                (async () => {
-                                    const resultProto = new ResultProto(actionProto);
-                                    if (!session.authorized) {
-                                        // Session is not authorized
-                                        // generate OTP
-                                        const pin = await challenge(this.identity.signingKey.publicKey, session.cipher.remoteIdentity.signingKey);
-                                        // Show notice
-                                        const ok = await Notification.question(`Is it correct pin ${pin}?`);
-                                        if (ok) {
-                                            this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
-                                            session.authorized = true;
-                                            this.emit("auth", session);
-                                        }
-                                    }
-                                    // result
-                                    resultProto.data = new Uint8Array([session.authorized ? 1 : 0]).buffer;
-                                    resolve(resultProto);
-                                })().catch(reject);
+                            console.log("Message:", actionProto.action, session.authorized);
+                            if (
+                                session.authorized ||
+                                actionProto.action === ServerIsLoggedInActionProto.ACTION ||
+                                actionProto.action === ServerLoginActionProto.ACTION
+                            ) {
+                                this.emit("message", new ServerMessageEvent(this, session, actionProto, resolve, reject));
                             } else {
                                 // If session is not authorized throw error
-                                if (!session.authorized) {
-                                    throw new Error("404: Not authorized");
-                                }
-                                this.emit("message", new ServerMessageEvent(this, session, actionProto, resolve, reject));
+                                throw new Error("404: Not authorized");
                             }
                         })
                             .then((answer: ResultProto) => {

@@ -3,7 +3,7 @@ import { Convert } from "pvtsutils";
 import { ObjectProto } from "tsprotobuf";
 import { Server, Session } from "../connection/server";
 import { Notification } from "../core/notification";
-import { ActionProto, CryptoItemProto, CryptoKeyPairProto, CryptoKeyProto, ResultProto } from "../core/proto";
+import { ActionProto, CryptoItemProto, CryptoKeyPairProto, CryptoKeyProto, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core/proto";
 import { CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetItemActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto, CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto } from "../core/protos/certstorage";
 import { ArrayStringConverter } from "../core/protos/converter";
 import { IsLoggedInActionProto, LoginActionProto } from "../core/protos/crypto";
@@ -12,6 +12,7 @@ import { ProviderAuthorizedEventProto, ProviderCryptoProto, ProviderGetCryptoAct
 import { DecryptActionProto, DeriveBitsActionProto, DeriveKeyActionProto, DigestActionProto, EncryptActionProto, ExportKeyActionProto, GenerateKeyActionProto, ImportKeyActionProto, SignActionProto, UnwrapKeyActionProto, VerifyActionProto, WrapKeyActionProto } from "../core/protos/subtle";
 import { ServiceCryptoItem } from "./crypto_item";
 import { LocalProvider } from "./provider";
+import { challenge } from "../connection/challenge";
 
 const crypto: Crypto = new (require("node-webcrypto-ossl"))();
 
@@ -94,12 +95,33 @@ export class LocalServer extends EventEmitter {
         return this;
     }
 
-    protected async  onMessage(session: Session, action: ActionProto) {
+    protected async onMessage(session: Session, action: ActionProto) {
         const resultProto = new ResultProto(action);
 
         let data: ArrayBuffer | undefined;
         console.log("Action:", action.action);
         switch (action.action) {
+            // Server
+            case ServerIsLoggedInActionProto.ACTION: {
+                data = new Uint8Array([session.authorized ? 1 : 0]).buffer;
+                break;
+            }
+            case ServerLoginActionProto.ACTION: {
+                if (!session.authorized) {
+                    // Session is not authorized
+                    // generate OTP
+                    const pin = await challenge(this.server.identity.signingKey.publicKey, session.cipher.remoteIdentity.signingKey);
+                    // Show notice
+                    const ok = await Notification.question(`Is it correct pin ${pin}?`);
+                    if (ok) {
+                        this.server.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
+                        session.authorized = true;
+                    } else {
+                        throw new Error("PIN is not approved");
+                    }
+                }
+                break;
+            }
             // Provider
             case ProviderInfoActionProto.ACTION: {
                 const info = this.provider.info;

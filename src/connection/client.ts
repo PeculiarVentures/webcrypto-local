@@ -2,7 +2,7 @@ import { AsymmetricRatchet, Identity, MessageSignedProtocol, PreKeyBundleProtoco
 import { EventEmitter } from "events";
 import { Convert } from "pvtsutils";
 import { ActionProto, Event, ServerInfo } from "../core";
-import { AuthRequestProto, ResultProto } from "../core";
+import { ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core";
 import { challenge } from "./challenge";
 // import { challenge } from "./challenge";
 import { SERVER_WELL_KNOWN } from "./const";
@@ -145,24 +145,7 @@ export class Client extends EventEmitter {
                                 });
                         });
 
-                        // authenticate
-                        Promise.resolve()
-                            .then(() => {
-                                return challenge(this.cipher.remoteIdentity.signingKey, identity.signingKey.publicKey);
-                            })
-                            .then((pin) => {
-                                this.emit("pin", pin);
-                                return this.send(new AuthRequestProto())
-                                    .then((data) => {
-                                        return (async () => {
-                                            if (data && new Uint8Array(data)[0]) {
-                                                this.emit("listening", new ClientListeningEvent(this, address));
-                                            } else {
-                                                this.close();
-                                            }
-                                        })();
-                                    });
-                            });
+                        this.emit("listening", new ClientListeningEvent(this, address));
                     })().catch((error) => this.emit("error", new ClientErrorEvent(this, error)));
                 };
                 this.socket.onclose = (e) => {
@@ -200,7 +183,6 @@ export class Client extends EventEmitter {
 
     public on(event: "event", listener: (e: ActionProto) => void): this;
     public on(event: "listening", listener: (e: ClientListeningEvent) => void): this;
-    public on(event: "pin", listener: (pin: string) => void): this;
     public on(event: "close", listener: (e: ClientCloseEvent) => void): this;
     public on(event: "error", listener: (e: ClientErrorEvent) => void): this;
     public on(event: string | symbol, listener: Function) {
@@ -208,12 +190,47 @@ export class Client extends EventEmitter {
     }
 
     public once(event: "listening", listener: (e: ClientListeningEvent) => void): this;
-    public once(event: "pin", listener: (pin: string) => void): this;
     public once(event: "close", listener: (e: ClientCloseEvent) => void): this;
     public once(event: "error", listener: (e: ClientErrorEvent) => void): this;
     public once(event: string | symbol, listener: Function): this;
     public once(event: string | symbol, listener: Function) {
         return super.once(event, listener);
+    }
+
+    /**
+     * Return PIN for current session
+     * 
+     * @returns 
+     * 
+     * @memberOf Client
+     */
+    public async challenge() {
+        return challenge(this.cipher.remoteIdentity.signingKey, this.cipher.identity.signingKey.publicKey);
+    }
+
+    /**
+     * Returns true if session is authorized
+     * 
+     * 
+     * @memberOf Client
+     */
+    public async isLoggedIn() {
+        const action = new ServerIsLoggedInActionProto();
+
+        const data = await this.send(action);
+        return data ? !!(new Uint8Array(data)[0]) : false;
+    }
+
+    /**
+     * Request session authentication
+     * 
+     * 
+     * @memberOf Client
+     */
+    public async login() {
+        const action = new ServerLoginActionProto();
+
+        await this.send(action);
     }
 
     /**

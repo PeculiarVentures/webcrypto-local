@@ -221,3 +221,19 @@ export class AuthRequestProto extends ActionProto {
     public static ACTION = "auth";
 
 }
+
+@ProtobufElement({})
+export class ServerLoginActionProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "server/login";
+
+}
+
+@ProtobufElement({})
+export class ServerIsLoggedInActionProto extends ActionProto {
+
+    public static INDEX = ActionProto.INDEX;
+    public static ACTION = "server/isLoggedIn";
+
+}
