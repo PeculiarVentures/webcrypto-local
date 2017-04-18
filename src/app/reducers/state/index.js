@@ -1,3 +1,3 @@
 export App from './app';
-export Certificates from './certificate';
+export Items from './item';
 export Providers from './provider';

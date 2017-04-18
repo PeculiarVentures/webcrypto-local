@@ -40,3 +40,7 @@ export const getProviders = () => ({
 export const login = () => ({
   type: ACTIONS_CONST.WS_LOGIN,
 });
+
+export const onListening = () => ({
+  type: ACTIONS_CONST.WS_ON_LISTENING,
+});

@@ -31,7 +31,8 @@ export const CERTIFICATE_CLEAR = 'CERTIFICATE:CLEAR';
 // Provider
 export const PROVIDER_ADD = 'PROVIDER:ADD';
 export const PROVIDER_SELECT = 'PROVIDER:SELECT';
-export const PROVIDERS_UPDATE = 'PROVIDERS:UPDATE';
+export const PROVIDER_UPDATE = 'PROVIDER:UPDATE';
+// export const PROVIDERS_UPDATE = 'PROVIDERS:UPDATE';
 
 // Routing
 export const ROUTING_PUSH = 'ROUTING:PUSH';
@@ -54,3 +55,14 @@ export const WS_LOGIN = 'WS:LOGIN';
 
 // Error
 export const ERROR = 'ERROR';
+
+// Webcrypto
+export const WS_ON_LISTENING = 'WS:ON_LISTENING';
+
+// Item
+export const ITEM_SELECT = 'ITEM:SELECT';
+export const ITEM_UPDATE = 'ITEM:UPDATE';
+export const ITEM_ADD = 'ITEM:ADD';
+export const ITEM_REMOVE = 'ITEM:REMOVE';
+export const ITEM_DOWNLOAD = 'ITEM:DOWNLOAD';
+export const ITEM_COPY = 'ITEM:COPY';

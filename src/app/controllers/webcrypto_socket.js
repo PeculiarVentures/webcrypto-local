@@ -1,7 +1,8 @@
 /* eslint no-undef: 0 */
 import { SERVER_URL } from '../../../scripts/config';
 import Store from '../store';
-import { WSActions, ErrorActions } from '../actions/state';
+// import { WSActions, ErrorActions } from '../actions/state';
+import { WSActions } from '../actions/state';
 
 export const ws = new WebcryptoSocket.SocketProvider();
 window.ws = ws;
@@ -15,21 +16,22 @@ export const WSController = {
     ws.connect(SERVER_URL)
       .on('error', (error) => {
         clearTimeout(this.interval);
-        Store.dispatch(ErrorActions.error(error));
+        // Store.dispatch(ErrorActions.error(error));
         console.log('WebcryptoSocket connected error: ', error.message);
       })
       .on('listening', () => {
         clearTimeout(this.interval);
-        Store.dispatch(WSActions.status('online'));
-        Store.dispatch(WSActions.getProviders());
+        Store.dispatch(WSActions.onListening());
+        // Store.dispatch(WSActions.status('online'));
+        // Store.dispatch(WSActions.getProviders());
       })
       .on('close', () => {
-        Store.dispatch(WSActions.status('offline'));
+        // Store.dispatch(WSActions.status('offline'));
         this.checkConnect();
       })
       .on('token', () => {
         clearTimeout(this.interval);
-        Store.dispatch(WSActions.getProviders());
+        // Store.dispatch(WSActions.getProviders());
       });
   },
 

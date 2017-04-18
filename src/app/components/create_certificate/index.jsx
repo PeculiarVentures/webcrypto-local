@@ -8,8 +8,8 @@ import * as IndexStyled from './styled/index.styled';
 export default class CertificateCreate extends Component {
 
   static propTypes = {
-    dataLoaded: PropTypes.bool,
-    serverStatus: PropTypes.string,
+    loaded: PropTypes.bool,
+    status: PropTypes.string,
     providers: PropTypes.oneOfType([
       PropTypes.array,
     ]),
@@ -17,8 +17,8 @@ export default class CertificateCreate extends Component {
   };
 
   static defaultProps = {
-    dataLoaded: false,
-    serverStatus: 'seaching',
+    loaded: false,
+    status: 'seaching',
     providers: [],
     readOnly: false,
   };
@@ -38,7 +38,7 @@ export default class CertificateCreate extends Component {
   };
 
   render() {
-    const { dataLoaded, serverStatus, providers, readOnly } = this.props;
+    const { loaded, status, providers, readOnly } = this.props;
     return (
       <IndexStyled.Wrapper>
         <Header
@@ -47,8 +47,8 @@ export default class CertificateCreate extends Component {
         <Body
           onCancel={this.onCancelHandler}
           onCreate={this.onCreateHandler}
-          dataLoaded={dataLoaded}
-          serverStatus={serverStatus}
+          loaded={loaded}
+          status={status}
           providers={providers}
           readOnly={readOnly}
         />

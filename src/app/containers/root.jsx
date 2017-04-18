@@ -29,25 +29,19 @@ class RootContainer extends Component {
       PropTypes.object,
     ]),
     dispatch: PropTypes.func,
-    certificates: PropTypes.oneOfType([
-      PropTypes.array,
-    ]),
-    dataLoaded: PropTypes.bool,
-    serverStatus: PropTypes.string,
+    loaded: PropTypes.bool,
+    status: PropTypes.string,
     providers: PropTypes.oneOfType([
       PropTypes.array,
     ]),
-    readOnly: PropTypes.bool,
   };
 
   static defaultProps = {
     params: {},
     dispatch: () => {},
-    certificates: [],
-    dataLoaded: false,
-    serverStatus: 'seaching',
+    loaded: false,
+    status: 'seaching',
     providers: [],
-    readOnly: false,
   };
 
   static childContextTypes = {
@@ -96,56 +90,56 @@ class RootContainer extends Component {
   }
 
   componentDidMount() {
-    const { dispatch, certificates, params } = this.props;
-    const selectedCertificate = this.getSelectedCertificateProps();
-
-    if (!certificates.length) {
-      dispatch(RoutingActions.push(''));
-    } else if (params.id) {
-      dispatch(CertificateActions.select(params.id));
-    } else if (!selectedCertificate.id && certificates.length) {
-      dispatch(CertificateActions.select(certificates[0].id));
-    }
-
-    if (!certificates.length) {
-      this.handleRootAction({ type: 'SIDEBAR:OPEN' });
-    }
+    // const { dispatch, certificates, params } = this.props;
+    // const selectedCertificate = this.getSelectedCertificateProps();
+    //
+    // if (!certificates.length) {
+    //   dispatch(RoutingActions.push(''));
+    // } else if (params.id) {
+    //   dispatch(CertificateActions.select(params.id));
+    // } else if (!selectedCertificate.id && certificates.length) {
+    //   dispatch(CertificateActions.select(certificates[0].id));
+    // }
+    //
+    // if (!certificates.length) {
+    //   this.handleRootAction({ type: 'SIDEBAR:OPEN' });
+    // }
   }
 
   componentDidUpdate(prevProps) {
-    const { params, dispatch, certificates } = this.props;
-
-    const selectedCert = this.getSelectedCertificateProps();
-    const selectedCertId = selectedCert.id;
-    const paramsId = params.id;
-    const certificatesLength = certificates.length;
-    const prevCertificatesLength = prevProps.certificates.length;
-    const firstCertificate = certificates[0];
-
-    if (!paramsId && !selectedCertId && certificatesLength) {
-      dispatch(CertificateActions.select(firstCertificate.id));
-      dispatch(RoutingActions.push(`certificate/${firstCertificate.id}`));
-    }
-
-    if (selectedCertId && paramsId && (selectedCertId !== paramsId)) {
-      dispatch(CertificateActions.select(selectedCertId));
-      dispatch(RoutingActions.push(`certificate/${selectedCertId}`));
-    }
-
-    if (
-      paramsId && !selectedCertId
-      && (prevCertificatesLength !== certificatesLength)
-      && firstCertificate
-    ) {
-      dispatch(CertificateActions.select(firstCertificate.id));
-      dispatch(RoutingActions.push(`certificate/${firstCertificate.id}`));
-    }
-
-    // if remove last certificate
-    if (prevCertificatesLength === 1 && !certificatesLength) {
-      this.handleRootAction({ type: 'SIDEBAR:OPEN' });
-      dispatch(RoutingActions.push(''));
-    }
+    // const { params, dispatch, certificates } = this.props;
+    //
+    // const selectedCert = this.getSelectedCertificateProps();
+    // const selectedCertId = selectedCert.id;
+    // const paramsId = params.id;
+    // const certificatesLength = certificates.length;
+    // const prevCertificatesLength = prevProps.certificates.length;
+    // const firstCertificate = certificates[0];
+    //
+    // if (!paramsId && !selectedCertId && certificatesLength) {
+    //   dispatch(CertificateActions.select(firstCertificate.id));
+    //   dispatch(RoutingActions.push(`certificate/${firstCertificate.id}`));
+    // }
+    //
+    // if (selectedCertId && paramsId && (selectedCertId !== paramsId)) {
+    //   dispatch(CertificateActions.select(selectedCertId));
+    //   dispatch(RoutingActions.push(`certificate/${selectedCertId}`));
+    // }
+    //
+    // if (
+    //   paramsId && !selectedCertId
+    //   && (prevCertificatesLength !== certificatesLength)
+    //   && firstCertificate
+    // ) {
+    //   dispatch(CertificateActions.select(firstCertificate.id));
+    //   dispatch(RoutingActions.push(`certificate/${firstCertificate.id}`));
+    // }
+    //
+    // // if remove last certificate
+    // if (prevCertificatesLength === 1 && !certificatesLength) {
+    //   this.handleRootAction({ type: 'SIDEBAR:OPEN' });
+    //   dispatch(RoutingActions.push(''));
+    // }
   }
 
   componentWillUnmount() {
@@ -158,18 +152,18 @@ class RootContainer extends Component {
     });
   }
 
-  getSelectedCertificateProps() {
-    const { certificates } = this.props;
-    let certificate = {};
+  getSelectedProviderProps() {
+    const { providers } = this.props;
+    let provider = {};
 
-    certificates.map((cert) => {
-      if (cert.selected) {
-        certificate = cert;
+    providers.map((prv) => {
+      if (prv.selected) {
+        provider = prv;
       }
       return true;
     });
 
-    return certificate;
+    return provider;
   }
 
   handleRootAction(payload) {
@@ -196,24 +190,23 @@ class RootContainer extends Component {
   }
 
   render() {
-    const { certificates, dataLoaded, serverStatus, providers, readOnly } = this.props;
+    const { loaded, status, providers } = this.props;
     const { sidebarOpen } = this.state;
+    const selectedProviderProps = this.getSelectedProviderProps();
 
     return (
       <ContentStyled>
         <Sidebar
           open={sidebarOpen}
-          list={certificates}
-          dataLoaded={dataLoaded}
-          serverStatus={serverStatus}
+          loaded={loaded}
+          status={status}
           providers={providers}
-          readOnly={readOnly}
+          provider={selectedProviderProps}
         />
         <InfoStyled>
           <Info
-            dataLoaded={dataLoaded}
-            readOnly={readOnly}
-            certificate={this.getSelectedCertificateProps()}
+            loaded={loaded}
+            item={selectedProviderProps.items}
           />
         </InfoStyled>
         <Snackbars />

@@ -2,9 +2,7 @@ export const DEFAULT = {
   modal: '',
   dialog: '',
   snackbar: '',
-  dataLoaded: false,
-  serverStatus: 'seaching',
-  certificates: [],
+  loaded: false,
+  status: 'seaching',
   providers: [],
-  readOnly: false,
 };

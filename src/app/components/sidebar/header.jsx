@@ -8,7 +8,7 @@ import * as HeaderStyled from './styled/header.styled';
 export default class SidebarHeader extends Component {
 
   static propTypes = {
-    dataLoaded: PropTypes.bool,
+    loaded: PropTypes.bool,
     providers: PropTypes.oneOfType([
       PropTypes.array,
     ]),
@@ -16,7 +16,7 @@ export default class SidebarHeader extends Component {
   };
 
   static defaultProps = {
-    dataLoaded: false,
+    loaded: false,
     providers: [],
     readOnly: false,
   };
@@ -33,7 +33,7 @@ export default class SidebarHeader extends Component {
 
   onClickImportHandler = () => {
     const { dispatch } = this.context;
-    dispatch(ModalActions.openModal('import_certificate'));
+    dispatch(ModalActions.open('import_certificate'));
   };
 
   onSelectHandler = (data) => {
@@ -46,7 +46,7 @@ export default class SidebarHeader extends Component {
   };
 
   render() {
-    const { dataLoaded, providers, readOnly } = this.props;
+    const { loaded, providers, readOnly } = this.props;
     const { deviceType } = this.context;
     const selectedProvider = providers.filter(obj => obj.selected);
     const currentProvider = selectedProvider.length
@@ -57,7 +57,7 @@ export default class SidebarHeader extends Component {
       <HeaderStyled.SidebarHeader>
         <HeaderStyled.BtnsContainer>
           <HeaderStyled.Btn
-            disabled={!dataLoaded || readOnly}
+            disabled={!loaded || readOnly}
             primary
             onClick={this.onClickImportHandler}
           >
@@ -65,7 +65,7 @@ export default class SidebarHeader extends Component {
             { enLang['Sidebar.Header.Btn.Import'] }
           </HeaderStyled.Btn>
           <HeaderStyled.Btn
-            disabled={!dataLoaded || readOnly}
+            disabled={!loaded || readOnly}
             primary
             onClick={this.onClickCreateHandler}
           >

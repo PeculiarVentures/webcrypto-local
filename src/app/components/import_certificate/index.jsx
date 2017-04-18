@@ -22,7 +22,7 @@ export default class ImportCertificate extends Component {
 
   onBackHandler = () => {
     const { dispatch } = this.context;
-    dispatch(ModalActions.closeModal());
+    dispatch(ModalActions.close());
   };
 
   render() {

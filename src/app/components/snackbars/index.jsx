@@ -60,7 +60,7 @@ export default class Snackbars extends React.Component {
     switch (type) {
 
       case ACTIONS_CONST.MODAL_OPEN:
-        dispatch(ModalActions.openModal(value));
+        dispatch(ModalActions.open(value));
         break;
 
       default:

@@ -3,38 +3,57 @@ import * as pkijs from 'pkijs';
 import * as asn1js from 'asn1js';
 import { ErrorActions } from '../../actions/state';
 import { CertHelper } from '../../helpers';
+import * as Key from './key';
 
-export function* getCertificates(crypto) {
+export function* certificateGetIDs(crypto) {
   if (crypto) {
-    return yield crypto.certStorage.keys();
+    try {
+      return yield crypto.certStorage.keys();
+    } catch (error) {
+      yield put(ErrorActions.error(error));
+      return [];
+    }
   }
   return [];
 }
 
-export function* getCertificate(crypto, certId) {
+export function* certificateSet(crypto, cert) {
   if (crypto) {
     try {
-      return yield crypto.certStorage.getItem(certId);
+      return yield crypto.certStorage.setItem(cert);
     } catch (error) {
       yield put(ErrorActions.error(error));
+      return false;
     }
   }
   return false;
 }
 
-export function* exportCertificate(crypto, certId, format = 'pem') {
+export function* certificateGet(crypto, id) {
   if (crypto) {
     try {
-      const cert = yield crypto.certStorage.getItem(certId);
+      return yield crypto.certStorage.getItem(id);
+    } catch (error) {
+      yield put(ErrorActions.error(error));
+      return false;
+    }
+  }
+  return false;
+}
+
+export function* certificateExport(crypto, cert, format = 'pem') {
+  if (crypto) {
+    try {
       return yield crypto.certStorage.exportCert(format, cert);
     } catch (error) {
       yield put(ErrorActions.error(error));
+      return false;
     }
   }
   return false;
 }
 
-export function* importCertificate(crypto, data) {
+export function* certificateImport(crypto, data) {
   if (crypto) {
     try {
       const { raw, usages, type } = data;
@@ -55,15 +74,16 @@ export function* importCertificate(crypto, data) {
         }
       }
 
-      return yield crypto.certStorage.setItem(importCert);
+      return yield certificateSet(crypto, importCert);
     } catch (error) {
       yield put(ErrorActions.error(error, 'import_certificate'));
+      return false;
     }
   }
   return false;
 }
 
-export function* createCertificate(crypto, data) {
+export function* certificateCreate(crypto, data) {
   // const data = {
   //   commonName: 'My cert 6',
   //   hostName: 'domain',
@@ -94,6 +114,7 @@ export function* createCertificate(crypto, data) {
         publicKey,
         privateKey,
       } = yield crypto.subtle.generateKey(_algorithm(), extractable, usages);
+
       pkijs.setEngine('Crypto', crypto, crypto.subtle);
       pkcs10.version = 0;
       pkcs10 = CertHelper.decoratePkcs10Subject(pkcs10, data);
@@ -119,6 +140,7 @@ export function* createCertificate(crypto, data) {
       });
 
       pkcs10.attributes.push(attribute);
+      // sign
       yield pkcs10.sign(privateKey, privateKey.algorithm.hash ? privateKey.algorithm.hash.name : 'SHA-1');
 
       const csrBuffer = pkcs10.toSchema().toBER(false);
@@ -130,9 +152,9 @@ export function* createCertificate(crypto, data) {
         yield put(ErrorActions.error(error, 'request_create'));
       }
 
-      const certId = yield crypto.certStorage.setItem(importCert);
-      yield crypto.keyStorage.setItem(privateKey);
-      yield crypto.keyStorage.setItem(publicKey);
+      const certId = yield certificateSet(crypto, importCert);
+      Key.keySet(crypto, privateKey);
+      Key.keySet(crypto, publicKey);
       return certId;
     } catch (error) {
       yield put(ErrorActions.error(error, 'request_create'));
@@ -144,10 +166,21 @@ export function* createCertificate(crypto, data) {
 export function* removeCertificate(crypto, certId) {
   if (crypto) {
     try {
-      yield crypto.certStorage.removeItem(certId);
-      return true;
+      return yield crypto.certStorage.removeItem(certId);
     } catch (error) {
       yield put(ErrorActions.error(error));
+    }
+  }
+  return false;
+}
+
+export function* certificateThumbprint(crypto, raw) {
+  if (crypto) {
+    try {
+      return yield crypto.subtle.digest('SHA-256', raw);
+    } catch (error) {
+      yield put(ErrorActions.error(error));
+      return false;
     }
   }
   return false;

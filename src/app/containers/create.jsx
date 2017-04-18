@@ -12,8 +12,8 @@ class CreateContainer extends Component {
 
   static propTypes = {
     dispatch: PropTypes.func,
-    dataLoaded: PropTypes.bool,
-    serverStatus: PropTypes.string,
+    loaded: PropTypes.bool,
+    status: PropTypes.string,
     providers: PropTypes.oneOfType([
       PropTypes.array,
     ]),
@@ -22,8 +22,8 @@ class CreateContainer extends Component {
 
   static defaultProps = {
     dispatch: null,
-    dataLoaded: false,
-    serverStatus: 'seaching',
+    loaded: false,
+    status: 'seaching',
     providers: [],
     readOnly: false,
   };
@@ -39,12 +39,12 @@ class CreateContainer extends Component {
   }
 
   render() {
-    const { dataLoaded, serverStatus, providers, readOnly } = this.props;
+    const { loaded, status, providers, readOnly } = this.props;
     return (
       <ContentStyled>
         <CertificateCreate
-          dataLoaded={dataLoaded}
-          serverStatus={serverStatus}
+          loaded={loaded}
+          status={status}
           providers={providers}
           readOnly={readOnly}
         />

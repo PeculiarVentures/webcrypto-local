@@ -45,7 +45,7 @@ export default class Info extends Component {
   };
 
   static propTypes = {
-    dataLoaded: PropTypes.bool,
+    loaded: PropTypes.bool,
     certificate: PropTypes.oneOfType([
       PropTypes.object,
     ]),
@@ -54,7 +54,7 @@ export default class Info extends Component {
 
   static defaultProps = {
     certificate: {},
-    dataLoaded: false,
+    loaded: false,
     readOnly: false,
   };
 
@@ -108,15 +108,15 @@ export default class Info extends Component {
   }
 
   render() {
-    const { certificate, dataLoaded, readOnly } = this.props;
+    const { certificate, loaded, readOnly } = this.props;
 
     switch (true) {
-      case !dataLoaded:
+      case !loaded:
         return (
           <RootStyled>
             <HeaderContainer>
               <Header
-                dataLoaded={dataLoaded}
+                loaded={loaded}
               />
             </HeaderContainer>
             <InfoContainer>
@@ -140,7 +140,7 @@ export default class Info extends Component {
             <HeaderContainer>
               <Header
                 readOnly={readOnly}
-                dataLoaded={dataLoaded}
+                loaded={loaded}
                 name={certificate.name}
                 isKey={certificate.type === 'key'}
                 onCopy={this.onCopyHandler}

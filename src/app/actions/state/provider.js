@@ -5,13 +5,14 @@ export const add = result => ({
   result,
 });
 
-export const updateProviders = result => ({
-  type: ACTIONS_CONST.PROVIDERS_UPDATE,
+export const update = (result, id) => ({
+  type: ACTIONS_CONST.PROVIDER_UPDATE,
   result,
+  id,
 });
 
-export const select = (id, update) => ({
+export const select = (id, upd) => ({
   type: ACTIONS_CONST.PROVIDER_SELECT,
   id,
-  update,
+  upd,
 });

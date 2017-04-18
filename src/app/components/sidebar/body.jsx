@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
-import Certificate from './parts/certificate';
+import Item from './parts/item';
 import EmptyBody from '../info/empty_body';
 import Shell from './parts/shell';
 
@@ -18,12 +18,12 @@ export default class SidebarBody extends Component {
     list: PropTypes.oneOfType([
       PropTypes.array,
     ]),
-    dataLoaded: PropTypes.bool,
+    loaded: PropTypes.bool,
   };
 
   static defaultProps = {
     list: [],
-    dataLoaded: false,
+    loaded: false,
   };
 
   static contextTypes = {
@@ -41,34 +41,34 @@ export default class SidebarBody extends Component {
     return null;
   }
 
-  renderCertificates() {
+  renderItems() {
     const { list } = this.props;
 
     return list.map((item, index) => (
-      <Certificate
+      <Item
         key={index}
         id={item.id}
         name={item.name}
         type={item.type}
         selected={item.selected}
-        algorithm={item.algorithm || item.publicKeyInfo.algorithm}
-        size={item.size || item.publicKeyInfo.modulusBits || item.publicKeyInfo.namedCurve || ''}
+        algorithm={item.algorithm || item.publicKey.algorithm}
+        size={item.modulusLength || item.namedCurve || item.publicKey.modulusBits || item.publicKey.namedCurve || ''}
       />
     ));
   }
 
   renderContent() {
-    const { list, dataLoaded } = this.props;
+    const { list, loaded } = this.props;
 
     switch (true) {
-      case !dataLoaded:
+      case !loaded:
         return (
           <Shell />
         );
 
       case list.length > 0:
         return (
-          this.renderCertificates()
+          this.renderItems()
         );
 
       default:

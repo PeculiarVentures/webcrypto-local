@@ -1,10 +1,10 @@
 import { ACTIONS_CONST } from '../../constants';
 
-export const openModal = value => ({
+export const open = value => ({
   type: ACTIONS_CONST.MODAL_OPEN,
   value,
 });
 
-export const closeModal = () => ({
+export const close = () => ({
   type: ACTIONS_CONST.MODAL_CLOSE,
 });

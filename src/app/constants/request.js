@@ -2,13 +2,18 @@ export const DEFAULT = {
   id: '[[id]]',
   _id: '[[id]]',
   name: '',
-  commonName: '',
-  organization: '',
-  organizationUnit: '',
-  country: '',
-  region: '',
-  city: '',
-  publicKeyInfo: {
+  selected: false,
+  type: 'request',
+  pem: '',
+  subject: {
+    commonName: '',
+    organization: '',
+    organizationUnit: '',
+    country: '',
+    region: '',
+    city: '',
+  },
+  publicKey: {
     modulusBits: '',
     namedCurve: '',
     type: '',
@@ -21,7 +26,4 @@ export const DEFAULT = {
     hash: '',
     value: '',
   },
-  selected: false,
-  type: 'request',
-  pem: '',
 };

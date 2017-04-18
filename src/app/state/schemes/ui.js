@@ -1,21 +1,15 @@
 import { Type, Schema, is } from 'quantizer';
-import { CertificateList, ProviderList } from '../models';
+import { ProviderListModel } from '../models';
 
 export default new Schema('UI', {
   modal: Type.String,
   dialog: Type.String,
   snackbar: Type.String,
-  dataLoaded: Type.Boolean,
-  serverStatus: Type.String,
-  certificates: new Type({
-    name: 'CertificateList',
-    instance: CertificateList,
-    validate: is.list,
-  }),
+  loaded: Type.Boolean,
+  status: Type.String,
   providers: new Type({
     name: 'ProviderList',
-    instance: ProviderList,
+    instance: ProviderListModel,
     validate: is.list,
   }),
-  readOnly: Type.Boolean,
 });
