@@ -60,7 +60,7 @@ export default class Overlay extends Component {
       }
     }
 
-    if (prevProps.dialog !== this.props.dialog) {
+    if (prevProps.dialog !== this.props.dialog && !this.props.dialog) {
       this.onSetMessage('');
     }
   }
@@ -129,7 +129,7 @@ export default class Overlay extends Component {
       }
 
       case 'TRY_AGAIN_PIN': {
-        WSController.connect();
+        WSController.isLogged();
         return dispatch(DialogActions.close());
       }
 
@@ -211,6 +211,7 @@ export default class Overlay extends Component {
           />
           <Dialog.FortifyAuthorizationDialog
             name="fortify_authorization"
+            message={message}
           />
         </SegueHandler>
       );

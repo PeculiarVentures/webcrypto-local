@@ -48,7 +48,7 @@ function* errorHandler({ data, action }) {
         //   break;
         // }
 
-        case '404: Not authorized': {
+        case 'PIN is not approved': {
           yield put(DialogActions.open('unauthorize_pin'));
           break;
         }

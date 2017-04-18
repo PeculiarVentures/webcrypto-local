@@ -2952,6 +2952,30 @@ AuthRequestProto.ACTION = "auth";
 AuthRequestProto = __decorate([
     ProtobufElement({ name: "AuthRequest" })
 ], AuthRequestProto);
+var ServerLoginActionProto = (function (_super) {
+    __extends(ServerLoginActionProto, _super);
+    function ServerLoginActionProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ServerLoginActionProto;
+}(ActionProto));
+ServerLoginActionProto.INDEX = ActionProto.INDEX;
+ServerLoginActionProto.ACTION = "server/login";
+ServerLoginActionProto = __decorate([
+    ProtobufElement({})
+], ServerLoginActionProto);
+var ServerIsLoggedInActionProto = (function (_super) {
+    __extends(ServerIsLoggedInActionProto, _super);
+    function ServerIsLoggedInActionProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ServerIsLoggedInActionProto;
+}(ActionProto));
+ServerIsLoggedInActionProto.INDEX = ActionProto.INDEX;
+ServerIsLoggedInActionProto.ACTION = "server/isLoggedIn";
+ServerIsLoggedInActionProto = __decorate([
+    ProtobufElement({})
+], ServerIsLoggedInActionProto);
 var BaseProto_1;
 var ActionProto_1;
 var BaseAlgorithmProto_1;
@@ -3267,27 +3291,7 @@ var Client = (function (_super) {
                                         console.error(error);
                                     });
                                 });
-                                Promise.resolve()
-                                    .then(function () {
-                                    return challenge(_this.cipher.remoteIdentity.signingKey, identity.signingKey.publicKey);
-                                })
-                                    .then(function (pin) {
-                                    _this.emit("pin", pin);
-                                    return _this.send(new AuthRequestProto())
-                                        .then(function (data) {
-                                        return (function () { return __awaiter(_this, void 0, void 0, function () {
-                                            return __generator(this, function (_a) {
-                                                if (data && new Uint8Array(data)[0]) {
-                                                    this.emit("listening", new ClientListeningEvent(this, address));
-                                                }
-                                                else {
-                                                    this.close();
-                                                }
-                                                return [2];
-                                            });
-                                        }); })();
-                                    });
-                                });
+                                this.emit("listening", new ClientListeningEvent(this, address));
                                 return [2];
                         }
                     });
@@ -3325,6 +3329,43 @@ var Client = (function (_super) {
     };
     Client.prototype.once = function (event, listener) {
         return _super.prototype.once.call(this, event, listener);
+    };
+    Client.prototype.challenge = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, challenge(this.cipher.remoteIdentity.signingKey, this.cipher.identity.signingKey.publicKey)];
+            });
+        });
+    };
+    Client.prototype.isLoggedIn = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var action, data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        action = new ServerIsLoggedInActionProto();
+                        return [4, this.send(action)];
+                    case 1:
+                        data = _a.sent();
+                        return [2, data ? !!(new Uint8Array(data)[0]) : false];
+                }
+            });
+        });
+    };
+    Client.prototype.login = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var action;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        action = new ServerLoginActionProto();
+                        return [4, this.send(action)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
     };
     Client.prototype.send = function (data) {
         var _this = this;
@@ -3545,7 +3586,7 @@ var LoginActionProto = (function (_super) {
     }
     return LoginActionProto;
 }(CryptoActionProto));
-LoginActionProto.INDEX = ActionProto.INDEX;
+LoginActionProto.INDEX = CryptoActionProto.INDEX;
 LoginActionProto.ACTION = "crypto/login";
 LoginActionProto = __decorate([
     ProtobufElement({})
@@ -3557,7 +3598,7 @@ var IsLoggedInActionProto = (function (_super) {
     }
     return IsLoggedInActionProto;
 }(CryptoActionProto));
-IsLoggedInActionProto.INDEX = ActionProto.INDEX;
+IsLoggedInActionProto.INDEX = CryptoActionProto.INDEX;
 IsLoggedInActionProto.ACTION = "crypto/isLoggedIn";
 IsLoggedInActionProto = __decorate([
     ProtobufElement({})
@@ -6299,10 +6340,6 @@ var SocketProvider = (function (_super) {
                 });
             }); })();
         })
-            .on("pin", function (pin) {
-            console.info("Client:Pin", pin);
-            _this.emit("pin", pin);
-        })
             .on("listening", function (e) {
             console.info("Client:Listening", e.address);
             _this.emit("listening", address);
@@ -6337,6 +6374,27 @@ var SocketProvider = (function (_super) {
                         infoProto = _a.sent();
                         return [2, infoProto];
                 }
+            });
+        });
+    };
+    SocketProvider.prototype.challenge = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, this.client.challenge()];
+            });
+        });
+    };
+    SocketProvider.prototype.isLoggedIn = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, this.client.isLoggedIn()];
+            });
+        });
+    };
+    SocketProvider.prototype.login = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, this.client.login()];
             });
         });
     };

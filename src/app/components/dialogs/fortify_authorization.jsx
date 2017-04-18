@@ -1,7 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
 import { Dialog } from '../basic';
-import { QShortcuts } from '../../controllers';
 import enLang from '../../langs/en.json';
 
 const NumberStyled = styled.div`
@@ -34,52 +33,28 @@ const DescrStyled = styled.div`
 export default class FortifyAuthorizationDialog extends Component {
 
   static propTypes = {
-    onAccept: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired,
-    numbers: PropTypes.arrayOf(PropTypes.number),
+    message: PropTypes.string,
   };
 
   static defaultProps = {
-    onAccept: null,
-    onCancel: null,
-    numbers: [],
+    message: '',
   };
 
-  constructor() {
-    super();
-    this.unbind = () => {};
-  }
-
-  componentDidMount() {
-    const { onCancel } = this.props;
-    QShortcuts.on('ESCAPE', onCancel);
-
-    this.unbind = () => {
-      QShortcuts.off('ESCAPE', onCancel);
-    };
-  }
-
-  componentWillUnmount() {
-    this.unbind();
-  }
-
   render() {
-    const { onAccept, onCancel, numbers } = this.props;
+    const { message } = this.props;
 
     return (
       <Dialog
         title={enLang['Dialog.FortifyAuthorization.Title']}
-        acceptText={enLang['Dialog.FortifyAuthorization.Btn.Accept']}
-        cancelText={enLang['Dialog.FortifyAuthorization.Btn.Cancel']}
-        onAccept={onAccept}
-        onCancel={onCancel}
+        acceptText={''}
+        cancelText={''}
       >
         <DescrStyled>
           { enLang['Dialog.FortifyAuthorization.Description'] }
         </DescrStyled>
         <NumbersContainerStyled>
           {
-            numbers.map((number, index) => (
+            message.split('').map((number, index) => (
               <NumberStyled
                 key={index}
               >
