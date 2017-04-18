@@ -72,7 +72,11 @@ export const Col = styled.div`
 `;
 
 export const ColCert = styled.div`
-  font-size: 14px;
+  ${props => (
+    props.monospace
+      ? 'font-family: Monaco, monospace !important;font-size: 13px;'
+      : 'font-family: inherit;font-size: 14px;'
+  )};
   letter-spacing: 0.04em;
   display: inline-block;
   vertical-align: top;
