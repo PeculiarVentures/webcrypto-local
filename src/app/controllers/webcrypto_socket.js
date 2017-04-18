@@ -25,11 +25,16 @@ export const WSController = {
       })
       .on('close', () => {
         Store.dispatch(WSActions.status('offline'));
-        this.checkConnect();
+        // this.checkConnect();
       })
       .on('token', () => {
         clearTimeout(this.interval);
         Store.dispatch(WSActions.getProviders());
+      })
+      .on('pin', (pin) => {
+        console.log(pin);
+        // console.log(ws);
+        // console.log(pin);
       });
   },
 

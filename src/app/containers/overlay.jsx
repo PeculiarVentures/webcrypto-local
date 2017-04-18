@@ -209,6 +209,9 @@ export default class Overlay extends Component {
           <Dialog.LoadDialog
             name="load"
           />
+          <Dialog.FortifyAuthorizationDialog
+            name="fortify_authorization"
+          />
         </SegueHandler>
       );
     }

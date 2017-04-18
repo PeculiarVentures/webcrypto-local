@@ -39,6 +39,12 @@ export default class FortifyAuthorizationDialog extends Component {
     numbers: PropTypes.arrayOf(PropTypes.number),
   };
 
+  static defaultProps = {
+    onAccept: null,
+    onCancel: null,
+    numbers: [],
+  };
+
   constructor() {
     super();
     this.unbind = () => {};
