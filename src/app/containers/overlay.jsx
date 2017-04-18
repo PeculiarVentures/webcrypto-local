@@ -60,7 +60,7 @@ export default class Overlay extends Component {
       }
     }
 
-    if (prevProps.dialog !== this.props.dialog) {
+    if (prevProps.dialog !== this.props.dialog && !this.props.dialog) {
       this.onSetMessage('');
     }
   }
@@ -97,17 +97,20 @@ export default class Overlay extends Component {
     return null;
   }
 
-  getSelectedCertificateProps() {
-    const { certificates } = this.props;
-    let certificate = {};
+  getSelectedItemProps() {
+    const { provider } = this.props;
+    let item = false;
 
-    certificates.map((cert) => {
-      if (cert.selected) {
-        certificate = cert;
-      }
-    });
+    if (provider.items) {
+      provider.items.map((itm) => {
+        if (itm.selected) {
+          item = itm;
+        }
+        return true;
+      });
+    }
 
-    return certificate;
+    return item;
   }
 
   handleAction = (payload) => {
@@ -129,7 +132,7 @@ export default class Overlay extends Component {
       }
 
       case 'TRY_AGAIN_PIN': {
-        WSController.connect();
+        WSController.isLogged();
         return dispatch(DialogActions.close());
       }
 
@@ -143,7 +146,7 @@ export default class Overlay extends Component {
     const { message } = this.state;
 
     if (dialog) {
-      const selectedCertificateProps = this.getSelectedCertificateProps();
+      const selectedItemProps = this.getSelectedItemProps();
       return (
         <SegueHandler
           query={dialog}
@@ -151,8 +154,8 @@ export default class Overlay extends Component {
         >
           <Dialog.RemoveCertificateDialog
             name="remove_certificate"
-            certificateName={selectedCertificateProps.name}
-            certificateType={selectedCertificateProps.type}
+            certificateName={selectedItemProps.name}
+            certificateType={selectedItemProps.type}
             onAccept={() => (
               this.handleAction({
                 type: ACTIONS_CONST.WS_REMOVE_ITEM,
@@ -208,6 +211,10 @@ export default class Overlay extends Component {
           />
           <Dialog.LoadDialog
             name="load"
+          />
+          <Dialog.FortifyAuthorizationDialog
+            name="fortify_authorization"
+            message={message}
           />
         </SegueHandler>
       );

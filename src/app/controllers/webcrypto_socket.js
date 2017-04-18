@@ -2,7 +2,9 @@
 import { SERVER_URL } from '../../../scripts/config';
 import Store from '../store';
 // import { WSActions, ErrorActions } from '../actions/state';
-import { WSActions } from '../actions/state';
+import { WSActions, ErrorActions } from '../actions/state';
+import { DialogActions } from '../actions/ui';
+import { EventChannel } from '../controllers';
 
 export const ws = new WebcryptoSocket.SocketProvider();
 window.ws = ws;
@@ -21,7 +23,8 @@ export const WSController = {
       })
       .on('listening', () => {
         clearTimeout(this.interval);
-        Store.dispatch(WSActions.onListening());
+        this.isLogged();
+        // Store.dispatch(WSActions.onListening());
         // Store.dispatch(WSActions.status('online'));
         // Store.dispatch(WSActions.getProviders());
       })
@@ -39,5 +42,26 @@ export const WSController = {
     this.interval = setTimeout(() => {
       this.connect();
     }, 4000);
+  },
+
+  isLogged: function isLogged() {
+    ws.isLoggedIn()
+      .then((ok) => {
+        if (!ok) {
+          ws.challenge()
+            .then((pin) => {
+              EventChannel.emit('DIALOG:SET_MESSAGE', pin);
+              Store.dispatch(DialogActions.open('fortify_authorization'));
+            });
+          return ws.login();
+        }
+      })
+      .then(() => {
+        Store.dispatch(DialogActions.close());
+        Store.dispatch(WSActions.onListening());
+      })
+      .catch((error) => {
+        Store.dispatch(ErrorActions.error(error));
+      });
   },
 };

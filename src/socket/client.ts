@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
 import { Client } from "../connection/client";
-import { ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderInfoProto, ProviderTokenEventProto } from "../core/protos/provider";
+import { ProviderAuthorizedEventProto, ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderInfoProto, ProviderTokenEventProto } from "../core/protos/provider";
 import { SocketCrypto } from "./crypto";
 
 /**
@@ -46,6 +46,10 @@ export class SocketProvider extends EventEmitter {
                             const tokenProto = await ProviderTokenEventProto.importProto(await proto.exportProto());
                             this.emit("token", tokenProto);
                         }
+                        case ProviderAuthorizedEventProto.ACTION: {
+                            const authProto = await ProviderAuthorizedEventProto.importProto(await proto.exportProto());
+                            this.emit("auth", authProto);
+                        }
                         default:
                     }
                 })();
@@ -83,6 +87,18 @@ export class SocketProvider extends EventEmitter {
 
         const infoProto = await ProviderInfoProto.importProto(result);
         return infoProto;
+    }
+
+    public async challenge() {
+        return this.client.challenge();
+    }
+
+    public async isLoggedIn() {
+        return this.client.isLoggedIn();
+    }
+
+    public async login() {
+        return this.client.login();
     }
 
     public async getCrypto(cryptoID: string) {

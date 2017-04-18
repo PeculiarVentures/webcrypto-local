@@ -2,7 +2,8 @@ import { AsymmetricRatchet, Identity, MessageSignedProtocol, PreKeyBundleProtoco
 import { EventEmitter } from "events";
 import { Convert } from "pvtsutils";
 import { ActionProto, Event, ServerInfo } from "../core";
-import { AuthRequestProto, ResultProto } from "../core";
+import { ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core";
+import { challenge } from "./challenge";
 // import { challenge } from "./challenge";
 import { SERVER_WELL_KNOWN } from "./const";
 import { BrowserStorage } from "./storages/browser";
@@ -144,16 +145,7 @@ export class Client extends EventEmitter {
                                 });
                         });
 
-                        // authenticate
-                        this.send(new AuthRequestProto())
-                            .then((data) => {
-                                return (async () => {
-                                    if (data && !(new Uint8Array(data)[0])) {
-                                        // alert(`PIN: ${await challenge(this.cipher.remoteIdentity.signingKey, identity.signingKey.publicKey)}`);
-                                    }
-                                    this.emit("listening", new ClientListeningEvent(this, address));
-                                })();
-                            });
+                        this.emit("listening", new ClientListeningEvent(this, address));
                     })().catch((error) => this.emit("error", new ClientErrorEvent(this, error)));
                 };
                 this.socket.onclose = (e) => {
@@ -203,6 +195,42 @@ export class Client extends EventEmitter {
     public once(event: string | symbol, listener: Function): this;
     public once(event: string | symbol, listener: Function) {
         return super.once(event, listener);
+    }
+
+    /**
+     * Return PIN for current session
+     * 
+     * @returns 
+     * 
+     * @memberOf Client
+     */
+    public async challenge() {
+        return challenge(this.cipher.remoteIdentity.signingKey, this.cipher.identity.signingKey.publicKey);
+    }
+
+    /**
+     * Returns true if session is authorized
+     * 
+     * 
+     * @memberOf Client
+     */
+    public async isLoggedIn() {
+        const action = new ServerIsLoggedInActionProto();
+
+        const data = await this.send(action);
+        return data ? !!(new Uint8Array(data)[0]) : false;
+    }
+
+    /**
+     * Request session authentication
+     * 
+     * 
+     * @memberOf Client
+     */
+    public async login() {
+        const action = new ServerLoginActionProto();
+
+        await this.send(action);
     }
 
     /**

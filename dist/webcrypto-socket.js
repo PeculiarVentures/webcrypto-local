@@ -1076,7 +1076,7 @@ if (typeof self === "undefined") {
 else {
     cryptoPolyfill = self.crypto;
 }
-var crypto = cryptoPolyfill;
+var crypto$1 = cryptoPolyfill;
 
 var Curve = (function () {
     function Curve() {
@@ -1089,7 +1089,7 @@ var Curve = (function () {
                     case 0:
                         name = type;
                         usage = type === "ECDSA" ? ["sign", "verify"] : ["deriveKey", "deriveBits"];
-                        return [4, crypto.subtle.generateKey({ name: name, namedCurve: this.NAMED_CURVE }, false, usage)];
+                        return [4, crypto$1.subtle.generateKey({ name: name, namedCurve: this.NAMED_CURVE }, false, usage)];
                     case 1:
                         keys = _a.sent();
                         return [4, ECPublicKey.create(keys.publicKey)];
@@ -1105,15 +1105,15 @@ var Curve = (function () {
         });
     };
     Curve.deriveBytes = function (privateKey, publicKey) {
-        return crypto.subtle.deriveBits({ name: "ECDH", public: publicKey.key }, privateKey, 256);
+        return crypto$1.subtle.deriveBits({ name: "ECDH", public: publicKey.key }, privateKey, 256);
     };
     Curve.verify = function (signingKey, message, signature) {
-        return crypto.subtle.verify({ name: "ECDSA", hash: this.DIGEST_ALGORITHM }, signingKey.key, signature, message);
+        return crypto$1.subtle.verify({ name: "ECDSA", hash: this.DIGEST_ALGORITHM }, signingKey.key, signature, message);
     };
     Curve.sign = function (signingKey, message) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2, crypto.subtle.sign({ name: "ECDSA", hash: this.DIGEST_ALGORITHM }, signingKey, message)];
+                return [2, crypto$1.subtle.sign({ name: "ECDSA", hash: this.DIGEST_ALGORITHM }, signingKey, message)];
             });
         });
     };
@@ -1161,30 +1161,30 @@ var Secret = (function () {
     }
     Secret.randomBytes = function (size) {
         var array = new Uint8Array(size);
-        crypto.getRandomValues(array);
+        crypto$1.getRandomValues(array);
         return array.buffer;
     };
     Secret.digest = function (alg, message) {
-        return crypto.subtle.digest(alg, message);
+        return crypto$1.subtle.digest(alg, message);
     };
     Secret.encrypt = function (key, data, iv) {
-        return crypto.subtle.encrypt({ name: SECRET_KEY_NAME, iv: new Uint8Array(iv) }, key, data);
+        return crypto$1.subtle.encrypt({ name: SECRET_KEY_NAME, iv: new Uint8Array(iv) }, key, data);
     };
     Secret.decrypt = function (key, data, iv) {
-        return crypto.subtle.decrypt({ name: SECRET_KEY_NAME, iv: new Uint8Array(iv) }, key, data);
+        return crypto$1.subtle.decrypt({ name: SECRET_KEY_NAME, iv: new Uint8Array(iv) }, key, data);
     };
     Secret.importHMAC = function (raw) {
-        return crypto.subtle
+        return crypto$1.subtle
             .importKey("raw", raw, { name: HMAC_NAME, hash: { name: HASH_NAME } }, false, ["sign", "verify"]);
     };
     Secret.importAES = function (raw) {
-        return crypto.subtle.importKey("raw", raw, AES_ALGORITHM, false, ["encrypt", "decrypt"]);
+        return crypto$1.subtle.importKey("raw", raw, AES_ALGORITHM, false, ["encrypt", "decrypt"]);
     };
     Secret.sign = function (key, data) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, crypto.subtle.sign({ name: HMAC_NAME, hash: HASH_NAME }, key, data)];
+                    case 0: return [4, crypto$1.subtle.sign({ name: HMAC_NAME, hash: HASH_NAME }, key, data)];
                     case 1: return [2, _a.sent()];
                 }
             });
@@ -1232,7 +1232,7 @@ var Secret = (function () {
     };
     return Secret;
 }());
-Secret.subtle = crypto.subtle;
+Secret.subtle = crypto$1.subtle;
 
 var ECPublicKey = (function () {
     function ECPublicKey() {
@@ -1252,7 +1252,7 @@ var ECPublicKey = (function () {
                             throw new Error("Error: Expected key type to be public but it was not.");
                         }
                         res.key = publicKey;
-                        return [4, crypto.subtle.exportKey("jwk", publicKey)];
+                        return [4, crypto$1.subtle.exportKey("jwk", publicKey)];
                     case 1:
                         jwk = _b.sent();
                         x = Convert.FromBase64Url(jwk.x);
@@ -1283,7 +1283,7 @@ var ECPublicKey = (function () {
                             y: y,
                         };
                         usage = (type === "ECDSA" ? ["verify"] : []);
-                        return [4, crypto.subtle
+                        return [4, crypto$1.subtle
                                 .importKey("jwk", jwk, { name: type, namedCurve: Curve.NAMED_CURVE }, true, usage)];
                     case 1:
                         key = _a.sent();
@@ -2952,6 +2952,30 @@ AuthRequestProto.ACTION = "auth";
 AuthRequestProto = __decorate([
     ProtobufElement({ name: "AuthRequest" })
 ], AuthRequestProto);
+var ServerLoginActionProto = (function (_super) {
+    __extends(ServerLoginActionProto, _super);
+    function ServerLoginActionProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ServerLoginActionProto;
+}(ActionProto));
+ServerLoginActionProto.INDEX = ActionProto.INDEX;
+ServerLoginActionProto.ACTION = "server/login";
+ServerLoginActionProto = __decorate([
+    ProtobufElement({})
+], ServerLoginActionProto);
+var ServerIsLoggedInActionProto = (function (_super) {
+    __extends(ServerIsLoggedInActionProto, _super);
+    function ServerIsLoggedInActionProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ServerIsLoggedInActionProto;
+}(ActionProto));
+ServerIsLoggedInActionProto.INDEX = ActionProto.INDEX;
+ServerIsLoggedInActionProto.ACTION = "server/isLoggedIn";
+ServerIsLoggedInActionProto = __decorate([
+    ProtobufElement({})
+], ServerIsLoggedInActionProto);
 var BaseProto_1;
 var ActionProto_1;
 var BaseAlgorithmProto_1;
@@ -2960,6 +2984,34 @@ var CryptoItemProto_1;
 var CryptoKeyProto_1;
 var CryptoKeyPairProto_1;
 var ResultProto_1;
+
+var subtle;
+if (typeof self === "undefined") {
+    subtle = new (require("node-webcrypto-ossl"))().subtle;
+}
+else {
+    subtle = crypto.subtle;
+}
+function challenge(serverIdentity, clientIdentity) {
+    return __awaiter(this, void 0, void 0, function () {
+        var serverIdentityDigest, clientIdentityDigest, combinedIdentity, digest;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4, serverIdentity.thumbprint()];
+                case 1:
+                    serverIdentityDigest = _a.sent();
+                    return [4, clientIdentity.thumbprint()];
+                case 2:
+                    clientIdentityDigest = _a.sent();
+                    combinedIdentity = Convert.FromHex(serverIdentityDigest + clientIdentityDigest);
+                    return [4, subtle.digest("SHA-256", combinedIdentity)];
+                case 3:
+                    digest = _a.sent();
+                    return [2, parseInt(Convert.ToHex(digest), 16).toString().substr(2, 6)];
+            }
+        });
+    });
+}
 
 var SERVER_WELL_KNOWN = "/.well-known/webcrypto-socket";
 
@@ -3239,17 +3291,7 @@ var Client = (function (_super) {
                                         console.error(error);
                                     });
                                 });
-                                this.send(new AuthRequestProto())
-                                    .then(function (data) {
-                                    return (function () { return __awaiter(_this, void 0, void 0, function () {
-                                        return __generator(this, function (_a) {
-                                            if (data && !(new Uint8Array(data)[0])) {
-                                            }
-                                            this.emit("listening", new ClientListeningEvent(this, address));
-                                            return [2];
-                                        });
-                                    }); })();
-                                });
+                                this.emit("listening", new ClientListeningEvent(this, address));
                                 return [2];
                         }
                     });
@@ -3287,6 +3329,43 @@ var Client = (function (_super) {
     };
     Client.prototype.once = function (event, listener) {
         return _super.prototype.once.call(this, event, listener);
+    };
+    Client.prototype.challenge = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, challenge(this.cipher.remoteIdentity.signingKey, this.cipher.identity.signingKey.publicKey)];
+            });
+        });
+    };
+    Client.prototype.isLoggedIn = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var action, data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        action = new ServerIsLoggedInActionProto();
+                        return [4, this.send(action)];
+                    case 1:
+                        data = _a.sent();
+                        return [2, data ? !!(new Uint8Array(data)[0]) : false];
+                }
+            });
+        });
+    };
+    Client.prototype.login = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var action;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        action = new ServerLoginActionProto();
+                        return [4, this.send(action)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
     };
     Client.prototype.send = function (data) {
         var _this = this;
@@ -3507,7 +3586,7 @@ var LoginActionProto = (function (_super) {
     }
     return LoginActionProto;
 }(CryptoActionProto));
-LoginActionProto.INDEX = ActionProto.INDEX;
+LoginActionProto.INDEX = CryptoActionProto.INDEX;
 LoginActionProto.ACTION = "crypto/login";
 LoginActionProto = __decorate([
     ProtobufElement({})
@@ -3519,7 +3598,7 @@ var IsLoggedInActionProto = (function (_super) {
     }
     return IsLoggedInActionProto;
 }(CryptoActionProto));
-IsLoggedInActionProto.INDEX = ActionProto.INDEX;
+IsLoggedInActionProto.INDEX = CryptoActionProto.INDEX;
 IsLoggedInActionProto.ACTION = "crypto/isLoggedIn";
 IsLoggedInActionProto = __decorate([
     ProtobufElement({})
@@ -6230,24 +6309,33 @@ var SocketProvider = (function (_super) {
             .on("event", function (proto) {
             console.log("Client:Event", proto.action);
             (function () { return __awaiter(_this, void 0, void 0, function () {
-                var _a, tokenProto, _b, _c;
-                return __generator(this, function (_d) {
-                    switch (_d.label) {
+                var _a, tokenProto, _b, _c, authProto, _d, _e;
+                return __generator(this, function (_f) {
+                    switch (_f.label) {
                         case 0:
                             _a = proto.action;
                             switch (_a) {
                                 case ProviderTokenEventProto.ACTION: return [3, 1];
+                                case ProviderAuthorizedEventProto.ACTION: return [3, 4];
                             }
-                            return [3, 4];
+                            return [3, 7];
                         case 1:
                             _c = (_b = ProviderTokenEventProto).importProto;
                             return [4, proto.exportProto()];
-                        case 2: return [4, _c.apply(_b, [_d.sent()])];
+                        case 2: return [4, _c.apply(_b, [_f.sent()])];
                         case 3:
-                            tokenProto = _d.sent();
+                            tokenProto = _f.sent();
                             this.emit("token", tokenProto);
-                            _d.label = 4;
-                        case 4: return [2];
+                            _f.label = 4;
+                        case 4:
+                            _e = (_d = ProviderAuthorizedEventProto).importProto;
+                            return [4, proto.exportProto()];
+                        case 5: return [4, _e.apply(_d, [_f.sent()])];
+                        case 6:
+                            authProto = _f.sent();
+                            this.emit("auth", authProto);
+                            _f.label = 7;
+                        case 7: return [2];
                     }
                 });
             }); })();
@@ -6286,6 +6374,27 @@ var SocketProvider = (function (_super) {
                         infoProto = _a.sent();
                         return [2, infoProto];
                 }
+            });
+        });
+    };
+    SocketProvider.prototype.challenge = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, this.client.challenge()];
+            });
+        });
+    };
+    SocketProvider.prototype.isLoggedIn = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, this.client.isLoggedIn()];
+            });
+        });
+    };
+    SocketProvider.prototype.login = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, this.client.login()];
             });
         });
     };

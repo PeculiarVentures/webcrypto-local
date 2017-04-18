@@ -1,7 +1,7 @@
-// import { takeEvery } from 'redux-saga';
-// import { put } from 'redux-saga/effects';
-// import { ACTIONS_CONST } from '../constants';
-// import { DialogActions } from '../actions/ui';
+import { takeEvery } from 'redux-saga';
+import { put } from 'redux-saga/effects';
+import { ACTIONS_CONST } from '../constants';
+import { DialogActions } from '../actions/ui';
 // import { WSActions } from '../actions/state';
 // import { WSController } from '../controllers/webcrypto_socket';
 // import { EventChannel } from '../controllers';
@@ -30,8 +30,8 @@ function* errorHandler({ data, action }) {
   //   }
   // }
   //
-  // if ({}.hasOwnProperty.call(data, 'message')) {
-  //   const { message, stack } = data;
+  if ({}.hasOwnProperty.call(data, 'message')) {
+    const { message, stack } = data;
   //
   //   if (/CKR_PIN_INCORRECT/.test(message)) { // incorrent pin
   //     yield put(DialogActions.open('incorrect_pin'));
@@ -41,31 +41,31 @@ function* errorHandler({ data, action }) {
   //   } else if (/Client.prototype.getServerInfo/.test(stack)) { // not supported localhost (Firefox)
   //     yield put(DialogActions.open('not_supported_localhost'));
   //   } else {
-  //     switch (message) {
+      switch (message) {
   //
   //       // case 'CryptoLogin timeout': {
   //       //   yield put(DialogActions.open('timeout_pin'));
   //       //   break;
   //       // }
   //
-  //       case '404: Not authorized': {
-  //         yield put(DialogActions.open('unauthorize_pin'));
-  //         break;
-  //       }
-  //
-  //       default:
-  //         console.error(data);
-  //
-  //     }
-  //   }
-  // } else {
-  //   console.error(data);
-  // }
-  // return true;
+        case 'PIN is not approved': {
+          yield put(DialogActions.open('unauthorize_pin'));
+          break;
+        }
+
+        default:
+          console.error(data);
+
+      }
+    // }
+  } else {
+    console.error(data);
+  }
+  return true;
 }
 
 export default function* () {
   yield [
-    // takeEvery(ACTIONS_CONST.ERROR, errorHandler),
+    takeEvery(ACTIONS_CONST.ERROR, errorHandler),
   ];
 }

@@ -190,7 +190,7 @@ class RootContainer extends Component {
   }
 
   render() {
-    const { loaded, status, providers } = this.props;
+    const { loaded, status, providers, dialog, modal } = this.props;
     const { sidebarOpen } = this.state;
     const selectedProviderProps = this.getSelectedProviderProps();
 
@@ -210,7 +210,12 @@ class RootContainer extends Component {
           />
         </InfoStyled>
         <Snackbars />
-        <Overlay {...this.props} />
+        <Overlay
+          provider={selectedProviderProps}
+          dialog={dialog}
+          providers={providers}
+          modal={modal}
+        />
       </ContentStyled>
     );
   }
