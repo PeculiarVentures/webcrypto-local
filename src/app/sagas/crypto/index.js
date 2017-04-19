@@ -153,17 +153,14 @@ function* providerSelect({ id }) {
 }
 
 function* downloadItem({ format }) {
-  console.log('FORMAT:', format);
   const state = yield select();
   const selectedProvider = state.find('providers').where({ selected: true });
   const crypto = yield Provider.cryptoGet(selectedProvider.get().id);
 
   if (crypto) {
-    console.log('CRYPTO:', crypto);
     const selectedItem = selectedProvider.find('items').where({ selected: true }).get();
     const item = yield Certificate.certificateGet(crypto, selectedItem._id);
     const exported = yield Certificate.certificateExport(crypto, item, format);
-    console.log('EXPORTED:', exported);
 
     if (exported && typeof exported === 'string') {
       downloadCertFromURI(selectedItem.name, exported, selectedItem.type);
