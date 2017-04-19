@@ -262,7 +262,7 @@ const CertHelper = {
 
   decoratePkcs10Subject: function decoratePkcs10Subject(pkcs10, data) {
     Object.keys(data).map((key) => {
-      if ({}.hasOwnProperty.call(subjectTypesAndValues, key)) {
+      if ({}.hasOwnProperty.call(subjectTypesAndValues, key) && data[key]) {
         pkcs10.subject.typesAndValues.push(new pkijs.AttributeTypeAndValue({
           type: subjectTypesAndValues[key],
           value: new asn1js.Utf8String({ value: data[key] }),

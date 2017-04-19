@@ -145,7 +145,6 @@ export default class Overlay extends Component {
   renderDialog() {
     const { dialog, provider } = this.props;
     const { message } = this.state;
-    console.log(message, dialog);
 
     if (dialog) {
       const selectedItemProps = provider ? provider.items.filter(i => i.selected)[0] : false;
@@ -156,8 +155,8 @@ export default class Overlay extends Component {
         >
           <Dialog.RemoveItemDialog
             name="remove_item"
-            certificateName={selectedItemProps.name}
-            certificateType={selectedItemProps.type}
+            certificateName={selectedItemProps ? selectedItemProps.name : ''}
+            certificateType={selectedItemProps ? selectedItemProps.type : ''}
             onAccept={() => (
               this.handleAction({
                 type: ACTIONS_CONST.WS_REMOVE_ITEM,

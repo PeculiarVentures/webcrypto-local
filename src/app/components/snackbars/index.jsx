@@ -79,13 +79,15 @@ export default class Snackbars extends React.Component {
 
   show(type, time = 3000, delay, params) {
     const show = () => {
-      this.setState({
-        type,
-        params,
-        duration: time,
-      });
-      if (Number.isFinite(time)) {
-        this.setHideTimeout(time);
+      if (this.setState) {
+        this.setState({
+          type,
+          params,
+          duration: time,
+        });
+        if (Number.isFinite(time)) {
+          this.setHideTimeout(time);
+        }
       }
     };
     if (delay) {
