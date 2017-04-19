@@ -1,12 +1,12 @@
 import { ACTIONS_CONST } from '../../constants';
 
-export const createCertificate = data => ({
-  type: ACTIONS_CONST.WS_CREATE_CSR,
+export const createRequest = data => ({
+  type: ACTIONS_CONST.WS_CREATE_REQUEST,
   data,
 });
 
-export const importCertificate = data => ({
-  type: ACTIONS_CONST.WS_IMPORT_CERTIFICATE,
+export const importItem = data => ({
+  type: ACTIONS_CONST.WS_IMPORT_ITEM,
   data,
 });
 
@@ -23,8 +23,8 @@ export const status = state => ({
   state,
 });
 
-export const downloadCertificate = format => ({
-  type: ACTIONS_CONST.WS_DOWNLOAD_CERTIFICATE,
+export const downloadItem = format => ({
+  type: ACTIONS_CONST.WS_DOWNLOAD_ITEM,
   format,
 });
 
@@ -37,6 +37,21 @@ export const getProviders = () => ({
   type: ACTIONS_CONST.WS_GET_PROVIDERS,
 });
 
-export const login = () => ({
+export const login = id => ({
   type: ACTIONS_CONST.WS_LOGIN,
+  id,
+});
+
+export const onListening = () => ({
+  type: ACTIONS_CONST.WS_ON_LISTENING,
+});
+
+export const addedProvider = data => ({
+  type: ACTIONS_CONST.WS_ADDED_PROVIDER,
+  data,
+});
+
+export const removedProvider = data => ({
+  type: ACTIONS_CONST.WS_REMOVED_PROVIDER,
+  data,
 });

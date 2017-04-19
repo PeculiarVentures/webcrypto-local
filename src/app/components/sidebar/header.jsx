@@ -1,14 +1,14 @@
 import React, { PropTypes, Component } from 'react';
 import { SelectField, SelectItem, SelectNative } from '../basic';
-import { RoutingActions, ModalActions } from '../../actions/ui';
-import { ProviderActions } from '../../actions/state';
+import { ModalActions } from '../../actions/ui';
+import { ProviderActions, AppActions } from '../../actions/state';
 import enLang from '../../langs/en.json';
 import * as HeaderStyled from './styled/header.styled';
 
 export default class SidebarHeader extends Component {
 
   static propTypes = {
-    dataLoaded: PropTypes.bool,
+    loaded: PropTypes.bool,
     providers: PropTypes.oneOfType([
       PropTypes.array,
     ]),
@@ -16,7 +16,7 @@ export default class SidebarHeader extends Component {
   };
 
   static defaultProps = {
-    dataLoaded: false,
+    loaded: false,
     providers: [],
     readOnly: false,
   };
@@ -28,25 +28,25 @@ export default class SidebarHeader extends Component {
 
   onClickCreateHandler = () => {
     const { dispatch } = this.context;
-    dispatch(RoutingActions.push('create'));
+    dispatch(AppActions.create(true));
   };
 
   onClickImportHandler = () => {
     const { dispatch } = this.context;
-    dispatch(ModalActions.openModal('import_certificate'));
+    dispatch(ModalActions.open('import_certificate'));
   };
 
   onSelectHandler = (data) => {
     const { dispatch } = this.context;
     if (typeof data === 'string') {
-      dispatch(ProviderActions.select(data, true));
+      dispatch(ProviderActions.select(data));
     } else {
-      dispatch(ProviderActions.select(data.value, true));
+      dispatch(ProviderActions.select(data.value));
     }
   };
 
   render() {
-    const { dataLoaded, providers, readOnly } = this.props;
+    const { loaded, providers, readOnly } = this.props;
     const { deviceType } = this.context;
     const selectedProvider = providers.filter(obj => obj.selected);
     const currentProvider = selectedProvider.length
@@ -57,7 +57,7 @@ export default class SidebarHeader extends Component {
       <HeaderStyled.SidebarHeader>
         <HeaderStyled.BtnsContainer>
           <HeaderStyled.Btn
-            disabled={!dataLoaded || readOnly}
+            disabled={!loaded || readOnly}
             primary
             onClick={this.onClickImportHandler}
           >
@@ -65,7 +65,7 @@ export default class SidebarHeader extends Component {
             { enLang['Sidebar.Header.Btn.Import'] }
           </HeaderStyled.Btn>
           <HeaderStyled.Btn
-            disabled={!dataLoaded || readOnly}
+            disabled={!loaded || readOnly}
             primary
             onClick={this.onClickCreateHandler}
           >
@@ -84,6 +84,7 @@ export default class SidebarHeader extends Component {
                   name: item.name,
                 }))}
                 value={currentProvider ? currentProvider.id : ''}
+                onChange={this.onSelectHandler}
               />
               : <SelectField
                 labelText={enLang['CertificateCreate.Provider.Field.Name']}

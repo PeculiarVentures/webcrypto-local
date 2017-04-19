@@ -5,4 +5,7 @@ export * as CERTIFICATE from './certificate';
 export * as REQUEST from './request';
 export * as KEY from './key';
 export * as PROVIDER from './provider';
+
 export OIDS from './oids';
+export PARAMETERS from './parameters.json';
+export COUNTRIES from './countries.json';

@@ -10,8 +10,12 @@ export default function (state, payload) {
       return state;
     }
 
-    case ACTIONS_CONST.PROVIDERS_UPDATE: {
-      state.merge({ providers: result });
+    case ACTIONS_CONST.PROVIDER_UPDATE: {
+      if (id) {
+        providers.where({ id }).merge(result);
+      } else {
+        providers.where({ selected: true }).merge(result);
+      }
       return state;
     }
 

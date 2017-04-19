@@ -1,7 +1,7 @@
 import downloadURI from './download_uri';
 
 export default function downloadCertFromURI(name, value, type, binary) {
-  const extension = type === 'certificate' ? 'cer' : 'csr';
+  const extension = type === 'certificate' ? 'cer' : 'req';
   const mimetype = type === 'certificate' ? 'application/pkix-cert' : 'application/pkcs10';
   const fileName = `${name}.${extension}`;
   let key = '';

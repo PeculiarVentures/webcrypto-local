@@ -1,7 +1,7 @@
 import { State } from 'quantizer';
 import ProviderModel from './provider';
 
-export default class ProviderList extends State.List {
+export default class ProviderListModel extends State.List {
 
   constructor(value) {
     super(value, ProviderModel);

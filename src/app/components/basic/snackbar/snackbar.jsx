@@ -84,7 +84,7 @@ export default class Snackbar extends Component {
   };
 
   static defaultProps = {
-    width: '37%',
+    width: '500px',
     offset: '16px',
     origin: 'bottom',
     type: 'info', // info, error

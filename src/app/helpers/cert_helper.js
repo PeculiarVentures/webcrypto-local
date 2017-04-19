@@ -1,6 +1,7 @@
 import * as asn1js from 'asn1js';
 import * as pkijs from 'pkijs';
 import moment from 'moment';
+import UUID from 'uuid';
 import { Convert } from 'pvtsutils';
 import { OIDS } from '../constants';
 import { regExps } from '../helpers';
@@ -82,16 +83,16 @@ const subjectTypesAndValues = {
 };
 
 const subjectNames = {
-  O: 'organization',
-  CN: 'commonName',
-  C: 'country',
-  OU: 'organizationUnit',
-  L: 'city',
-  ST: 'region',
-  E: 'email',
-  G: 'givenName',
-  SN: 'surname',
-  '1.3.6.1.2.1.1.5': 'hostName',
+  O: 'Organization',
+  CN: 'Common Name',
+  C: 'Country',
+  OU: 'Organization Unit',
+  L: 'City',
+  ST: 'Region',
+  E: 'Email',
+  G: 'Given Name',
+  SN: 'Surname',
+  '1.3.6.1.2.1.1.5': 'Host Name',
 };
 
 const CertHelper = {
@@ -261,7 +262,7 @@ const CertHelper = {
 
   decoratePkcs10Subject: function decoratePkcs10Subject(pkcs10, data) {
     Object.keys(data).map((key) => {
-      if ({}.hasOwnProperty.call(subjectTypesAndValues, key)) {
+      if ({}.hasOwnProperty.call(subjectTypesAndValues, key) && data[key]) {
         pkcs10.subject.typesAndValues.push(new pkijs.AttributeTypeAndValue({
           type: subjectTypesAndValues[key],
           value: new asn1js.Utf8String({ value: data[key] }),
@@ -272,25 +273,30 @@ const CertHelper = {
     return pkcs10;
   },
 
-  keyDataHandler: function keyDataHandler(keyData, keyId) {
-    const { algorithm, usages, id } = keyData;
+  keyDataHandler: function keyDataHandler(data) {
+    const { _algorithm, _usages, id } = data;
+
+    let publicExponent = '';
+
+    if (_algorithm.publicExponent && _algorithm.publicExponent.byteLength) {
+      publicExponent = _algorithm.publicExponent.byteLength === 3 ? 65537 : 3;
+    }
 
     return {
-      id,
-      _id: keyId,
-      algorithm: algorithm.name,
-      usages,
+      id: UUID(),
+      _id: id,
+      usages: _usages,
       name: '',
-      size: (algorithm.modulusLength || algorithm.namedCurve).toString(),
-      createdAt: '',
-      lastUsed: '',
       type: 'key',
+      publicExponent,
+      algorithm: _algorithm.name,
+      modulusLength: _algorithm.modulusLength,
+      namedCurve: _algorithm.namedCurve,
     };
   },
 
-  certDataHandler: function certDataHandler(certDetails, certData, certId, pem, thumbprint) {
+  certDataHandler: function certDataHandler(data) {
     const lang = navigator.language;
-    const { id } = certData;
     const {
       issuerName,
       subjectName,
@@ -301,51 +307,65 @@ const CertHelper = {
       serialNumber,
       notBefore,
       notAfter,
-    } = certDetails;
+      id,
+      thumbprint,
+      pem,
+      addedId,
+    } = data;
 
     const decodedIssuer = this.decodeSubjectString(issuerName);
     const decodedSubject = this.decodeSubjectString(subjectName);
 
     return {
-      id,
-      _id: certId,
+      id: addedId || UUID(),
+      _id: id,
       type: 'certificate',
-      name: decodedSubject.name || '',
-      serialNumber,
-      extensions,
-      publicKey,
-      version,
-      signature,
-      publicKeyInfo: {
+      name: decodedSubject['Common Name'] || '',
+      pem,
+      general: {
+        serialNumber,
+        version,
+        notBefore: notBefore ? moment(notBefore).locale(lang).format('LLLL') : '',
+        notAfter: notAfter ? moment(notAfter).locale(lang).format('LLLL') : '',
+        thumbprint: this.addSpaceAfterSecondCharset(Convert.ToHex(thumbprint)),
+      },
+      issuer: decodedIssuer,
+      subject: decodedSubject,
+      publicKey: {
+        publicExponent: publicKey.algorithm.publicExponent,
+        value: publicKey.value,
         algorithm: signature.algorithm.name,
         modulusBits: publicKey.algorithm.modulusBits,
         namedCurve: publicKey.algorithm.namedCurve,
       },
-      thumbprint: this.addSpaceAfterSecondCharset(Convert.ToHex(thumbprint)),
-      issuer: decodedIssuer,
-      subject: decodedSubject,
-      notBefore: notBefore ? moment(notBefore).locale(lang).format('LLLL') : '',
-      notAfter: notAfter ? moment(notAfter).locale(lang).format('LLLL') : '',
-      pem,
+      signature: {
+        algorithm: signature.algorithm.name,
+        hash: signature.algorithm.hash,
+        value: signature.value,
+      },
+      extensions,
     };
   },
 
-  requestDataHandler: function requestDataHandler(reqData, reqId, pem) {
-    const { publicKey, id, subjectName } = reqData;
-    const { algorithm, raw } = publicKey;
+  requestDataHandler: function requestDataHandler(data) {
+    const { _publicKey, id, _subjectName, pem, addedId } = data;
+    const { algorithm, raw } = _publicKey;
 
-    const decodedSubject = this.decodeSubjectString(subjectName);
+    const decodedSubject = this.decodeSubjectString(_subjectName);
     let publicExponent = '';
+
     if (algorithm.publicExponent && algorithm.publicExponent.byteLength) {
-      publicExponent = algorithm.publicExponent.byteLength === 3 ? '65537' : '3';
+      publicExponent = algorithm.publicExponent.byteLength === 3 ? 65537 : 3;
     }
 
-    return Object.assign({
-      id,
-      _id: reqId,
-      name: '',
+    return {
+      id: addedId || UUID(),
+      _id: id,
+      name: decodedSubject['Common Name'] || '',
       type: 'request',
-      publicKeyInfo: {
+      pem,
+      subject: decodedSubject,
+      publicKey: {
         modulusBits: algorithm.modulusLength,
         namedCurve: algorithm.namedCurve,
         type: this.getKeyType(algorithm.name),
@@ -358,14 +378,7 @@ const CertHelper = {
         hash: algorithm.hash.name,
         value: this.addSpaceAfterSecondCharset(Convert.ToHex(algorithm.raw)),
       },
-      commonName: '',
-      organization: '',
-      organizationUnit: '',
-      country: '',
-      region: '',
-      city: '',
-      pem,
-    }, decodedSubject);
+    };
   },
 
   decodeSubjectString: function decodeSubjectString(subjectString) {

@@ -19,8 +19,8 @@ export default class Body extends Component {
     ]),
     onCancel: PropTypes.func,
     onCreate: PropTypes.func,
-    dataLoaded: PropTypes.bool,
-    serverStatus: PropTypes.string,
+    loaded: PropTypes.bool,
+    status: PropTypes.string,
     providers: PropTypes.oneOfType([
       PropTypes.array,
     ]),
@@ -30,8 +30,8 @@ export default class Body extends Component {
   static defaultProps = {
     countries: countriesData,
     parameters: parametersData,
-    dataLoaded: false,
-    serverStatus: 'seaching',
+    loaded: false,
+    status: 'seaching',
     onCancel: null,
     onCreate: null,
     providers: [],
@@ -81,9 +81,9 @@ export default class Body extends Component {
   };
 
   render() {
-    const { countries, parameters, dataLoaded, serverStatus, providers, readOnly } = this.props;
+    const { countries, parameters, loaded, status, providers, readOnly } = this.props;
     const { createDisabled } = this.state;
-    const btnCreateDisabled = !dataLoaded || serverStatus !== 'online' || readOnly || createDisabled;
+    const btnCreateDisabled = !loaded || status !== 'online' || readOnly || createDisabled;
 
     return (
       <BodyStyled.Body>

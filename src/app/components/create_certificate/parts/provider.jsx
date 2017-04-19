@@ -52,24 +52,20 @@ export default class Provider extends Component {
     }
   };
 
-  getSelectedProviderProps() {
-    const { providers } = this.props;
-    let provider = false;
-
-    providers.map((prv) => {
-      if (prv.selected) {
-        provider = prv;
-      }
-      return true;
-    });
-
-    return provider;
-  }
-
   render() {
     const { providers } = this.props;
-    const { deviceType } = this.context;
-    const selectedProvider = this.getSelectedProviderProps();
+    const { deviceType, dispatch } = this.context;
+
+    const selectedProvider = providers.filter(obj => obj.selected);
+    const notReadOnlyProviders = providers.filter(obj => !obj.readOnly);
+    const currentProvider = selectedProvider.length
+      ? selectedProvider[0]
+      : false;
+
+    // select another provider if current provider readOnly
+    if (currentProvider && currentProvider.readOnly) {
+      dispatch(ProviderActions.select(notReadOnlyProviders[0].id));
+    }
 
     return (
       <GroupContainer>
@@ -83,26 +79,26 @@ export default class Provider extends Component {
                 ? <SelectNative
                   labelText={enLang['CertificateCreate.Provider.Field.Name']}
                   placeholder={enLang['Select.Label.Provider']}
-                  options={providers.map(item => ({
+                  options={notReadOnlyProviders.map(item => ({
                     value: item.id,
                     name: item.name,
                   }))}
-                  defaultValue={selectedProvider ? selectedProvider.id : ''}
+                  value={currentProvider ? currentProvider.id : ''}
                   onChange={this.onSelectHandler}
                 />
                 : <SelectField
                   labelText={enLang['CertificateCreate.Provider.Field.Name']}
                   placeholder={enLang['Select.Label.Provider']}
-                  defaultSelected={{
-                    name: selectedProvider ? selectedProvider.name : '',
-                    value: selectedProvider ? selectedProvider.id : '',
-                    index: selectedProvider ? selectedProvider.index : 0,
+                  value={{
+                    name: currentProvider ? currentProvider.name : '',
+                    value: currentProvider ? currentProvider.id : '',
+                    index: currentProvider ? currentProvider.index : null,
                   }}
                   disabled={!providers.length}
                   onChange={this.onSelectHandler}
                 >
                   {
-                    providers.map((item, index) => (
+                    notReadOnlyProviders.map((item, index) => (
                       <SelectItem
                         key={index}
                         value={item.id}

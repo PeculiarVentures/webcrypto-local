@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import styled from 'styled-components';
-import { CertificateActions } from '../../../actions/state';
+import { ItemActions } from '../../../actions/state';
 import { DocCertIcon, DocRequestIcon, DocKeyIcon } from '../../svg';
 
 const AlgName = styled.div`
@@ -82,7 +82,7 @@ const CertificateStyled = styled.div`
   }
 `;
 
-const Certificate = (props, context) => {
+const Item = (props, context) => {
   const {
     id,
     name,
@@ -98,7 +98,7 @@ const Certificate = (props, context) => {
       type: 'SIDEBAR:CLOSE',
     });
     if (!selected) {
-      dispatch(CertificateActions.select(id));
+      dispatch(ItemActions.select(id));
     }
   };
 
@@ -140,7 +140,7 @@ const Certificate = (props, context) => {
   );
 };
 
-Certificate.propTypes = {
+Item.propTypes = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   type: PropTypes.string,
@@ -152,7 +152,7 @@ Certificate.propTypes = {
   ]),
 };
 
-Certificate.defaultProps = {
+Item.defaultProps = {
   id: '',
   name: '',
   type: '',
@@ -161,9 +161,9 @@ Certificate.defaultProps = {
   size: '',
 };
 
-Certificate.contextTypes = {
+Item.contextTypes = {
   dispatch: PropTypes.func,
   handleRootAction: PropTypes.func,
 };
 
-export default Certificate;
+export default Item;

@@ -136,6 +136,11 @@ export default class SelectNative extends Component {
         selectedValue: nextProps.defaultValue,
       });
     }
+    if (!value && value !== nextProps.value) {
+      this.setState({
+        selectedValue: nextProps.value,
+      });
+    }
   }
 
   onChangeHandler = (e) => {
@@ -157,13 +162,9 @@ export default class SelectNative extends Component {
     if (onBlur) onBlur();
   };
 
-  validate = () => {
-    const valid = this.isValid();
-
-    this.setState({
-      valid,
-    });
-  };
+  getValue = () => (
+    this.state.selectedValue
+  );
 
   isValid = () => {
     const { validation } = this.props;
@@ -177,8 +178,12 @@ export default class SelectNative extends Component {
     return valid;
   };
 
-  getValue = () => {
-    return this.state.selectedValue;
+  validate = () => {
+    const valid = this.isValid();
+
+    this.setState({
+      valid,
+    });
   };
 
   render() {

@@ -45,33 +45,34 @@ export default class Info extends Component {
   };
 
   static propTypes = {
-    dataLoaded: PropTypes.bool,
-    certificate: PropTypes.oneOfType([
+    loaded: PropTypes.bool,
+    provider: PropTypes.oneOfType([
       PropTypes.object,
     ]),
-    readOnly: PropTypes.bool,
   };
 
   static defaultProps = {
-    certificate: {},
-    dataLoaded: false,
-    readOnly: false,
+    provider: {
+      items: [],
+      readOnly: false,
+    },
+    loaded: false,
   };
 
   onRemoveHandler = () => {
     const { dispatch } = this.context;
-    dispatch(DialogActions.open('remove_certificate'));
+    dispatch(DialogActions.open('remove_item'));
   };
 
   onDownloadhandler = (format = 'pem') => {
     const { dispatch } = this.context;
-    dispatch(WSActions.downloadCertificate(format));
+    dispatch(WSActions.downloadItem(format));
   };
 
   onCopyHandler = () => {
-    const { certificate } = this.props;
+    const selectedItem = this.getSelectedItemProps();
 
-    copyToClipboard(certificate.pem);
+    copyToClipboard(selectedItem.pem);
     EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'copied', 3000);
   };
 
@@ -82,24 +83,37 @@ export default class Info extends Component {
     });
   };
 
-  renderInfoContent() {
-    const { certificate } = this.props;
-    const { type } = certificate;
+  getSelectedItemProps() {
+    const { provider } = this.props;
+    let item = false;
 
+    if (provider.items) {
+      provider.items.map((itm) => {
+        if (itm.selected) {
+          item = itm;
+        }
+        return true;
+      });
+    }
+
+    return item;
+  }
+
+  renderInfoContent(type, item) {
     switch (type) {
       case 'certificate':
         return (
-          <CertificateInfo {...certificate} />
+          <CertificateInfo {...item} />
         );
 
       case 'request':
         return (
-          <RequestInfo {...certificate} />
+          <RequestInfo {...item} />
         );
 
       case 'key':
         return (
-          <KeyInfo {...certificate} />
+          <KeyInfo {...item} />
         );
 
       default:
@@ -108,15 +122,16 @@ export default class Info extends Component {
   }
 
   render() {
-    const { certificate, dataLoaded, readOnly } = this.props;
+    const { loaded, provider } = this.props;
+    const selectedItem = this.getSelectedItemProps();
 
     switch (true) {
-      case !dataLoaded:
+      case !loaded:
         return (
           <RootStyled>
             <HeaderContainer>
               <Header
-                dataLoaded={dataLoaded}
+                loaded={loaded}
               />
             </HeaderContainer>
             <InfoContainer>
@@ -134,15 +149,15 @@ export default class Info extends Component {
           </RootStyled>
         );
 
-      case Object.keys(certificate).length > 0:
+      case Object.keys(selectedItem).length > 0:
         return (
           <RootStyled>
             <HeaderContainer>
               <Header
-                readOnly={readOnly}
-                dataLoaded={dataLoaded}
-                name={certificate.name}
-                isKey={certificate.type === 'key'}
+                readOnly={provider.readOnly}
+                loaded={loaded}
+                name={selectedItem.name}
+                isKey={selectedItem.type === 'key'}
                 onCopy={this.onCopyHandler}
                 onDownload={this.onDownloadhandler}
                 onRemove={this.onRemoveHandler}
@@ -150,7 +165,7 @@ export default class Info extends Component {
               />
             </HeaderContainer>
             <InfoContainer>
-              { this.renderInfoContent() }
+              { this.renderInfoContent(selectedItem.type, selectedItem) }
             </InfoContainer>
           </RootStyled>
         );

@@ -10,17 +10,22 @@ export default function (state, payload) {
     }
 
     case ACTIONS_CONST.APP_SET_STATE: {
-      state.setState(payload.state, payload.from);
+      state.merge(payload.state);
       break;
     }
 
     case ACTIONS_CONST.APP_DATA_LOADED: {
-      state.merge({ dataLoaded: payload.state });
+      state.merge({ loaded: payload.state });
+      break;
+    }
+
+    case ACTIONS_CONST.APP_CREATE: {
+      state.merge({ create: payload.state });
       break;
     }
 
     case ACTIONS_CONST.WS_STATUS: {
-      state.merge({ serverStatus: payload.state });
+      state.merge({ status: payload.state });
       break;
     }
 

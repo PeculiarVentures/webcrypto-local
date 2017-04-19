@@ -8,59 +8,62 @@ import { EventChannel } from '../controllers';
 import { browserInfo } from '../helpers';
 
 function* errorHandler({ data, action }) {
-  if (browserInfo() === 'Safari') {
-    yield put(DialogActions.open('not_supported_localhost'));
-    return true;
+  const { message, stack } = data;
+  let errorMessage = '';
+
+  if (browserInfo() === 'Safari' || /Client.prototype.getServerInfo/.test(stack)) {
+    errorMessage = 'NOT_SUPPORTED_LOCALHOST';
+  } else if (action === 'request_create') {
+    errorMessage = 'REQUEST_CREATE';
+  } else if (action === 'import_item') {
+    errorMessage = 'IMPORT_ITEM';
+  } else if (/CKR_PIN_INCORRECT/.test(message)) {
+    errorMessage = 'INCORRECT_PIN';
+  } else if (/XMLHttpRequest.xmlHttp/.test(stack) || message === 'offline') {
+    errorMessage = 'OFFLINE';
+  } else if (message === 'PIN is not approved') {
+    errorMessage = 'UNAPPROVED_PIN';
   }
 
-  if (action) {
-    switch (action) {
-      case 'request_create':
-        yield put(DialogActions.open('request_create_error'));
-        EventChannel.emit('DIALOG:SET_MESSAGE', data.message);
-        return true;
-
-      case 'import_certificate':
-        yield put(DialogActions.open('certificate_import_error'));
-        EventChannel.emit('DIALOG:SET_MESSAGE', data.message);
-        return true;
-
-      default:
-        return true;
+  switch (errorMessage) {
+    case 'NOT_SUPPORTED_LOCALHOST': {
+      yield put(DialogActions.open('not_supported_localhost'));
+      break;
     }
-  }
 
-  if ({}.hasOwnProperty.call(data, 'message')) {
-    const { message, stack } = data;
+    case 'REQUEST_CREATE': {
+      yield put(DialogActions.open('request_create_error'));
+      EventChannel.emit('DIALOG:SET_MESSAGE', message);
+      break;
+    }
 
-    if (/CKR_PIN_INCORRECT/.test(message)) { // incorrent pin
+    case 'IMPORT_ITEM': {
+      yield put(DialogActions.open('certificate_import_error'));
+      EventChannel.emit('DIALOG:SET_MESSAGE', message);
+      break;
+    }
+
+    case 'INCORRECT_PIN': {
       yield put(DialogActions.open('incorrect_pin'));
-    } else if (/XMLHttpRequest.xmlHttp/.test(stack)) { // offline
+      break;
+    }
+
+    case 'OFFLINE': {
+      yield put(DialogActions.open('server_offline'));
       WSController.checkConnect();
       yield put(WSActions.status('offline'));
-    } else if (/Client.prototype.getServerInfo/.test(stack)) { // not supported localhost (Firefox)
-      yield put(DialogActions.open('not_supported_localhost'));
-    } else {
-      switch (message) {
-
-        // case 'CryptoLogin timeout': {
-        //   yield put(DialogActions.open('timeout_pin'));
-        //   break;
-        // }
-
-        case 'PIN is not approved': {
-          yield put(DialogActions.open('unauthorize_pin'));
-          break;
-        }
-
-        default:
-          console.error(data);
-
-      }
+      break;
     }
-  } else {
-    console.error(data);
+
+    case 'UNAPPROVED_PIN': {
+      yield put(DialogActions.open('unauthorize_pin'));
+      break;
+    }
+
+    default:
+      console.error(data);
   }
+
   return true;
 }
 

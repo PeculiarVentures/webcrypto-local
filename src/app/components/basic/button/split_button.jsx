@@ -39,7 +39,7 @@ export default class SplitButton extends Component {
       this.setState({
         open: false,
       });
-    }, 150);
+    }, 200);
   };
 
   onItemClickHandler = (value) => {

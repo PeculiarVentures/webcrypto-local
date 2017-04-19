@@ -55,7 +55,7 @@ export default class Body extends Component {
     const value = textarea.getValue();
     const preparedCert = CertHelper.prepareCertToImport(value);
     if (preparedCert) {
-      dispatch(WSActions.importCertificate(preparedCert));
+      dispatch(WSActions.importItem(preparedCert));
     }
   };
 
@@ -79,20 +79,6 @@ export default class Body extends Component {
     const file = e.dataTransfer.files[0];
     this.fileReaderHandler(file);
   };
-
-  getSelectedProviderProps() {
-    const { providers } = this.props;
-    let provider = false;
-
-    providers.map((prv) => {
-      if (prv.selected) {
-        provider = prv;
-      }
-      return true;
-    });
-
-    return provider;
-  }
 
   decodeBinaryString(str) {
     const { textarea } = this.fieldNodes;
@@ -145,7 +131,11 @@ export default class Body extends Component {
     const { providers } = this.props;
     const { valid } = this.state;
     const { deviceType } = this.context;
-    const selectedProvider = this.getSelectedProviderProps();
+    const selectedProvider = providers.filter(obj => obj.selected);
+    const currentProvider = selectedProvider.length
+      ? selectedProvider[0]
+      : false;
+    const providersFiltered = providers.filter(f => !f.readOnly);
 
     return (
       <BodyStyled.Body>
@@ -156,25 +146,25 @@ export default class Body extends Component {
                 ? <SelectNative
                   labelText={enLang['ImportCertificate.Field.Provider']}
                   placeholder={enLang['Select.Label.Provider']}
-                  options={providers.map(item => ({
+                  options={providersFiltered.map(item => ({
                     value: item.id,
                     name: item.name,
                   }))}
-                  defaultValue={selectedProvider ? selectedProvider.id : ''}
+                  defaultValue={currentProvider ? currentProvider.id : ''}
                   onChange={this.onSelectChange}
                 />
                 : <SelectField
                   labelText={enLang['ImportCertificate.Field.Provider']}
                   placeholder={enLang['Select.Label.Provider']}
                   defaultSelected={{
-                    name: selectedProvider ? selectedProvider.name : '',
-                    value: selectedProvider ? selectedProvider.id : '',
-                    index: selectedProvider ? selectedProvider.index : 0,
+                    name: currentProvider ? currentProvider.name : '',
+                    value: currentProvider ? currentProvider.id : '',
+                    index: currentProvider ? currentProvider.index : 0,
                   }}
                   onChange={this.onSelectChange}
                 >
                   {
-                    providers.map((item, index) => (
+                    providersFiltered.map((item, index) => (
                       <SelectItem
                         key={index}
                         value={item.id}

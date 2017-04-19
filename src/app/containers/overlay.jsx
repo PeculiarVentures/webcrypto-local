@@ -97,20 +97,24 @@ export default class Overlay extends Component {
     return null;
   }
 
-  getSelectedCertificateProps() {
-    const { certificates } = this.props;
-    let certificate = {};
+  getSelectedItemProps() {
+    const { provider } = this.props;
+    let item = false;
 
-    certificates.map((cert) => {
-      if (cert.selected) {
-        certificate = cert;
-      }
-    });
+    if (provider.items) {
+      provider.items.map((itm) => {
+        if (itm.selected) {
+          item = itm;
+        }
+        return true;
+      });
+    }
 
-    return certificate;
+    return item;
   }
 
   handleAction = (payload) => {
+    const { provider } = this.props;
     const { type } = payload;
     const { dispatch } = this.context;
 
@@ -124,7 +128,7 @@ export default class Overlay extends Component {
       }
 
       case 'TRY_AGAIN_LOGIN': {
-        dispatch(WSActions.login());
+        dispatch(WSActions.login(provider.id));
         return dispatch(DialogActions.close());
       }
 
@@ -139,20 +143,20 @@ export default class Overlay extends Component {
   };
 
   renderDialog() {
-    const { dialog } = this.props;
+    const { dialog, provider } = this.props;
     const { message } = this.state;
 
     if (dialog) {
-      const selectedCertificateProps = this.getSelectedCertificateProps();
+      const selectedItemProps = provider ? provider.items.filter(i => i.selected)[0] : false;
       return (
         <SegueHandler
           query={dialog}
           name="Confirms"
         >
-          <Dialog.RemoveCertificateDialog
-            name="remove_certificate"
-            certificateName={selectedCertificateProps.name}
-            certificateType={selectedCertificateProps.type}
+          <Dialog.RemoveItemDialog
+            name="remove_item"
+            certificateName={selectedItemProps ? selectedItemProps.name : ''}
+            certificateType={selectedItemProps ? selectedItemProps.type : ''}
             onAccept={() => (
               this.handleAction({
                 type: ACTIONS_CONST.WS_REMOVE_ITEM,
@@ -208,6 +212,9 @@ export default class Overlay extends Component {
           />
           <Dialog.LoadDialog
             name="load"
+          />
+          <Dialog.ServerOfflineDialog
+            name="server_offline"
           />
           <Dialog.FortifyAuthorizationDialog
             name="fortify_authorization"

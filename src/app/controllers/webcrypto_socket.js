@@ -27,12 +27,22 @@ export const WSController = {
         this.isLogged();
       })
       .on('close', () => {
-        Store.dispatch(WSActions.status('offline'));
+        Store.dispatch(ErrorActions.error({
+          message: 'offline',
+        }));
         this.checkConnect();
       })
-      .on('token', () => {
+      .on('token', (info) => {
+        if (info.added.length) {
+          Store.dispatch(WSActions.addedProvider(info.added));
+        }
+        if (info.removed.length) {
+          Store.dispatch(WSActions.removedProvider(info.removed));
+        }
+        if (info.error) {
+          console.log('TOKEN:', info.error);
+        }
         clearTimeout(this.interval);
-        Store.dispatch(WSActions.getProviders());
       });
   },
 
@@ -56,7 +66,7 @@ export const WSController = {
       })
       .then(() => {
         Store.dispatch(DialogActions.close());
-        Store.dispatch(WSActions.getProviders());
+        Store.dispatch(WSActions.onListening());
       })
       .catch((error) => {
         Store.dispatch(ErrorActions.error(error));

@@ -9,14 +9,18 @@ export const loadState = state => ({
   state,
 });
 
-export const setState = (state, from) => ({
+export const setState = state => ({
   type: ACTIONS_CONST.APP_SET_STATE,
   state,
-  from,
 });
 
-export const dataLoaded = state => ({
+export const loaded = state => ({
   type: ACTIONS_CONST.APP_DATA_LOADED,
+  state,
+});
+
+export const create = state => ({
+  type: ACTIONS_CONST.APP_CREATE,
   state,
 });
 

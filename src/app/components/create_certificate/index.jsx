@@ -1,26 +1,27 @@
 import React, { PropTypes, Component } from 'react';
 import Header from './header';
 import Body from './body';
-import { WSActions } from '../../actions/state';
-import { RoutingActions } from '../../actions/ui';
+import { WSActions, AppActions } from '../../actions/state';
 import * as IndexStyled from './styled/index.styled';
 
 export default class CertificateCreate extends Component {
 
   static propTypes = {
-    dataLoaded: PropTypes.bool,
-    serverStatus: PropTypes.string,
+    loaded: PropTypes.bool,
+    status: PropTypes.string,
     providers: PropTypes.oneOfType([
       PropTypes.array,
     ]),
-    readOnly: PropTypes.bool,
+    provider: PropTypes.oneOfType([
+      PropTypes.object,
+    ]),
   };
 
   static defaultProps = {
-    dataLoaded: false,
-    serverStatus: 'seaching',
+    loaded: false,
+    status: 'seaching',
     providers: [],
-    readOnly: false,
+    provider: {},
   };
 
   static contextTypes = {
@@ -29,16 +30,16 @@ export default class CertificateCreate extends Component {
 
   onCancelHandler = () => {
     const { dispatch } = this.context;
-    dispatch(RoutingActions.back());
+    dispatch(AppActions.create(false));
   };
 
   onCreateHandler = (data) => {
     const { dispatch } = this.context;
-    dispatch(WSActions.createCertificate(data));
+    dispatch(WSActions.createRequest(data));
   };
 
   render() {
-    const { dataLoaded, serverStatus, providers, readOnly } = this.props;
+    const { loaded, status, providers, provider } = this.props;
     return (
       <IndexStyled.Wrapper>
         <Header
@@ -47,10 +48,10 @@ export default class CertificateCreate extends Component {
         <Body
           onCancel={this.onCancelHandler}
           onCreate={this.onCreateHandler}
-          dataLoaded={dataLoaded}
-          serverStatus={serverStatus}
+          loaded={loaded}
+          status={status}
           providers={providers}
-          readOnly={readOnly}
+          readOnly={provider.readOnly}
         />
       </IndexStyled.Wrapper>
     );

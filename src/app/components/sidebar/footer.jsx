@@ -49,17 +49,17 @@ const StatusTextStyled = styled.div`
 export default class SidebarFooter extends Component {
 
   static propTypes = {
-    serverStatus: PropTypes.string,
+    status: PropTypes.string,
   };
 
   static defaultProps = {
-    serverStatus: 'seaching',
+    status: 'seaching',
   };
 
   getStatusText() {
-    const { serverStatus } = this.props;
+    const { status } = this.props;
 
-    switch (serverStatus) {
+    switch (status) {
       case 'seaching':
         return enLang['Sidebar.Footer.Status.Seaching'];
 
@@ -75,12 +75,12 @@ export default class SidebarFooter extends Component {
   }
 
   render() {
-    const { serverStatus } = this.props;
+    const { status } = this.props;
 
     return (
       <SidebarFooterStyled>
         <StatusIconStyled
-          status={serverStatus}
+          status={status}
         />
         <StatusTextStyled>
           { this.getStatusText() }

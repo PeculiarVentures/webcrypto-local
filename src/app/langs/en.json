@@ -19,6 +19,7 @@
   "Dialog.RequestCreateError.Btn.Accept": "Try again",
   "Dialog.CertificateImportError.Title": "An error occurred import action.\n Please try your request again",
   "Dialog.CertificateImportError.Btn.Accept": "Try again",
+  "Dialog.ServerOffline.Title": "Server is offline.\n Wait until the connection is established",
   "Sidebar.Footer.Status.Online": "Server is online",
   "Sidebar.Footer.Status.Offline": "Server is offline",
   "Sidebar.Footer.Status.Seaching": "Seaching for server",

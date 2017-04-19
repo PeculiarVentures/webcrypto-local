@@ -28,13 +28,13 @@ export default class Header extends Component {
     onCopy: PropTypes.func,
     onRemove: PropTypes.func,
     onMenu: PropTypes.func,
-    dataLoaded: PropTypes.bool,
+    loaded: PropTypes.bool,
     isKey: PropTypes.bool,
     readOnly: PropTypes.bool,
   };
 
   static defaultProps = {
-    dataLoaded: false,
+    loaded: false,
     name: '',
     onDownload: () => {},
     onCopy: () => {},
@@ -207,7 +207,7 @@ export default class Header extends Component {
   }
 
   renderButtons() {
-    const { dataLoaded, isKey, readOnly } = this.props;
+    const { loaded, isKey, readOnly } = this.props;
 
     return (
       <ButtonsContainer>
@@ -216,7 +216,7 @@ export default class Header extends Component {
           ? null
           : <SplitButton
             secondary
-            disabled={!dataLoaded}
+            disabled={!loaded}
             onClick={() => this.handleDownload('pem')}
             onSelect={value => this.handleDownload(value.toLowerCase())}
             list={['PEM', 'DER']}
@@ -231,7 +231,7 @@ export default class Header extends Component {
             : <StyledButton
               onClick={this.bindedHandleCopy}
               secondary
-              disabled={!dataLoaded}
+              disabled={!loaded}
             >
               <CopyIconStyled />
               { enLang['Info.Header.Btn.Copy'] }
@@ -240,7 +240,7 @@ export default class Header extends Component {
         <StyledButton
           onClick={this.bindedHandleRemove}
           secondary
-          disabled={!dataLoaded || readOnly}
+          disabled={!loaded || readOnly}
         >
           <RemoveIconStyled />
           { enLang['Info.Header.Btn.Remove'] }
@@ -251,13 +251,13 @@ export default class Header extends Component {
 
   render() {
     const {
-      dataLoaded,
+      loaded,
       name,
     } = this.props;
     const { windowSize } = this.context;
     const { device } = windowSize;
 
-    if (!dataLoaded) {
+    if (!loaded) {
       return this.renderShellState();
     }
 

@@ -28,45 +28,43 @@ const SidebarStyled = styled.div`
 export default class Sidebar extends Component {
 
   static propTypes = {
-    list: PropTypes.oneOfType([
-      PropTypes.array,
-    ]),
     open: PropTypes.bool,
-    dataLoaded: PropTypes.bool,
-    serverStatus: PropTypes.string,
-    readOnly: PropTypes.bool,
+    loaded: PropTypes.bool,
+    status: PropTypes.string,
     providers: PropTypes.oneOfType([
       PropTypes.array,
+    ]),
+    provider: PropTypes.oneOfType([
+      PropTypes.object,
     ]),
   };
 
   static defaultProps = {
-    list: [],
     open: false,
-    dataLoaded: false,
-    serverStatus: 'seaching',
-    readOnly: false,
+    loaded: false,
+    status: 'seaching',
     providers: [],
+    provider: {},
   };
 
   render() {
-    const { list, open, dataLoaded, serverStatus, providers, readOnly } = this.props;
+    const { open, loaded, status, providers, provider } = this.props;
 
     return (
       <SidebarStyled
         open={open}
       >
         <SidebarHeader
-          dataLoaded={dataLoaded}
+          loaded={loaded}
           providers={providers}
-          readOnly={readOnly}
+          readOnly={provider.readOnly}
         />
         <SidebarBody
-          list={list}
-          dataLoaded={dataLoaded}
+          list={provider.items}
+          loaded={loaded}
         />
         <SidebarFooter
-          serverStatus={serverStatus}
+          status={status}
         />
       </SidebarStyled>
     );

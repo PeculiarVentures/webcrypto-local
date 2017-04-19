@@ -2,7 +2,7 @@ import { State } from 'quantizer';
 import { CERTIFICATE, KEY, REQUEST } from '../../constants';
 import { CertificateSchema, KeySchema, RequestSchema } from '../schemes';
 
-export default class CertificateModel extends State.Map {
+export default class ItemModel extends State.Map {
 
   constructor(value) {
     const { type } = value;
