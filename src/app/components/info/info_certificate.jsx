@@ -12,13 +12,7 @@ const CertificateInfo = (props) => {
     extensions,
   } = props;
 
-  // const transformCamelCase = string => (
-  //   string
-  //     .replace(/([A-Z])/g, ' $1')
-  //     .replace(/^./, str => str.toUpperCase())
-  // );
-
-  const renderRowContainer = (title, value, index) => {
+  const renderRowContainer = (title, value, index, monospace) => {
     if (value && title !== 'name') {
       return (
         <RowCertInfo
@@ -27,7 +21,7 @@ const CertificateInfo = (props) => {
           <ColCert>
             { title }{title === 'None' ? '' : ':'}
           </ColCert>
-          <ColCert>
+          <ColCert monospace={monospace}>
             { value }
           </ColCert>
         </RowCertInfo>
@@ -44,12 +38,12 @@ const CertificateInfo = (props) => {
           { enLang['Info.Body.General'] }
         </Title>
         <RowCert>
-          { renderRowContainer(enLang['Info.Body.SerialNumber'], general.serialNumber) }
+          { renderRowContainer(enLang['Info.Body.SerialNumber'], general.serialNumber, '', true) }
           { renderRowContainer(enLang['Info.Body.Version'], general.version) }
           { renderRowContainer(enLang['Info.Body.Issued'], general.notBefore) }
           { renderRowContainer(enLang['Info.Body.Expired'], general.notAfter) }
           <RowCert>
-            { renderRowContainer(enLang['Info.Body.Thumbprint'], general.thumbprint) }
+            { renderRowContainer(enLang['Info.Body.Thumbprint'], general.thumbprint, '', true) }
           </RowCert>
         </RowCert>
       </Row>
@@ -87,7 +81,7 @@ const CertificateInfo = (props) => {
           { renderRowContainer(enLang['Info.Body.NamedCurve'], publicKey.namedCurve) }
         </RowCert>
         <RowCert>
-          { renderRowContainer(enLang['Info.Body.Value'], publicKey.value) }
+          { renderRowContainer(enLang['Info.Body.Value'], publicKey.value, '', true) }
         </RowCert>
       </Row>
 
@@ -100,7 +94,7 @@ const CertificateInfo = (props) => {
           { renderRowContainer(enLang['Info.Body.Hash'], signature.hash) }
         </RowCert>
         <RowCert>
-          { renderRowContainer(enLang['Info.Body.Value'], signature.value) }
+          { renderRowContainer(enLang['Info.Body.Value'], signature.value, '', true) }
         </RowCert>
       </Row>
 
@@ -115,7 +109,7 @@ const CertificateInfo = (props) => {
               key={index}
             >
               { renderRowContainer(enLang['Info.Body.Name'], ext.name) }
-              { renderRowContainer(enLang['Info.Body.Value'], ext.value) }
+              { renderRowContainer(enLang['Info.Body.Value'], ext.value, '', true) }
               { renderRowContainer(enLang['Info.Body.Critical'], ext.critical ? 'yes' : 'no') }
             </RowCert>
           ))

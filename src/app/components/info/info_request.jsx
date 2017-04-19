@@ -25,14 +25,14 @@ const RequestInfo = (props) => {
     return null;
   };
 
-  const renderRowContainer = (title, value) => {
+  const renderRowContainer = (title, value, monospace) => {
     if (value && title !== 'name') {
       return (
         <RowCertInfo>
           <ColCert>
             { title }:
           </ColCert>
-          <ColCert>
+          <ColCert monospace={monospace}>
             { value }
           </ColCert>
         </RowCertInfo>
@@ -67,7 +67,7 @@ const RequestInfo = (props) => {
           { renderRowContainer(enLang['Info.Body.NamedCurve'], publicKey.namedCurve) }
         </RowCert>
         <RowCert>
-          { renderRowContainer(enLang['Info.Body.Value'], publicKey.value) }
+          { renderRowContainer(enLang['Info.Body.Value'], publicKey.value, true) }
         </RowCert>
       </Row>
 
@@ -80,7 +80,7 @@ const RequestInfo = (props) => {
           { renderRowContainer(enLang['Info.Body.Hash'], signature.hash) }
         </RowCert>
         <RowCert>
-          { renderRowContainer(enLang['Info.Body.Value'], signature.value) }
+          { renderRowContainer(enLang['Info.Body.Value'], signature.value, true) }
         </RowCert>
       </Row>
 

@@ -17,11 +17,6 @@ export default function (state, payload) {
       return state;
     }
 
-    // case ACTIONS_CONST.CERTIFICATE_CLEAR: {
-    //   certificates.clearAll();
-    //   return state;
-    // }
-
     case ACTIONS_CONST.ITEM_REMOVE: {
       const items = providers.where({ selected: true }).find('items');
       items.remove(id);

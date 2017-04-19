@@ -5,7 +5,6 @@ import Info from '../components/info/index';
 import Sidebar from '../components/sidebar/index';
 import Overlay from './overlay';
 import { CertificateActions } from '../actions/state';
-import { RoutingActions } from '../actions/ui';
 import Snackbars from '../components/snackbars';
 
 const ContentStyled = styled.div`
@@ -87,59 +86,6 @@ class RootContainer extends Component {
       windowSize: this.state.windowSize,
       handleRootAction: this.handleRootAction.bind(this),
     };
-  }
-
-  componentDidMount() {
-    // const { dispatch, certificates, params } = this.props;
-    // const selectedCertificate = this.getSelectedCertificateProps();
-    //
-    // if (!certificates.length) {
-    //   dispatch(RoutingActions.push(''));
-    // } else if (params.id) {
-    //   dispatch(CertificateActions.select(params.id));
-    // } else if (!selectedCertificate.id && certificates.length) {
-    //   dispatch(CertificateActions.select(certificates[0].id));
-    // }
-    //
-    // if (!certificates.length) {
-    //   this.handleRootAction({ type: 'SIDEBAR:OPEN' });
-    // }
-  }
-
-  componentDidUpdate(prevProps) {
-    // const { params, dispatch, certificates } = this.props;
-    //
-    // const selectedCert = this.getSelectedCertificateProps();
-    // const selectedCertId = selectedCert.id;
-    // const paramsId = params.id;
-    // const certificatesLength = certificates.length;
-    // const prevCertificatesLength = prevProps.certificates.length;
-    // const firstCertificate = certificates[0];
-    //
-    // if (!paramsId && !selectedCertId && certificatesLength) {
-    //   dispatch(CertificateActions.select(firstCertificate.id));
-    //   dispatch(RoutingActions.push(`certificate/${firstCertificate.id}`));
-    // }
-    //
-    // if (selectedCertId && paramsId && (selectedCertId !== paramsId)) {
-    //   dispatch(CertificateActions.select(selectedCertId));
-    //   dispatch(RoutingActions.push(`certificate/${selectedCertId}`));
-    // }
-    //
-    // if (
-    //   paramsId && !selectedCertId
-    //   && (prevCertificatesLength !== certificatesLength)
-    //   && firstCertificate
-    // ) {
-    //   dispatch(CertificateActions.select(firstCertificate.id));
-    //   dispatch(RoutingActions.push(`certificate/${firstCertificate.id}`));
-    // }
-    //
-    // // if remove last certificate
-    // if (prevCertificatesLength === 1 && !certificatesLength) {
-    //   this.handleRootAction({ type: 'SIDEBAR:OPEN' });
-    //   dispatch(RoutingActions.push(''));
-    // }
   }
 
   componentWillUnmount() {
