@@ -59,6 +59,8 @@ export const ERROR = 'ERROR';
 
 // Webcrypto
 export const WS_ON_LISTENING = 'WS:ON_LISTENING';
+export const WS_ADDED_PROVIDER = 'WS:ADDED_PROVIDER ';
+export const WS_REMOVED_PROVIDER = 'WS:REMOVED_PROVIDER ';
 
 // Item
 export const ITEM_SELECT = 'ITEM:SELECT';

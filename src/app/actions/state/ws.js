@@ -45,3 +45,13 @@ export const login = id => ({
 export const onListening = () => ({
   type: ACTIONS_CONST.WS_ON_LISTENING,
 });
+
+export const addedProvider = data => ({
+  type: ACTIONS_CONST.WS_ADDED_PROVIDER,
+  data,
+});
+
+export const removedProvider = data => ({
+  type: ACTIONS_CONST.WS_REMOVED_PROVIDER,
+  data,
+});

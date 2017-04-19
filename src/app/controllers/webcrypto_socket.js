@@ -32,10 +32,10 @@ export const WSController = {
       })
       .on('token', (info) => {
         if (info.added.length) {
-          console.log('TOKEN added:', info.added);
+          Store.dispatch(WSActions.addedProvider(info.added));
         }
         if (info.removed.length) {
-          console.log('TOKEN removed:', info.removed);
+          Store.dispatch(WSActions.removedProvider(info.removed));
         }
         if (info.error) {
           console.log('TOKEN:', info.error);

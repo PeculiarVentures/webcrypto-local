@@ -13,7 +13,7 @@ import { CertHelper, downloadCertFromURI } from '../../helpers';
 import * as Key from './key';
 import * as Provider from './provider';
 import * as Certificate from './certificate';
-import { RoutingController } from '../../controllers';
+import { RoutingController, EventChannel } from '../../controllers';
 
 function* getProviderKeys() {
   const state = yield select();
@@ -95,12 +95,11 @@ function* webcryptoOnListening() {
   yield put(AppActions.setState({
     loaded: false,
     providers: [],
+    status: 'online',
   }));
-  // yield put(AppActions.loaded(false));
   const providers = yield Provider.providerGetList();
   let index = 0;
 
-  yield put(WSActions.status('online'));
   for (const prv of providers) {
     const provider = yield Provider.providerGet(prv.id);
 
@@ -266,6 +265,27 @@ function* createRequest({ data }) {
   }
 }
 
+function* addedProvider({ data }) {
+  EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'card_inserted', 3000);
+
+  const state = yield select();
+  const prv = data[0];
+  const provider = yield Provider.providerGet(prv.id);
+
+  yield put(ProviderActions.add({
+    id: prv.id,
+    name: prv.name,
+    readOnly: prv.readOnly,
+    index: state.get('providers').length,
+    logged: provider.isLogged,
+  }));
+}
+
+function* removedProvider({ data }) {
+  EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'card_removed', 3000);
+  yield webcryptoOnListening();
+}
+
 export default function* () {
   yield [
     takeEvery(ACTIONS_CONST.WS_ON_LISTENING, webcryptoOnListening),
@@ -275,6 +295,8 @@ export default function* () {
     takeEvery(ACTIONS_CONST.WS_REMOVE_ITEM, removeItem),
     takeEvery(ACTIONS_CONST.WS_IMPORT_ITEM, importItem),
     takeEvery(ACTIONS_CONST.WS_CREATE_REQUEST, createRequest),
+    takeEvery(ACTIONS_CONST.WS_ADDED_PROVIDER, addedProvider),
+    takeEvery(ACTIONS_CONST.WS_REMOVED_PROVIDER, removedProvider),
   ];
   // yield [
   //   takeEvery(ACTIONS_CONST.WS_GET_KEYS, getKeys),
