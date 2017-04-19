@@ -153,8 +153,8 @@ export function* certificateCreate(crypto, data) {
       }
 
       const certId = yield certificateSet(crypto, importCert);
-      Key.keySet(crypto, privateKey);
-      Key.keySet(crypto, publicKey);
+      yield Key.keySet(crypto, privateKey);
+      yield Key.keySet(crypto, publicKey);
       return certId;
     } catch (error) {
       yield put(ErrorActions.error(error, 'request_create'));

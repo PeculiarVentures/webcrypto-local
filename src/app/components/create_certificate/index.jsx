@@ -12,14 +12,16 @@ export default class CertificateCreate extends Component {
     providers: PropTypes.oneOfType([
       PropTypes.array,
     ]),
-    readOnly: PropTypes.bool,
+    provider: PropTypes.oneOfType([
+      PropTypes.object,
+    ]),
   };
 
   static defaultProps = {
     loaded: false,
     status: 'seaching',
     providers: [],
-    readOnly: false,
+    provider: {},
   };
 
   static contextTypes = {
@@ -33,11 +35,11 @@ export default class CertificateCreate extends Component {
 
   onCreateHandler = (data) => {
     const { dispatch } = this.context;
-    dispatch(WSActions.createCertificate(data));
+    dispatch(WSActions.createRequest(data));
   };
 
   render() {
-    const { loaded, status, providers, readOnly } = this.props;
+    const { loaded, status, providers, provider } = this.props;
     return (
       <IndexStyled.Wrapper>
         <Header
@@ -49,7 +51,7 @@ export default class CertificateCreate extends Component {
           loaded={loaded}
           status={status}
           providers={providers}
-          readOnly={readOnly}
+          readOnly={provider.readOnly}
         />
       </IndexStyled.Wrapper>
     );

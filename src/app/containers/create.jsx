@@ -39,16 +39,23 @@ class CreateContainer extends Component {
   }
 
   render() {
-    const { loaded, status, providers, readOnly } = this.props;
+    const { loaded, status, providers, dialog, modal } = this.props;
+    const selectedProviderProps = providers.filter(p => p.selected)[0];
+
     return (
       <ContentStyled>
         <CertificateCreate
           loaded={loaded}
           status={status}
           providers={providers}
-          readOnly={readOnly}
+          provider={selectedProviderProps}
         />
-        <Overlay {...this.props} />
+        <Overlay
+          provider={selectedProviderProps}
+          dialog={dialog}
+          providers={providers}
+          modal={modal}
+        />
       </ContentStyled>
     );
   }

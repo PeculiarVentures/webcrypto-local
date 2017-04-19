@@ -152,20 +152,6 @@ class RootContainer extends Component {
     });
   }
 
-  getSelectedProviderProps() {
-    const { providers } = this.props;
-    let provider = {};
-
-    providers.map((prv) => {
-      if (prv.selected) {
-        provider = prv;
-      }
-      return true;
-    });
-
-    return provider;
-  }
-
   handleRootAction(payload) {
     const { type } = payload;
 
@@ -192,7 +178,7 @@ class RootContainer extends Component {
   render() {
     const { loaded, status, providers, dialog, modal } = this.props;
     const { sidebarOpen } = this.state;
-    const selectedProviderProps = this.getSelectedProviderProps();
+    const selectedProviderProps = providers.filter(p => p.selected)[0];
 
     return (
       <ContentStyled>

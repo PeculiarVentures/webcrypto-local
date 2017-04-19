@@ -1,7 +1,7 @@
 import { ACTIONS_CONST } from '../../constants';
 
-export const createCertificate = data => ({
-  type: ACTIONS_CONST.WS_CREATE_CSR,
+export const createRequest = data => ({
+  type: ACTIONS_CONST.WS_CREATE_REQUEST,
   data,
 });
 
