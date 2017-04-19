@@ -92,7 +92,11 @@ function* getProviderCertificates() {
 }
 
 function* webcryptoOnListening() {
-  yield put(AppActions.loaded(false));
+  yield put(AppActions.setState({
+    loaded: false,
+    providers: [],
+  }));
+  // yield put(AppActions.loaded(false));
   const providers = yield Provider.providerGetList();
   let index = 0;
 

@@ -25,6 +25,9 @@ export const WSController = {
         this.isLogged();
       })
       .on('close', () => {
+        Store.dispatch(ErrorActions.error({
+          message: 'offline',
+        }));
         this.checkConnect();
       })
       .on('token', (info) => {

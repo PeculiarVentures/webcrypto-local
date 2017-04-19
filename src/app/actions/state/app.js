@@ -9,10 +9,9 @@ export const loadState = state => ({
   state,
 });
 
-export const setState = (state, from) => ({
+export const setState = state => ({
   type: ACTIONS_CONST.APP_SET_STATE,
   state,
-  from,
 });
 
 export const loaded = state => ({

@@ -10,7 +10,7 @@ export default function (state, payload) {
     }
 
     case ACTIONS_CONST.APP_SET_STATE: {
-      state.setState(payload.state, payload.from);
+      state.merge(payload.state);
       break;
     }
 

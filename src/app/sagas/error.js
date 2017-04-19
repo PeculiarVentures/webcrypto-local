@@ -11,7 +11,7 @@ function* errorHandler({ data, action }) {
   const { message, stack } = data;
   let errorMessage = '';
 
-  if (browserInfo() === 'Safari') {
+  if (browserInfo() === 'Safari' || /Client.prototype.getServerInfo/.test(stack)) {
     errorMessage = 'NOT_SUPPORTED_LOCALHOST';
   } else if (action === 'request_create') {
     errorMessage = 'REQUEST_CREATE';
@@ -19,10 +19,8 @@ function* errorHandler({ data, action }) {
     errorMessage = 'IMPORT_ITEM';
   } else if (/CKR_PIN_INCORRECT/.test(message)) {
     errorMessage = 'INCORRECT_PIN';
-  } else if (/XMLHttpRequest.xmlHttp/.test(stack)) {
+  } else if (/XMLHttpRequest.xmlHttp/.test(stack) || message === 'offline') {
     errorMessage = 'OFFLINE';
-  } else if (/Client.prototype.getServerInfo/.test(stack)) {
-    errorMessage = 'NOT_SUPPORTED_LOCALHOST';
   } else if (message === 'PIN is not approved') {
     errorMessage = 'UNAPPROVED_PIN';
   }
