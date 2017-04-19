@@ -20,6 +20,11 @@ export const loaded = state => ({
   state,
 });
 
+export const create = state => ({
+  type: ACTIONS_CONST.APP_CREATE,
+  state,
+});
+
 export const readState = state => ({
   type: ACTIONS_CONST.APP_READ_STATE,
   state,

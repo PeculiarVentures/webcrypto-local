@@ -1,7 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import { SelectField, SelectItem, SelectNative } from '../basic';
-import { RoutingActions, ModalActions } from '../../actions/ui';
-import { ProviderActions } from '../../actions/state';
+import { ModalActions } from '../../actions/ui';
+import { ProviderActions, AppActions } from '../../actions/state';
 import enLang from '../../langs/en.json';
 import * as HeaderStyled from './styled/header.styled';
 
@@ -28,7 +28,7 @@ export default class SidebarHeader extends Component {
 
   onClickCreateHandler = () => {
     const { dispatch } = this.context;
-    dispatch(RoutingActions.push('create'));
+    dispatch(AppActions.create(true));
   };
 
   onClickImportHandler = () => {

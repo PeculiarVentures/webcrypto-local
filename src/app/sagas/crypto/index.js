@@ -352,6 +352,9 @@ function* webcryptoOnListening() {
     index += 1;
   }
 
+  if (RoutingController.initialState.create) {
+    yield put(AppActions.create(true));
+  }
   const initState = RoutingController.parseInitState(
     window.location.pathname,
     window.location.search,

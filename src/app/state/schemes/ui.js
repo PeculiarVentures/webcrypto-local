@@ -12,4 +12,5 @@ export default new Schema('UI', {
     instance: ProviderListModel,
     validate: is.list,
   }),
+  create: Type.Boolean,
 });

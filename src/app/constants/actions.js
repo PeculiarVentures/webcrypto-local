@@ -4,6 +4,7 @@ export const APP_LOAD_STATE = 'APP:LOAD_STATE';
 export const APP_SET_STATE = 'APP:SET_STATE';
 export const APP_DATA_LOADED = 'APP:DATA_LOADED';
 export const APP_READ_STATE = 'APP:READ_STATE';
+export const APP_CREATE = 'APP:CREATE';
 
 // Dialog
 export const DIALOG_OPEN = 'DIALOG:OPEN';

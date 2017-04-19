@@ -1,8 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import Header from './header';
 import Body from './body';
-import { WSActions } from '../../actions/state';
-import { RoutingActions } from '../../actions/ui';
+import { WSActions, AppActions } from '../../actions/state';
 import * as IndexStyled from './styled/index.styled';
 
 export default class CertificateCreate extends Component {
@@ -29,7 +28,7 @@ export default class CertificateCreate extends Component {
 
   onCancelHandler = () => {
     const { dispatch } = this.context;
-    dispatch(RoutingActions.back());
+    dispatch(AppActions.create(false));
   };
 
   onCreateHandler = (data) => {

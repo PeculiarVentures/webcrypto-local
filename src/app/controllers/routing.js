@@ -28,6 +28,7 @@ class RoutingController extends State.Map {
       certificate: false,
       key: false,
       request: false,
+      create: false,
       chuncks: [],
       params: {
         provider: false,
@@ -59,9 +60,11 @@ class RoutingController extends State.Map {
       certificate: false,
       key: false,
       request: false,
+      create: this.get('create'),
       params: this.get('params'),
     });
     const providers = state.find('providers');
+    const create = state.find('create');
     const selectedProvider = providers.where({ selected: true });
 
     if (selectedProvider) {
@@ -82,6 +85,16 @@ class RoutingController extends State.Map {
       }
     }
 
+    if (create.get()) {
+      this.merge({
+        create: true,
+      });
+    } else {
+      this.merge({
+        create: false,
+      });
+    }
+
     return this.compose();
   }
 
@@ -90,7 +103,12 @@ class RoutingController extends State.Map {
     const certificate = this.get('certificate');
     const request = this.get('request');
     const key = this.get('key');
+    const create = this.get('create');
 
+    if (create) {
+      this.pushChunk('create');
+      return this.getPath();
+    }
     if (certificate) {
       this.pushChunk(`certificate/${certificate}`);
       return this.getPath();
@@ -131,13 +149,9 @@ class RoutingController extends State.Map {
   }
 
   middleware() {
-    return (store) => (next) => (payload) => {
+    return store => next => (payload) => {
       next(payload);
       const res = this.changeFromState(store.getState());
-      // console.log(res);
-      // if (payload.type === ACTIONS_CONST.PROVIDER_SELECT) {
-      // res = this.changeFromState(store.getState());
-      // }
       RoutingController.go(res);
       return true;
     };
@@ -156,6 +170,9 @@ class RoutingController extends State.Map {
     initWith.splice(0, 1);
     const result = { params: {} };
     result.params = parseSearch(path);
+    if (initWith[0] === 'create') {
+      result.create = true;
+    }
     if (initWith[0] === 'certificate') {
       result.certificate = initWith[1] ? initWith[1] : null;
     }

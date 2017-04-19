@@ -19,6 +19,11 @@ export default function (state, payload) {
       break;
     }
 
+    case ACTIONS_CONST.APP_CREATE: {
+      state.merge({ create: payload.state });
+      break;
+    }
+
     case ACTIONS_CONST.WS_STATUS: {
       state.merge({ status: payload.state });
       break;
