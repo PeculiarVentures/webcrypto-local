@@ -143,11 +143,12 @@ export default class Overlay extends Component {
   };
 
   renderDialog() {
-    const { dialog } = this.props;
+    const { dialog, provider } = this.props;
     const { message } = this.state;
+    console.log(message, dialog);
 
     if (dialog) {
-      const selectedItemProps = this.getSelectedItemProps();
+      const selectedItemProps = provider ? provider.items.filter(i => i.selected)[0] : false;
       return (
         <SegueHandler
           query={dialog}
