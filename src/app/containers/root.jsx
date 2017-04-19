@@ -88,6 +88,22 @@ class RootContainer extends Component {
     };
   }
 
+  componentDidMount() {
+    this.handleRootAction({ type: 'SIDEBAR:OPEN' });
+  }
+
+  componentDidUpdate(prevProps) {
+    const { providers } = this.props;
+    const selectedProviderProps = providers.filter(p => p.selected)[0];
+    const selectedPrevProviderProps = prevProps.providers.filter(p => p.selected)[0];
+
+    if (selectedPrevProviderProps) {
+      if (selectedPrevProviderProps.items.length === 1 && !selectedProviderProps.items.length) {
+        this.handleRootAction({ type: 'SIDEBAR:OPEN' });
+      }
+    }
+  }
+
   componentWillUnmount() {
     window.removeEventListener('resize', this.bindedOnResize);
   }
