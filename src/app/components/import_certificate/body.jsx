@@ -42,11 +42,11 @@ export default class Body extends Component {
 
   onSelectChange = (data) => {
     const { dispatch } = this.context;
-    // if (typeof data === 'string') {
-    //   dispatch(ProviderActions.select(data));
-    // } else {
-    //   dispatch(ProviderActions.select(data.value));
-    // }
+    if (typeof data === 'string') {
+      dispatch(ProviderActions.select(data));
+    } else {
+      dispatch(ProviderActions.select(data.value));
+    }
   };
 
   onClickImportHandler = () => {
@@ -146,6 +146,7 @@ export default class Body extends Component {
     const { valid } = this.state;
     const { deviceType } = this.context;
     const selectedProvider = this.getSelectedProviderProps();
+    const providersFiltered = providers.filter(f => !f.readOnly);
 
     return (
       <BodyStyled.Body>
@@ -156,7 +157,7 @@ export default class Body extends Component {
                 ? <SelectNative
                   labelText={enLang['ImportCertificate.Field.Provider']}
                   placeholder={enLang['Select.Label.Provider']}
-                  options={providers.map(item => ({
+                  options={providersFiltered.map(item => ({
                     value: item.id,
                     name: item.name,
                   }))}
@@ -174,7 +175,7 @@ export default class Body extends Component {
                   onChange={this.onSelectChange}
                 >
                   {
-                    providers.map((item, index) => (
+                    providersFiltered.map((item, index) => (
                       <SelectItem
                         key={index}
                         value={item.id}
