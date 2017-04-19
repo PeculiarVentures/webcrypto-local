@@ -84,6 +84,7 @@ export default class SidebarHeader extends Component {
                   name: item.name,
                 }))}
                 value={currentProvider ? currentProvider.id : ''}
+                onChange={this.onSelectHandler}
               />
               : <SelectField
                 labelText={enLang['CertificateCreate.Provider.Field.Name']}
