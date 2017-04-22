@@ -6,11 +6,12 @@ import enLang from '../../langs/en.json';
 const NumberStyled = styled.div`
   display: inline-block;
   vertical-align: top;
-  width: 24px;
-  line-height: 26px;
+  width: 34px;
+  line-height: 36px;
   border: 1px solid ${props => props.theme.dialog.authorization.borderColorNumber};
   border-radius: ${props => props.theme.borderRadius}px;
-  font-size: 12px;
+  font-size: 16px;
+  font-weight: 600;
   margin-left: 2px;
   color: ${props => props.theme.dialog.color};
   &:first-child {
