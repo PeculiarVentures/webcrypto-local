@@ -103,7 +103,6 @@ export default class KeyInfo extends Component {
     const algorithmData = {
       hash: 'SHA-256',
       name: data.algorithm,
-      publicExponent: data.publicExponent === 3 ? new Uint8Array([3]) : new Uint8Array([1, 0, 1]),
     };
 
     if (data.algorithm.slice(0, 2) === 'EC') {
@@ -251,44 +250,6 @@ export default class KeyInfo extends Component {
               </SelectField>
             }
           </TextFieldContainer>
-          {
-            !isECType
-            ? <TextFieldContainer>
-              {
-                deviceType === 'phone'
-                  ? <SelectNative
-                    labelText={enLang['CertificateCreate.KeyInfo.Field.PublicExponent']}
-                    placeholder={enLang['Select.Label.Exponent']}
-                    ref={node => (this.fieldNodes.publicExponent = node)}
-                    options={currentAlgorithmData.publicExponent.map(module => ({
-                      value: module,
-                    }))}
-                    defaultValue={currentAlgorithmData.publicExponent[0]}
-                  />
-                  : <SelectField
-                    labelText={enLang['CertificateCreate.KeyInfo.Field.PublicExponent']}
-                    ref={node => (this.fieldNodes.publicExponent = node)}
-                    placeholder={enLang['Select.Label.Exponent']}
-                    defaultSelected={{
-                      name: currentAlgorithmData.publicExponent[0],
-                      value: currentAlgorithmData.publicExponent[0],
-                      index: 0,
-                    }}
-                  >
-                    {
-                      currentAlgorithmData.publicExponent.map((item, index) => (
-                        <SelectItem
-                          key={index}
-                          value={item}
-                          primaryText={item}
-                        />
-                      ))
-                    }
-                  </SelectField>
-              }
-            </TextFieldContainer>
-            : null
-          }
         </GroupPart>
         <GroupPart>
           <TitleCheckboxes>

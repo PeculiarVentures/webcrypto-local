@@ -104,8 +104,10 @@ export function* certificateCreate(crypto, data) {
   //   },
   // };
   if (crypto) {
-    const { algorithm, extractable, usages } = data.keyInfo;
-    const _algorithm = () => Object.assign({}, algorithm);
+    const { extractable, usages } = data.keyInfo;
+    const algorithm = (() => Object.assign({
+      publicExponent: new Uint8Array([1, 0, 1]),
+    }, data.keyInfo.algorithm))();
     const algorithmHash = algorithm.hash;
     let pkcs10 = new pkijs.CertificationRequest();
 
@@ -113,7 +115,7 @@ export function* certificateCreate(crypto, data) {
       const {
         publicKey,
         privateKey,
-      } = yield crypto.subtle.generateKey(_algorithm(), extractable, usages);
+      } = yield crypto.subtle.generateKey(algorithm, extractable, usages);
 
       pkijs.setEngine('Crypto', crypto, crypto.subtle);
       pkcs10.version = 0;
@@ -147,7 +149,7 @@ export function* certificateCreate(crypto, data) {
 
       let importCert = '';
       try {
-        importCert = yield crypto.certStorage.importCert('request', csrBuffer, _algorithm(), usages);
+        importCert = yield crypto.certStorage.importCert('request', csrBuffer, algorithm, usages);
       } catch (error) {
         yield put(ErrorActions.error(error, 'request_create'));
       }
