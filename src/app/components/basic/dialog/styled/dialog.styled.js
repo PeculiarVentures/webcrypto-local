@@ -40,6 +40,7 @@ export const Container = styled.div`
   display: inline-block;
   padding: 88px 70px 86px;
   vertical-align: middle;
+  animation: ${props => props.theme.mixins.fadeIn} ${props => props.theme.basicTransition}ms;
   @media ${props => props.theme.media.mobile} {
     width: calc(100% - 20px);
     padding: 50px 30px 46px;
@@ -57,6 +58,5 @@ export const Dialog = styled.div`
   left: 0;
   overflow: auto;
   background: ${props => props.theme.dialog.backgroundOverlay};
-  animation: ${props => props.theme.mixins.fadeIn} ${props => props.theme.basicTransition}ms;
   ${props => props.theme.mixins.ghostVerticalAlign}
 `;
