@@ -1,5 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import styled from 'styled-components';
+import { CircularLoader } from '../basic';
 import Header from './header';
 import { ACTIONS_CONST } from '../../constants';
 import CertificateInfo from './info_certificate';
@@ -18,6 +19,11 @@ const StyledShellInfo = StyledAnimatedIcon(InfoShellIcon, 'i_gradient');
 const RootStyled = styled.div`
   width: 100%;
   height: 100%;
+`;
+
+const LoaderContainer = styled(RootStyled)`
+  text-align: center;
+  ${props => props.theme.mixins.ghostVerticalAlign}
 `;
 
 const HeaderContainer = styled.div`
@@ -125,57 +131,61 @@ export default class Info extends Component {
     const { loaded, provider } = this.props;
     const selectedItem = this.getSelectedItemProps();
 
-    switch (true) {
-      case !loaded:
-        return (
-          <RootStyled>
-            <HeaderContainer>
-              <Header
-                loaded={loaded}
-              />
-            </HeaderContainer>
-            <InfoContainer>
-              <div
-                style={{
-                  width: '100%',
-                  maxWidth: 700,
-                  padding: '75px 20px',
-                  margin: '0 auto',
-                }}
-              >
-                <StyledShellInfo />
-              </div>
-            </InfoContainer>
-          </RootStyled>
-        );
-
-      case Object.keys(selectedItem).length > 0:
-        return (
-          <RootStyled>
-            <HeaderContainer>
-              <Header
-                readOnly={provider.readOnly}
-                loaded={loaded}
-                name={selectedItem.name}
-                isKey={selectedItem.type === 'key'}
-                onCopy={this.onCopyHandler}
-                onDownload={this.onDownloadhandler}
-                onRemove={this.onRemoveHandler}
-                onMenu={this.onMenuHandler}
-              />
-            </HeaderContainer>
-            <InfoContainer>
-              { this.renderInfoContent(selectedItem.type, selectedItem) }
-            </InfoContainer>
-          </RootStyled>
-        );
-
-      default:
-        return (
-          <RootStyled>
-            <EmptyBody />
-          </RootStyled>
-        );
+    if (!loaded) {
+      return (
+        <RootStyled>
+          <HeaderContainer>
+            <Header
+              loaded={loaded}
+            />
+          </HeaderContainer>
+          <InfoContainer>
+            <div
+              style={{
+                width: '100%',
+                maxWidth: 700,
+                padding: '75px 20px',
+                margin: '0 auto',
+              }}
+            >
+              <StyledShellInfo />
+            </div>
+          </InfoContainer>
+        </RootStyled>
+      );
+    } else if (loaded && !provider.loaded) {
+      return (
+        <LoaderContainer>
+          <CircularLoader
+            color="#000000"
+          />
+        </LoaderContainer>
+      );
+    } else if (Object.keys(selectedItem).length > 0) {
+      return (
+        <RootStyled>
+          <HeaderContainer>
+            <Header
+              readOnly={provider.readOnly}
+              loaded={loaded}
+              name={selectedItem.name}
+              isKey={selectedItem.type === 'key'}
+              onCopy={this.onCopyHandler}
+              onDownload={this.onDownloadhandler}
+              onRemove={this.onRemoveHandler}
+              onMenu={this.onMenuHandler}
+            />
+          </HeaderContainer>
+          <InfoContainer>
+            { this.renderInfoContent(selectedItem.type, selectedItem) }
+          </InfoContainer>
+        </RootStyled>
+      );
     }
+    return (
+      <RootStyled>
+        <EmptyBody />
+      </RootStyled>
+    );
   }
 }

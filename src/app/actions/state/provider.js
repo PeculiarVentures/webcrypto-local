@@ -11,7 +11,7 @@ export const update = (result, id) => ({
   id,
 });
 
-export const select = (id) => ({
+export const select = id => ({
   type: ACTIONS_CONST.PROVIDER_SELECT,
   id,
 });

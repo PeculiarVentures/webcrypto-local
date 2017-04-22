@@ -97,31 +97,50 @@ function* webcryptoOnListening() {
     providers: [],
     status: 'online',
   }));
+
   const providers = yield Provider.providerGetList();
   let index = 0;
+  let selected = false;
+  const providersArray = [];
 
-  for (const prv of providers) {
-    const provider = yield Provider.providerGet(prv.id);
-
-    yield put(ProviderActions.add({
-      id: prv.id,
-      name: prv.name,
-      readOnly: prv.readOnly,
-      index,
-      logged: provider.isLogged,
-    }));
-    index += 1;
-  }
-
-  if (RoutingController.initialState.create) {
-    yield put(AppActions.create(true));
-  }
   const initState = RoutingController.parseInitState(
     window.location.pathname,
     window.location.search,
   );
 
-  yield put(ProviderActions.select(initState.params.provider));
+  for (const prv of providers) {
+    const provider = yield Provider.providerGet(prv.id);
+
+    if (initState.params.provider === prv.id) {
+      selected = prv.id;
+    }
+
+    providersArray.push({
+      id: prv.id,
+      name: prv.name,
+      readOnly: prv.readOnly,
+      index,
+      logged: provider.isLogged,
+      selected: initState.params.provider === prv.id,
+    });
+
+    index += 1;
+  }
+
+  if (!selected) {
+    selected = providersArray[0].id;
+    providersArray[0].selected = true;
+  }
+
+  yield put(AppActions.setState({
+    providers: providersArray,
+  }));
+
+  if (RoutingController.initialState.create) {
+    yield put(AppActions.create(true));
+  }
+
+  yield providerSelect({ id: selected });
   yield put(AppActions.loaded(true));
 }
 
@@ -298,14 +317,4 @@ export default function* () {
     takeEvery(ACTIONS_CONST.WS_ADDED_PROVIDER, addedProvider),
     takeEvery(ACTIONS_CONST.WS_REMOVED_PROVIDER, removedProvider),
   ];
-  // yield [
-  //   takeEvery(ACTIONS_CONST.WS_GET_KEYS, getKeys),
-  //   takeEvery(ACTIONS_CONST.WS_GET_CERTIFICATES, getCerificates),
-  //   takeEvery(ACTIONS_CONST.WS_CREATE_CSR, createCertificate),
-  //   takeEvery(ACTIONS_CONST.WS_REMOVE_ITEM, removeItem),
-  //   takeEvery(ACTIONS_CONST.WS_DOWNLOAD_CERTIFICATE, downloadCertificate),
-  //   takeEvery(ACTIONS_CONST.WS_GET_PROVIDERS, getProviders),
-  //   takeEvery(ACTIONS_CONST.WS_IMPORT_CERTIFICATE, importCertificate),
-  //   takeEvery(ACTIONS_CONST.WS_LOGIN, login),
-  // ];
 }
