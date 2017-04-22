@@ -112,7 +112,7 @@ export default class Snackbars extends React.Component {
   }
 
   render() {
-    const {type, message, params, duration} = this.state;
+    const { type, message, params, duration } = this.state;
     return (
       <SegueHandler
         query={type}

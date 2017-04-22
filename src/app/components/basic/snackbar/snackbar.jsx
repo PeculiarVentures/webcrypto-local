@@ -38,6 +38,11 @@ const SnackbarContentStyled = styled.div`
 `;
 
 const TextStyled = styled.div`
+  ${props => (
+    !props.buttonText
+      ? 'text-align: center;'
+      : null
+  )}
   font-size: 14px;
   line-height: 18px;
   font-weight: 600;
@@ -197,7 +202,7 @@ export default class Snackbar extends Component {
 
     return (
       <SnackbarContentStyled>
-        <TextStyled>
+        <TextStyled buttonText={buttonText}>
           { text }
         </TextStyled>
         {

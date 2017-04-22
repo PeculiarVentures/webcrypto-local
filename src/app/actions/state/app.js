@@ -28,3 +28,8 @@ export const readState = state => ({
   type: ACTIONS_CONST.APP_READ_STATE,
   state,
 });
+
+export const fromRoute = state => ({
+  type: ACTIONS_CONST.APP_STATE_FROM_ROUTE,
+  state,
+});

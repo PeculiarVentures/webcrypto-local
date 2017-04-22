@@ -7,6 +7,8 @@ import Store from './store';
 import { getTheme } from './components/theme';
 import { RootContainer, CreateContainer } from './containers';
 import { getAppPath } from './helpers';
+// import { RoutingController } from './controllers';
+// import { AppActions } from './actions/state';
 
 export default class Routing extends Component {
 
@@ -31,6 +33,31 @@ export default class Routing extends Component {
       deviceType: Routing.getDeviceType(),
     };
   }
+
+  // constructor() {
+  //   super();
+  //   window.onpopstate = ::this.processRouteAction;
+  //   const pathname = window.location.pathname;
+  //   const search = window.location.search;
+  //   this.prevRoute = `${pathname}${search}`;
+  // }
+  //
+  // shouldComponentUpdate() {
+  //   return false;
+  // }
+
+  // processRouteAction() {
+  //   const pathname = window.location.pathname;
+  //   const search = window.location.search;
+  //
+  //   if (this.prevRoute && this.prevRoute !== `${pathname}${search}`) {
+  //     const routingData = RoutingController.parseInitState(pathname, search);
+  //     if (routingData) {
+  //       Store.dispatch(AppActions.fromRoute(routingData));
+  //     }
+  //   }
+  //   this.prevRoute = `${pathname}${search}`;
+  // }
 
   render() {
     return (
