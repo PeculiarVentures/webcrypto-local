@@ -69,6 +69,11 @@
 		"readOnly": true,
 		"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
 	}, {
+		"atr": "3B7F96000080318065B0850300EF120FFE829000",
+		"name": "Gemalto IDPrime MD 840 (PKI)",
+		"readOnly": true,
+		"driver": "993988460d8f49a2ac519a2935f11533"
+	}, {
 		"atr": "3BFC180000813180459067464A00642D70C172FEE0FE",
 		"name": "PivKey T800",
 		"readOnly": true,
