@@ -65,7 +65,7 @@ export class LocalProvider extends EventEmitter {
 
         // Add OpenSSL
         const openSsl = new OpenSSLCrypto();
-        this.crypto["1234567890"] = openSsl;
+        this.crypto["286cb673c23e4decbe22bb71fc04e5ea"] = openSsl;
 
         providers = (await openSsl.info()).providers;
         providers.forEach((item) => {
