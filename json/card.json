@@ -100,9 +100,10 @@
 		"id": "993988460d8f49a2ac519a2935f00533",
 		"name": "YubiKey",
 		"file": {
-			"osx": "/usr/local/lib/libykcs11.dylib",
-			"linux": "/usr/local/lib/libykcs11.so",
-			"windows": "/Windows/System/libykcs11-1.dll"
+		  "osx": "/usr/local/lib/libykcs11.dylib",
+		  "linux": "/usr/local/lib/libykcs11.so",
+		  "windows": "/Windows/System/libykcs11-1.dll"
+		}
 	}, {
 		"id": "993988460d8f49a2ac519a5555f00533",
 		"name": "Gemalto IDPrime MD 840 (PKI)",
