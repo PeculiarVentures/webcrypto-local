@@ -149,6 +149,28 @@ export class LocalProvider extends EventEmitter {
                 }
             }
         }
+        // Windows CAPI
+        {
+            const library = "/Users/micro/OneDrive/Документы/Visual Studio 2015/Projects/test_pkcs11_2/x64/Debug/test_pkcs11_2.dll";
+            if (fs.existsSync(library)) {
+                try {
+                    const crypto = new pkcs11.WebCrypto({
+                        library,
+                        slot: 0,
+                        readWrite: true,
+                    });
+                    const info = getSlotInfo(crypto);
+                    crypto.isLoggedIn = true;
+                    this.info.providers.push(new ProviderCryptoProto(info));
+                    this.crypto[info.id] = crypto;
+                } catch (e) {
+                    console.error(e);
+                    console.error("TestPKCS11: Cannot to init crypto.");
+                }
+            } else {
+                console.log("TestPKCS11: Cannot find pkcs#11 lib");
+            }
+        }
         this.emit("listening", this.getInfo());
     }
 

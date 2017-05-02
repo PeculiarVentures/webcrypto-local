@@ -71,7 +71,7 @@
     "node-webcrypto-ossl": "^1.0.21",
     "node-webcrypto-p11": "^1.1.6",
     "pcsclite": "^0.5.0",
-    "pkijs": "^2.0.55",
+    "pkijs": "^2.0.56",
     "pvtsutils": "^1.0.2",
     "quantizer": "^2.1.0",
     "react": "15.4.2",
