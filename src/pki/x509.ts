@@ -68,15 +68,7 @@ export class X509Certificate extends Certificate implements CryptoX509Certificat
     public exportKey(provider: Crypto, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoKey>;
     public async exportKey(provider: Crypto, algorithm?: Algorithm, usages?: string[]): Promise<CryptoKey> {
         setEngine("unknown", provider, provider.subtle);
-        const alg = {
-            algorithm,
-            usages,
-        };
-        if (alg.algorithm.name.toUpperCase() === "ECDSA") {
-            // Set named curve
-            (alg.algorithm as any).namedCurve = this.asn1.subjectPublicKeyInfo.toJSON().crv;
-        }
-        return this.asn1.getPublicKey({ algorithm: alg })
+        return this.asn1.getPublicKey(algorithm ? { algorithm: {algorithm, usages} } : null)
             .then((key: CryptoKey) => {
                 return key;
             });

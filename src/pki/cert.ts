@@ -41,9 +41,11 @@ export abstract class Certificate implements CryptoCertificate {
     }
 
     public async getID(provider: Crypto, algorithm: string) {
-        const hash = await provider.subtle.digest(algorithm, this.raw);
+        const publicKey = await this.exportKey(provider);
+        const spki = await provider.subtle.exportKey("spki", publicKey);
+        const sha1Hash = await provider.subtle.digest("SHA-1", spki);
         const rnd = crypto.getRandomValues(new Uint8Array(4));
-        return `${this.type}-${Convert.ToHex(rnd)}-${Convert.ToHex(hash)}`;
+        return `${this.type}-${Convert.ToHex(rnd)}-${Convert.ToHex(sha1Hash)}`;
     }
 
 }
