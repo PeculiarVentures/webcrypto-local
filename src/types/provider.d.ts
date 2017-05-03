@@ -4,6 +4,7 @@ interface IProvider {
     readOnly: boolean;
     library?: string;
     algorithms: string[];
+    isRemovable: boolean;
 }
 
 interface IModule {
