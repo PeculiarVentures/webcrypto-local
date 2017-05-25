@@ -13,8 +13,12 @@
     "lint-fix": "eslint src --fix",
     "test": "",
     "deploy:gh-pages": "./scripts/deploy-ghpages.sh",
-    "build:ws": "rimraf out && tsc && rollup -c",
-    "server:ws": "npm run build:ws && node out/test/local"
+    "build:lib": "rollup -c rollup.config.lib.js",
+    "build:web": "rollup -c",
+    "build:server": "tsc",
+    "build:ws": "rimraf out && npm run build:server && npm run build:web && npm run build:lib",
+    "server:ws": "npm run build:ws && node out/test/local",
+    "install": "npm run build:ws"
   },
   "repository": {
     "type": "git",
