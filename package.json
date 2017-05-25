@@ -13,8 +13,12 @@
     "lint-fix": "eslint src --fix",
     "test": "",
     "deploy:gh-pages": "./scripts/deploy-ghpages.sh",
-    "build:ws": "rimraf out && tsc && rollup -c",
-    "server:ws": "npm run build:ws && node out/test/local"
+    "build:lib": "rollup -c rollup.config.lib.js",
+    "build:web": "rollup -c",
+    "build:server": "tsc",
+    "build:ws": "rimraf out && npm run build:server && npm run build:web && npm run build:lib",
+    "server:ws": "npm run build:ws && node out/test/local",
+    "install": "npm run build:ws"
   },
   "repository": {
     "type": "git",
@@ -43,11 +47,10 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
-    "json-loader": "^0.5.4",
-    "typescript": "^2.2.1"
+    "json-loader": "^0.5.4"
   },
   "dependencies": {
-    "2key-ratchet": "git+ssh@github.com:PeculiarVentures/2key-ratchet",
+    "2key-ratchet": "^1.0.1",
     "@types/asn1js": "0.0.1",
     "@types/long": "^3.0.31",
     "@types/node-notifier": "0.0.28",
@@ -90,7 +93,7 @@
     "styled-components": "^1.4.4",
     "tslib": "^1.5.0",
     "tsprotobuf": "^1.0.4",
-    "typescript": "^2.1.5",
+    "typescript": "^2.3.3",
     "uuid": "^3.0.1",
     "webcrypto-core": "^0.1.13",
     "webpack": "^1.13.2",
