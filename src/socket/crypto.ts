@@ -23,7 +23,10 @@ export class SocketCrypto implements Crypto {
     }
 
     public getRandomValues(data: ArrayBufferView): ArrayBufferView {
-        throw new Error("Method not implemented");
+        if (!self.crypto) {
+            throw new Error("Cannot get native crypto object. Function getRandomValues is not implemented.");
+        }
+        return self.crypto.getRandomValues(data);
     }
 
     public async login() {
