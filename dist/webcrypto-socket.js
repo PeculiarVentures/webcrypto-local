@@ -93,6 +93,10 @@ EventHandlers.prototype = Object.create(null);
 function EventEmitter() {
   EventEmitter.init.call(this);
 }
+// nodejs oddity
+// require('events') === require('events').EventEmitter
+EventEmitter.EventEmitter = EventEmitter;
+
 EventEmitter.usingDomains = false;
 
 EventEmitter.prototype.domain = undefined;
@@ -3475,6 +3479,9 @@ __decorate([
 __decorate([
     ProtobufProperty({ id: ProviderCryptoProto_1.INDEX++, repeated: true, type: "string" })
 ], ProviderCryptoProto.prototype, "algorithms", void 0);
+__decorate([
+    ProtobufProperty({ id: ProviderCryptoProto_1.INDEX++, type: "bool", defaultValue: false })
+], ProviderCryptoProto.prototype, "isRemovable", void 0);
 ProviderCryptoProto = ProviderCryptoProto_1 = __decorate([
     ProtobufElement({})
 ], ProviderCryptoProto);
