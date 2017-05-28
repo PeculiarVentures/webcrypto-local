@@ -8,6 +8,7 @@ import { CardWatcher } from "./pcsc_watcher";
 // TODO must be fixed in pkcs11 layer
 const utils = require("node-webcrypto-p11/built/utils");
 import * as graphene from "graphene-pk11";
+import { Convert } from "pvtsutils";
 
 const CARD_CONFIG_PATH = "./json/card.json";
 
@@ -98,6 +99,7 @@ export class LocalProvider extends EventEmitter {
                         readWrite: !card.readOnly,
                     });
                     const info = getSlotInfo(crypto);
+                    info.atr = Convert.ToHex(card.atr);
                     info.library = card.library;
                     this.info.providers.push(new ProviderCryptoProto(info));
                     this.crypto[info.id] = crypto;

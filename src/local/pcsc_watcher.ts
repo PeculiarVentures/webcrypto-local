@@ -86,7 +86,6 @@ export class PCSCWatcher extends EventEmitter {
 
 }
 
-
 interface JsonCard {
     atr: HexString;
     name: string;
@@ -200,7 +199,7 @@ export class CardWatcher extends EventEmitter {
 
     /**
      * List of allowed cards
-     * 
+     *
      * @type {Card[]}
      * @memberOf CardWatcher
      */
@@ -243,10 +242,10 @@ export class CardWatcher extends EventEmitter {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} config Path to JSON config file
-     * 
+     *
      * @memberOf CardWatcher
      */
     public start(config: string) {
