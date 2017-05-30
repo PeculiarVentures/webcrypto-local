@@ -153,7 +153,7 @@ export class LocalProvider extends EventEmitter {
         }
         // Windows CAPI
         {
-            const library = "/Users/micro/OneDrive/Документы/Visual Studio 2015/Projects/test_pkcs11_2/x64/Debug/test_pkcs11_2.dll";
+            const library = "/github/pvpkcs11/build/Debug/pvpkcs11.dll";
             if (fs.existsSync(library)) {
                 try {
                     const crypto = new pkcs11.WebCrypto({

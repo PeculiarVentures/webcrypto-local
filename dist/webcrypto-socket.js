@@ -1627,7 +1627,6 @@ var ECDSAPublicKeyConverter = (function () {
             });
         });
     };
-    
     return ECDSAPublicKeyConverter;
 }());
 var ECDHPublicKeyConverter = (function () {
@@ -1647,7 +1646,6 @@ var ECDHPublicKeyConverter = (function () {
             });
         });
     };
-    
     return ECDHPublicKeyConverter;
 }());
 var DateConverter = (function () {
@@ -1667,7 +1665,6 @@ var DateConverter = (function () {
             });
         });
     };
-    
     return DateConverter;
 }());
 
@@ -3482,6 +3479,9 @@ __decorate([
 __decorate([
     ProtobufProperty({ id: ProviderCryptoProto_1.INDEX++, type: "bool", defaultValue: false })
 ], ProviderCryptoProto.prototype, "isRemovable", void 0);
+__decorate([
+    ProtobufProperty({ id: ProviderCryptoProto_1.INDEX++, type: "string" })
+], ProviderCryptoProto.prototype, "atr", void 0);
 ProviderCryptoProto = ProviderCryptoProto_1 = __decorate([
     ProtobufElement({})
 ], ProviderCryptoProto);
@@ -3702,6 +3702,9 @@ function PrepareAlgorithm(alg) {
 function PrepareData(data, paramName) {
     if (!data) {
         throw new WebCryptoError("Parameter '" + paramName + "' is required and cant be empty");
+    }
+    if (typeof Buffer !== "undefined" && Buffer.isBuffer(data)) {
+        return new Uint8Array(data);
     }
     if (ArrayBuffer.isView(data)) {
         return new Uint8Array(data.buffer);
@@ -6289,7 +6292,10 @@ var SocketCrypto = (function () {
         this.certStorage = new SocketCertificateStorage(this);
     }
     SocketCrypto.prototype.getRandomValues = function (data) {
-        throw new Error("Method not implemented");
+        if (!self.crypto) {
+            throw new Error("Cannot get native crypto object. Function getRandomValues is not implemented.");
+        }
+        return self.crypto.getRandomValues(data);
     };
     SocketCrypto.prototype.login = function () {
         return __awaiter(this, void 0, void 0, function () {
