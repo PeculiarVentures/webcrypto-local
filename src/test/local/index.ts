@@ -1,8 +1,6 @@
 import * as fs from "fs";
+import { Notification } from "../../core/notification";
 import { LocalServer } from "../../local";
-const EventLogger = require("node-windows").EventLogger;
-
-const log = new EventLogger("Hello world");
 
 const server = new LocalServer();
 
@@ -10,15 +8,29 @@ const server = new LocalServer();
 server.listen("localhost:8080")
     .on("listening", (e: any) => {
         console.log(`${e.address}`);
-        log.info(`${e.address}`);
-        log.info(`USER PROFILE: ${process.env["USERPROFILE"]}`);
         fs.writeFileSync("C:/tmp/log.md", `$User profile: {process.env["USERPROFILE"]}\n`);
     })
     .on("error", (e: Error) => {
         console.error(e);
-        log.error(e.message + "\n" + e.stack);
+    })
+    .on("notify", (p: any) => {
+        console.log("Notify:", p.type);
+
+        switch (p.type) {
+            case "2key": {
+                Notification.question(`Is it correct pin ${p.pin}?`)
+                    .then(p.resolve, p.reject);
+                break;
+            }
+            case "pin": {
+                Notification.prompt("Enter PIN for PKCS#11 token: ")
+                    .then(p.resolve, p.reject);
+                break;
+            }
+            default:
+                throw new Error("Unknown type of notify");
+        }
     })
     .on("close", (e: any) => {
-        log.info(`Close: ${e.remoteAddress}`);
         console.log("Close:", e.remoteAddress);
     });

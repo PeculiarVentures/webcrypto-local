@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 import * as fs from "fs";
 import * as pkcs11 from "node-webcrypto-p11";
+import * as path from "path";
 import { ProviderCryptoProto, ProviderInfoProto } from "../core/protos/provider";
 import { OpenSSLCrypto } from "./ossl";
 import { CardWatcher } from "./pcsc_watcher";
@@ -10,7 +11,7 @@ const utils = require("node-webcrypto-p11/built/utils");
 import * as graphene from "graphene-pk11";
 import { Convert } from "pvtsutils";
 
-const CARD_CONFIG_PATH = "./json/card.json";
+const CARD_CONFIG_PATH = path.join(__dirname, "../../json/card.json");
 
 type LocalProviderTokenHandler = (info: { removed: IProvider[], added: IProvider[], error: Error }) => void;
 type LocalProviderListeningHandler = (info: IModule[]) => void;
@@ -167,7 +168,7 @@ export class LocalProvider extends EventEmitter {
                     this.crypto[info.id] = crypto;
                 } catch (e) {
                     console.error(e);
-                    console.error("TestPKCS11: Cannot to init crypto.");
+                    console.error("TestPKCS11: Cannot to init pvpkcs11.");
                 }
             } else {
                 console.log("TestPKCS11: Cannot find pkcs#11 lib");

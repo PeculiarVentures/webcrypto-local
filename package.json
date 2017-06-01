@@ -2,7 +2,8 @@
   "name": "webcrypto-local",
   "version": "1.0.0",
   "description": "* Clone latest version this repository  * `npm install`  * `npm run development`",
-  "main": "index.js",
+  "main": "out/local/index.js",
+  "types": "index.d.ts",
   "scripts": {
     "build": "cross-env NODE_ENV=build babel-node scripts/run --client",
     "clear": "cross-env NODE_ENV=production babel-node scripts/run --clear",
