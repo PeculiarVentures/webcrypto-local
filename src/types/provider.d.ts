@@ -3,6 +3,7 @@ interface IProvider {
     id: string;
     readOnly: boolean;
     library?: string;
+    atr?: string;
     algorithms: string[];
     isRemovable: boolean;
 }

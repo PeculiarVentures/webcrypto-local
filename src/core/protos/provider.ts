@@ -26,6 +26,9 @@ export class ProviderCryptoProto extends BaseProto implements IProvider {
     @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, type: "bool", defaultValue: false })
     public isRemovable: boolean;
 
+    @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, type: "string" })
+    public atr: string;
+
     constructor(data?: IProvider) {
         super();
 

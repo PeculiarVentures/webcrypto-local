@@ -2,7 +2,6 @@ import { EventEmitter } from "events";
 import { Convert } from "pvtsutils";
 import { ObjectProto } from "tsprotobuf";
 import { Server, Session } from "../connection/server";
-import { Notification } from "../core/notification";
 import { ActionProto, CryptoItemProto, CryptoKeyPairProto, CryptoKeyProto, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core/proto";
 import { CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetItemActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto, CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto } from "../core/protos/certstorage";
 import { ArrayStringConverter } from "../core/protos/converter";
@@ -10,9 +9,9 @@ import { IsLoggedInActionProto, LoginActionProto } from "../core/protos/crypto";
 import { KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageIndexOfActionProto, KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto } from "../core/protos/keystorage";
 import { ProviderAuthorizedEventProto, ProviderCryptoProto, ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderTokenEventProto } from "../core/protos/provider";
 import { DecryptActionProto, DeriveBitsActionProto, DeriveKeyActionProto, DigestActionProto, EncryptActionProto, ExportKeyActionProto, GenerateKeyActionProto, ImportKeyActionProto, SignActionProto, UnwrapKeyActionProto, VerifyActionProto, WrapKeyActionProto } from "../core/protos/subtle";
+import { challenge } from "../connection/challenge";
 import { ServiceCryptoItem } from "./crypto_item";
 import { LocalProvider } from "./provider";
-import { challenge } from "../connection/challenge";
 
 const crypto: Crypto = new (require("node-webcrypto-ossl"))();
 
@@ -95,6 +94,14 @@ export class LocalServer extends EventEmitter {
         return this;
     }
 
+    public on(event: "listening", cb: Function): this;
+    public on(event: "error", cb: Function): this;
+    public on(event: "close", cb: Function): this;
+    public on(event: "notify", cb: Function): this;
+    public on(event: string, cb: Function) {
+        return super.on(event, cb);
+    }
+
     protected async onMessage(session: Session, action: ActionProto) {
         const resultProto = new ResultProto(action);
 
@@ -112,7 +119,15 @@ export class LocalServer extends EventEmitter {
                     // generate OTP
                     const pin = await challenge(this.server.identity.signingKey.publicKey, session.cipher.remoteIdentity.signingKey);
                     // Show notice
-                    const ok = await Notification.question(`Is it correct pin ${pin}?`);
+                    const promise = new Promise<boolean>((resolve, reject) => {
+                        this.emit("notify", {
+                            type: "2key",
+                            pin,
+                            resolve,
+                            reject,
+                        });
+                    });
+                    const ok = await promise;
                     if (ok) {
                         this.server.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
                         session.authorized = true;
@@ -150,7 +165,14 @@ export class LocalServer extends EventEmitter {
 
                 if (crypto.login) {
                     // show prompt
-                    const pin = await Notification.prompt("Enter PIN for PKCS#11 token: ");
+                    const promise = new Promise<string>((resolve, reject) => {
+                        this.emit("notify", {
+                            type: "pin",
+                            resolve,
+                            reject,
+                        });
+                    });
+                    const pin = await promise;
                     crypto.login(pin);
                 }
                 break;
