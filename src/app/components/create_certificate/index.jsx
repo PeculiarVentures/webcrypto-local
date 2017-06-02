@@ -33,9 +33,14 @@ export default class CertificateCreate extends Component {
     dispatch(AppActions.create(false));
   };
 
-  onCreateHandler = (data) => {
+  onCreateHandler = (data, selfSigned) => {
     const { dispatch } = this.context;
-    dispatch(WSActions.createRequest(data));
+
+    if (selfSigned) {
+      dispatch(WSActions.createSelfSignedCertificate(data));
+    } else {
+      dispatch(WSActions.createRequest(data));
+    }
   };
 
   render() {

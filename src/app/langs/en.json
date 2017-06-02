@@ -47,6 +47,7 @@
   "CertificateCreate.KeyInfo.Usage.Title": "Usage",
   "CertificateCreate.Provider.Title": "Provider info",
   "CertificateCreate.Provider.Field.Name": "Name",
+  "CertificateCreate.CMS.Title": "Self signed",
 
   "Info.Header.Btn.Download": "Download",
   "Info.Header.Download.Pem": "as PEM",

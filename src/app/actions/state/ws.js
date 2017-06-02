@@ -5,6 +5,11 @@ export const createRequest = data => ({
   data,
 });
 
+export const createSelfSignedCertificate = data => ({
+  type: ACTIONS_CONST.WS_CREATE_SELF_SIGNED_CERTIFICATE,
+  data,
+});
+
 export const importItem = data => ({
   type: ACTIONS_CONST.WS_IMPORT_ITEM,
   data,

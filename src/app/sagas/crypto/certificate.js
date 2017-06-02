@@ -165,6 +165,61 @@ export function* certificateCreate(crypto, data) {
   return false;
 }
 
+export function* CMSCreate(crypto, data) {
+  if (crypto) {
+    const algorithm = (() => Object.assign({
+      publicExponent: new Uint8Array([1, 0, 1]),
+    }, data.keyInfo.algorithm))();
+    const usages = ['sign', 'verify'];
+
+    try {
+      // Set engine
+      yield pkijs.setEngine('MsCAPI PKCS#11', crypto, crypto.subtle);
+
+      // Generate key
+      const {
+        publicKey,
+        privateKey,
+      } = yield crypto.subtle.generateKey(algorithm, false, usages);
+
+      // Generate new certificate
+      let certificate = new pkijs.Certificate();
+      certificate.version = 2;
+      certificate.serialNumber = new asn1js.Integer({ value: 1 });
+
+      certificate = CertHelper.decorateCertificateSubject(certificate, data);
+
+      certificate.notBefore.value = new Date();
+      certificate.notAfter.value = new Date();
+      certificate.notAfter.value.setFullYear(certificate.notAfter.value.getFullYear() + 1);
+
+      // Extensions are not a part of certificate by default, it's an optional array
+      certificate.extensions = [];
+
+      yield certificate.subjectPublicKeyInfo.importKey(publicKey);
+      yield certificate.sign(privateKey, 'SHA-256');
+
+      // Convert certificate to DER
+      const derCert = certificate.toSchema(true).toBER(false);
+
+      let importCert = '';
+      try {
+        importCert = yield crypto.certStorage.importCert('x509', derCert, algorithm, usages);
+      } catch (error) {
+        yield put(ErrorActions.error(error, 'request_create'));
+      }
+
+      const certId = yield certificateSet(crypto, importCert);
+      yield Key.keySet(crypto, privateKey);
+      yield Key.keySet(crypto, publicKey);
+      return certId;
+    } catch (error) {
+      yield put(ErrorActions.error(error, 'request_create'));
+    }
+  }
+  return false;
+}
+
 export function* certificateRemove(crypto, id) {
   if (crypto) {
     try {

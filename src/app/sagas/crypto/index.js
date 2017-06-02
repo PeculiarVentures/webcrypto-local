@@ -284,6 +284,51 @@ function* createRequest({ data }) {
   }
 }
 
+function* createSelfSignedCertificate({ data }) {
+  yield put(DialogActions.open('load'));
+
+  const state = yield select();
+  const selectedProvider = state.find('providers').where({ selected: true });
+  const crypto = yield Provider.cryptoGet(selectedProvider.get().id);
+
+  if (crypto) {
+    const created = yield Certificate.CMSCreate(crypto, data);
+
+    if (created) {
+      const item = yield Certificate.certificateGet(crypto, created);
+      const pem = yield Certificate.certificateExport(crypto, item, 'pem');
+      const addedId = UUID();
+      let certData = '';
+
+      if (item.type === 'x509') {
+        const raw = yield Certificate.certificateExport(crypto, item, 'raw');
+        const thumbprint = yield Certificate.certificateThumbprint(crypto, raw);
+        const certificateDetails = CertHelper.certRawToJson(raw);
+
+        certData = CertHelper.certDataHandler({
+          ...certificateDetails,
+          id: created,
+          pem,
+          thumbprint,
+          addedId,
+        });
+      } else {
+        certData = CertHelper.requestDataHandler({
+          ...item,
+          id: created,
+          pem,
+          addedId,
+        });
+      }
+
+      yield put(ItemActions.add(certData, selectedProvider.get().id));
+      yield put(AppActions.create(false));
+      yield put(DialogActions.close());
+      yield put(ItemActions.select(addedId));
+    }
+  }
+}
+
 function* addedProvider({ data }) {
   EventChannel.emit(ACTIONS_CONST.SNACKBAR_SHOW, 'card_inserted', 3000);
 
@@ -314,6 +359,7 @@ export default function* () {
     takeEvery(ACTIONS_CONST.WS_REMOVE_ITEM, removeItem),
     takeEvery(ACTIONS_CONST.WS_IMPORT_ITEM, importItem),
     takeEvery(ACTIONS_CONST.WS_CREATE_REQUEST, createRequest),
+    takeEvery(ACTIONS_CONST.WS_CREATE_SELF_SIGNED_CERTIFICATE, createSelfSignedCertificate),
     takeEvery(ACTIONS_CONST.WS_ADDED_PROVIDER, addedProvider),
     takeEvery(ACTIONS_CONST.WS_REMOVED_PROVIDER, removedProvider),
   ];

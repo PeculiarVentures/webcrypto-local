@@ -273,6 +273,23 @@ const CertHelper = {
     return pkcs10;
   },
 
+  decorateCertificateSubject: function decorateCertificateSubject(certificate, data) {
+    Object.keys(data).map((key) => {
+      if ({}.hasOwnProperty.call(subjectTypesAndValues, key) && data[key]) {
+        certificate.issuer.typesAndValues.push(new pkijs.AttributeTypeAndValue({
+          type: subjectTypesAndValues[key],
+          value: new asn1js.BmpString({ value: data[key] }),
+        }));
+        certificate.subject.typesAndValues.push(new pkijs.AttributeTypeAndValue({
+          type: subjectTypesAndValues[key],
+          value: new asn1js.BmpString({ value: data[key] }),
+        }));
+      }
+      return true;
+    });
+    return certificate;
+  },
+
   keyDataHandler: function keyDataHandler(data) {
     const { _algorithm, _usages, id } = data;
 
