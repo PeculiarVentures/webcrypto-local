@@ -27,3 +27,11 @@ export class IsLoggedInActionProto extends CryptoActionProto {
     public static ACTION = "crypto/isLoggedIn";
 
 }
+
+@ProtobufElement({})
+export class ResetActionProto extends CryptoActionProto {
+
+    public static INDEX = CryptoActionProto.INDEX;
+    public static ACTION = "crypto/reset";
+
+}

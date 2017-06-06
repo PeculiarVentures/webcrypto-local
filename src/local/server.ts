@@ -5,7 +5,7 @@ import { Server, Session } from "../connection/server";
 import { ActionProto, CryptoItemProto, CryptoKeyPairProto, CryptoKeyProto, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core/proto";
 import { CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetItemActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto, CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto } from "../core/protos/certstorage";
 import { ArrayStringConverter } from "../core/protos/converter";
-import { IsLoggedInActionProto, LoginActionProto } from "../core/protos/crypto";
+import { IsLoggedInActionProto, LoginActionProto, ResetActionProto } from "../core/protos/crypto";
 import { KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageIndexOfActionProto, KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto } from "../core/protos/keystorage";
 import { ProviderAuthorizedEventProto, ProviderCryptoProto, ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderTokenEventProto } from "../core/protos/provider";
 import { DecryptActionProto, DeriveBitsActionProto, DeriveKeyActionProto, DigestActionProto, EncryptActionProto, ExportKeyActionProto, GenerateKeyActionProto, ImportKeyActionProto, SignActionProto, UnwrapKeyActionProto, VerifyActionProto, WrapKeyActionProto } from "../core/protos/subtle";
@@ -174,6 +174,16 @@ export class LocalServer extends EventEmitter {
                     });
                     const pin = await promise;
                     crypto.login(pin);
+                }
+                break;
+            }
+            case ResetActionProto.ACTION: {
+                const params = await ResetActionProto.importProto(action);
+                const crypto = await this.provider.getCrypto(params.providerID);
+
+                if ("reset" in crypto) {
+                    // node-webcrypto-p11 has reset method
+                    await (crypto as any).reset();
                 }
                 break;
             }

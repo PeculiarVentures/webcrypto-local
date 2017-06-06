@@ -1,5 +1,5 @@
 import { Client } from "../connection/client";
-import { IsLoggedInActionProto, LoginActionProto } from "../core/protos/crypto";
+import { IsLoggedInActionProto, LoginActionProto, ResetActionProto } from "../core/protos/crypto";
 import { SocketCertificateStorage } from "./cert_storage";
 import { SocketKeyStorage } from "./key_storage";
 import { SocketSubtleCrypto } from "./subtle";
@@ -31,6 +31,13 @@ export class SocketCrypto implements Crypto {
 
     public async login() {
         const action = new LoginActionProto();
+        action.providerID = this.id;
+
+        return this.client.send(action);
+    }
+
+    public async reset() {
+        const action = new ResetActionProto();
         action.providerID = this.id;
 
         return this.client.send(action);
