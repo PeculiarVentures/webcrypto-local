@@ -265,21 +265,35 @@ export class Client extends EventEmitter {
      */
     protected getServerInfo(address: string): Promise<ServerInfo> {
         return new Promise((resolve, reject) => {
-            const xmlHttp = getXmlHttp();
-            xmlHttp.open("GET", `http://${address}${SERVER_WELL_KNOWN}`, true);
-            xmlHttp.responseType = "text";
-            xmlHttp.onreadystatechange = () => {
-                if (xmlHttp.readyState === 4) {
-                    if (xmlHttp.status === 200) {
-                        const json = JSON.parse(xmlHttp.responseText);
-                        console.log(json);
-                        resolve(json);
-                    } else {
-                        reject(new Error("Cannot GET response"));
+            const url = `http://${address}${SERVER_WELL_KNOWN}`;
+            if (self.fetch) {
+                fetch(url)
+                    .then((response) => {
+                        if (response.status !== 200) {
+                            throw new Error("Cannot get wellknown link");
+                        } else {
+                            return response.json();
+                        }
+                    })
+                    .then(resolve)
+                    .catch(reject);
+            } else {
+                const xmlHttp = getXmlHttp();
+                xmlHttp.open("GET", `http://${address}${SERVER_WELL_KNOWN}`, true);
+                xmlHttp.responseType = "text";
+                xmlHttp.onreadystatechange = () => {
+                    if (xmlHttp.readyState === 4) {
+                        if (xmlHttp.status === 200) {
+                            const json = JSON.parse(xmlHttp.responseText);
+                            console.log(json);
+                            resolve(json);
+                        } else {
+                            reject(new Error("Cannot GET response"));
+                        }
                     }
-                }
-            };
-            xmlHttp.send(null);
+                };
+                xmlHttp.send(null);
+            }
         });
     }
 
