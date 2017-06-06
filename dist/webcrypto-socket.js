@@ -3610,6 +3610,18 @@ IsLoggedInActionProto.ACTION = "crypto/isLoggedIn";
 IsLoggedInActionProto = __decorate([
     ProtobufElement({})
 ], IsLoggedInActionProto);
+var ResetActionProto = (function (_super) {
+    __extends(ResetActionProto, _super);
+    function ResetActionProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ResetActionProto;
+}(CryptoActionProto));
+ResetActionProto.INDEX = CryptoActionProto.INDEX;
+ResetActionProto.ACTION = "crypto/reset";
+ResetActionProto = __decorate([
+    ProtobufElement({})
+], ResetActionProto);
 var CryptoActionProto_1;
 
 function printf(text) {
@@ -6302,6 +6314,16 @@ var SocketCrypto = (function () {
             var action;
             return __generator(this, function (_a) {
                 action = new LoginActionProto();
+                action.providerID = this.id;
+                return [2, this.client.send(action)];
+            });
+        });
+    };
+    SocketCrypto.prototype.reset = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var action;
+            return __generator(this, function (_a) {
+                action = new ResetActionProto();
                 action.providerID = this.id;
                 return [2, this.client.send(action)];
             });
