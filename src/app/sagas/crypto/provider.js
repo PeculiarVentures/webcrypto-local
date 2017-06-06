@@ -46,6 +46,16 @@ export function* cryptoGet(id) {
   }
 }
 
+export function* cryptoReset(id) {
+  try {
+    const crypto = yield ws.getCrypto(id);
+    return yield crypto.reset();
+  } catch (error) {
+    yield put(ErrorActions.error(error));
+    return false;
+  }
+}
+
 export function* providerGet(id) {
   try {
     const provider = yield cryptoGet(id);

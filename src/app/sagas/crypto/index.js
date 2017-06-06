@@ -170,6 +170,17 @@ function* providerSelect({ id }) {
   }
 }
 
+function* providerReload({ id }) {
+  yield put(AppActions.loaded(false));
+  yield put(ProviderActions.update({ loaded: false, items: [] }));
+
+  const crypto = yield Provider.cryptoReset(id);
+  if (typeof crypto === 'undefined') {
+    yield providerSelect({ id });
+    yield put(AppActions.loaded(true));
+  }
+}
+
 function* downloadItem({ format }) {
   const state = yield select();
   const selectedProvider = state.find('providers').where({ selected: true });
@@ -354,6 +365,7 @@ export default function* () {
   yield [
     takeEvery(ACTIONS_CONST.WS_ON_LISTENING, webcryptoOnListening),
     takeEvery(ACTIONS_CONST.PROVIDER_SELECT, providerSelect),
+    takeEvery(ACTIONS_CONST.PROVIDER_RELOAD, providerReload),
     takeEvery(ACTIONS_CONST.WS_LOGIN, providerLogin),
     takeEvery(ACTIONS_CONST.WS_DOWNLOAD_ITEM, downloadItem),
     takeEvery(ACTIONS_CONST.WS_REMOVE_ITEM, removeItem),

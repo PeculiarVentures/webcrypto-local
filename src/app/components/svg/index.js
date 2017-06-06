@@ -14,3 +14,4 @@ export TripleDot from './triple_dot';
 export SidebarShellIcon from './sidebar_shell';
 export TitleShellIcon from './title_shell';
 export InfoShellIcon from './info_shell';
+export ReloadIcon from './reload';

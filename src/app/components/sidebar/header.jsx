@@ -3,7 +3,8 @@ import { SelectField, SelectItem, SelectNative } from '../basic';
 import { ModalActions } from '../../actions/ui';
 import { ProviderActions, AppActions } from '../../actions/state';
 import enLang from '../../langs/en.json';
-import * as HeaderStyled from './styled/header.styled';
+import { ReloadIcon } from '../svg';
+import * as S from './styled/header.styled';
 
 export default class SidebarHeader extends Component {
 
@@ -45,6 +46,13 @@ export default class SidebarHeader extends Component {
     }
   };
 
+  handleReloadProvider = (id) => {
+    if (id) {
+      const { dispatch } = this.context;
+      dispatch(ProviderActions.reload(id));
+    }
+  };
+
   render() {
     const { loaded, providers, readOnly } = this.props;
     const { deviceType } = this.context;
@@ -52,30 +60,32 @@ export default class SidebarHeader extends Component {
     const currentProvider = selectedProvider.length
       ? selectedProvider[0]
       : false;
+    const disabledReload = !providers.length || !currentProvider.loaded;
 
     return (
-      <HeaderStyled.SidebarHeader>
-        <HeaderStyled.BtnsContainer>
-          <HeaderStyled.Btn
+      <S.SidebarHeader>
+        <S.BtnsContainer>
+          <S.Btn
             disabled={!loaded || readOnly}
             primary
             onClick={this.onClickImportHandler}
           >
-            <HeaderStyled.ImportIc />
+            <S.ImportIc />
             { enLang['Sidebar.Header.Btn.Import'] }
-          </HeaderStyled.Btn>
-          <HeaderStyled.Btn
+          </S.Btn>
+          <S.Btn
             disabled={!loaded || readOnly}
             primary
             onClick={this.onClickCreateHandler}
           >
-            <HeaderStyled.CreateIc />
+            <S.CreateIc />
             { enLang['Sidebar.Header.Btn.Create'] }
-          </HeaderStyled.Btn>
-        </HeaderStyled.BtnsContainer>
-        <HeaderStyled.SelectContainer disabled={!providers.length}>
-          {
-            deviceType === 'phone'
+          </S.Btn>
+        </S.BtnsContainer>
+        <S.Container disabled={!providers.length}>
+          <S.SelectContainer>
+            {
+              deviceType === 'phone'
               ? <SelectNative
                 labelText={enLang['CertificateCreate.Provider.Field.Name']}
                 placeholder={enLang['Select.Label.Provider']}
@@ -107,9 +117,20 @@ export default class SidebarHeader extends Component {
                   ))
                 }
               </SelectField>
-          }
-        </HeaderStyled.SelectContainer>
-      </HeaderStyled.SidebarHeader>
+            }
+          </S.SelectContainer>
+          <S.ReloadBtn
+            disabled={disabledReload}
+            onClick={() => {
+              if (!disabledReload) {
+                this.handleReloadProvider(currentProvider.id);
+              }
+            }}
+          >
+            <ReloadIcon />
+          </S.ReloadBtn>
+        </S.Container>
+      </S.SidebarHeader>
     );
   }
 }

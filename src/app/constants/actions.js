@@ -34,6 +34,7 @@ export const CERTIFICATE_CLEAR = 'CERTIFICATE:CLEAR';
 export const PROVIDER_ADD = 'PROVIDER:ADD';
 export const PROVIDER_SELECT = 'PROVIDER:SELECT';
 export const PROVIDER_UPDATE = 'PROVIDER:UPDATE';
+export const PROVIDER_RELOAD = 'PROVIDER:RELOAD';
 
 // Webcrypto
 export const WS_GET_KEYS = 'WS:GET_KEYS';

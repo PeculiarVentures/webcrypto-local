@@ -15,3 +15,8 @@ export const select = id => ({
   type: ACTIONS_CONST.PROVIDER_SELECT,
   id,
 });
+
+export const reload = id => ({
+  type: ACTIONS_CONST.PROVIDER_RELOAD,
+  id,
+});
