@@ -36,7 +36,7 @@
                         // TestWrap();
                         // TestDeriveBits();
                         // TestDeriveKey();
-                        TestKeyStorageKeys();
+                        // TestKeyStorageKeys();
                         // TestKeyStorageIndexOf("private-713400c913c5f0be5183431f7af2b6df236db5095ddb30b37124acfba46e7edd");
                         // TestKeyStorageSetItem();
                         // TestKeyStorageGetItem("private-713400c913c5f0be5183431f7af2b6df236db5095ddb30b37124acfba46e7edd");
@@ -52,6 +52,7 @@
                         // TestCertStorageRemoveItemCert("request-9cb2b372daea96f94477ee0be4248c23efad5164e5ad738b4076bccde298f244");
                         // TestCertStorageClear();
                         // TestCertStorageGetItemCert("x509-c53021e4c84bd1a9e9dee840ba6a169f77928f91");
+                        TestReset()
                     })
                     .catch((err) => {
                         console.error(err);
@@ -854,6 +855,43 @@
                                 .then((index) => {
                                     console.log("Index:", index);
                                 });
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+        function TestReset(itemId) {
+            var alg = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" };
+
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[PROVIDER_ID];
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    return crypto.isLoggedIn()
+                        .then((ok) => {
+                            if (!ok) {
+                                return crypto.login();
+                            }
+                        })
+                        .then(() => {
+                            return crypto.certStorage.keys()
+                                .then((names) => {
+                                    console.log("Certificates:", names);
+                                })
+                        })
+                        .then(() => {
+                            alert("Insert SmartCard and click OK");
+                            return crypto.reset();
+                        })
+                        .then(() => {
+                            return crypto.certStorage.keys()
+                                .then((names) => {
+                                    console.log("Certificates:", names);
+                                })
                         })
                 })
                 .catch((err) => {
