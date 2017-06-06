@@ -3392,22 +3392,38 @@ var Client = (function (_super) {
     };
     Client.prototype.getServerInfo = function (address) {
         return new Promise(function (resolve, reject) {
-            var xmlHttp = getXmlHttp();
-            xmlHttp.open("GET", "http://" + address + SERVER_WELL_KNOWN, true);
-            xmlHttp.responseType = "text";
-            xmlHttp.onreadystatechange = function () {
-                if (xmlHttp.readyState === 4) {
-                    if (xmlHttp.status === 200) {
-                        var json = JSON.parse(xmlHttp.responseText);
-                        console.log(json);
-                        resolve(json);
+            var url = "http://" + address + SERVER_WELL_KNOWN;
+            if (self.fetch) {
+                fetch(url)
+                    .then(function (response) {
+                    if (response.status !== 200) {
+                        throw new Error("Cannot get wellknown link");
                     }
                     else {
-                        reject(new Error("Cannot GET response"));
+                        return response.json();
                     }
-                }
-            };
-            xmlHttp.send(null);
+                })
+                    .then(resolve)
+                    .catch(reject);
+            }
+            else {
+                var xmlHttp_1 = getXmlHttp();
+                xmlHttp_1.open("GET", "http://" + address + SERVER_WELL_KNOWN, true);
+                xmlHttp_1.responseType = "text";
+                xmlHttp_1.onreadystatechange = function () {
+                    if (xmlHttp_1.readyState === 4) {
+                        if (xmlHttp_1.status === 200) {
+                            var json = JSON.parse(xmlHttp_1.responseText);
+                            console.log(json);
+                            resolve(json);
+                        }
+                        else {
+                            reject(new Error("Cannot GET response"));
+                        }
+                    }
+                };
+                xmlHttp_1.send(null);
+            }
         });
     };
     Client.prototype.checkSocketState = function () {
