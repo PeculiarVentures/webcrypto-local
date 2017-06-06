@@ -1,11 +1,6 @@
 import { NotificationCenter } from "node-notifier";
 import * as os from "os";
-// import * as readline from "readline";
-
-// const rl = readline.createInterface({
-//     input: process.stdin,
-//     output: process.stdout,
-// });
+import * as readline from "readline";
 
 const notifier = new (NotificationCenter as any)();
 
@@ -34,14 +29,20 @@ export class Notification {
                 }
                 default: {
                     // Windows, Linux
-                    resolve(true);
-                    // rl.question(text, (answer) => {
-                    //     if (answer && answer.length && answer[0].toLowerCase() === "y") {
-                    //         resolve(true);
-                    //     } else {
-                    //         resolve(false);
-                    //     }
-                    // });
+                    // resolve(true);
+                    const rl = readline.createInterface({
+                        input: process.stdin,
+                        output: process.stdout,
+                    });
+
+                    rl.question(text, (answer) => {
+                        rl.close();
+                        if (answer && answer.length && answer[0].toLowerCase() === "y") {
+                            resolve(true);
+                        } else {
+                            resolve(false);
+                        }
+                    });
                 }
             }
         });
@@ -76,10 +77,16 @@ export class Notification {
                 }
                 default: {
                     // Windows, Linux
-                    resolve("");
-                    // rl.question(text, (answer) => {
-                    //     resolve(answer);
-                    // });
+                    // resolve("");
+                    const rl = readline.createInterface({
+                        input: process.stdin,
+                        output: process.stdout,
+                    });
+
+                    rl.question(text, (answer) => {
+                        rl.close();
+                        resolve(answer);
+                    });
                 }
             }
         });
