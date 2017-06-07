@@ -19,13 +19,13 @@ export default new Schema('Certificate', {
   publicKey: {
     modulusBits: Type.Any,
     namedCurve: Type.Any,
-    publicExponent: Type.Number,
+    publicExponent: Type.Any,
     algorithm: Type.String,
     value: Type.String,
   },
   signature: {
     algorithm: Type.String,
-    hash: Type.String,
+    hash: Type.Any,
     value: Type.String,
   },
   extensions: Type.List,
