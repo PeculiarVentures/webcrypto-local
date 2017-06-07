@@ -136,6 +136,9 @@ const CertHelper = {
       case '1.2.840.113549.1.1.13': {
         return { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-512' };
       }
+      case '1.2.840.10045.4.3.2': {
+        return { name: 'ECDSA', hash: 'SHA-256' };
+      }
       default: {
         return { name: pkiAlg.algorithmId };
       }
@@ -313,6 +316,7 @@ const CertHelper = {
   },
 
   certDataHandler: function certDataHandler(data) {
+    // console.log('sdsds', data);
     const lang = navigator.language;
     const {
       issuerName,
@@ -351,7 +355,7 @@ const CertHelper = {
       publicKey: {
         publicExponent: publicKey.algorithm.publicExponent,
         value: publicKey.value,
-        algorithm: signature.algorithm.name,
+        algorithm: publicKey.algorithm.name,
         modulusBits: publicKey.algorithm.modulusBits,
         namedCurve: publicKey.algorithm.namedCurve,
       },
