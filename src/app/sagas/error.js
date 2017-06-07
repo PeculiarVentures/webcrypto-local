@@ -19,7 +19,7 @@ function* errorHandler({ data, action }) {
     errorMessage = 'IMPORT_ITEM';
   } else if (/CKR_PIN_INCORRECT/.test(message)) {
     errorMessage = 'INCORRECT_PIN';
-  } else if (/XMLHttpRequest.xmlHttp/.test(stack) || message === 'offline') {
+  } else if (/XMLHttpRequest.xmlHttp/.test(stack) || message === 'offline' || message === 'Failed to fetch') {
     errorMessage = 'OFFLINE';
   } else if (message === 'PIN is not approved') {
     errorMessage = 'UNAPPROVED_PIN';
