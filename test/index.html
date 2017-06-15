@@ -67,25 +67,49 @@
 	</script>
 	<script src="../dist/webcrypto-socket.js"></script>
 	<script>
-		var ws = new WebcryptoSocket.SocketCrypto();
-        ws.connect("127.0.0.1:8080")
-            .on("error", (e) => {
-                console.error(e.error);
-            })
-            .on("listening", (e) => {
-                console.info(e.address);
-				mocha.run();
-            })
-            .on("close", (e) => {
-                console.info("close");
-            });
+		var ws = new WebcryptoSocket.SocketProvider();
+		ws.connect("127.0.0.1:8080")
+			.on("error", (e) => {
+				console.error(e.error);
+			})
+			.on("listening", (e) => {
+				console.info(e.address);
+				ws.isLoggedIn()
+					.then((ok) => {
+						console.log("Is logged in:", ok);
+						if (!ok) {
+							return ws.login();
+						}
+					})
+					.then(() => {
+						return ws.info()
+							.then((info) => {
+								return ws.getCrypto(info.providers[0].id);
+							})
+							.then((crypto) => {
+								window.subtle = {
+									native: nativeSubtle,
+									js: crypto.subtle,
+								}
+
+
+								mocha.run();
+							})
+					})
+					.catch((err) => {
+						console.error(err);
+					})
+			})
+			.on("close", (e) => {
+				console.info("close");
+			});
 	</script>
 	<script>
 		mocha.setup('bdd')
 	</script>
 	<!--<script src="script/sha.js"></script>-->
-	<script src="script/ec.js"></script>
-	<script src="script/aes.js"></script>
+	<!--<script src="script/ec.js"></script>-->
+	<!--<script src="script/aes.js"></script>-->
 	<script src="script/rsa.js"></script>
 	<!--
 	<script src="script/test-vectors.js"></script>
