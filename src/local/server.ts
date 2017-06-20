@@ -1,17 +1,21 @@
 import { EventEmitter } from "events";
+import * as graphene from "graphene-pk11";
 import { Convert } from "pvtsutils";
 import { ObjectProto } from "tsprotobuf";
+import { challenge } from "../connection/challenge";
 import { Server, Session } from "../connection/server";
 import { ActionProto, CryptoItemProto, CryptoKeyPairProto, CryptoKeyProto, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core/proto";
-import { CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetItemActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto, CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto } from "../core/protos/certstorage";
+import { CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetChainActionProto, CertificateStorageGetChainResultProto, CertificateStorageGetItemActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto, CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto } from "../core/protos/certstorage";
 import { ArrayStringConverter } from "../core/protos/converter";
 import { IsLoggedInActionProto, LoginActionProto, ResetActionProto } from "../core/protos/crypto";
 import { KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageIndexOfActionProto, KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto } from "../core/protos/keystorage";
 import { ProviderAuthorizedEventProto, ProviderCryptoProto, ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderTokenEventProto } from "../core/protos/provider";
 import { DecryptActionProto, DeriveBitsActionProto, DeriveKeyActionProto, DigestActionProto, EncryptActionProto, ExportKeyActionProto, GenerateKeyActionProto, ImportKeyActionProto, SignActionProto, UnwrapKeyActionProto, VerifyActionProto, WrapKeyActionProto } from "../core/protos/subtle";
-import { challenge } from "../connection/challenge";
 import { ServiceCryptoItem } from "./crypto_item";
 import { LocalProvider } from "./provider";
+
+// register new attribute for pkcs11 modules
+graphene.registerAttribute("x509Chain", 2147483905, "buffer");
 
 const crypto: Crypto = new (require("node-webcrypto-ossl"))();
 
@@ -586,6 +590,39 @@ export class LocalServer extends EventEmitter {
                 if (index) {
                     data = Convert.FromUtf8String(index);
                 }
+                break;
+            }
+            case CertificateStorageGetChainActionProto.ACTION: {
+                // load cert storage
+                const params = await CertificateStorageGetChainActionProto.importProto(action);
+                const crypto = await this.provider.getCrypto(params.providerID);
+                const cert = this.getItemFromStorage(params.item).item as CryptoCertificate;
+                // Get chain works only for x509 item type
+                if (cert.type !== "x509") {
+                    throw new Error("Wrong item type, must be 'x509'");
+                }
+
+                // do operation
+                if ("session" in crypto) {
+                    const buffer = (cert as any).p11Object.getAttribute("x509Chain") as Buffer;
+
+                    const ulongSize = (cert as any).p11Object.handle.length;
+                    const resultProto = new CertificateStorageGetChainResultProto();
+                    let i = 0;
+                    while (i < buffer.length) {
+                        const certSizeBuffer = buffer.slice(i, i + ulongSize);
+                        const certSize = certSizeBuffer.readInt16LE(0);
+                        const certValue = buffer.slice(i + ulongSize, i + ulongSize + certSize)
+                        resultProto.items.push(new Uint8Array(certValue).buffer);
+                        i += ulongSize + certSize;
+                    }
+                    data = await resultProto.exportProto();
+                } else {
+                    throw new Error("Provider doesn't support GetChain method");
+                }
+
+                // result
+
                 break;
             }
             default:

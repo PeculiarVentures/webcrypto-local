@@ -1,5 +1,5 @@
 import { ArrayBufferConverter, ProtobufElement, ProtobufProperty } from "tsprotobuf";
-import { AlgorithmProto, CryptoItemProto, CryptoKeyProto } from "../proto";
+import { AlgorithmProto, BaseProto, CryptoItemProto, CryptoKeyProto } from "../proto";
 import { DateConverter, HexStringConverter } from "./converter";
 import { CryptoActionProto } from "./crypto";
 
@@ -48,6 +48,21 @@ export class CryptoX509CertificateRequestProto extends CryptoCertificateProto im
 
     @ProtobufProperty({ id: CryptoX509CertificateRequestProto.INDEX++, required: true, type: "string" })
     public subjectName: string;
+
+}
+
+@ProtobufElement({})
+export class CertificateStorageGetChainResultProto extends BaseProto {
+
+    public static INDEX = BaseProto.INDEX;
+
+    @ProtobufProperty({
+        id: CertificateStorageGetChainResultProto.INDEX++,
+        required: true,
+        repeated: true,
+        converter: ArrayBufferConverter,
+    })
+    public items: ArrayBuffer[] = [];
 
 }
 
@@ -149,6 +164,17 @@ export class CertificateStorageIndexOfActionProto extends CryptoActionProto {
     public static ACTION = "crypto/certificateStorage/indexOf";
 
     @ProtobufProperty({ id: CertificateStorageIndexOfActionProto.INDEX++, required: true, parser: CryptoCertificateProto })
+    public item: CryptoCertificateProto;
+
+}
+
+@ProtobufElement({})
+export class CertificateStorageGetChainActionProto extends CryptoActionProto {
+
+    public static INDEX = CryptoActionProto.INDEX;
+    public static ACTION = "crypto/certificateStorage/getChain";
+
+    @ProtobufProperty({ id: CertificateStorageSetItemActionProto.INDEX++, required: true, parser: CryptoCertificateProto })
     public item: CryptoCertificateProto;
 
 }

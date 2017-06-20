@@ -1,7 +1,7 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('protobufjs')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'protobufjs'], factory) :
-	(factory((global.WebcryptoSocket = global.WebcryptoSocket || {}),global.protobuf));
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('protobufjs')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'protobufjs'], factory) :
+  (factory((global.WebcryptoSocket = global.WebcryptoSocket || {}),global.protobuf));
 }(this, (function (exports,protobufjs) { 'use strict';
 
 /*! *****************************************************************************
@@ -5130,6 +5130,27 @@ __decorate([
 CryptoX509CertificateRequestProto = CryptoX509CertificateRequestProto_1 = __decorate([
     ProtobufElement({})
 ], CryptoX509CertificateRequestProto);
+var CertificateStorageGetChainResultProto = CertificateStorageGetChainResultProto_1 = (function (_super) {
+    __extends(CertificateStorageGetChainResultProto, _super);
+    function CertificateStorageGetChainResultProto() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.items = [];
+        return _this;
+    }
+    return CertificateStorageGetChainResultProto;
+}(BaseProto));
+CertificateStorageGetChainResultProto.INDEX = BaseProto.INDEX;
+__decorate([
+    ProtobufProperty({
+        id: CertificateStorageGetChainResultProto_1.INDEX++,
+        required: true,
+        repeated: true,
+        converter: ArrayBufferConverter,
+    })
+], CertificateStorageGetChainResultProto.prototype, "items", void 0);
+CertificateStorageGetChainResultProto = CertificateStorageGetChainResultProto_1 = __decorate([
+    ProtobufElement({})
+], CertificateStorageGetChainResultProto);
 var CertificateStorageSetItemActionProto = CertificateStorageSetItemActionProto_1 = (function (_super) {
     __extends(CertificateStorageSetItemActionProto, _super);
     function CertificateStorageSetItemActionProto() {
@@ -5262,9 +5283,25 @@ __decorate([
 CertificateStorageIndexOfActionProto = CertificateStorageIndexOfActionProto_1 = __decorate([
     ProtobufElement({})
 ], CertificateStorageIndexOfActionProto);
+var CertificateStorageGetChainActionProto = (function (_super) {
+    __extends(CertificateStorageGetChainActionProto, _super);
+    function CertificateStorageGetChainActionProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return CertificateStorageGetChainActionProto;
+}(CryptoActionProto));
+CertificateStorageGetChainActionProto.INDEX = CryptoActionProto.INDEX;
+CertificateStorageGetChainActionProto.ACTION = "crypto/certificateStorage/getChain";
+__decorate([
+    ProtobufProperty({ id: CertificateStorageSetItemActionProto.INDEX++, required: true, parser: CryptoCertificateProto })
+], CertificateStorageGetChainActionProto.prototype, "item", void 0);
+CertificateStorageGetChainActionProto = __decorate([
+    ProtobufElement({})
+], CertificateStorageGetChainActionProto);
 var CryptoCertificateProto_1;
 var CryptoX509CertificateProto_1;
 var CryptoX509CertificateRequestProto_1;
+var CertificateStorageGetChainResultProto_1;
 var CertificateStorageSetItemActionProto_1;
 var CertificateStorageGetItemActionProto_1;
 var CertificateStorageRemoveItemActionProto_1;
@@ -5463,6 +5500,26 @@ var SocketCertificateStorage = (function () {
                     case 1:
                         _a.sent();
                         return [2];
+                }
+            });
+        });
+    };
+    SocketCertificateStorage.prototype.getChain = function (value) {
+        return __awaiter(this, void 0, void 0, function () {
+            var proto, data, resultProto;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        proto = new CertificateStorageGetChainActionProto();
+                        proto.providerID = this.service.id;
+                        proto.item = value;
+                        return [4, this.service.client.send(proto)];
+                    case 1:
+                        data = _a.sent();
+                        return [4, CertificateStorageGetChainResultProto.importProto(data)];
+                    case 2:
+                        resultProto = _a.sent();
+                        return [2, resultProto.items];
                 }
             });
         });

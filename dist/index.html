@@ -52,7 +52,8 @@
                         // TestCertStorageRemoveItemCert("request-9cb2b372daea96f94477ee0be4248c23efad5164e5ad738b4076bccde298f244");
                         // TestCertStorageClear();
                         // TestCertStorageGetItemCert("x509-c53021e4c84bd1a9e9dee840ba6a169f77928f91");
-                        TestReset()
+                        // TestReset()
+                        TestGetChain()
                     })
                     .catch((err) => {
                         console.error(err);
@@ -892,6 +893,38 @@
                                 .then((names) => {
                                     console.log("Certificates:", names);
                                 })
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+        function TestGetChain() {
+            const certIndex = 0;
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[PROVIDER_ID];
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    return crypto.isLoggedIn()
+                        .then((ok) => {
+                            if (!ok) {
+                                return crypto.login();
+                            }
+                        })
+                        .then(() => {
+                            return crypto.certStorage.keys()
+                        })
+                        .then((keys) => {
+                            return crypto.certStorage.getItem(keys[certIndex]);
+                        })
+                        .then((item) => {
+                            return crypto.certStorage.getChain(item);
+                        })
+                        .then((chain) => {
+                            console.log(chain);
                         })
                 })
                 .catch((err) => {
