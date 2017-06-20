@@ -1,12 +1,6 @@
 "use strict";
 for (let i = 0; i < REPEAT; i++) {
     describe("EC crypto", () => {
-
-        const subtle = {
-            native: nativeSubtle,
-            js: ws.subtle,
-        }
-        console.log(subtle);
         const cryptoType = ["native", "js"];
         const keys = [];
 

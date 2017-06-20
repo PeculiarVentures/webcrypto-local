@@ -1,15 +1,11 @@
 "use strict";
 for (let i = 0; i < REPEAT; i++) {
     describe("SHA crypto", () => {
-
-        const subtle = {
-            native: nativeSubtle,
-            js: crypto.subtle,
-        }
+        
         const cryptoType = ["native", "js"];
 
         context("digest", () => {
-            ["SHA-1", "SHA-256"].forEach(digest =>
+            ["SHA-1", "SHA-256", "SHA-384", "SHA-512"].forEach(digest =>
                 it(digest, done => {
                     let data = crypto.getRandomValues(new Uint8Array(16));
                     let hashNative;

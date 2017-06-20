@@ -738,14 +738,14 @@ var ArrayBufferConverter = (function () {
     ArrayBufferConverter.set = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Uint8Array(value)];
+                return [2, new Uint8Array(value)];
             });
         });
     };
     ArrayBufferConverter.get = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, value.buffer];
+                return [2, value.buffer];
             });
         });
     };
@@ -832,10 +832,10 @@ var ObjectProto = (function () {
                 switch (_a.label) {
                     case 0:
                         res = new this();
-                        return [4 /*yield*/, res.importProto(data)];
+                        return [4, res.importProto(data)];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/, res];
+                        return [2, res];
                 }
             });
         });
@@ -872,11 +872,11 @@ var ObjectProto = (function () {
                     case 0:
                         thisStatic = this.constructor;
                         that = this;
-                        if (!(data instanceof ObjectProto)) return [3 /*break*/, 2];
-                        return [4 /*yield*/, data.exportProto()];
+                        if (!(data instanceof ObjectProto)) return [3, 2];
+                        return [4, data.exportProto()];
                     case 1:
                         raw = _d.sent();
-                        return [3 /*break*/, 3];
+                        return [3, 3];
                     case 2:
                         raw = data;
                         _d.label = 3;
@@ -885,7 +885,7 @@ var ObjectProto = (function () {
                             scheme = thisStatic.protobuf.decode(new Uint8Array(raw)).toObject();
                         }
                         catch (e) {
-                            throw new Error("Error: Cannot decode message for " + thisStatic.localName + ".\n$ProtobufError: {e.message}");
+                            throw new Error("Error: Cannot decode message for " + thisStatic.localName + ".\n$ProtobufError: " + e.message);
                         }
                         _a = [];
                         for (_b in thisStatic.items)
@@ -893,7 +893,7 @@ var ObjectProto = (function () {
                         _i = 0;
                         _d.label = 4;
                     case 4:
-                        if (!(_i < _a.length)) return [3 /*break*/, 17];
+                        if (!(_i < _a.length)) return [3, 17];
                         key = _a[_i];
                         item = thisStatic.items[key];
                         schemeValues = scheme[item.name];
@@ -912,34 +912,34 @@ var ObjectProto = (function () {
                         _c = 0, schemeValues_1 = schemeValues;
                         _d.label = 5;
                     case 5:
-                        if (!(_c < schemeValues_1.length)) return [3 /*break*/, 16];
+                        if (!(_c < schemeValues_1.length)) return [3, 16];
                         schemeValue = schemeValues_1[_c];
-                        if (!item.parser) return [3 /*break*/, 9];
+                        if (!item.parser) return [3, 9];
                         parser = item.parser;
-                        if (!(schemeValue && schemeValue.byteLength)) return [3 /*break*/, 7];
-                        return [4 /*yield*/, parser.importProto(new Uint8Array(schemeValue).buffer)];
+                        if (!(schemeValue && schemeValue.byteLength)) return [3, 7];
+                        return [4, parser.importProto(new Uint8Array(schemeValue).buffer)];
                     case 6:
                         setValue = _d.sent();
-                        return [3 /*break*/, 8];
+                        return [3, 8];
                     case 7:
                         if (item.required) {
                             throw new Error("Error: Parameter '" + item.name + "' is required in '" + thisStatic.localName + "' protobuf message.");
                         }
                         _d.label = 8;
-                    case 8: return [3 /*break*/, 14];
+                    case 8: return [3, 14];
                     case 9:
-                        if (!item.converter) return [3 /*break*/, 13];
-                        if (!(schemeValue && schemeValue.byteLength)) return [3 /*break*/, 11];
-                        return [4 /*yield*/, item.converter.get(schemeValue)];
+                        if (!item.converter) return [3, 13];
+                        if (!(schemeValue && schemeValue.byteLength)) return [3, 11];
+                        return [4, item.converter.get(schemeValue)];
                     case 10:
                         setValue = _d.sent();
-                        return [3 /*break*/, 12];
+                        return [3, 12];
                     case 11:
                         if (item.required) {
                             throw new Error("Error: Parameter '" + item.name + "' is required in '" + thisStatic.localName + "' protobuf message.");
                         }
                         _d.label = 12;
-                    case 12: return [3 /*break*/, 14];
+                    case 12: return [3, 14];
                     case 13:
                         setValue = schemeValue;
                         _d.label = 14;
@@ -956,13 +956,13 @@ var ObjectProto = (function () {
                         _d.label = 15;
                     case 15:
                         _c++;
-                        return [3 /*break*/, 5];
+                        return [3, 5];
                     case 16:
                         _i++;
-                        return [3 /*break*/, 4];
+                        return [3, 4];
                     case 17:
                         this.raw = raw;
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
@@ -974,7 +974,7 @@ var ObjectProto = (function () {
                 switch (_d.label) {
                     case 0:
                         if (!this.hasChanged()) {
-                            return [2 /*return*/, this.raw];
+                            return [2, this.raw];
                         }
                         thisStatic = this.constructor;
                         that = this;
@@ -985,7 +985,7 @@ var ObjectProto = (function () {
                         _i = 0;
                         _d.label = 1;
                     case 1:
-                        if (!(_i < _a.length)) return [3 /*break*/, 11];
+                        if (!(_i < _a.length)) return [3, 11];
                         key = _a[_i];
                         item = thisStatic.items[key];
                         values = that[key];
@@ -995,12 +995,12 @@ var ObjectProto = (function () {
                         _c = 0, values_1 = values;
                         _d.label = 2;
                     case 2:
-                        if (!(_c < values_1.length)) return [3 /*break*/, 10];
+                        if (!(_c < values_1.length)) return [3, 10];
                         value = values_1[_c];
                         protobufValue = void 0;
-                        if (!item.parser) return [3 /*break*/, 4];
+                        if (!item.parser) return [3, 4];
                         obj = value;
-                        return [4 /*yield*/, obj.exportProto()];
+                        return [4, obj.exportProto()];
                     case 3:
                         raw = _d.sent();
                         if (item.required && !raw) {
@@ -1009,18 +1009,18 @@ var ObjectProto = (function () {
                         if (raw) {
                             protobufValue = new Uint8Array(raw);
                         }
-                        return [3 /*break*/, 8];
+                        return [3, 8];
                     case 4:
                         if (item.required && value === void 0) {
                             throw new Error("Error: Paramter '" + key + "' is required in '" + thisStatic.localName + "' protobuf message.");
                         }
-                        if (!item.converter) return [3 /*break*/, 7];
-                        if (!value) return [3 /*break*/, 6];
-                        return [4 /*yield*/, item.converter.set(value)];
+                        if (!item.converter) return [3, 7];
+                        if (!value) return [3, 6];
+                        return [4, item.converter.set(value)];
                     case 5:
                         protobufValue = _d.sent();
                         _d.label = 6;
-                    case 6: return [3 /*break*/, 8];
+                    case 6: return [3, 8];
                     case 7:
                         if (value instanceof ArrayBuffer) {
                             value = new Uint8Array(value);
@@ -1040,13 +1040,13 @@ var ObjectProto = (function () {
                         _d.label = 9;
                     case 9:
                         _c++;
-                        return [3 /*break*/, 2];
+                        return [3, 2];
                     case 10:
                         _i++;
-                        return [3 /*break*/, 1];
+                        return [3, 1];
                     case 11:
                         this.raw = new Uint8Array(thisStatic.protobuf.encode(protobuf).finish()).buffer;
-                        return [2 /*return*/, this.raw];
+                        return [2, this.raw];
                 }
             });
         });

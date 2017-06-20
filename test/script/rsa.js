@@ -3,10 +3,6 @@
 for (let i = 0; i < REPEAT; i++) {
     describe("RSA crypto", () => {
 
-        const subtle = {
-            native: nativeSubtle,
-            js: ws.subtle,
-        }
         const cryptoType = ["native", "js"];
         const keys = [];
 

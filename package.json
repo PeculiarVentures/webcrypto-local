@@ -100,7 +100,7 @@
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-watch": "^3.2.2",
     "tslib": "^1.5.0",
-    "tsprotobuf": "^1.0.4",
+    "tsprotobuf": "^1.0.9",
     "typescript": "^2.3.3",
     "websocket": "^1.0.24"
   }
