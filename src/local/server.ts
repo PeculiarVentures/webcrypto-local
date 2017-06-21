@@ -700,7 +700,9 @@ export class LocalServer extends EventEmitter {
 
                 // do operation
                 const ocspArray = await new Promise<ArrayBuffer>((resolve, reject) => {
-                    request(params.url, { encoding: null }, (err, response, body) => {
+                    const b64 = new Buffer(params.url).toString("hex");
+                    const url = `${params.url}/${b64}`;
+                    request(url, { encoding: null }, (err, response, body) => {
                         try {
                             const message = `Cannot get OCSP by URI '${params.url}'`;
                             if (err) {
