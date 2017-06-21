@@ -1,7 +1,7 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('protobufjs')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'protobufjs'], factory) :
-  (factory((global.WebcryptoSocket = global.WebcryptoSocket || {}),global.protobuf));
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('protobufjs')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'protobufjs'], factory) :
+	(factory((global.WebcryptoSocket = global.WebcryptoSocket || {}),global.protobuf));
 }(this, (function (exports,protobufjs) { 'use strict';
 
 /*! *****************************************************************************
