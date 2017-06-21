@@ -53,7 +53,9 @@
                         // TestCertStorageClear();
                         // TestCertStorageGetItemCert("x509-c53021e4c84bd1a9e9dee840ba6a169f77928f91");
                         // TestReset()
-                        TestGetChain()
+                        // TestGetChain()
+                        // TestGetCRL()
+                        TestGetOCSP()
                     })
                     .catch((err) => {
                         console.error(err);
@@ -925,6 +927,60 @@
                         })
                         .then((chain) => {
                             console.log(chain);
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+
+        function TestGetCRL() {
+            const certIndex = 0;
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[PROVIDER_ID];
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    return crypto.isLoggedIn()
+                        .then((ok) => {
+                            if (!ok) {
+                                return crypto.login();
+                            }
+                        })
+                        .then(() => {
+                            return crypto.certStorage.getCRL("http://crl.quovadisglobal.com/qvrca.crl")
+                        })
+                        .then((crl) => {
+                            console.log(crl);
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+        function TestGetOCSP() {
+            const certIndex = 0;
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[PROVIDER_ID];
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    return crypto.isLoggedIn()
+                        .then((ok) => {
+                            if (!ok) {
+                                return crypto.login();
+                            }
+                        })
+                        .then(() => {
+                            const ocspRequest = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]).buffer;
+                            return crypto.certStorage.getOCSP("http://www.cryptopro.ru/ocsp/ocsp.srf", ocspRequest);
+                        })
+                        .then((ocsp) => {
+                            console.log(ocsp);
                         })
                 })
                 .catch((err) => {

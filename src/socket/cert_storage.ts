@@ -1,6 +1,12 @@
 import { Convert } from "pvtsutils";
 import { PrepareAlgorithm } from "webcrypto-core";
-import { CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetChainActionProto, CertificateStorageGetChainResultProto, CertificateStorageGetItemActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto, CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto, CryptoCertificateProto, CryptoX509CertificateProto, CryptoX509CertificateRequestProto } from "../core/protos/certstorage";
+import {
+    CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetChainActionProto,
+    CertificateStorageGetChainResultProto, CertificateStorageGetCRLActionProto, CertificateStorageGetItemActionProto,
+    CertificateStorageGetOCSPActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto,
+    CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto,
+    CryptoCertificateProto, CryptoX509CertificateProto, CryptoX509CertificateRequestProto,
+} from "../core/protos/certstorage";
 import { SocketCrypto } from "./crypto";
 
 export class SocketCertificateStorage implements ICertificateStorage {
@@ -175,6 +181,29 @@ export class SocketCertificateStorage implements ICertificateStorage {
         const data = await this.service.client.send(proto);
         const resultProto = await CertificateStorageGetChainResultProto.importProto(data);
         return resultProto.items;
+    }
+
+    public async getCRL(url: string) {
+        // prepare request
+        const proto = new CertificateStorageGetCRLActionProto();
+        proto.providerID = this.service.id;
+        proto.url = url;
+
+        // send and receive result
+        const data = await this.service.client.send(proto);
+        return data;
+    }
+
+    public async getOCSP(url: string, request: ArrayBuffer) {
+        // prepare request
+        const proto = new CertificateStorageGetOCSPActionProto();
+        proto.providerID = this.service.id;
+        proto.url = url;
+        proto.request = request;
+
+        // send and receive result
+        const data = await this.service.client.send(proto);
+        return data;
     }
 }
 

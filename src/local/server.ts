@@ -1,18 +1,38 @@
 import { EventEmitter } from "events";
 import * as graphene from "graphene-pk11";
 import { Convert } from "pvtsutils";
+import * as request from "request";
 import { ObjectProto } from "tsprotobuf";
 import { challenge } from "../connection/challenge";
 import { Server, Session } from "../connection/server";
 import { ActionProto, CryptoItemProto, CryptoKeyPairProto, CryptoKeyProto, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core/proto";
-import { CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetChainActionProto, CertificateStorageGetChainResultProto, CertificateStorageGetItemActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto, CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto } from "../core/protos/certstorage";
+import {
+    CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetChainActionProto,
+    CertificateStorageGetChainResultProto, CertificateStorageGetCRLActionProto, CertificateStorageGetItemActionProto,
+    CertificateStorageGetOCSPActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto,
+    CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto,
+} from "../core/protos/certstorage";
 import { ArrayStringConverter } from "../core/protos/converter";
 import { IsLoggedInActionProto, LoginActionProto, ResetActionProto } from "../core/protos/crypto";
-import { KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageIndexOfActionProto, KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto } from "../core/protos/keystorage";
-import { ProviderAuthorizedEventProto, ProviderCryptoProto, ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderTokenEventProto } from "../core/protos/provider";
-import { DecryptActionProto, DeriveBitsActionProto, DeriveKeyActionProto, DigestActionProto, EncryptActionProto, ExportKeyActionProto, GenerateKeyActionProto, ImportKeyActionProto, SignActionProto, UnwrapKeyActionProto, VerifyActionProto, WrapKeyActionProto } from "../core/protos/subtle";
+import {
+    KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageIndexOfActionProto,
+    KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto,
+} from "../core/protos/keystorage";
+import {
+    ProviderAuthorizedEventProto, ProviderCryptoProto, ProviderGetCryptoActionProto,
+    ProviderInfoActionProto, ProviderTokenEventProto,
+} from "../core/protos/provider";
+import {
+    DecryptActionProto, DeriveBitsActionProto, DeriveKeyActionProto,
+    DigestActionProto, EncryptActionProto, ExportKeyActionProto,
+    GenerateKeyActionProto, ImportKeyActionProto, SignActionProto,
+    UnwrapKeyActionProto, VerifyActionProto, WrapKeyActionProto,
+} from "../core/protos/subtle";
 import { ServiceCryptoItem } from "./crypto_item";
 import { LocalProvider } from "./provider";
+
+import * as asn1js from "asn1js";
+const { CertificateRevocationList, OCSPResponse } = require("pkijs");
 
 // register new attribute for pkcs11 modules
 graphene.registerAttribute("x509Chain", 2147483905, "buffer");
@@ -622,6 +642,106 @@ export class LocalServer extends EventEmitter {
                 }
 
                 // result
+
+                break;
+            }
+            case CertificateStorageGetCRLActionProto.ACTION: {
+                const params = await CertificateStorageGetCRLActionProto.importProto(action);
+
+                // do operation
+                const crlArray = await new Promise<ArrayBuffer>((resolve, reject) => {
+                    request(params.url, { encoding: null }, (err, response, body) => {
+                        try {
+                            const message = `Cannot get CRL by URI '${params.url}'`;
+                            if (err) {
+                                throw new Error(`${message}. ${err.message}`);
+                            }
+                            if (response.statusCode !== 200) {
+                                throw new Error(`${message}. Bad status ${response.statusCode}`);
+                            }
+
+                            if (typeof body === "string") {
+                                body = new Buffer(body, "binary");
+                            }
+                            // convert body to ArrayBuffer
+                            body = new Uint8Array(body).buffer;
+
+                            // try to parse CRL for checking
+                            try {
+                                const asn1 = asn1js.fromBER(body);
+                                if (asn1.result.error) {
+                                    throw new Error(`ASN1: ${asn1.result.error}`);
+                                }
+                                const crl = new CertificateRevocationList({
+                                    schema: asn1.result,
+                                });
+                                if (!crl) {
+                                    throw new Error(`variable crl is empty`);
+                                }
+                            } catch (e) {
+                                console.error(e);
+                                throw new Error(`Cannot parse received CRL from URI '${params.url}'`);
+                            }
+
+                            resolve(body);
+                        } catch (e) {
+                            reject(e);
+                        }
+                    });
+                });
+
+                // result
+                data = crlArray;
+
+                break;
+            }
+            case CertificateStorageGetOCSPActionProto.ACTION: {
+                const params = await CertificateStorageGetOCSPActionProto.importProto(action);
+
+                // do operation
+                const ocspArray = await new Promise<ArrayBuffer>((resolve, reject) => {
+                    request(params.url, { encoding: null }, (err, response, body) => {
+                        try {
+                            const message = `Cannot get OCSP by URI '${params.url}'`;
+                            if (err) {
+                                throw new Error(`${message}. ${err.message}`);
+                            }
+                            if (response.statusCode !== 200) {
+                                throw new Error(`${message}. Bad status ${response.statusCode}`);
+                            }
+
+                            if (typeof body === "string") {
+                                body = new Buffer(body, "binary");
+                            }
+                            // convert body to ArrayBuffer
+                            body = new Uint8Array(body).buffer;
+
+                            // try to parse CRL for checking
+                            try {
+                                const asn1 = asn1js.fromBER(body);
+                                if (asn1.result.error) {
+                                    throw new Error(`ASN1: ${asn1.result.error}`);
+                                }
+                                const ocsp = new OCSPResponse({
+                                    schema: asn1.result,
+                                });
+                                if (!ocsp) {
+                                    throw new Error(`variable ocsp is empty`);
+                                }
+                            } catch (e) {
+                                console.error(e);
+                                throw new Error(`Cannot parse received OCSP from URI '${params.url}'`);
+                            }
+
+                            resolve(body);
+                        } catch (e) {
+                            reject(e);
+                        }
+                    });
+                });
+
+                // result
+                data = ocspArray;
 
                 break;
             }

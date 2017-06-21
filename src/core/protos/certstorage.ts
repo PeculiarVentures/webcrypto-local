@@ -178,3 +178,28 @@ export class CertificateStorageGetChainActionProto extends CryptoActionProto {
     public item: CryptoCertificateProto;
 
 }
+
+@ProtobufElement({})
+export class CertificateStorageGetCRLActionProto extends CryptoActionProto {
+
+    public static INDEX = CryptoActionProto.INDEX;
+    public static ACTION = "crypto/certificateStorage/getCRL";
+
+    @ProtobufProperty({ id: CertificateStorageGetCRLActionProto.INDEX++, required: true, type: "string" })
+    public url: string;
+
+}
+
+@ProtobufElement({})
+export class CertificateStorageGetOCSPActionProto extends CryptoActionProto {
+
+    public static INDEX = CryptoActionProto.INDEX;
+    public static ACTION = "crypto/certificateStorage/getOCSP";
+
+    @ProtobufProperty({ id: CertificateStorageGetOCSPActionProto.INDEX++, required: true, type: "string" })
+    public url: string;
+
+    @ProtobufProperty({ id: CertificateStorageGetOCSPActionProto.INDEX++, required: true, converter: ArrayBufferConverter })
+    public request: ArrayBuffer;
+
+}
