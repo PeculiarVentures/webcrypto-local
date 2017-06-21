@@ -976,8 +976,8 @@
                             }
                         })
                         .then(() => {
-                            const ocspRequest = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]).buffer;
-                            return crypto.certStorage.getOCSP("http://www.cryptopro.ru/ocsp/ocsp.srf", ocspRequest);
+                            const ocspRequest = HexToArray("3060305EA122A420301E311C3009060355040613025255300F06035504031E080054006500730074301F301D301B300706052B0E03021A04047F01020304047F01020302047F010203A2173015301306092B0601050507300102040604047F010203");
+                            return crypto.certStorage.getOCSP("http://www.cryptopro.ru/ocsp/ocsp.srf", ocspRequest, { method: "post" });
                         })
                         .then((ocsp) => {
                             console.log(ocsp);

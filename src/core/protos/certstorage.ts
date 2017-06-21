@@ -190,6 +190,20 @@ export class CertificateStorageGetCRLActionProto extends CryptoActionProto {
 
 }
 
+export interface OCSPRequestOptions {
+    method: "post" | "get";
+}
+
+@ProtobufElement({})
+export class OCSPRequestOptionsProto extends BaseProto implements OCSPRequestOptions {
+
+    public static INDEX = BaseProto.INDEX;
+
+    @ProtobufProperty({ id: OCSPRequestOptionsProto.INDEX++, required: false, type: "string", defaultValue: "get" })
+    public method: "post" | "get";
+
+}
+
 @ProtobufElement({})
 export class CertificateStorageGetOCSPActionProto extends CryptoActionProto {
 
@@ -201,5 +215,8 @@ export class CertificateStorageGetOCSPActionProto extends CryptoActionProto {
 
     @ProtobufProperty({ id: CertificateStorageGetOCSPActionProto.INDEX++, required: true, converter: ArrayBufferConverter })
     public request: ArrayBuffer;
+
+    @ProtobufProperty({ id: CertificateStorageGetOCSPActionProto.INDEX++, required: false, parser: OCSPRequestOptionsProto })
+    public options: OCSPRequestOptionsProto;
 
 }

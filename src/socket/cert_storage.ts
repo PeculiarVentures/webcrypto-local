@@ -6,6 +6,7 @@ import {
     CertificateStorageGetOCSPActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto,
     CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto,
     CryptoCertificateProto, CryptoX509CertificateProto, CryptoX509CertificateRequestProto,
+    OCSPRequestOptions,
 } from "../core/protos/certstorage";
 import { SocketCrypto } from "./crypto";
 
@@ -28,8 +29,8 @@ export class SocketCertificateStorage implements ICertificateStorage {
         return result ? Convert.ToUtf8String(result) : null;
     }
 
-    public exportCert(format: "pem", item: CryptoCertificate): Promise<string>
-    public exportCert(format: "raw", item: CryptoCertificate): Promise<ArrayBuffer>
+    public exportCert(format: "pem", item: CryptoCertificate): Promise<string>;
+    public exportCert(format: "raw", item: CryptoCertificate): Promise<ArrayBuffer>;
     public exportCert(format: CryptoCertificateFormat, item: CryptoCertificate): Promise<ArrayBuffer | string>;
     public async exportCert(format: CryptoCertificateFormat, item: CryptoCertificateProto): Promise<ArrayBuffer | string> {
         // prepare request
@@ -117,7 +118,7 @@ export class SocketCertificateStorage implements ICertificateStorage {
     }
 
     public getItem(key: string): Promise<CryptoCertificate>;
-    public getItem(key: string, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoCertificate>
+    public getItem(key: string, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoCertificate>;
     public async getItem(key: string, algorithm?: Algorithm, keyUsages?: string[]) {
         // prepare request
         const proto = new CertificateStorageGetItemActionProto();
@@ -194,12 +195,19 @@ export class SocketCertificateStorage implements ICertificateStorage {
         return data;
     }
 
-    public async getOCSP(url: string, request: ArrayBuffer) {
+    public async getOCSP(url: string, request: ArrayBuffer, options?: OCSPRequestOptions) {
         // prepare request
         const proto = new CertificateStorageGetOCSPActionProto();
         proto.providerID = this.service.id;
         proto.url = url;
         proto.request = request;
+
+        if (options) {
+            // copy options to proto
+            for (const key in options) {
+                (proto as any).options[key] = (options as any)[key];
+            }
+        }
 
         // send and receive result
         const data = await this.service.client.send(proto);

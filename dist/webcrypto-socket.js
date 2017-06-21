@@ -5388,6 +5388,20 @@ __decorate([
 CertificateStorageGetCRLActionProto = CertificateStorageGetCRLActionProto_1 = __decorate([
     ProtobufElement({})
 ], CertificateStorageGetCRLActionProto);
+var OCSPRequestOptionsProto = OCSPRequestOptionsProto_1 = (function (_super) {
+    __extends(OCSPRequestOptionsProto, _super);
+    function OCSPRequestOptionsProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return OCSPRequestOptionsProto;
+}(BaseProto));
+OCSPRequestOptionsProto.INDEX = BaseProto.INDEX;
+__decorate([
+    ProtobufProperty({ id: OCSPRequestOptionsProto_1.INDEX++, required: false, type: "string", defaultValue: "get" })
+], OCSPRequestOptionsProto.prototype, "method", void 0);
+OCSPRequestOptionsProto = OCSPRequestOptionsProto_1 = __decorate([
+    ProtobufElement({})
+], OCSPRequestOptionsProto);
 var CertificateStorageGetOCSPActionProto = CertificateStorageGetOCSPActionProto_1 = (function (_super) {
     __extends(CertificateStorageGetOCSPActionProto, _super);
     function CertificateStorageGetOCSPActionProto() {
@@ -5403,6 +5417,9 @@ __decorate([
 __decorate([
     ProtobufProperty({ id: CertificateStorageGetOCSPActionProto_1.INDEX++, required: true, converter: ArrayBufferConverter })
 ], CertificateStorageGetOCSPActionProto.prototype, "request", void 0);
+__decorate([
+    ProtobufProperty({ id: CertificateStorageGetOCSPActionProto_1.INDEX++, required: false, parser: OCSPRequestOptionsProto })
+], CertificateStorageGetOCSPActionProto.prototype, "options", void 0);
 CertificateStorageGetOCSPActionProto = CertificateStorageGetOCSPActionProto_1 = __decorate([
     ProtobufElement({})
 ], CertificateStorageGetOCSPActionProto);
@@ -5417,6 +5434,7 @@ var CertificateStorageImportActionProto_1;
 var CertificateStorageExportActionProto_1;
 var CertificateStorageIndexOfActionProto_1;
 var CertificateStorageGetCRLActionProto_1;
+var OCSPRequestOptionsProto_1;
 var CertificateStorageGetOCSPActionProto_1;
 
 var SocketCertificateStorage = (function () {
@@ -5651,9 +5669,9 @@ var SocketCertificateStorage = (function () {
             });
         });
     };
-    SocketCertificateStorage.prototype.getOCSP = function (url, request) {
+    SocketCertificateStorage.prototype.getOCSP = function (url, request, options) {
         return __awaiter(this, void 0, void 0, function () {
-            var proto, data;
+            var proto, key, data;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -5661,6 +5679,11 @@ var SocketCertificateStorage = (function () {
                         proto.providerID = this.service.id;
                         proto.url = url;
                         proto.request = request;
+                        if (options) {
+                            for (key in options) {
+                                proto.options[key] = options[key];
+                            }
+                        }
                         return [4, this.service.client.send(proto)];
                     case 1:
                         data = _a.sent();
