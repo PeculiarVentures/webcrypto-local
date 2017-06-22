@@ -10,15 +10,15 @@ import { ActionProto } from "../../core";
             console.log("Listening");
 
             const action = new ActionProto();
-            client.send("wow", action)
+            client.send(action)
                 .then(() => {
-                    return client.send("Working", action);
+                    return client.send(action);
                 });
         })
         .on("error", (e) => {
             console.error(e.error);
         })
-        .on("closed", (e) => {
+        .on("close", (e) => {
             console.log("Close");
         });
 

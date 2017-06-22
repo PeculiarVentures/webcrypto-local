@@ -28,7 +28,7 @@ export interface CryptoServiceEcAlgorithm extends CryptoServiceAlgorithm {
 
 export interface CryptoServiceEcdhAlgorithm extends CryptoServiceEcAlgorithm {
     // AES, HMAC, PBKDF2
-    derivedKeyTypes: CryptoServiceSecretAlgorithm[]
+    derivedKeyTypes: CryptoServiceSecretAlgorithm[];
 }
 
 export interface CryptoService {

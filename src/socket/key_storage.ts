@@ -1,8 +1,10 @@
 import { Convert } from "pvtsutils";
-import { CryptoKeyProto, KeyStorageGetItemProto, KeyStorageKeysProto, KeyStorageRemoveItemProto, KeyStorageSetItemProto } from "../core/proto";
-import { SocketCrypto } from "./client";
+import { PrepareAlgorithm } from "webcrypto-core";
+import { CryptoKeyProto } from "../core/proto";
+import { KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto, KeyStorageIndexOfActionProto } from "../core/protos/keystorage";
+import { SocketCrypto } from "./crypto";
 
-export class KeyStorage implements IKeyStorage {
+export class SocketKeyStorage implements IKeyStorage {
 
     protected readonly service: SocketCrypto;
 
@@ -11,19 +13,43 @@ export class KeyStorage implements IKeyStorage {
     }
 
     public async keys() {
-        const proto = new KeyStorageKeysProto();
-        const result = await this.service.client.send(KeyStorageKeysProto.ACTION, proto);
-        const keys = Convert.ToUtf8String(result).split(";");
-        return keys;
+        const proto = new KeyStorageKeysActionProto();
+        proto.providerID = this.service.id;
+        const result = await this.service.client.send(proto);
+        if (result) {
+            const keys = Convert.ToUtf8String(result).split(",");
+            return keys;
+        }
+        return [];
     }
 
-    public async getItem(key: string) {
+    public async indexOf(item: CryptoKeyProto): Promise<string> {
         // prepare request
-        const proto = new KeyStorageGetItemProto();
-        proto.key = key;
+        const proto = new KeyStorageIndexOfActionProto();
+        proto.providerID = this.service.id;
+        proto.item = item;
 
         // send and receive result
-        const result = await this.service.client.send(KeyStorageGetItemProto.ACTION, proto);
+        const result = await this.service.client.send(proto);
+        return result ? Convert.ToUtf8String(result) : null;
+    }
+
+    public getItem(key: string): Promise<CryptoKey>;
+    public getItem(key: string, algorithm: Algorithm, usages: string[]): Promise<CryptoKey>;
+    public async getItem(key: string, algorithm?: Algorithm, usages?: string[]) {
+        // prepare request
+        const proto = new KeyStorageGetItemActionProto();
+        proto.providerID = this.service.id;
+        proto.key = key;
+
+        if (algorithm) {
+            const preparedAlgorithm = PrepareAlgorithm(algorithm);
+            proto.algorithm.fromAlgorithm(preparedAlgorithm);
+            proto.keyUsages = usages;
+        }
+
+        // send and receive result
+        const result = await this.service.client.send(proto);
 
         // prepare result
         let socketKey: CryptoKeyProto | null = null;
@@ -34,23 +60,34 @@ export class KeyStorage implements IKeyStorage {
         return socketKey;
     }
 
-    public async setItem(key: string, value: CryptoKeyProto) {
+    public async setItem(value: CryptoKeyProto) {
         // prepare request
-        const proto = new KeyStorageSetItemProto();
-        proto.key = key;
+        const proto = new KeyStorageSetItemActionProto();
+        proto.providerID = this.service.id;
         proto.item = value;
 
         // send and receive result
-        await this.service.client.send(KeyStorageSetItemProto.ACTION, proto);
+        const data = await this.service.client.send(proto);
+        return Convert.ToUtf8String(data);
     }
 
     public async removeItem(key: string) {
         // prepare request
-        const proto = new KeyStorageRemoveItemProto();
+        const proto = new KeyStorageRemoveItemActionProto();
+        proto.providerID = this.service.id;
         proto.key = key;
 
         // send and receive result
-        await this.service.client.send(KeyStorageRemoveItemProto.ACTION, proto);
+        await this.service.client.send(proto);
+    }
+
+    public async clear() {
+        // prepare request
+        const proto = new KeyStorageClearActionProto();
+        proto.providerID = this.service.id;
+
+        // send and receive result
+        await this.service.client.send(proto);
     }
 
 }

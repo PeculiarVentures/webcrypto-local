@@ -2,8 +2,9 @@ import { AsymmetricRatchet, Identity, MessageSignedProtocol, PreKeyBundleProtoco
 import { EventEmitter } from "events";
 import { Convert } from "pvtsutils";
 import { ActionProto, Event, ServerInfo } from "../core";
-import { AuthRequestProto, ResultProto } from "../core";
+import { ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core";
 import { challenge } from "./challenge";
+// import { challenge } from "./challenge";
 import { SERVER_WELL_KNOWN } from "./const";
 import { BrowserStorage } from "./storages/browser";
 
@@ -144,16 +145,7 @@ export class Client extends EventEmitter {
                                 });
                         });
 
-                        // authenticate
-                        this.send(AuthRequestProto.ACTION, new AuthRequestProto())
-                            .then((data) => {
-                                return (async () => {
-                                    if (data && !(new Uint8Array(data)[0])) {
-                                        alert(`PIN: ${await challenge(this.cipher.remoteIdentity.signingKey, identity.signingKey.publicKey)}`);
-                                    }
-                                    this.emit("listening", new ClientListeningEvent(this, address));
-                                })();
-                            });
+                        this.emit("listening", new ClientListeningEvent(this, address));
                     })().catch((error) => this.emit("error", new ClientErrorEvent(this, error)));
                 };
                 this.socket.onclose = (e) => {
@@ -189,15 +181,16 @@ export class Client extends EventEmitter {
         this.socket.close();
     }
 
+    public on(event: "event", listener: (e: ActionProto) => void): this;
     public on(event: "listening", listener: (e: ClientListeningEvent) => void): this;
-    public on(event: "closed", listener: (e: ClientCloseEvent) => void): this;
+    public on(event: "close", listener: (e: ClientCloseEvent) => void): this;
     public on(event: "error", listener: (e: ClientErrorEvent) => void): this;
     public on(event: string | symbol, listener: Function) {
         return super.on(event, listener);
     }
 
     public once(event: "listening", listener: (e: ClientListeningEvent) => void): this;
-    public once(event: "closed", listener: (e: ClientCloseEvent) => void): this;
+    public once(event: "close", listener: (e: ClientCloseEvent) => void): this;
     public once(event: "error", listener: (e: ClientErrorEvent) => void): this;
     public once(event: string | symbol, listener: Function): this;
     public once(event: string | symbol, listener: Function) {
@@ -205,16 +198,52 @@ export class Client extends EventEmitter {
     }
 
     /**
+     * Return PIN for current session
+     * 
+     * @returns 
+     * 
+     * @memberOf Client
+     */
+    public async challenge() {
+        return challenge(this.cipher.remoteIdentity.signingKey, this.cipher.identity.signingKey.publicKey);
+    }
+
+    /**
+     * Returns true if session is authorized
+     * 
+     * 
+     * @memberOf Client
+     */
+    public async isLoggedIn() {
+        const action = new ServerIsLoggedInActionProto();
+
+        const data = await this.send(action);
+        return data ? !!(new Uint8Array(data)[0]) : false;
+    }
+
+    /**
+     * Request session authentication
+     * 
+     * 
+     * @memberOf Client
+     */
+    public async login() {
+        const action = new ServerLoginActionProto();
+
+        await this.send(action);
+    }
+
+    /**
      * Sends and receives
      */
-    public send(event: string, data?: ActionProto): Promise<ArrayBuffer> {
+    public send(data?: ActionProto): Promise<ArrayBuffer> {
         console.log("Send message:", data.action);
         return new Promise((resolve, reject) => {
             this.checkSocketState();
             if (!data) {
                 data = new ActionProto();
             }
-            data.action = event;
+            data.action = data.action;
             data.actionId = (this.messageCounter++).toString();
             data.exportProto()
                 .then((raw) => {
@@ -236,21 +265,35 @@ export class Client extends EventEmitter {
      */
     protected getServerInfo(address: string): Promise<ServerInfo> {
         return new Promise((resolve, reject) => {
-            const xmlHttp = getXmlHttp();
-            xmlHttp.open("GET", `http://${address}${SERVER_WELL_KNOWN}`, true);
-            xmlHttp.onreadystatechange = () => {
-                if (xmlHttp.readyState !== 4) {
-                    return;
-                }
-                if (xmlHttp.status === 200) {
-                    const json = JSON.parse(xmlHttp.responseText);
-                    console.log(json);
-                    resolve(json);
-                } else {
-                    reject(new Error("Cannot GET response"));
-                }
-            };
-            xmlHttp.send(null);
+            const url = `http://${address}${SERVER_WELL_KNOWN}`;
+            if (self.fetch) {
+                fetch(url)
+                    .then((response) => {
+                        if (response.status !== 200) {
+                            throw new Error("Cannot get wellknown link");
+                        } else {
+                            return response.json();
+                        }
+                    })
+                    .then(resolve)
+                    .catch(reject);
+            } else {
+                const xmlHttp = getXmlHttp();
+                xmlHttp.open("GET", `http://${address}${SERVER_WELL_KNOWN}`, true);
+                xmlHttp.responseType = "text";
+                xmlHttp.onreadystatechange = () => {
+                    if (xmlHttp.readyState === 4) {
+                        if (xmlHttp.status === 200) {
+                            const json = JSON.parse(xmlHttp.responseText);
+                            console.log(json);
+                            resolve(json);
+                        } else {
+                            reject(new Error("Cannot GET response"));
+                        }
+                    }
+                };
+                xmlHttp.send(null);
+            }
         });
     }
 
@@ -261,17 +304,22 @@ export class Client extends EventEmitter {
     }
 
     protected async onMessage(message: ArrayBuffer) {
-        const proto = await ResultProto.importProto(message);
+        const proto = await ActionProto.importProto(message);
+        console.info("Action:", proto.action);
         // find Promise
         const promise = this.stack[proto.actionId];
-        delete this.stack[proto.actionId];
-        console.info("Action:", proto.action);
-        if (proto.error) {
-            console.error("Error action:", proto.action);
-            console.error(proto.error);
-            promise.reject(new Error(proto.error));
+        if (promise) {
+            delete this.stack[proto.actionId];
+            const messageProto = await ResultProto.importProto(await proto.exportProto());
+            if (messageProto.error) {
+                console.error("Error action:", messageProto.action);
+                console.error(messageProto.error);
+                promise.reject(new Error(messageProto.error));
+            } else {
+                promise.resolve(messageProto.data);
+            }
         } else {
-            promise.resolve(proto.data);
+            this.emit("event", proto);
         }
     }
 

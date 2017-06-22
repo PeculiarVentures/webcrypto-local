@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import { Convert } from "pvtsutils";
 
 const crypto: Crypto = new (require("node-webcrypto-ossl"))();
 
@@ -23,15 +24,29 @@ export class OpenSSLKeyStorage implements IKeyStorage {
         return Object.keys(keys);
     }
 
-    public async setItem(key: string, value: CryptoKey) {
+    public async indexOf(item: CryptoKey) {
         const keys = this.readFile();
-        keys[key] = await this.keyToJson(value);
+        const id = await this.getID(item);
+        if (id in keys) {
+            return id;
+        }
+        return null;
+    }
+
+    public async setItem(value: CryptoKey) {
+        const keys = this.readFile();
+        const id = await this.getID(value);
+        keys[id] = await this.keyToJson(value);
         this.writeFile(keys);
+        return id;
     }
 
     public async getItem(key: string) {
         const keys = this.readFile();
         const keyJson = keys[key];
+        if (!keyJson) {
+            return null;
+        }
         const res = this.keyFromJson(keyJson);
         this.writeFile(keys);
         return res;
@@ -41,6 +56,10 @@ export class OpenSSLKeyStorage implements IKeyStorage {
         const keys = this.readFile();
         delete keys[key];
         this.writeFile(keys);
+    }
+
+    public async clear() {
+        this.writeFile({});
     }
 
     protected readFile(): IJsonOpenSSLKeyStorage {
@@ -57,6 +76,46 @@ export class OpenSSLKeyStorage implements IKeyStorage {
             encoding: "utf8",
             flag: "w+",
         });
+    }
+
+    /**
+     * <type>-<hex>
+     * - public/private key's hex = SHA-256(spki)
+     * - secret key's hex = SHA-256(RND(32))
+     *
+     * @protected
+     * @param {CryptoKey} key
+     * @returns
+     *
+     * @memberOf OpenSSLKeyStorage
+     */
+    protected async getID(key: CryptoKey) {
+        const nativeKey = (key as any).native;
+        let id: BufferSource;
+        switch (key.type) {
+            case "secret": {
+                id = await crypto.getRandomValues(new Uint8Array(20));
+                break;
+            }
+            case "private":
+            case "public":
+                const fn = nativeKey.exportSpki as (cb: (err: Error, data: Buffer) => void) => void;
+                id = await new Promise<Buffer>((resolve, reject) => {
+                    fn.call(nativeKey, (err: Error, data: Buffer) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
+                });
+                break;
+            default:
+                throw new Error(`Unsupported type of CryptoKey '${key.type}'`);
+        }
+        const hash = await crypto.subtle.digest("SHA-1", id);
+        const rnd = crypto.getRandomValues(new Uint8Array(4));
+        return `${key.type}-${Convert.ToHex(rnd)}-${Convert.ToHex(hash)}`;
     }
 
     protected keyToJson(key: CryptoKey): Promise<IJsonOpenSSLKey> {

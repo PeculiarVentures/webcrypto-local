@@ -1,10 +1,16 @@
 .vscode
 node_modules
-dist/*.js
+dist_ui
 out
+dist/webcrypto-socket*.js
 
 .webcrypto
 .keystorage
 .certstorage
 .DS_Store
 *.log
+
+index.d.ts
+
+.idea
+scripts/compiled_env.json

@@ -1,38 +1,7 @@
 import { EventEmitter } from "events";
 import { Client } from "../connection/client";
-import { Event } from "../core";
-import { CertificateStorage } from "./cert_storage";
-import { KeyStorage } from "./key_storage";
-import { SocketSubtleCrypto } from "./subtle";
-
-export class SocketCryptoEvent extends Event<SocketCrypto> {
-}
-
-export class SocketCryptoListeningEvent extends SocketCryptoEvent {
-
-    public readonly address: string;
-
-    constructor(target: SocketCrypto, address: string) {
-        super(target, "listening");
-        this.address = address;
-    }
-}
-
-export class SocketCryptoCloseEvent extends SocketCryptoEvent {
-    public remoteAddress: string;
-    constructor(target: SocketCrypto, remoteAddress: string) {
-        super(target, "close");
-        this.remoteAddress = remoteAddress;
-    }
-}
-
-export class SocketCryptoErrorEvent extends SocketCryptoEvent {
-    public error: Error;
-    constructor(target: SocketCrypto, error: Error) {
-        super(target, "error");
-        this.error = error;
-    }
-}
+import { ProviderAuthorizedEventProto, ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderInfoProto, ProviderTokenEventProto } from "../core/protos/provider";
+import { SocketCrypto } from "./crypto";
 
 /**
  * Implementation of WebCrypto interface
@@ -40,12 +9,11 @@ export class SocketCryptoErrorEvent extends SocketCryptoEvent {
  * - Symmetric cryptography uses native implementation
  * - Asymmetric cryptography uses calls to Server
  */
-export class SocketCrypto extends EventEmitter implements Crypto {
+export class SocketProvider extends EventEmitter {
 
-    public readonly subtle: SocketSubtleCrypto;
-    public readonly keyStorage: KeyStorage;
-    public readonly certStorage: CertificateStorage;
     public client = new Client();
+
+    public crypto: { [id: string]: Crypto };
 
     public get state() {
         return this.client.state;
@@ -53,13 +21,6 @@ export class SocketCrypto extends EventEmitter implements Crypto {
 
     constructor() {
         super();
-        this.subtle = new SocketSubtleCrypto(this);
-        this.keyStorage = new KeyStorage(this);
-        this.certStorage = new CertificateStorage(this);
-    }
-
-    public getRandomValues(array: ArrayBufferView) {
-        return self.crypto.getRandomValues(array);
     }
 
     /**
@@ -70,18 +31,36 @@ export class SocketCrypto extends EventEmitter implements Crypto {
      * 2. Create 2key-ratchet session from PreKeyBundle
      */
     public connect(address: string): this {
+        this.client.removeAllListeners();
         this.client.connect(address)
             .on("error", (e) => {
+                console.log("Client:Error");
                 console.error(e.error);
-                this.emit("error", new SocketCryptoErrorEvent(this, e.error));
+                this.emit("error", e.error);
+            })
+            .on("event", (proto) => {
+                console.log("Client:Event", proto.action);
+                (async () => {
+                    switch (proto.action) {
+                        case ProviderTokenEventProto.ACTION: {
+                            const tokenProto = await ProviderTokenEventProto.importProto(await proto.exportProto());
+                            this.emit("token", tokenProto);
+                        }
+                        case ProviderAuthorizedEventProto.ACTION: {
+                            const authProto = await ProviderAuthorizedEventProto.importProto(await proto.exportProto());
+                            this.emit("auth", authProto);
+                        }
+                        default:
+                    }
+                })();
             })
             .on("listening", (e) => {
                 console.info("Client:Listening", e.address);
-                this.emit("listening", new SocketCryptoListeningEvent(this, address));
+                this.emit("listening", address);
             })
-            .on("closed", (e) => {
+            .on("close", (e) => {
                 console.info("Client:Closed");
-                this.emit("closed", new SocketCryptoCloseEvent(this, e.remoteAddress));
+                this.emit("close", e.remoteAddress);
             });
 
         return this;
@@ -94,25 +73,41 @@ export class SocketCrypto extends EventEmitter implements Crypto {
         this.client.close();
     }
 
-    public on(event: "listening", listener: (e: SocketCryptoListeningEvent) => void): this;
-    public on(event: "closed", listener: (e: SocketCryptoCloseEvent) => void): this;
-    public on(event: "error", listener: (e: SocketCryptoErrorEvent) => void): this;
     public on(event: string | symbol, listener: Function) {
         return super.on(event, listener);
     }
 
-    public once(event: "listening", listener: (e: SocketCryptoListeningEvent) => void): this;
-    public once(event: "closed", listener: (e: SocketCryptoCloseEvent) => void): this;
-    public once(event: "error", listener: (e: SocketCryptoErrorEvent) => void): this;
-    public once(event: string | symbol, listener: Function): this;
     public once(event: string | symbol, listener: Function) {
         return super.once(event, listener);
     }
 
-    protected checkSocketState() {
-        // if (this.state !== SocketCryptoState.open) {
-        //     throw new Error("Socket connection is not open");
-        // }
+    public async info() {
+        const proto = new ProviderInfoActionProto();
+        const result = await this.client.send(proto);
+
+        const infoProto = await ProviderInfoProto.importProto(result);
+        return infoProto;
+    }
+
+    public async challenge() {
+        return this.client.challenge();
+    }
+
+    public async isLoggedIn() {
+        return this.client.isLoggedIn();
+    }
+
+    public async login() {
+        return this.client.login();
+    }
+
+    public async getCrypto(cryptoID: string) {
+        const actionProto = new ProviderGetCryptoActionProto();
+        actionProto.cryptoID = cryptoID;
+
+        await this.client.send(actionProto);
+
+        return new SocketCrypto(this.client, cryptoID);
     }
 
 }

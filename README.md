@@ -1,42 +1,56 @@
 # webcrypto-local
 
-[![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](https://raw.githubusercontent.com/PeculiarVentures/2key-ratchet/master/LICENSE.md)
+`webcrypto-local` is a cross platform service that provides access to PKCS#11 implementations over a `ProtoBuf` based protocol we call `webcrypto-socket`. It provides for message confidentiality and integrity via `2key-ratchet` and implements a security policy mechanism that allows the user to approve which peers can interact with it.
 
+## UI
 
+<<<<<<< HEAD
 `webcrypto-local` is a cross platform service that provides access to PKCS#11 implementations over a `ProtoBuf` based protocol, the client end of this protocol is implemented in a WebCrypto polyfill we call `webcrypto-socket`. This protocol provides for message confidentiality and integrity via `2key-ratchet` and implements a security policy mechanism that allows the user to approve which peers can interact with it. 
+=======
+#### Quick Development Start
+>>>>>>> application
 
+ * Clone latest version this repository
+ * `npm install`
+ * `npm run development`
 
-## Build
+#### Quick Production Start
+
+ * Clone latest version this repository
+ * `npm install`
+ * `npm run production`
+
+#### Clear
+
+* `npm run clear`
+
+#### Automatic deploy to GitHub pages
+
+* `npm run deploy`
+
+## webcrypto-socket
+
+#### Build
 
 ```
-tsc
+npm run build:ws
 ```
 
-## Run
+#### Build && Server
 
 ```
-node out/test/local
+npm run server:ws
 ```
 
-# webcrypto-socket
-
-## Build
-
-```
-rollup -c
-```
-
-## Run
-
-### Tests combined with Chrome native webcrypto
+#### Tests combined with Chrome native webcrypto
 
 Open `test/index.html`
 
-### Example
+#### Example
 
 Open `dist/index.html`
 
-## Related
+### Related
 - [2key-ratchet](https://github.com/PeculiarVentures/2key-ratchet)
 - [pvpkcs11](https://github.com/PeculiarVentures/pvpkcs11)
 - [node-webcrypto-p11](https://github.com/PeculiarVentures/node-webcrypto-p11)

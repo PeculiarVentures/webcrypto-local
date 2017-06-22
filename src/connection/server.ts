@@ -2,18 +2,15 @@ import { AsymmetricRatchet, Identity, PreKeyBundleProtocol } from "2key-ratchet"
 import { MessageSignedProtocol, PreKeyMessageProtocol } from "2key-ratchet";
 import { EventEmitter } from "events";
 import * as http from "http";
-import { NotificationCenter } from "node-notifier";
 import { assign, Convert } from "pvtsutils";
+import { ObjectProto } from "tsprotobuf";
 import * as url from "url";
 import * as WebSocket from "websocket";
-import { ActionProto, AuthRequestProto, Event, ResultProto } from "../core";
-import { challenge } from "./challenge";
+import { ActionProto, Event, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core";
 import { SERVER_WELL_KNOWN } from "./const";
 import { OpenSSLStorage } from "./storages/ossl";
 
 const D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
-
-const notifier = new (NotificationCenter as any)();
 
 type AlgorithmUsageType = "generateKey" | "importKey" | "exportKey" | "sign" | "verify" | "deriveKey" | "deriveBits" | "encrypt" | "decrypt" | "wrapKey" | "unwrapKey" | "digest";
 
@@ -124,12 +121,15 @@ export class Server extends EventEmitter {
         ],
     };
 
+    public identity: Identity;
+    public storage: OpenSSLStorage;
+
     protected httpServer: http.Server;
     protected socketServer: WebSocket.server;
-    protected identity: Identity;
-    protected storage: OpenSSLStorage;
 
+    public on(event: "auth", listener: (session: Session) => void): this;
     public on(event: "listening", listener: (e: ServerListeningEvent) => void): this;
+    public on(event: "connect", listener: (e: Session) => void): this;
     public on(event: "close", listener: (e: ServerCloseEvent) => void): this;
     public on(event: "error", listener: (e: ServerErrorEvent) => void): this;
     public on(event: "message", listener: (e: ServerMessageEvent) => void): this;
@@ -204,12 +204,13 @@ export class Server extends EventEmitter {
                 cipher: null,
                 authorized: false,
             };
+            this.emit("connect", session);
             connection.on("message", (message) => {
                 if (message.type === "utf8") {
                     console.log("Received Message: " + message.utf8Data);
                     console.log(message.utf8Data);
                 } else if (message.type === "binary") {
-                    console.log("Received Binary Message of " + message.binaryData.length + " bytes");
+                    // console.log("Received Binary Message of " + message.binaryData.length + " bytes");
                     // connection.sendBytes(message.binaryData);
                     // console.log(message.binaryData.toString("binary"));
                     // this.onMessage(connection, message.binaryData);
@@ -248,63 +249,31 @@ export class Server extends EventEmitter {
                         const actionProto = await ActionProto.importProto(decryptedMessage);
 
                         return new Promise((resolve, reject) => {
-                            if (actionProto.action === AuthRequestProto.ACTION) {
-                                (async () => {
-                                    const resultProto = new ResultProto(actionProto);
-                                    if (!session.authorized) {
-                                        // Session is not authorized
-                                        // generate OTP
-                                        const pin = await challenge(this.identity.signingKey.publicKey, session.cipher.remoteIdentity.signingKey);
-                                        // Show notice
-                                        notifier.notify({
-                                            title: "webcrypto-local",
-                                            message: `Is it correct PIN ${pin}?`,
-                                            wait: true,
-                                            actions: "Yes",
-                                            closeLabel: "No",
-                                            // timeout: 30,
-                                        } as any, (error: Error, response: string) => {
-                                            console.log("Notifier response:", response);
-                                            if (response === "activate") {
-                                                this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
-                                                session.authorized = true;
-                                            }
-                                        });
-                                    }
-                                    // result
-                                    resultProto.data = new Uint8Array([session.authorized ? 1 : 0]).buffer;
-                                    resolve(resultProto);
-                                })().catch(reject);
+                            console.log("Message:", actionProto.action, session.authorized);
+                            if (
+                                session.authorized ||
+                                actionProto.action === ServerIsLoggedInActionProto.ACTION ||
+                                actionProto.action === ServerLoginActionProto.ACTION
+                            ) {
+                                this.emit("message", new ServerMessageEvent(this, session, actionProto, resolve, reject));
                             } else {
                                 // If session is not authorized throw error
-                                if (!session.authorized) {
-                                    throw new Error("404: Not authorized");
-                                }
-                                const emit = this.emit("message", new ServerMessageEvent(this, session, actionProto, resolve, reject));
-                                console.log("Emit message:", emit);
+                                throw new Error("404: Not authorized");
                             }
                         })
                             .then((answer: ResultProto) => {
-                                (async () => {
-                                    // Encrypt success result
-                                    const raw = await answer.exportProto();
-                                    const encryptedData = await session.cipher.encrypt(raw);
-                                    const encryptedRaw = await encryptedData.exportProto();
-                                    connection.sendBytes(new Buffer(encryptedRaw));
-                                })();
+                                answer.status = true;
+                                return this.send(session, answer);
                             })
                             .catch((e) => {
                                 (async () => {
-                                    // Encrypt Error result
                                     const resultProto = new ResultProto(actionProto);
                                     console.log("Error for action:", actionProto.action);
                                     console.error(e);
                                     resultProto.error = e.message;
+                                    resultProto.status = false;
 
-                                    const raw = await resultProto.exportProto();
-                                    const encryptedData = await session.cipher.encrypt(raw);
-                                    const encryptedRaw = await encryptedData.exportProto();
-                                    connection.sendBytes(new Buffer(encryptedRaw));
+                                    this.send(session, resultProto);
                                 })();
                             });
                     })().catch((e) => {
@@ -318,6 +287,20 @@ export class Server extends EventEmitter {
         });
 
         return this;
+    }
+
+    public async send(session: Session, data: ObjectProto | ArrayBuffer) {
+        let buf: ArrayBuffer;
+        if (data instanceof ArrayBuffer) {
+            buf = data;
+        } else {
+            buf = await data.exportProto();
+        }
+        // encrypt data
+        const encryptedData = await session.cipher.encrypt(buf);
+        buf = await encryptedData.exportProto();
+        console.log("Server:Send answer");
+        session.connection.sendBytes(new Buffer(buf));
     }
 
     protected async generateIdentity() {

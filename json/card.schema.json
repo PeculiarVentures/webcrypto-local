@@ -1,0 +1,89 @@
+{
+    "title": "JSON schema for card.json files",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "additionalProperties": true,
+    "definitions": {
+        "hexString": {
+            "type": "string",
+            "pattern": "^([0-9a-fA-F]{2})+$"
+        },
+        "card": {
+            "type": "object",
+            "properties": {
+                "atr": {
+                    "description": "ATR ",
+                    "$ref": "#/definitions/hexString"
+                },
+                "mask": {
+                    "description": "mask of card ATR",
+                    "$ref": "#/definitions/hexString"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "readOnly": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "driver": {
+                    "$ref": "#/definitions/hexString",
+                    "description": "GUID of driver"
+                }
+            },
+            "required": [
+                "atr",
+                "name",
+                "driver"
+            ]
+        },
+        "driver": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/hexString",
+                    "description": "GUID for driver"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "file": {
+                    "type": "object",
+                    "description": "List of paths for PKCS#11 libraries",
+                    "properties": {
+                        "windows": {
+                            "type": "string"
+                        },
+                        "linux": {
+                            "type": "string"
+                        },
+                        "osx": {
+                            "type": "string"
+                        }
+                    },
+                    "minProperties": 1
+                }
+            },
+            "required": [
+                "id",
+                "file"
+            ]
+        }
+    },
+    "properties": {
+        "cards": {
+            "description": "List of cards",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/card"
+            }
+        },
+        "drivers": {
+            "description": "List of drivers",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/driver"
+            }
+        }
+    }
+}

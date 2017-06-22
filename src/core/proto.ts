@@ -1,5 +1,5 @@
 import { ArrayBufferConverter, IProtobufScheme, ObjectProto, ProtobufElement, ProtobufProperty } from "tsprotobuf";
-import { ArrayStringConverter, HexStringConverter } from "./convert";
+import { HexStringConverter } from "./protos/converter";
 
 export interface IAlgorithmConvertible {
     toAlgorithm(): Algorithm;
@@ -28,7 +28,7 @@ export class ActionProto extends BaseProto {
     /**
      * Identity of action (needs to link request to response)
      */
-    @ProtobufProperty({ id: ActionProto.INDEX++, type: "string", required: true })
+    @ProtobufProperty({ id: ActionProto.INDEX++, type: "string", required: false })
     public actionId: string;
 
     constructor() {
@@ -140,24 +140,35 @@ export class AlgorithmProto extends BaseAlgorithmProto {
 
 }
 
-@ProtobufElement({ name: "CryptoKey" })
-export class CryptoKeyProto extends BaseProto implements CryptoKey {
+@ProtobufElement({ name: "CryptoItem" })
+export class CryptoItemProto extends BaseProto {
 
     public static INDEX = BaseProto.INDEX;
 
-    @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bytes", required: true, converter: HexStringConverter })
+    @ProtobufProperty({ id: CryptoItemProto.INDEX++, type: "string", required: true })
+    public providerID: string;
+
+    @ProtobufProperty({ id: CryptoItemProto.INDEX++, type: "bytes", required: true, converter: HexStringConverter })
     public id: string;
+
+    @ProtobufProperty({ id: CryptoItemProto.INDEX++, type: "string", required: true })
+    public type: string;
+
+}
+
+@ProtobufElement({ name: "CryptoKey" })
+export class CryptoKeyProto extends CryptoItemProto implements CryptoKey {
+
+    public static INDEX = CryptoItemProto.INDEX;
 
     @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bytes", required: true, parser: AlgorithmProto })
     public algorithm: AlgorithmProto;
 
-    @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "string", required: true })
-    public type: string;
 
     @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bool" })
     public extractable: boolean;
 
-    @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bytes", converter: ArrayStringConverter })
+    @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "string", repeated: true })
     public usages: string[];
 
 }
@@ -172,171 +183,6 @@ export class CryptoKeyPairProto extends BaseProto implements CryptoKeyPair {
 
     @ProtobufProperty({ id: CryptoKeyPairProto.INDEX++, name: "publicKey", type: "bytes", parser: CryptoKeyProto })
     public publicKey: CryptoKeyProto;
-
-}
-
-@ProtobufElement({ name: "GenerateKey" })
-export class GenerateKeyProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-
-    @ProtobufProperty({ id: GenerateKeyProto.INDEX++, type: "bytes", required: true, parser: AlgorithmProto })
-    public algorithm: AlgorithmProto;
-
-    @ProtobufProperty({ id: GenerateKeyProto.INDEX++, type: "bool" })
-    public extractable: boolean;
-
-    @ProtobufProperty({ id: GenerateKeyProto.INDEX++, type: "bytes", required: true, converter: ArrayStringConverter })
-    public usage: string[];
-
-}
-
-@ProtobufElement({ name: "Sign" })
-export class SignProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-
-    @ProtobufProperty({ id: SignProto.INDEX++, required: true, parser: AlgorithmProto })
-    public algorithm: AlgorithmProto;
-
-    @ProtobufProperty({ id: SignProto.INDEX++, required: true, parser: CryptoKeyProto })
-    public key: CryptoKeyProto;
-
-    @ProtobufProperty({ id: SignProto.INDEX++, required: true, converter: ArrayBufferConverter })
-    public data: ArrayBuffer;
-
-}
-
-@ProtobufElement({ name: "Encrypt" })
-export class EncryptProto extends SignProto { }
-
-@ProtobufElement({ name: "Verify" })
-export class VerifyProto extends SignProto {
-
-    public static INDEX = ActionProto.INDEX;
-
-    @ProtobufProperty({ id: SignProto.INDEX++, required: true, converter: ArrayBufferConverter })
-    public signature: ArrayBuffer;
-
-}
-
-@ProtobufElement({ name: "DeriveBits" })
-export class DeriveBitsProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-
-    @ProtobufProperty({ id: DeriveBitsProto.INDEX++, required: true, parser: AlgorithmProto })
-    public algorithm: AlgorithmProto;
-
-    @ProtobufProperty({ id: DeriveBitsProto.INDEX++, required: true, parser: CryptoKeyProto })
-    public key: CryptoKeyProto;
-
-    @ProtobufProperty({ id: DeriveBitsProto.INDEX++, required: true, type: "uint32" })
-    public length: number;
-
-}
-
-@ProtobufElement({ name: "DeriveKey" })
-export class DeriveKeyProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-
-    @ProtobufProperty({ id: DeriveKeyProto.INDEX++, required: true, parser: AlgorithmProto })
-    public algorithm: AlgorithmProto;
-
-    @ProtobufProperty({ id: DeriveKeyProto.INDEX++, required: true, parser: CryptoKeyProto })
-    public key: CryptoKeyProto;
-
-    @ProtobufProperty({ id: DeriveKeyProto.INDEX++, required: true, parser: AlgorithmProto })
-    public derivedKeyType: AlgorithmProto;
-
-    @ProtobufProperty({ id: DeriveKeyProto.INDEX++, type: "bool" })
-    public extractable: boolean;
-
-    @ProtobufProperty({ id: DeriveKeyProto.INDEX++, type: "bytes", required: true, converter: ArrayStringConverter })
-    public usage: string[];
-
-}
-
-@ProtobufElement({ name: "UnwrapKey" })
-export class UnwrapKeyProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-
-    @ProtobufProperty({ id: UnwrapKeyProto.INDEX++, required: true, type: "string" })
-    public format: string;
-
-    @ProtobufProperty({ id: UnwrapKeyProto.INDEX++, required: true, converter: ArrayBufferConverter })
-    public wrappedKey: ArrayBuffer;
-
-    @ProtobufProperty({ id: UnwrapKeyProto.INDEX++, required: true, parser: CryptoKeyProto })
-    public unwrappingKey: CryptoKeyProto;
-
-    @ProtobufProperty({ id: UnwrapKeyProto.INDEX++, required: true, parser: AlgorithmProto })
-    public unwrapAlgorithm: AlgorithmProto;
-
-    @ProtobufProperty({ id: UnwrapKeyProto.INDEX++, required: true, parser: AlgorithmProto })
-    public unwrappedKeyAlgorithm: AlgorithmProto;
-
-    @ProtobufProperty({ id: UnwrapKeyProto.INDEX++, type: "bool" })
-    public extractable: boolean;
-
-    @ProtobufProperty({ id: UnwrapKeyProto.INDEX++, type: "bytes", required: true, converter: ArrayStringConverter })
-    public keyUsage: string[];
-
-}
-
-@ProtobufElement({ name: "WrapKey" })
-export class WrapKeyProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-
-    @ProtobufProperty({ id: WrapKeyProto.INDEX++, required: true, type: "string" })
-    public format: string;
-
-    @ProtobufProperty({ id: WrapKeyProto.INDEX++, required: true, parser: CryptoKeyProto })
-    public key: CryptoKeyProto;
-
-    @ProtobufProperty({ id: WrapKeyProto.INDEX++, required: true, parser: CryptoKeyProto })
-    public wrappingKey: CryptoKeyProto;
-
-    @ProtobufProperty({ id: WrapKeyProto.INDEX++, required: true, parser: AlgorithmProto })
-    public wrapAlgorithm: AlgorithmProto;
-
-}
-
-@ProtobufElement({ name: "Export" })
-export class ExportProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-
-    @ProtobufProperty({ id: ExportProto.INDEX++, type: "string", required: true })
-    public format: string;
-
-    @ProtobufProperty({ id: ExportProto.INDEX++, required: true, parser: CryptoKeyProto })
-    public key: CryptoKeyProto;
-
-}
-
-@ProtobufElement({ name: "Import" })
-export class ImportProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-
-    @ProtobufProperty({ id: ImportProto.INDEX++, type: "string", required: true })
-    public format: string;
-
-    @ProtobufProperty({ id: ImportProto.INDEX++, required: true, converter: ArrayBufferConverter })
-    public keyData: ArrayBuffer;
-
-    @ProtobufProperty({ id: ImportProto.INDEX++, required: true, parser: AlgorithmProto })
-    public algorithm: AlgorithmProto;
-
-    @ProtobufProperty({ id: ImportProto.INDEX++, required: true, type: "bool" })
-    public extractable: boolean;
-
-    @ProtobufProperty({ id: ImportProto.INDEX++, converter: ArrayStringConverter })
-    public keyUsages: string[];
 
 }
 
@@ -376,159 +222,18 @@ export class AuthRequestProto extends ActionProto {
 
 }
 
-// Key storage
-
-@ProtobufElement({ name: "KeyStorageSetItem" })
-export class KeyStorageSetItemProto extends ActionProto {
+@ProtobufElement({})
+export class ServerLoginActionProto extends ActionProto {
 
     public static INDEX = ActionProto.INDEX;
-    public static ACTION = "keyStorageSetItem";
-
-    @ProtobufProperty({ id: KeyStorageSetItemProto.INDEX++, required: true, type: "string" })
-    public key: string;
-
-    @ProtobufProperty({ id: KeyStorageSetItemProto.INDEX++, required: true, parser: CryptoKeyProto })
-    public item: CryptoKeyProto;
+    public static ACTION = "server/login";
 
 }
 
-@ProtobufElement({ name: "KeyStorageGetItem" })
-export class KeyStorageGetItemProto extends ActionProto {
+@ProtobufElement({})
+export class ServerIsLoggedInActionProto extends ActionProto {
 
     public static INDEX = ActionProto.INDEX;
-    public static ACTION = "keyStorageGetItem";
-
-    @ProtobufProperty({ id: KeyStorageGetItemProto.INDEX++, required: true, type: "string" })
-    public key: string;
-
-}
-
-@ProtobufElement({ name: "KeyStorageKeys" })
-export class KeyStorageKeysProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-    public static ACTION = "keyStorageKeys";
-
-}
-
-@ProtobufElement({ name: "KeyStorageRemoveItem" })
-export class KeyStorageRemoveItemProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-    public static ACTION = "keyStorageRemoveItem";
-
-    @ProtobufProperty({ id: KeyStorageRemoveItemProto.INDEX++, required: true, type: "string" })
-    public key: string;
-
-}
-
-// Certificate storage
-
-@ProtobufElement({ name: "CertificateItem" })
-export class CertificateItemProto extends BaseProto {
-
-    public static INDEX = BaseProto.INDEX;
-
-    @ProtobufProperty({ id: CertificateItemProto.INDEX++, required: true, converter: HexStringConverter })
-    public id: string;
-
-    @ProtobufProperty({ id: CertificateItemProto.INDEX++, required: true, parser: CryptoKeyProto })
-    public publicKey: CryptoKeyProto;
-
-    @ProtobufProperty({ id: CertificateItemProto.INDEX++, required: true, type: "string" })
-    public type: string;
-
-    @ProtobufProperty({ id: CertificateItemProto.INDEX++, required: true, converter: ArrayBufferConverter })
-    public value: ArrayBuffer;
-
-}
-
-@ProtobufElement({ name: "X509Certificate" })
-export class X509CertificateProto extends CertificateItemProto implements IX509Certificate {
-
-    public static INDEX = CertificateItemProto.INDEX;
-
-    @ProtobufProperty({ id: X509CertificateProto.INDEX++, required: true, converter: HexStringConverter })
-    public serialNumber: string;
-
-    @ProtobufProperty({ id: X509CertificateProto.INDEX++, required: true, type: "string" })
-    public issuerName: string;
-
-    @ProtobufProperty({ id: X509CertificateProto.INDEX++, required: true, type: "string" })
-    public subjectName: string;
-
-}
-
-@ProtobufElement({ name: "X509Request" })
-export class X509RequestProto extends CertificateItemProto implements IX509Request {
-
-    public static INDEX = CertificateItemProto.INDEX;
-
-    @ProtobufProperty({ id: X509CertificateProto.INDEX++, required: true, type: "string" })
-    public subjectName: string;
-
-}
-
-@ProtobufElement({ name: "CertificateStorageSetItem" })
-export class CertificateStorageSetItemProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-    public static ACTION = "certificateStorage/setItem";
-
-    @ProtobufProperty({ id: CertificateStorageSetItemProto.INDEX++, required: true, type: "string" })
-    public key: string;
-
-    @ProtobufProperty({ id: CertificateStorageSetItemProto.INDEX++, required: true, parser: CertificateItemProto })
-    public item: CertificateItemProto;
-
-}
-
-@ProtobufElement({ name: "CertificateStorageGetItem" })
-export class CertificateStorageGetItemProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-    public static ACTION = "certificateStorage/getItem";
-
-    @ProtobufProperty({ id: CertificateStorageGetItemProto.INDEX++, required: true, type: "string" })
-    public key: string;
-
-}
-
-@ProtobufElement({ name: "CertificateStorageKeys" })
-export class CertificateStorageKeysProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-    public static ACTION = "certificateStorage/keys";
-
-}
-
-@ProtobufElement({ name: "CertificateStorageRemoveItem" })
-export class CertificateStorageRemoveItemProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-    public static ACTION = "certificateStorage/removeItem";
-
-    @ProtobufProperty({ id: CertificateStorageRemoveItemProto.INDEX++, required: true, type: "string" })
-    public key: string;
-
-}
-
-@ProtobufElement({ name: "CertificateStorageImport" })
-export class CertificateStorageImportProto extends ActionProto {
-
-    public static INDEX = ActionProto.INDEX;
-    public static ACTION = "certificateStorage/import";
-
-    @ProtobufProperty({ id: CertificateStorageImportProto.INDEX++, required: true, type: "string" })
-    public type: string;
-
-    @ProtobufProperty({ id: CertificateStorageImportProto.INDEX++, required: true, converter: ArrayBufferConverter })
-    public data: ArrayBuffer;
-
-    @ProtobufProperty({ id: CertificateStorageImportProto.INDEX++, required: true, parser: AlgorithmProto })
-    public algorithm: AlgorithmProto;
-
-    @ProtobufProperty({ id: CertificateStorageImportProto.INDEX++, required: true, converter: ArrayStringConverter })
-    public keyUsages: string[];
+    public static ACTION = "server/isLoggedIn";
 
 }
