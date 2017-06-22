@@ -4,11 +4,7 @@
 
 ## UI
 
-<<<<<<< HEAD
-`webcrypto-local` is a cross platform service that provides access to PKCS#11 implementations over a `ProtoBuf` based protocol, the client end of this protocol is implemented in a WebCrypto polyfill we call `webcrypto-socket`. This protocol provides for message confidentiality and integrity via `2key-ratchet` and implements a security policy mechanism that allows the user to approve which peers can interact with it. 
-=======
 #### Quick Development Start
->>>>>>> application
 
  * Clone latest version this repository
  * `npm install`
