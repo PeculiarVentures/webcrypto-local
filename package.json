@@ -84,13 +84,9 @@
     "@types/node-notifier": "0.0.28",
     "@types/request": "0.0.44",
     "@types/websocket": "^0.0.33",
-<<<<<<< HEAD
-    "@types/long": "^3.0.31",
-=======
     "asn1js": "^2.0.15",
     "event-emitter": "^0.3.5",
     "graphene-pk11": "^2.0.25",
->>>>>>> application
     "idb": "^2.0.0",
     "node-notifier": "^5.0.2",
     "node-webcrypto-ossl": "^1.0.24",
