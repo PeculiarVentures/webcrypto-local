@@ -12,20 +12,20 @@ import { SocketCrypto } from "./crypto";
 
 export class SocketCertificateStorage implements ICertificateStorage {
 
-    protected readonly service: SocketCrypto;
+    protected readonly provider: SocketCrypto;
 
-    constructor(service: SocketCrypto) {
-        this.service = service;
+    constructor(provider: SocketCrypto) {
+        this.provider = provider;
     }
 
     public async indexOf(item: CryptoCertificateProto): Promise<string> {
         // prepare request
         const proto = new CertificateStorageIndexOfActionProto();
-        proto.providerID = this.service.id;
+        proto.providerID = this.provider.id;
         proto.item = item;
 
         // send and receive result
-        const result = await this.service.client.send(proto);
+        const result = await this.provider.client.send(proto);
         return result ? Convert.ToUtf8String(result) : null;
     }
 
@@ -35,13 +35,13 @@ export class SocketCertificateStorage implements ICertificateStorage {
     public async exportCert(format: CryptoCertificateFormat, item: CryptoCertificateProto): Promise<ArrayBuffer | string> {
         // prepare request
         const proto = new CertificateStorageExportActionProto();
-        proto.providerID = this.service.id;
+        proto.providerID = this.provider.id;
 
         proto.format = "raw"; // export only 'raw' format
         proto.item = item;
 
         // send and receive result
-        const result = await this.service.client.send(proto);
+        const result = await this.provider.client.send(proto);
 
         // prepare result
         if (format === "raw") {
@@ -87,27 +87,27 @@ export class SocketCertificateStorage implements ICertificateStorage {
 
         // prepare request
         const proto = new CertificateStorageImportActionProto();
-        proto.providerID = this.service.id;
+        proto.providerID = this.provider.id;
         proto.type = type;
         proto.data = data;
         proto.algorithm.fromAlgorithm(alg);
         proto.keyUsages = keyUsages;
 
         // send and receive result
-        const result = await this.service.client.send(proto);
+        const result = await this.provider.client.send(proto);
 
         // prepare result
         const certItem = await CryptoCertificateProto.importProto(result);
-        return prepareCertItem(certItem);
+        return this.prepareCertItem(certItem) as any;
     }
 
     public async keys() {
         // prepare request
         const proto = new CertificateStorageKeysActionProto();
-        proto.providerID = this.service.id;
+        proto.providerID = this.provider.id;
 
         // send and receive data
-        const result = await this.service.client.send(proto);
+        const result = await this.provider.client.send(proto);
 
         // prepare result
         if (result) {
@@ -122,7 +122,7 @@ export class SocketCertificateStorage implements ICertificateStorage {
     public async getItem(key: string, algorithm?: Algorithm, keyUsages?: string[]) {
         // prepare request
         const proto = new CertificateStorageGetItemActionProto();
-        proto.providerID = this.service.id;
+        proto.providerID = this.provider.id;
         proto.key = key;
 
         if (algorithm) {
@@ -132,12 +132,12 @@ export class SocketCertificateStorage implements ICertificateStorage {
         }
 
         // send and receive result
-        const result = await this.service.client.send(proto);
+        const result = await this.provider.client.send(proto);
 
         // prepare result
         if (result && result.byteLength) {
             const certItem = await CryptoCertificateProto.importProto(result);
-            return prepareCertItem(certItem);
+            return this.prepareCertItem(certItem);
         }
         return null;
     }
@@ -145,41 +145,41 @@ export class SocketCertificateStorage implements ICertificateStorage {
     public async setItem(value: CryptoCertificateProto) {
         // prepare request
         const proto = new CertificateStorageSetItemActionProto();
-        proto.providerID = this.service.id;
+        proto.providerID = this.provider.id;
         proto.item = value;
 
         // send and receive result
-        const data = await this.service.client.send(proto);
+        const data = await this.provider.client.send(proto);
         return Convert.ToUtf8String(data);
     }
 
     public async removeItem(key: string) {
         // prepare request
         const proto = new CertificateStorageRemoveItemActionProto();
-        proto.providerID = this.service.id;
+        proto.providerID = this.provider.id;
         proto.key = key;
 
         // send and receive result
-        await this.service.client.send(proto);
+        await this.provider.client.send(proto);
     }
 
     public async clear() {
         // prepare request
         const proto = new CertificateStorageClearActionProto();
-        proto.providerID = this.service.id;
+        proto.providerID = this.provider.id;
 
         // send and receive result
-        await this.service.client.send(proto);
+        await this.provider.client.send(proto);
     }
 
     public async getChain(value: CryptoCertificateProto) {
         // prepare request
         const proto = new CertificateStorageGetChainActionProto();
-        proto.providerID = this.service.id;
+        proto.providerID = this.provider.id;
         proto.item = value;
 
         // send and receive result
-        const data = await this.service.client.send(proto);
+        const data = await this.provider.client.send(proto);
         const resultProto = await CertificateStorageGetChainResultProto.importProto(data);
         return resultProto.items;
     }
@@ -187,18 +187,18 @@ export class SocketCertificateStorage implements ICertificateStorage {
     public async getCRL(url: string) {
         // prepare request
         const proto = new CertificateStorageGetCRLActionProto();
-        proto.providerID = this.service.id;
+        proto.providerID = this.provider.id;
         proto.url = url;
 
         // send and receive result
-        const data = await this.service.client.send(proto);
+        const data = await this.provider.client.send(proto);
         return data;
     }
 
     public async getOCSP(url: string, request: ArrayBuffer, options?: OCSPRequestOptions) {
         // prepare request
         const proto = new CertificateStorageGetOCSPActionProto();
-        proto.providerID = this.service.id;
+        proto.providerID = this.provider.id;
         proto.url = url;
         proto.request = request;
 
@@ -210,21 +210,27 @@ export class SocketCertificateStorage implements ICertificateStorage {
         }
 
         // send and receive result
-        const data = await this.service.client.send(proto);
+        const data = await this.provider.client.send(proto);
         return data;
     }
-}
 
-async function prepareCertItem(item: CryptoCertificateProto) {
-    const raw = await item.exportProto();
-    switch (item.type) {
-        case "x509": {
-            return await CryptoX509CertificateProto.importProto(raw);
+    protected async prepareCertItem(item: CryptoCertificateProto) {
+        const raw = await item.exportProto();
+        let result: CryptoCertificateProto;
+        switch (item.type) {
+            case "x509": {
+                result = await CryptoX509CertificateProto.importProto(raw);
+                break;
+            }
+            case "request": {
+                result = await CryptoX509CertificateRequestProto.importProto(raw);
+                break;
+            }
+            default:
+                throw new Error(`Unsupported CertificateItem type '${item.type}'`);
         }
-        case "request": {
-            return await CryptoX509CertificateRequestProto.importProto(raw);
-        }
-        default:
-            throw new Error(`Unsupported CertificateItem type '${item.type}'`);
+        (result as any).provider = this.provider;
+        return result;
     }
+
 }

@@ -9,7 +9,7 @@ export class SocketCrypto implements Crypto {
     public id: string;
     public subtle: SocketSubtleCrypto;
     public keyStorage: IKeyStorage;
-    public certStorage: ICertificateStorage;
+    public certStorage: SocketCertificateStorage;
 
     public client: Client;
 

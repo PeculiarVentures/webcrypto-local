@@ -53,9 +53,10 @@
                         // TestCertStorageClear();
                         // TestCertStorageGetItemCert("x509-c53021e4c84bd1a9e9dee840ba6a169f77928f91");
                         // TestReset()
-                        // TestGetChain()
+                        TestGetChain()
                         // TestGetCRL()
-                        TestGetOCSP()
+                        // TestGetOCSP()
+                        // TestChainBuilder()
                     })
                     .catch((err) => {
                         console.error(err);
@@ -902,7 +903,7 @@
                 });
         }
         function TestGetChain() {
-            const certIndex = 0;
+            const certIndex = 5;
             ws.info()
                 .then((info) => {
                     const provider = info.providers[PROVIDER_ID];
@@ -923,10 +924,12 @@
                             return crypto.certStorage.getItem(keys[certIndex]);
                         })
                         .then((item) => {
+                            console.log(item);
+                            console.log(item.subjectName);
                             return crypto.certStorage.getChain(item);
                         })
                         .then((chain) => {
-                            console.log(chain);
+                            console.log(JSON.stringify(chain, null, "  "));
                         })
                 })
                 .catch((err) => {
@@ -981,6 +984,37 @@
                         })
                         .then((ocsp) => {
                             console.log(ocsp);
+                        })
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+
+        function TestChainBuilder() {
+            const certIndex = 5;
+            ws.info()
+                .then((info) => {
+                    const provider = info.providers[PROVIDER_ID];
+                    console.log("Provider:", provider);
+                    return ws.getCrypto(provider.id);
+                })
+                .then((crypto) => {
+                    return crypto.isLoggedIn()
+                        .then((ok) => {
+                            if (!ok) {
+                                return crypto.login();
+                            }
+                        })
+                        .then(() => {
+                            return crypto.certStorage.keys()
+                        })
+                        .then((keys) => {
+                            return crypto.certStorage.getItem(keys[certIndex]);
+                        })
+                        .then((item) => {
+                            console.log(item);
+                            return WebcryptoSocket.ChainBuild(item);
                         })
                 })
                 .catch((err) => {

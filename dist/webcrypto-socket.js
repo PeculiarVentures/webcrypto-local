@@ -1,7 +1,7 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('protobufjs')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'protobufjs'], factory) :
-	(factory((global.WebcryptoSocket = global.WebcryptoSocket || {}),global.protobuf));
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('protobufjs')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'protobufjs'], factory) :
+  (factory((global.WebcryptoSocket = global.WebcryptoSocket || {}),global.protobuf));
 }(this, (function (exports,protobufjs) { 'use strict';
 
 /*! *****************************************************************************
@@ -93,8 +93,6 @@ EventHandlers.prototype = Object.create(null);
 function EventEmitter() {
   EventEmitter.init.call(this);
 }
-// nodejs oddity
-// require('events') === require('events').EventEmitter
 EventEmitter.EventEmitter = EventEmitter;
 
 EventEmitter.usingDomains = false;
@@ -553,84 +551,6 @@ function unwrapListeners(arr) {
   return ret;
 }
 
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
-
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
-
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
-***************************************************************************** */
-/* global Reflect, Promise */
-
-var extendStatics$1 = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
-function __extends$1(d, b) {
-    extendStatics$1(d, b);
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-
-
-
-
-function __decorate$1(decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-}
-
-
-
-
-
-function __awaiter$1(thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-}
-
-function __generator$1(thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-}
-
 function PrepareBuffer(buffer) {
     if (typeof Buffer !== "undefined") {
         return new Uint8Array(buffer);
@@ -816,18 +736,17 @@ var ArrayBufferConverter = (function () {
     ArrayBufferConverter.set = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Uint8Array(value)];
+                return [2, new Uint8Array(value)];
             });
         });
     };
     ArrayBufferConverter.get = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, value.buffer];
+                return [2, new Uint8Array(value).buffer];
             });
         });
     };
-    
     return ArrayBufferConverter;
 }());
 function ProtobufElement(params) {
@@ -910,10 +829,10 @@ var ObjectProto = (function () {
                 switch (_a.label) {
                     case 0:
                         res = new this();
-                        return [4 /*yield*/, res.importProto(data)];
+                        return [4, res.importProto(data)];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/, res];
+                        return [2, res];
                 }
             });
         });
@@ -944,41 +863,40 @@ var ObjectProto = (function () {
     };
     ObjectProto.prototype.importProto = function (data) {
         return __awaiter(this, void 0, void 0, function () {
-            var thisStatic, that, scheme, raw, _a, _b, _i, key, item, schemeValues, setValue, _c, schemeValues_1, schemeValue, parser;
-            return __generator(this, function (_d) {
-                switch (_d.label) {
+            var thisStatic, that, scheme, raw, _a, _b, _i, key, item, schemeValues, _c, schemeValues_1, schemeValue, _d, _e, _f, _g;
+            return __generator(this, function (_h) {
+                switch (_h.label) {
                     case 0:
                         thisStatic = this.constructor;
                         that = this;
-                        if (!(data instanceof ObjectProto)) return [3 /*break*/, 2];
-                        return [4 /*yield*/, data.exportProto()];
+                        if (!(data instanceof ObjectProto)) return [3, 2];
+                        return [4, data.exportProto()];
                     case 1:
-                        raw = _d.sent();
-                        return [3 /*break*/, 3];
+                        raw = _h.sent();
+                        return [3, 3];
                     case 2:
                         raw = data;
-                        _d.label = 3;
+                        _h.label = 3;
                     case 3:
                         try {
                             scheme = thisStatic.protobuf.decode(new Uint8Array(raw)).toObject();
                         }
                         catch (e) {
-                            throw new Error("Error: Cannot decode message for " + thisStatic.localName + ".\n$ProtobufError: {e.message}");
+                            throw new Error("Error: Cannot decode message for " + thisStatic.localName + ".\n$ProtobufError: " + e.message);
                         }
                         _a = [];
                         for (_b in thisStatic.items)
                             _a.push(_b);
                         _i = 0;
-                        _d.label = 4;
+                        _h.label = 4;
                     case 4:
-                        if (!(_i < _a.length)) return [3 /*break*/, 17];
+                        if (!(_i < _a.length)) return [3, 11];
                         key = _a[_i];
                         item = thisStatic.items[key];
                         schemeValues = scheme[item.name];
                         if (ArrayBuffer.isView(schemeValues)) {
                             schemeValues = new Uint8Array(schemeValues);
                         }
-                        setValue = void 0;
                         if (!Array.isArray(schemeValues)) {
                             if (item.repeated) {
                                 that[key] = schemeValues = [];
@@ -987,72 +905,48 @@ var ObjectProto = (function () {
                                 schemeValues = [schemeValues];
                             }
                         }
+                        if (item.repeated && !that[key]) {
+                            that[key] = [];
+                        }
                         _c = 0, schemeValues_1 = schemeValues;
-                        _d.label = 5;
+                        _h.label = 5;
                     case 5:
-                        if (!(_c < schemeValues_1.length)) return [3 /*break*/, 16];
+                        if (!(_c < schemeValues_1.length)) return [3, 10];
                         schemeValue = schemeValues_1[_c];
-                        if (!item.parser) return [3 /*break*/, 9];
-                        parser = item.parser;
-                        if (!(schemeValue && schemeValue.byteLength)) return [3 /*break*/, 7];
-                        return [4 /*yield*/, parser.importProto(new Uint8Array(schemeValue).buffer)];
+                        if (!item.repeated) return [3, 7];
+                        _e = (_d = that[key]).push;
+                        return [4, this.importItem(item, schemeValue)];
                     case 6:
-                        setValue = _d.sent();
-                        return [3 /*break*/, 8];
+                        _e.apply(_d, [_h.sent()]);
+                        return [3, 9];
                     case 7:
-                        if (item.required) {
-                            throw new Error("Error: Parameter '" + item.name + "' is required in '" + thisStatic.localName + "' protobuf message.");
-                        }
-                        _d.label = 8;
-                    case 8: return [3 /*break*/, 14];
+                        _f = that;
+                        _g = key;
+                        return [4, this.importItem(item, schemeValue)];
+                    case 8:
+                        _f[_g] = _h.sent();
+                        _h.label = 9;
                     case 9:
-                        if (!item.converter) return [3 /*break*/, 13];
-                        if (!(schemeValue && schemeValue.byteLength)) return [3 /*break*/, 11];
-                        return [4 /*yield*/, item.converter.get(schemeValue)];
-                    case 10:
-                        setValue = _d.sent();
-                        return [3 /*break*/, 12];
-                    case 11:
-                        if (item.required) {
-                            throw new Error("Error: Parameter '" + item.name + "' is required in '" + thisStatic.localName + "' protobuf message.");
-                        }
-                        _d.label = 12;
-                    case 12: return [3 /*break*/, 14];
-                    case 13:
-                        setValue = schemeValue;
-                        _d.label = 14;
-                    case 14:
-                        if (item.repeated) {
-                            if (!that[key]) {
-                                that[key] = [];
-                            }
-                            that[key].push(setValue);
-                        }
-                        else {
-                            that[key] = setValue;
-                        }
-                        _d.label = 15;
-                    case 15:
                         _c++;
-                        return [3 /*break*/, 5];
-                    case 16:
+                        return [3, 5];
+                    case 10:
                         _i++;
-                        return [3 /*break*/, 4];
-                    case 17:
+                        return [3, 4];
+                    case 11:
                         this.raw = raw;
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
     };
     ObjectProto.prototype.exportProto = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var thisStatic, that, protobuf, _a, _b, _i, key, item, values, _c, values_1, value, protobufValue, obj, raw;
+            var thisStatic, that, protobuf, _a, _b, _i, key, item, values, _c, values_1, value, protobufValue;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
                         if (!this.hasChanged()) {
-                            return [2 /*return*/, this.raw];
+                            return [2, this.raw];
                         }
                         thisStatic = this.constructor;
                         that = this;
@@ -1063,7 +957,7 @@ var ObjectProto = (function () {
                         _i = 0;
                         _d.label = 1;
                     case 1:
-                        if (!(_i < _a.length)) return [3 /*break*/, 11];
+                        if (!(_i < _a.length)) return [3, 6];
                         key = _a[_i];
                         item = thisStatic.items[key];
                         values = that[key];
@@ -1073,39 +967,11 @@ var ObjectProto = (function () {
                         _c = 0, values_1 = values;
                         _d.label = 2;
                     case 2:
-                        if (!(_c < values_1.length)) return [3 /*break*/, 10];
+                        if (!(_c < values_1.length)) return [3, 5];
                         value = values_1[_c];
-                        protobufValue = void 0;
-                        if (!item.parser) return [3 /*break*/, 4];
-                        obj = value;
-                        return [4 /*yield*/, obj.exportProto()];
+                        return [4, this.exportItem(item, value)];
                     case 3:
-                        raw = _d.sent();
-                        if (item.required && !raw) {
-                            throw new Error("Error: Paramter '" + key + "' is required in '" + thisStatic.localName + "' protobuf message.");
-                        }
-                        if (raw) {
-                            protobufValue = new Uint8Array(raw);
-                        }
-                        return [3 /*break*/, 8];
-                    case 4:
-                        if (item.required && value === void 0) {
-                            throw new Error("Error: Paramter '" + key + "' is required in '" + thisStatic.localName + "' protobuf message.");
-                        }
-                        if (!item.converter) return [3 /*break*/, 7];
-                        if (!value) return [3 /*break*/, 6];
-                        return [4 /*yield*/, item.converter.set(value)];
-                    case 5:
                         protobufValue = _d.sent();
-                        _d.label = 6;
-                    case 6: return [3 /*break*/, 8];
-                    case 7:
-                        if (value instanceof ArrayBuffer) {
-                            value = new Uint8Array(value);
-                        }
-                        protobufValue = value;
-                        _d.label = 8;
-                    case 8:
                         if (item.repeated) {
                             if (!protobuf[item.name]) {
                                 protobuf[item.name] = [];
@@ -1115,16 +981,98 @@ var ObjectProto = (function () {
                         else {
                             protobuf[item.name] = protobufValue;
                         }
-                        _d.label = 9;
-                    case 9:
+                        _d.label = 4;
+                    case 4:
                         _c++;
-                        return [3 /*break*/, 2];
-                    case 10:
+                        return [3, 2];
+                    case 5:
                         _i++;
-                        return [3 /*break*/, 1];
-                    case 11:
+                        return [3, 1];
+                    case 6:
                         this.raw = new Uint8Array(thisStatic.protobuf.encode(protobuf).finish()).buffer;
-                        return [2 /*return*/, this.raw];
+                        return [2, this.raw];
+                }
+            });
+        });
+    };
+    ObjectProto.prototype.exportItem = function (template, value) {
+        return __awaiter(this, void 0, void 0, function () {
+            var thisStatic, result, obj, raw;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        thisStatic = this.constructor;
+                        if (!template.parser) return [3, 2];
+                        obj = value;
+                        return [4, obj.exportProto()];
+                    case 1:
+                        raw = _a.sent();
+                        if (template.required && !raw) {
+                            throw new Error("Error: Paramter '" + template.name + "' is required in '" + thisStatic.localName + "' protobuf message.");
+                        }
+                        if (raw) {
+                            result = new Uint8Array(raw);
+                        }
+                        return [3, 6];
+                    case 2:
+                        if (template.required && value === void 0) {
+                            throw new Error("Error: Paramter '" + template.name + "' is required in '" + thisStatic.localName + "' protobuf message.");
+                        }
+                        if (!template.converter) return [3, 5];
+                        if (!value) return [3, 4];
+                        return [4, template.converter.set(value)];
+                    case 3:
+                        result = _a.sent();
+                        _a.label = 4;
+                    case 4: return [3, 6];
+                    case 5:
+                        if (value instanceof ArrayBuffer) {
+                            value = new Uint8Array(value);
+                        }
+                        result = value;
+                        _a.label = 6;
+                    case 6: return [2, result];
+                }
+            });
+        });
+    };
+    ObjectProto.prototype.importItem = function (template, value) {
+        return __awaiter(this, void 0, void 0, function () {
+            var thisStatic, result, parser;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        thisStatic = this.constructor;
+                        if (!template.parser) return [3, 4];
+                        parser = template.parser;
+                        if (!(value && value.byteLength)) return [3, 2];
+                        return [4, parser.importProto(new Uint8Array(value).buffer)];
+                    case 1:
+                        result = _a.sent();
+                        return [3, 3];
+                    case 2:
+                        if (template.required) {
+                            throw new Error("Error: Parameter '" + template.name + "' is required in '" + thisStatic.localName + "' protobuf message.");
+                        }
+                        _a.label = 3;
+                    case 3: return [3, 9];
+                    case 4:
+                        if (!template.converter) return [3, 8];
+                        if (!(value && value.byteLength)) return [3, 6];
+                        return [4, template.converter.get(value)];
+                    case 5:
+                        result = _a.sent();
+                        return [3, 7];
+                    case 6:
+                        if (template.required) {
+                            throw new Error("Error: Parameter '" + template.name + "' is required in '" + thisStatic.localName + "' protobuf message.");
+                        }
+                        _a.label = 7;
+                    case 7: return [3, 9];
+                    case 8:
+                        result = value;
+                        _a.label = 9;
+                    case 9: return [2, result];
                 }
             });
         });
@@ -1164,9 +1112,9 @@ var Curve = (function () {
     function Curve() {
     }
     Curve.generateKeyPair = function (type) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var name, usage, keys, publicKey, res;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         name = type;
@@ -1193,16 +1141,16 @@ var Curve = (function () {
         return crypto$1.subtle.verify({ name: "ECDSA", hash: this.DIGEST_ALGORITHM }, signingKey.key, signature, message);
     };
     Curve.sign = function (signingKey, message) {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 return [2, crypto$1.subtle.sign({ name: "ECDSA", hash: this.DIGEST_ALGORITHM }, signingKey, message)];
             });
         });
     };
     Curve.ecKeyPairToJson = function (key) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var _a;
-            return __generator$1(this, function (_b) {
+            return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _a = {
@@ -1217,9 +1165,9 @@ var Curve = (function () {
         });
     };
     Curve.ecKeyPairFromJson = function (keys) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var _a;
-            return __generator$1(this, function (_b) {
+            return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _a = {
@@ -1263,8 +1211,8 @@ var Secret = (function () {
         return crypto$1.subtle.importKey("raw", raw, AES_ALGORITHM, false, ["encrypt", "decrypt"]);
     };
     Secret.sign = function (key, data) {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, crypto$1.subtle.sign({ name: HMAC_NAME, hash: HASH_NAME }, key, data)];
                     case 1: return [2, _a.sent()];
@@ -1275,9 +1223,9 @@ var Secret = (function () {
     Secret.HKDF = function (IKM, keysCount, salt, info) {
         if (keysCount === void 0) { keysCount = 1; }
         if (info === void 0) { info = new ArrayBuffer(0); }
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var PRKBytes, infoBuffer, infoArray, PRK, T, i, _a, _b;
-            return __generator$1(this, function (_c) {
+            return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
                         if (!!salt) return [3, 2];
@@ -1320,9 +1268,9 @@ var ECPublicKey = (function () {
     function ECPublicKey() {
     }
     ECPublicKey.create = function (publicKey) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var res, algName, jwk, x, y, xy, _a;
-            return __generator$1(this, function (_b) {
+            return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         res = new this();
@@ -1351,9 +1299,9 @@ var ECPublicKey = (function () {
         });
     };
     ECPublicKey.importKey = function (bytes, type) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var x, y, jwk, usage, key, res;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         x = Convert.ToBase64Url(bytes.slice(0, 32));
@@ -1381,9 +1329,9 @@ var ECPublicKey = (function () {
         return this.serialized;
     };
     ECPublicKey.prototype.thumbprint = function () {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var bytes, thumbprint;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, this.serialize()];
                     case 1:
@@ -1397,8 +1345,8 @@ var ECPublicKey = (function () {
         });
     };
     ECPublicKey.prototype.isEqual = function (other) {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 if (!(other && other instanceof ECPublicKey)) {
                     return [2, false];
                 }
@@ -1418,9 +1366,9 @@ var Identity = (function () {
         this.signedPreKeys = [];
     }
     Identity.fromJSON = function (obj) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var signingKey, exchangeKey, res;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, Curve.ecKeyPairFromJson(obj.signingKey)];
                     case 1:
@@ -1441,9 +1389,9 @@ var Identity = (function () {
     Identity.create = function (id, signedPreKeyAmount, preKeyAmount) {
         if (signedPreKeyAmount === void 0) { signedPreKeyAmount = 0; }
         if (preKeyAmount === void 0) { preKeyAmount = 0; }
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var signingKey, exchangeKey, res, i, _a, _b, i, _c, _d;
-            return __generator$1(this, function (_e) {
+            return __generator(this, function (_e) {
                 switch (_e.label) {
                     case 0: return [4, Curve.generateKeyPair(SIGN_ALGORITHM_NAME)];
                     case 1:
@@ -1484,9 +1432,9 @@ var Identity = (function () {
         });
     };
     Identity.prototype.toJSON = function () {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var preKeys, signedPreKeys, _i, _a, key, _b, _c, _d, _e, key, _f, _g, _h;
-            return __generator$1(this, function (_j) {
+            return __generator(this, function (_j) {
                 switch (_j.label) {
                     case 0:
                         preKeys = [];
@@ -1536,9 +1484,9 @@ var Identity = (function () {
         });
     };
     Identity.prototype.fromJSON = function (obj) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var _a, _b, _i, _c, key, _d, _e, _f, _g, key, _h, _j;
-            return __generator$1(this, function (_k) {
+            return __generator(this, function (_k) {
                 switch (_k.label) {
                     case 0:
                         this.id = obj.id;
@@ -1596,9 +1544,9 @@ var RemoteIdentity = (function () {
         return res;
     };
     RemoteIdentity.fromJSON = function (obj) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var res;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         res = new this();
@@ -1620,9 +1568,9 @@ var RemoteIdentity = (function () {
         return Curve.verify(this.signingKey, this.exchangeKey.serialize(), this.signature);
     };
     RemoteIdentity.prototype.toJSON = function () {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var _a;
-            return __generator$1(this, function (_b) {
+            return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _a = {
@@ -1644,9 +1592,9 @@ var RemoteIdentity = (function () {
         });
     };
     RemoteIdentity.prototype.fromJSON = function (obj) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var _a, _b, ok;
-            return __generator$1(this, function (_c) {
+            return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
                         this.id = obj.id;
@@ -1675,16 +1623,16 @@ var RemoteIdentity = (function () {
 }());
 
 var BaseProtocol = (function (_super) {
-    __extends$1(BaseProtocol, _super);
+    __extends(BaseProtocol, _super);
     function BaseProtocol() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     return BaseProtocol;
 }(ObjectProto));
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 0, type: "uint32", defaultValue: 1 })
 ], BaseProtocol.prototype, "version", void 0);
-BaseProtocol = __decorate$1([
+BaseProtocol = __decorate([
     ProtobufElement({ name: "Base" })
 ], BaseProtocol);
 
@@ -1692,15 +1640,15 @@ var ECDSAPublicKeyConverter = (function () {
     function ECDSAPublicKeyConverter() {
     }
     ECDSAPublicKeyConverter.set = function (value) {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 return [2, new Uint8Array(value.serialize())];
             });
         });
     };
     ECDSAPublicKeyConverter.get = function (value) {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 return [2, ECPublicKey.importKey(value.buffer, "ECDSA")];
             });
         });
@@ -1711,15 +1659,15 @@ var ECDHPublicKeyConverter = (function () {
     function ECDHPublicKeyConverter() {
     }
     ECDHPublicKeyConverter.set = function (value) {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 return [2, new Uint8Array(value.serialize())];
             });
         });
     };
     ECDHPublicKeyConverter.get = function (value) {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 return [2, ECPublicKey.importKey(value.buffer, "ECDH")];
             });
         });
@@ -1730,15 +1678,15 @@ var DateConverter = (function () {
     function DateConverter() {
     }
     DateConverter.set = function (value) {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 return [2, new Uint8Array(Convert.FromString(value.toISOString()))];
             });
         });
     };
     DateConverter.get = function (value) {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 return [2, new Date(Convert.ToString(value))];
             });
         });
@@ -1747,14 +1695,14 @@ var DateConverter = (function () {
 }());
 
 var IdentityProtocol = IdentityProtocol_1 = (function (_super) {
-    __extends$1(IdentityProtocol, _super);
+    __extends(IdentityProtocol, _super);
     function IdentityProtocol() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     IdentityProtocol.fill = function (identity) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var res;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         res = new IdentityProtocol_1();
@@ -1767,9 +1715,9 @@ var IdentityProtocol = IdentityProtocol_1 = (function (_super) {
         });
     };
     IdentityProtocol.prototype.sign = function (key) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var _a;
-            return __generator$1(this, function (_b) {
+            return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _a = this;
@@ -1782,8 +1730,8 @@ var IdentityProtocol = IdentityProtocol_1 = (function (_super) {
         });
     };
     IdentityProtocol.prototype.verify = function () {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, Curve.verify(this.signingKey, this.exchangeKey.serialize(), this.signature)];
                     case 1: return [2, _a.sent()];
@@ -1792,8 +1740,8 @@ var IdentityProtocol = IdentityProtocol_1 = (function (_super) {
         });
     };
     IdentityProtocol.prototype.fill = function (identity) {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         this.signingKey = identity.signingKey.publicKey;
@@ -1809,55 +1757,55 @@ var IdentityProtocol = IdentityProtocol_1 = (function (_super) {
     };
     return IdentityProtocol;
 }(BaseProtocol));
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 1, converter: ECDSAPublicKeyConverter })
 ], IdentityProtocol.prototype, "signingKey", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 2, converter: ECDHPublicKeyConverter })
 ], IdentityProtocol.prototype, "exchangeKey", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 3 })
 ], IdentityProtocol.prototype, "signature", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 4, converter: DateConverter })
 ], IdentityProtocol.prototype, "createdAt", void 0);
-IdentityProtocol = IdentityProtocol_1 = __decorate$1([
+IdentityProtocol = IdentityProtocol_1 = __decorate([
     ProtobufElement({ name: "Identity" })
 ], IdentityProtocol);
 var IdentityProtocol_1;
 
 var MessageProtocol = (function (_super) {
-    __extends$1(MessageProtocol, _super);
+    __extends(MessageProtocol, _super);
     function MessageProtocol() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     return MessageProtocol;
 }(BaseProtocol));
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 1, converter: ECDHPublicKeyConverter, required: true })
 ], MessageProtocol.prototype, "senderRatchetKey", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 2, type: "uint32", required: true })
 ], MessageProtocol.prototype, "counter", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 3, type: "uint32", required: true })
 ], MessageProtocol.prototype, "previousCounter", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 4, converter: ArrayBufferConverter, required: true })
 ], MessageProtocol.prototype, "cipherText", void 0);
-MessageProtocol = __decorate$1([
+MessageProtocol = __decorate([
     ProtobufElement({ name: "Message" })
 ], MessageProtocol);
 
 var MessageSignedProtocol = (function (_super) {
-    __extends$1(MessageSignedProtocol, _super);
+    __extends(MessageSignedProtocol, _super);
     function MessageSignedProtocol() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     MessageSignedProtocol.prototype.sign = function (hmacKey) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var _a;
-            return __generator$1(this, function (_b) {
+            return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _a = this;
@@ -1870,9 +1818,9 @@ var MessageSignedProtocol = (function (_super) {
         });
     };
     MessageSignedProtocol.prototype.verify = function (hmacKey) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var signature;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, this.signHMAC(hmacKey)];
                     case 1:
@@ -1883,9 +1831,9 @@ var MessageSignedProtocol = (function (_super) {
         });
     };
     MessageSignedProtocol.prototype.getSignedRaw = function () {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var receiverKey, senderKey, message, data;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         receiverKey = this.receiverKey.serialize();
@@ -1900,9 +1848,9 @@ var MessageSignedProtocol = (function (_super) {
         });
     };
     MessageSignedProtocol.prototype.signHMAC = function (macKey) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var data, signature;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, this.getSignedRaw()];
                     case 1:
@@ -1917,74 +1865,74 @@ var MessageSignedProtocol = (function (_super) {
     };
     return MessageSignedProtocol;
 }(BaseProtocol));
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 1, converter: ECDSAPublicKeyConverter, required: true })
 ], MessageSignedProtocol.prototype, "senderKey", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 2, parser: MessageProtocol, required: true })
 ], MessageSignedProtocol.prototype, "message", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 3, required: true })
 ], MessageSignedProtocol.prototype, "signature", void 0);
-MessageSignedProtocol = __decorate$1([
+MessageSignedProtocol = __decorate([
     ProtobufElement({ name: "MessageSigned" })
 ], MessageSignedProtocol);
 
 var PreKeyMessageProtocol = (function (_super) {
-    __extends$1(PreKeyMessageProtocol, _super);
+    __extends(PreKeyMessageProtocol, _super);
     function PreKeyMessageProtocol() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     return PreKeyMessageProtocol;
 }(BaseProtocol));
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 1, type: "uint32", required: true })
 ], PreKeyMessageProtocol.prototype, "registrationId", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 2, type: "uint32" })
 ], PreKeyMessageProtocol.prototype, "preKeyId", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 3, type: "uint32", required: true })
 ], PreKeyMessageProtocol.prototype, "preKeySignedId", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 4, converter: ECDHPublicKeyConverter, required: true })
 ], PreKeyMessageProtocol.prototype, "baseKey", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 5, parser: IdentityProtocol, required: true })
 ], PreKeyMessageProtocol.prototype, "identity", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 6, parser: MessageSignedProtocol, required: true })
 ], PreKeyMessageProtocol.prototype, "signedMessage", void 0);
-PreKeyMessageProtocol = __decorate$1([
+PreKeyMessageProtocol = __decorate([
     ProtobufElement({ name: "PreKeyMessage" })
 ], PreKeyMessageProtocol);
 
 var PreKeyProtocol = (function (_super) {
-    __extends$1(PreKeyProtocol, _super);
+    __extends(PreKeyProtocol, _super);
     function PreKeyProtocol() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     return PreKeyProtocol;
 }(BaseProtocol));
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 1, type: "uint32", required: true })
 ], PreKeyProtocol.prototype, "id", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 2, converter: ECDHPublicKeyConverter, required: true })
 ], PreKeyProtocol.prototype, "key", void 0);
-PreKeyProtocol = __decorate$1([
+PreKeyProtocol = __decorate([
     ProtobufElement({ name: "PreKey" })
 ], PreKeyProtocol);
 
 var PreKeySignedProtocol = (function (_super) {
-    __extends$1(PreKeySignedProtocol, _super);
+    __extends(PreKeySignedProtocol, _super);
     function PreKeySignedProtocol() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     PreKeySignedProtocol.prototype.sign = function (key) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var _a;
-            return __generator$1(this, function (_b) {
+            return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _a = this;
@@ -2001,33 +1949,33 @@ var PreKeySignedProtocol = (function (_super) {
     };
     return PreKeySignedProtocol;
 }(PreKeyProtocol));
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 3, converter: ArrayBufferConverter, required: true })
 ], PreKeySignedProtocol.prototype, "signature", void 0);
-PreKeySignedProtocol = __decorate$1([
+PreKeySignedProtocol = __decorate([
     ProtobufElement({ name: "PreKeySigned" })
 ], PreKeySignedProtocol);
 
 var PreKeyBundleProtocol = (function (_super) {
-    __extends$1(PreKeyBundleProtocol, _super);
+    __extends(PreKeyBundleProtocol, _super);
     function PreKeyBundleProtocol() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     return PreKeyBundleProtocol;
 }(BaseProtocol));
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 1, type: "uint32", required: true })
 ], PreKeyBundleProtocol.prototype, "registrationId", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 2, parser: IdentityProtocol, required: true })
 ], PreKeyBundleProtocol.prototype, "identity", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 3, parser: PreKeyProtocol })
 ], PreKeyBundleProtocol.prototype, "preKey", void 0);
-__decorate$1([
+__decorate([
     ProtobufProperty({ id: 4, parser: PreKeySignedProtocol, required: true })
 ], PreKeyBundleProtocol.prototype, "preKeySigned", void 0);
-PreKeyBundleProtocol = __decorate$1([
+PreKeyBundleProtocol = __decorate([
     ProtobufElement({ name: "PreKeyBundle" })
 ], PreKeyBundleProtocol);
 
@@ -2058,9 +2006,9 @@ var Stack = (function () {
         this.items.push(item);
     };
     Stack.prototype.toJSON = function () {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var res, _i, _a, item, _b, _c;
-            return __generator$1(this, function (_d) {
+            return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
                         res = [];
@@ -2083,8 +2031,8 @@ var Stack = (function () {
         });
     };
     Stack.prototype.fromJSON = function (obj) {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 this.items = obj;
                 return [2];
             });
@@ -2101,9 +2049,9 @@ var SymmetricRatchet = (function () {
         this.rootKey = rootKey;
     }
     SymmetricRatchet.fromJSON = function (obj) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var res;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 res = new this(obj.rootKey);
                 res.fromJSON(obj);
                 return [2, res];
@@ -2111,8 +2059,8 @@ var SymmetricRatchet = (function () {
         });
     };
     SymmetricRatchet.prototype.toJSON = function () {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 return [2, {
                         counter: this.counter,
                         rootKey: this.rootKey,
@@ -2121,8 +2069,8 @@ var SymmetricRatchet = (function () {
         });
     };
     SymmetricRatchet.prototype.fromJSON = function (obj) {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 this.counter = obj.counter;
                 this.rootKey = obj.rootKey;
                 return [2];
@@ -2130,9 +2078,9 @@ var SymmetricRatchet = (function () {
         });
     };
     SymmetricRatchet.prototype.calculateKey = function (rootKey) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var cipherKeyBytes, nextRootKeyBytes, res, _a;
-            return __generator$1(this, function (_b) {
+            return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4, Secret.sign(rootKey, CIPHER_KEY_KDF_INPUT)];
                     case 1:
@@ -2152,9 +2100,9 @@ var SymmetricRatchet = (function () {
         });
     };
     SymmetricRatchet.prototype.click = function () {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var rootKey, res;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         rootKey = this.rootKey;
@@ -2171,14 +2119,14 @@ var SymmetricRatchet = (function () {
     return SymmetricRatchet;
 }());
 var SendingRatchet = (function (_super) {
-    __extends$1(SendingRatchet, _super);
+    __extends(SendingRatchet, _super);
     function SendingRatchet() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     SendingRatchet.prototype.encrypt = function (message) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var cipherKey, keys, aesKey, hmacKey, iv, cipherText;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, this.click()];
                     case 1:
@@ -2207,16 +2155,16 @@ var SendingRatchet = (function (_super) {
     return SendingRatchet;
 }(SymmetricRatchet));
 var ReceivingRatchet = (function (_super) {
-    __extends$1(ReceivingRatchet, _super);
+    __extends(ReceivingRatchet, _super);
     function ReceivingRatchet() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.keys = [];
         return _this;
     }
     ReceivingRatchet.prototype.toJSON = function () {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var res;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, _super.prototype.toJSON.call(this)];
                     case 1:
@@ -2228,8 +2176,8 @@ var ReceivingRatchet = (function (_super) {
         });
     };
     ReceivingRatchet.prototype.fromJSON = function (obj) {
-        return __awaiter$1(this, void 0, void 0, function () {
-            return __generator$1(this, function (_a) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, _super.prototype.fromJSON.call(this, obj)];
                     case 1:
@@ -2241,9 +2189,9 @@ var ReceivingRatchet = (function (_super) {
         });
     };
     ReceivingRatchet.prototype.decrypt = function (message, counter) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var cipherKey, keys, aesKey, hmacKey, iv, cipherText;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, this.getKey(counter)];
                     case 1:
@@ -2270,9 +2218,9 @@ var ReceivingRatchet = (function (_super) {
         });
     };
     ReceivingRatchet.prototype.getKey = function (counter) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var cipherKey, key;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         if (!(this.counter <= counter)) return [3, 2];
@@ -2292,9 +2240,9 @@ var ReceivingRatchet = (function (_super) {
 }(SymmetricRatchet));
 
 function authenticate(flag, IKa, EKa, IKb, SPKb, OPKb) {
-    return __awaiter$1(this, void 0, void 0, function () {
+    return __awaiter(this, void 0, void 0, function () {
         var DH1, DH2, DH3, DH4, DH, F, KM, keys;
-        return __generator$1(this, function (_a) {
+        return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4, Curve.deriveBytes(IKa.exchangeKey.privateKey, SPKb)];
                 case 1:
@@ -2325,7 +2273,7 @@ function authenticate(flag, IKa, EKa, IKb, SPKb, OPKb) {
     });
 }
 var AsymmetricRatchet = (function (_super) {
-    __extends$1(AsymmetricRatchet, _super);
+    __extends(AsymmetricRatchet, _super);
     function AsymmetricRatchet() {
         var _this = _super.call(this) || this;
         _this.counter = 0;
@@ -2335,9 +2283,9 @@ var AsymmetricRatchet = (function (_super) {
         return _this;
     }
     AsymmetricRatchet.create = function (identity, protocol) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var rootKey, ratchet, _a, signedPreKey, preKey;
-            return __generator$1(this, function (_b) {
+            return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         ratchet = new AsymmetricRatchet();
@@ -2394,9 +2342,9 @@ var AsymmetricRatchet = (function (_super) {
         });
     };
     AsymmetricRatchet.fromJSON = function (identity, remote, obj) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var res;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         res = new AsymmetricRatchet();
@@ -2417,12 +2365,12 @@ var AsymmetricRatchet = (function (_super) {
         return _super.prototype.once.call(this, event, listener);
     };
     AsymmetricRatchet.prototype.decrypt = function (protocol) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            return __generator$1(this, function (_a) {
-                return [2, this.queuePromise("encrypt", function () { return __awaiter$1(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, this.queuePromise("encrypt", function () { return __awaiter(_this, void 0, void 0, function () {
                         var remoteRatchetKey, message, step, ratchetStep, _a, decryptedMessage;
-                        return __generator$1(this, function (_b) {
+                        return __generator(this, function (_b) {
                             switch (_b.label) {
                                 case 0:
                                     remoteRatchetKey = protocol.message.senderRatchetKey;
@@ -2463,12 +2411,12 @@ var AsymmetricRatchet = (function (_super) {
         });
     };
     AsymmetricRatchet.prototype.encrypt = function (message) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            return __generator$1(this, function (_a) {
-                return [2, this.queuePromise("encrypt", function () { return __awaiter$1(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, this.queuePromise("encrypt", function () { return __awaiter(_this, void 0, void 0, function () {
                         var _a, _b, encryptedMessage, preKeyMessage, signedMessage;
-                        return __generator$1(this, function (_c) {
+                        return __generator(this, function (_c) {
                             switch (_c.label) {
                                 case 0:
                                     if (!(this.currentStep.receivingChain && !this.currentStep.sendingChain)) return [3, 2];
@@ -2527,9 +2475,9 @@ var AsymmetricRatchet = (function (_super) {
         });
     };
     AsymmetricRatchet.prototype.hasRatchetKey = function (key) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var ecKey, _i, _a, item;
-            return __generator$1(this, function (_b) {
+            return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         if (!!(key instanceof ECPublicKey)) return [3, 2];
@@ -2561,9 +2509,9 @@ var AsymmetricRatchet = (function (_super) {
         });
     };
     AsymmetricRatchet.prototype.toJSON = function () {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var _a;
-            return __generator$1(this, function (_b) {
+            return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _a = {};
@@ -2583,9 +2531,9 @@ var AsymmetricRatchet = (function (_super) {
         });
     };
     AsymmetricRatchet.prototype.fromJSON = function (obj) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var _a, _i, _b, step, _c;
-            return __generator$1(this, function (_d) {
+            return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
                         _a = this;
@@ -2620,9 +2568,9 @@ var AsymmetricRatchet = (function (_super) {
         return Curve.generateKeyPair("ECDH");
     };
     AsymmetricRatchet.prototype.createChain = function (ourRatchetKey, theirRatchetKey, ratchetClass) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var derivedBytes, keys, rootKey, chainKey, chain;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, Curve.deriveBytes(ourRatchetKey, theirRatchetKey)];
                     case 1:
@@ -2660,9 +2608,9 @@ var DHRatchetStep = (function () {
     function DHRatchetStep() {
     }
     DHRatchetStep.fromJSON = function (obj) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var res;
-            return __generator$1(this, function (_a) {
+            return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         res = new this();
@@ -2675,9 +2623,9 @@ var DHRatchetStep = (function () {
         });
     };
     DHRatchetStep.prototype.toJSON = function () {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var res, _a, _b;
-            return __generator$1(this, function (_c) {
+            return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
                         res = {};
@@ -2703,9 +2651,9 @@ var DHRatchetStep = (function () {
         });
     };
     DHRatchetStep.prototype.fromJSON = function (obj) {
-        return __awaiter$1(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, void 0, function () {
             var _a, _b, _c;
-            return __generator$1(this, function (_d) {
+            return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
                         if (!obj.remoteRatchetKey) return [3, 2];
@@ -2736,7 +2684,7 @@ var DHRatchetStep = (function () {
     return DHRatchetStep;
 }());
 var DHRatchetStepStack = (function (_super) {
-    __extends$1(DHRatchetStepStack, _super);
+    __extends(DHRatchetStepStack, _super);
     function DHRatchetStepStack() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
@@ -3063,6 +3011,7 @@ var CryptoItemProto_1;
 var CryptoKeyProto_1;
 var CryptoKeyPairProto_1;
 var ResultProto_1;
+//# sourceMappingURL=proto.js.map
 
 var subtle;
 if (typeof self === "undefined") {
@@ -3091,8 +3040,10 @@ function challenge(serverIdentity, clientIdentity) {
         });
     });
 }
+//# sourceMappingURL=challenge.js.map
 
 var SERVER_WELL_KNOWN = "/.well-known/webcrypto-socket";
+//# sourceMappingURL=const.js.map
 
 var BrowserStorage = (function () {
     function BrowserStorage(db) {
@@ -3664,6 +3615,7 @@ var ProviderCryptoProto_1;
 var ProviderInfoProto_1;
 var ProviderGetCryptoActionProto_1;
 var ProviderTokenEventProto_1;
+//# sourceMappingURL=provider.js.map
 
 var CryptoActionProto = CryptoActionProto_1 = (function (_super) {
     __extends(CryptoActionProto, _super);
@@ -3717,6 +3669,7 @@ ResetActionProto = __decorate([
     ProtobufElement({})
 ], ResetActionProto);
 var CryptoActionProto_1;
+//# sourceMappingURL=crypto.js.map
 
 function printf(text) {
     var args = [];
@@ -3808,6 +3761,9 @@ function PrepareAlgorithm(alg) {
 function PrepareData(data, paramName) {
     if (!data) {
         throw new WebCryptoError("Parameter '" + paramName + "' is required and cant be empty");
+    }
+    if (typeof Buffer !== "undefined" && Buffer.isBuffer(data)) {
+        return new Uint8Array(data);
     }
     if (ArrayBuffer.isView(data)) {
         return new Uint8Array(data.buffer);
@@ -5205,6 +5161,31 @@ __decorate([
 CryptoX509CertificateRequestProto = CryptoX509CertificateRequestProto_1 = __decorate([
     ProtobufElement({})
 ], CryptoX509CertificateRequestProto);
+var ChainItemProto = ChainItemProto_1 = (function (_super) {
+    __extends(ChainItemProto, _super);
+    function ChainItemProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ChainItemProto;
+}(BaseProto));
+ChainItemProto.INDEX = BaseProto.INDEX;
+__decorate([
+    ProtobufProperty({
+        id: ChainItemProto_1.INDEX++,
+        required: true,
+        type: "string",
+    })
+], ChainItemProto.prototype, "type", void 0);
+__decorate([
+    ProtobufProperty({
+        id: ChainItemProto_1.INDEX++,
+        required: true,
+        converter: ArrayBufferConverter,
+    })
+], ChainItemProto.prototype, "value", void 0);
+ChainItemProto = ChainItemProto_1 = __decorate([
+    ProtobufElement({})
+], ChainItemProto);
 var CertificateStorageGetChainResultProto = CertificateStorageGetChainResultProto_1 = (function (_super) {
     __extends(CertificateStorageGetChainResultProto, _super);
     function CertificateStorageGetChainResultProto() {
@@ -5220,7 +5201,7 @@ __decorate([
         id: CertificateStorageGetChainResultProto_1.INDEX++,
         required: true,
         repeated: true,
-        converter: ArrayBufferConverter,
+        parser: ChainItemProto,
     })
 ], CertificateStorageGetChainResultProto.prototype, "items", void 0);
 CertificateStorageGetChainResultProto = CertificateStorageGetChainResultProto_1 = __decorate([
@@ -5426,6 +5407,7 @@ CertificateStorageGetOCSPActionProto = CertificateStorageGetOCSPActionProto_1 = 
 var CryptoCertificateProto_1;
 var CryptoX509CertificateProto_1;
 var CryptoX509CertificateRequestProto_1;
+var ChainItemProto_1;
 var CertificateStorageGetChainResultProto_1;
 var CertificateStorageSetItemActionProto_1;
 var CertificateStorageGetItemActionProto_1;
@@ -5436,10 +5418,11 @@ var CertificateStorageIndexOfActionProto_1;
 var CertificateStorageGetCRLActionProto_1;
 var OCSPRequestOptionsProto_1;
 var CertificateStorageGetOCSPActionProto_1;
+//# sourceMappingURL=certstorage.js.map
 
 var SocketCertificateStorage = (function () {
-    function SocketCertificateStorage(service) {
-        this.service = service;
+    function SocketCertificateStorage(provider) {
+        this.provider = provider;
     }
     SocketCertificateStorage.prototype.indexOf = function (item) {
         return __awaiter(this, void 0, void 0, function () {
@@ -5448,9 +5431,9 @@ var SocketCertificateStorage = (function () {
                 switch (_a.label) {
                     case 0:
                         proto = new CertificateStorageIndexOfActionProto();
-                        proto.providerID = this.service.id;
+                        proto.providerID = this.provider.id;
                         proto.item = item;
-                        return [4, this.service.client.send(proto)];
+                        return [4, this.provider.client.send(proto)];
                     case 1:
                         result = _a.sent();
                         return [2, result ? Convert.ToUtf8String(result) : null];
@@ -5465,10 +5448,10 @@ var SocketCertificateStorage = (function () {
                 switch (_a.label) {
                     case 0:
                         proto = new CertificateStorageExportActionProto();
-                        proto.providerID = this.service.id;
+                        proto.providerID = this.provider.id;
                         proto.format = "raw";
                         proto.item = item;
-                        return [4, this.service.client.send(proto)];
+                        return [4, this.provider.client.send(proto)];
                     case 1:
                         result = _a.sent();
                         if (format === "raw") {
@@ -5519,18 +5502,18 @@ var SocketCertificateStorage = (function () {
                     case 0:
                         alg = PrepareAlgorithm(algorithm);
                         proto = new CertificateStorageImportActionProto();
-                        proto.providerID = this.service.id;
+                        proto.providerID = this.provider.id;
                         proto.type = type;
                         proto.data = data;
                         proto.algorithm.fromAlgorithm(alg);
                         proto.keyUsages = keyUsages;
-                        return [4, this.service.client.send(proto)];
+                        return [4, this.provider.client.send(proto)];
                     case 1:
                         result = _a.sent();
                         return [4, CryptoCertificateProto.importProto(result)];
                     case 2:
                         certItem = _a.sent();
-                        return [2, prepareCertItem(certItem)];
+                        return [2, this.prepareCertItem(certItem)];
                 }
             });
         });
@@ -5542,8 +5525,8 @@ var SocketCertificateStorage = (function () {
                 switch (_a.label) {
                     case 0:
                         proto = new CertificateStorageKeysActionProto();
-                        proto.providerID = this.service.id;
-                        return [4, this.service.client.send(proto)];
+                        proto.providerID = this.provider.id;
+                        return [4, this.provider.client.send(proto)];
                     case 1:
                         result = _a.sent();
                         if (result) {
@@ -5562,21 +5545,21 @@ var SocketCertificateStorage = (function () {
                 switch (_a.label) {
                     case 0:
                         proto = new CertificateStorageGetItemActionProto();
-                        proto.providerID = this.service.id;
+                        proto.providerID = this.provider.id;
                         proto.key = key;
                         if (algorithm) {
                             alg = PrepareAlgorithm(algorithm);
                             proto.algorithm.fromAlgorithm(alg);
                             proto.keyUsages = keyUsages;
                         }
-                        return [4, this.service.client.send(proto)];
+                        return [4, this.provider.client.send(proto)];
                     case 1:
                         result = _a.sent();
                         if (!(result && result.byteLength)) return [3, 3];
                         return [4, CryptoCertificateProto.importProto(result)];
                     case 2:
                         certItem = _a.sent();
-                        return [2, prepareCertItem(certItem)];
+                        return [2, this.prepareCertItem(certItem)];
                     case 3: return [2, null];
                 }
             });
@@ -5589,9 +5572,9 @@ var SocketCertificateStorage = (function () {
                 switch (_a.label) {
                     case 0:
                         proto = new CertificateStorageSetItemActionProto();
-                        proto.providerID = this.service.id;
+                        proto.providerID = this.provider.id;
                         proto.item = value;
-                        return [4, this.service.client.send(proto)];
+                        return [4, this.provider.client.send(proto)];
                     case 1:
                         data = _a.sent();
                         return [2, Convert.ToUtf8String(data)];
@@ -5606,9 +5589,9 @@ var SocketCertificateStorage = (function () {
                 switch (_a.label) {
                     case 0:
                         proto = new CertificateStorageRemoveItemActionProto();
-                        proto.providerID = this.service.id;
+                        proto.providerID = this.provider.id;
                         proto.key = key;
-                        return [4, this.service.client.send(proto)];
+                        return [4, this.provider.client.send(proto)];
                     case 1:
                         _a.sent();
                         return [2];
@@ -5623,8 +5606,8 @@ var SocketCertificateStorage = (function () {
                 switch (_a.label) {
                     case 0:
                         proto = new CertificateStorageClearActionProto();
-                        proto.providerID = this.service.id;
-                        return [4, this.service.client.send(proto)];
+                        proto.providerID = this.provider.id;
+                        return [4, this.provider.client.send(proto)];
                     case 1:
                         _a.sent();
                         return [2];
@@ -5639,9 +5622,9 @@ var SocketCertificateStorage = (function () {
                 switch (_a.label) {
                     case 0:
                         proto = new CertificateStorageGetChainActionProto();
-                        proto.providerID = this.service.id;
+                        proto.providerID = this.provider.id;
                         proto.item = value;
-                        return [4, this.service.client.send(proto)];
+                        return [4, this.provider.client.send(proto)];
                     case 1:
                         data = _a.sent();
                         return [4, CertificateStorageGetChainResultProto.importProto(data)];
@@ -5659,9 +5642,9 @@ var SocketCertificateStorage = (function () {
                 switch (_a.label) {
                     case 0:
                         proto = new CertificateStorageGetCRLActionProto();
-                        proto.providerID = this.service.id;
+                        proto.providerID = this.provider.id;
                         proto.url = url;
-                        return [4, this.service.client.send(proto)];
+                        return [4, this.provider.client.send(proto)];
                     case 1:
                         data = _a.sent();
                         return [2, data];
@@ -5676,7 +5659,7 @@ var SocketCertificateStorage = (function () {
                 switch (_a.label) {
                     case 0:
                         proto = new CertificateStorageGetOCSPActionProto();
-                        proto.providerID = this.service.id;
+                        proto.providerID = this.provider.id;
                         proto.url = url;
                         proto.request = request;
                         if (options) {
@@ -5684,7 +5667,7 @@ var SocketCertificateStorage = (function () {
                                 proto.options[key] = options[key];
                             }
                         }
-                        return [4, this.service.client.send(proto)];
+                        return [4, this.provider.client.send(proto)];
                     case 1:
                         data = _a.sent();
                         return [2, data];
@@ -5692,31 +5675,38 @@ var SocketCertificateStorage = (function () {
             });
         });
     };
+    SocketCertificateStorage.prototype.prepareCertItem = function (item) {
+        return __awaiter(this, void 0, void 0, function () {
+            var raw, result, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4, item.exportProto()];
+                    case 1:
+                        raw = _b.sent();
+                        _a = item.type;
+                        switch (_a) {
+                            case "x509": return [3, 2];
+                            case "request": return [3, 4];
+                        }
+                        return [3, 6];
+                    case 2: return [4, CryptoX509CertificateProto.importProto(raw)];
+                    case 3:
+                        result = _b.sent();
+                        return [3, 7];
+                    case 4: return [4, CryptoX509CertificateRequestProto.importProto(raw)];
+                    case 5:
+                        result = _b.sent();
+                        return [3, 7];
+                    case 6: throw new Error("Unsupported CertificateItem type '" + item.type + "'");
+                    case 7:
+                        result.provider = this.provider;
+                        return [2, result];
+                }
+            });
+        });
+    };
     return SocketCertificateStorage;
 }());
-function prepareCertItem(item) {
-    return __awaiter(this, void 0, void 0, function () {
-        var raw, _a;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0: return [4, item.exportProto()];
-                case 1:
-                    raw = _b.sent();
-                    _a = item.type;
-                    switch (_a) {
-                        case "x509": return [3, 2];
-                        case "request": return [3, 4];
-                    }
-                    return [3, 6];
-                case 2: return [4, CryptoX509CertificateProto.importProto(raw)];
-                case 3: return [2, _b.sent()];
-                case 4: return [4, CryptoX509CertificateRequestProto.importProto(raw)];
-                case 5: return [2, _b.sent()];
-                case 6: throw new Error("Unsupported CertificateItem type '" + item.type + "'");
-            }
-        });
-    });
-}
 
 var KeyStorageSetItemActionProto = KeyStorageSetItemActionProto_1 = (function (_super) {
     __extends(KeyStorageSetItemActionProto, _super);
@@ -5812,6 +5802,7 @@ var KeyStorageSetItemActionProto_1;
 var KeyStorageGetItemActionProto_1;
 var KeyStorageRemoveItemActionProto_1;
 var KeyStorageIndexOfActionProto_1;
+//# sourceMappingURL=keystorage.js.map
 
 var SocketKeyStorage = (function () {
     function SocketKeyStorage(service) {
@@ -6195,6 +6186,7 @@ var UnwrapKeyActionProto_1;
 var WrapKeyActionProto_1;
 var ExportKeyActionProto_1;
 var ImportKeyActionProto_1;
+//# sourceMappingURL=subtle.js.map
 
 var SocketSubtleCrypto = (function (_super) {
     __extends(SocketSubtleCrypto, _super);

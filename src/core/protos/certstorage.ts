@@ -52,6 +52,26 @@ export class CryptoX509CertificateRequestProto extends CryptoCertificateProto im
 }
 
 @ProtobufElement({})
+export class ChainItemProto extends BaseProto {
+
+    public static INDEX = BaseProto.INDEX;
+
+    @ProtobufProperty({
+        id: ChainItemProto.INDEX++,
+        required: true,
+        type: "string",
+    })
+    public type: string;
+
+    @ProtobufProperty({
+        id: ChainItemProto.INDEX++,
+        required: true,
+        converter: ArrayBufferConverter,
+    })
+    public value: ArrayBuffer;
+}
+
+@ProtobufElement({})
 export class CertificateStorageGetChainResultProto extends BaseProto {
 
     public static INDEX = BaseProto.INDEX;
@@ -60,9 +80,9 @@ export class CertificateStorageGetChainResultProto extends BaseProto {
         id: CertificateStorageGetChainResultProto.INDEX++,
         required: true,
         repeated: true,
-        converter: ArrayBufferConverter,
+        parser: ChainItemProto,
     })
-    public items: ArrayBuffer[] = [];
+    public items: ChainItemProto[] = [];
 
 }
 

@@ -10,7 +10,7 @@ import {
     CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetChainActionProto,
     CertificateStorageGetChainResultProto, CertificateStorageGetCRLActionProto, CertificateStorageGetItemActionProto,
     CertificateStorageGetOCSPActionProto, CertificateStorageImportActionProto, CertificateStorageIndexOfActionProto,
-    CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto,
+    CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto, ChainItemProto,
 } from "../core/protos/certstorage";
 import { ArrayStringConverter } from "../core/protos/converter";
 import { IsLoggedInActionProto, LoginActionProto, ResetActionProto } from "../core/protos/crypto";
@@ -625,18 +625,37 @@ export class LocalServer extends EventEmitter {
                 // do operation
                 if ("session" in crypto) {
                     const buffer = (cert as any).p11Object.getAttribute("x509Chain") as Buffer;
+                    console.log(buffer.toString("hex"));
 
                     const ulongSize = (cert as any).p11Object.handle.length;
                     const resultProto = new CertificateStorageGetChainResultProto();
                     let i = 0;
                     while (i < buffer.length) {
-                        const certSizeBuffer = buffer.slice(i, i + ulongSize);
-                        const certSize = certSizeBuffer.readInt16LE(0);
-                        const certValue = buffer.slice(i + ulongSize, i + ulongSize + certSize)
-                        resultProto.items.push(new Uint8Array(certValue).buffer);
-                        i += ulongSize + certSize;
+                        const itemType = buffer.slice(i, i + 1)[0];
+                        const itemProto = new ChainItemProto();
+                        console.log("itemType:", itemType);
+                        switch (itemType) {
+                            case 1:
+                                itemProto.type = "x509";
+                                break;
+                            case 2:
+                                itemProto.type = "crl";
+                                break;
+                            default:
+                                throw new Error("Unknown type of item of chain");
+                        }
+                        i++;
+                        const itemSizeBuffer = buffer.slice(i, i + ulongSize);
+                        const itemSize = itemSizeBuffer.readInt32LE(0);
+                        console.log("itemSize:", itemSize);
+                        const itemValue = buffer.slice(i + ulongSize, i + ulongSize + itemSize)
+                        console.log("itemValue:", itemValue.toString("hex"));
+                        itemProto.value = new Uint8Array(itemValue).buffer;
+                        resultProto.items.push(itemProto);
+                        i += ulongSize + itemSize;
                     }
                     data = await resultProto.exportProto();
+                    console.log("PROTO:", new Buffer(data).toString("hex"));
                 } else {
                     throw new Error("Provider doesn't support GetChain method");
                 }
