@@ -53,8 +53,8 @@
                         // TestCertStorageClear();
                         // TestCertStorageGetItemCert("x509-c53021e4c84bd1a9e9dee840ba6a169f77928f91");
                         // TestReset()
-                        TestGetChain()
-                        // TestGetCRL()
+                        // TestGetChain()
+                        TestGetCRL()
                         // TestGetOCSP()
                         // TestChainBuilder()
                     })
@@ -929,7 +929,7 @@
                             return crypto.certStorage.getChain(item);
                         })
                         .then((chain) => {
-                            console.log(JSON.stringify(chain, null, "  "));
+                            console.log(chain);
                         })
                 })
                 .catch((err) => {
@@ -953,7 +953,7 @@
                             }
                         })
                         .then(() => {
-                            return crypto.certStorage.getCRL("http://crl.quovadisglobal.com/qvrca.crl")
+                            return crypto.certStorage.getCRL("http://localhost:3001/crl_ca.pem")
                         })
                         .then((crl) => {
                             console.log(crl);

@@ -679,9 +679,10 @@ export class LocalServer extends EventEmitter {
                                 throw new Error(`${message}. Bad status ${response.statusCode}`);
                             }
 
-                            if (typeof body === "string") {
-                                body = new Buffer(body, "binary");
+                            if (Buffer.isBuffer(body)) {
+                                body = body.toString("binary");
                             }
+                            body = prepareData(body);
                             // convert body to ArrayBuffer
                             body = new Uint8Array(body).buffer;
 
@@ -742,9 +743,10 @@ export class LocalServer extends EventEmitter {
                                 throw new Error(`${message}. Bad status ${response.statusCode}`);
                             }
 
-                            if (typeof body === "string") {
-                                body = new Buffer(body, "binary");
+                            if (Buffer.isBuffer(body)) {
+                                body = body.toString("binary");
                             }
+                            body = prepareData(body);
                             // convert body to ArrayBuffer
                             body = new Uint8Array(body).buffer;
 
@@ -820,4 +822,14 @@ export class LocalServer extends EventEmitter {
 function getHandle(size = 20) {
     const rndBytes = crypto.getRandomValues(new Uint8Array(size)) as Uint8Array;
     return Convert.ToHex(rndBytes);
+}
+
+function prepareData(data: string) {
+    if (data.indexOf("-----") === 0) {
+        // incoming data is PEM encoded string
+        data = data.replace(/-----[\w\s]+-----/gi, "").replace(/[\n\r]/g, "");
+        return new Buffer(data, "base64");
+    } else {
+        return new Buffer(data, "binary");
+    }
 }
