@@ -18,7 +18,7 @@ export default new Schema('Request', {
   },
   signature: {
     algorithm: Type.String,
-    hash: Type.String,
+    hash: Type.Any,
     value: Type.String,
   },
 });
