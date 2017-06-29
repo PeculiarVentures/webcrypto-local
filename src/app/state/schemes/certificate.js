@@ -25,7 +25,7 @@ export default new Schema('Certificate', {
   },
   signature: {
     algorithm: Type.String,
-    hash: Type.String,
+    hash: Type.Any,
     value: Type.String,
   },
   extensions: Type.List,
