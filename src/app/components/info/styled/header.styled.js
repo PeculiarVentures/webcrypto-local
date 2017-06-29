@@ -23,8 +23,8 @@ export const HeaderRoot = styled.div`
   padding: 0 5px 0 14px;
   width: 100%;
   height: 100%;
-  display: table;
-  vertical-align: middle;
+  // display: table;
+  // vertical-align: middle;
   @media ${props => props.theme.media.mobile} {
     padding: 0;
     display: block;
@@ -36,25 +36,29 @@ export const Title = styled.div`
   font-weight: 600;
   letter-spacing: -0.008em;
   color: ${props => props.theme.info.header.titleColor};
-  line-height: 32px;
-  display: table-cell;
+  line-height: 85px;
   vertical-align: middle;
+  display: inline-block;
+  width: calc(100% - 450px);
+  ${props => props.theme.mixins.truncateText}
+  padding-right: 20px;
   @media ${props => props.theme.media.mobile} {
     font-size: 18px;
     text-align: center;
     width: calc(100% - 38px - 38px);
-    display: inline-block;
     line-height: 56px;
     margin: 0 auto;
+    padding: 0;
     ${props => props.theme.mixins.truncateText}
   }
 `;
 
 export const ButtonsContainer = styled.div`
-  display: table-cell;
+  display: inline-block;
   vertical-align: middle;
   text-align: right;
   white-space: nowrap;
+  min-width: 450px;
   @media ${props => props.theme.media.mobile} {
     height: 100%;
   }
