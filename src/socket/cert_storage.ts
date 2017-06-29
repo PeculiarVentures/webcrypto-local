@@ -82,6 +82,8 @@ export class SocketCertificateStorage implements ICertificateStorage {
         }
     }
 
+    public importCert(type: "request", data: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoX509CertificateRequest>;
+    public importCert(type: "x509", data: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoX509Certificate>;
     public async importCert(type: string, data: ArrayBuffer, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoX509Certificate | CryptoX509CertificateRequest> {
         const alg = PrepareAlgorithm(algorithm as AlgorithmIdentifier);
 
