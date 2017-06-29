@@ -139,6 +139,9 @@ const CertHelper = {
       case '1.2.840.10045.4.3.2': {
         return { name: 'ECDSA', hash: 'SHA-256' };
       }
+      case '1.2.840.10045.4.1': {
+        return { name: 'ECDSA', hash: 'SHA-1' };
+      }
       default: {
         return { name: pkiAlg.algorithmId };
       }

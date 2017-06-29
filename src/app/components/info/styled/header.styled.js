@@ -13,9 +13,16 @@ import StyledAnimatedIcon from '../../sidebar/parts/shell.styles';
 export const StyledShellTitle = StyledAnimatedIcon(TitleShellIcon, 't_gradient');
 
 export const TitleShell = styled.div`
-  display: table-cell;
+  display: inline-block;
   vertical-align: middle;
-  width: 200px;
+  width: calc(100% - 450px);
+  height: 100%;
+  svg {
+    width: 200px;
+    position: relative;
+    top: 50%;
+    transform: translate(0, -50%);
+  }
 `;
 
 export const HeaderRoot = styled.div`
