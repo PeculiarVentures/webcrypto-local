@@ -5,18 +5,16 @@ const WebCrypto = require("node-webcrypto-ossl");
 const crypto: Crypto = new WebCrypto();
 import * as fs from "fs";
 import { Convert } from "pvtsutils";
+import { DOUBLE_KEY_RATCHET_STORAGE_DIR } from "../../core/const";
 
 export class OpenSSLStorage {
 
-    public static STORAGE_NAME = ".webcrypto";
+    public static STORAGE_NAME = DOUBLE_KEY_RATCHET_STORAGE_DIR;
     public static IDENTITY_STORAGE = "identity";
     public static SESSION_STORAGE = "sessions";
     public static REMOTE_STORAGE = "remoteIdentity";
 
     public static async create() {
-        if (!fs.existsSync(this.STORAGE_NAME)) {
-            fs.mkdirSync(this.STORAGE_NAME);
-        }
         return new this();
     }
 

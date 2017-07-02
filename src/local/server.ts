@@ -655,7 +655,6 @@ export class LocalServer extends EventEmitter {
                         i += ulongSize + itemSize;
                     }
                     data = await resultProto.exportProto();
-                    console.log("PROTO:", new Buffer(data).toString("hex"));
                 } else {
                     throw new Error("Provider doesn't support GetChain method");
                 }

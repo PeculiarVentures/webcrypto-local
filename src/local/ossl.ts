@@ -1,6 +1,5 @@
-import * as fs from "fs";
-
 import { AlgorithmNames } from "webcrypto-core";
+import { OPENSSL_CERT_STORAGE_DIR, OPENSSL_KEY_STORAGE_DIR } from "../core/const";
 import { OpenSSLCertificateStorage } from "./ossl_cert_storage";
 import { OpenSSLKeyStorage } from "./ossl_key_storage";
 
@@ -10,22 +9,13 @@ export class OpenSSLCrypto extends OSSLCrypto {
 
     public name = "OpenSSL";
 
-    public keyStorage: IKeyStorage = new OpenSSLKeyStorage(".keystorage/store.json");
-    public certStorage: ICertificateStorage = new OpenSSLCertificateStorage(".certstorage/store.json");
+    public keyStorage: IKeyStorage = new OpenSSLKeyStorage(`${OPENSSL_KEY_STORAGE_DIR}/store.json`);
+    public certStorage: ICertificateStorage = new OpenSSLCertificateStorage(`${OPENSSL_CERT_STORAGE_DIR}/store.json`);
 
     public isLoggedIn = true;
 
     constructor() {
         super();
-
-        // create folder for OSSL key storage
-        if (!fs.existsSync(".keystorage")) {
-            fs.mkdirSync(".keystorage");
-        }
-        // create folder for OSSL cert storage
-        if (!fs.existsSync(".certstorage")) {
-            fs.mkdirSync(".certstorage");
-        }
     }
 
     public async info() {
