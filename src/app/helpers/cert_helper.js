@@ -339,12 +339,17 @@ const CertHelper = {
 
     const decodedIssuer = this.decodeSubjectString(issuerName);
     const decodedSubject = this.decodeSubjectString(subjectName);
+    const name = decodedSubject['Common Name']
+      || decodedSubject['Email']
+      || decodedSubject['Surname']
+      || decodedSubject['Organization']
+      || '';
 
     return {
       id: addedId || UUID(),
       _id: id,
       type: 'certificate',
-      name: decodedSubject['Common Name'] || '',
+      name,
       pem,
       general: {
         serialNumber,
@@ -381,11 +386,16 @@ const CertHelper = {
     if (algorithm.publicExponent && algorithm.publicExponent.byteLength) {
       publicExponent = algorithm.publicExponent.byteLength === 3 ? 65537 : 3;
     }
+    const name = decodedSubject['Common Name']
+      || decodedSubject['Email']
+      || decodedSubject['Surname']
+      || decodedSubject['Organization']
+      || '';
 
     return {
       id: addedId || UUID(),
       _id: id,
-      name: decodedSubject['Common Name'] || '',
+      name,
       type: 'request',
       pem,
       subject: decodedSubject,
