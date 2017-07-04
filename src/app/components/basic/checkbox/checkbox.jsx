@@ -16,7 +16,7 @@ const TextStyles = styled.span`
       display: inline-block;
       vertical-align: top;
       font-size: 12px;
-      line-height: 14px;
+      line-height: 16px;
       letter-spacing: 0.075em;
       color: ${color};
       margin-left: 6px;
@@ -85,7 +85,6 @@ export default class Checkbox extends Component {
   static defaultProps = {
     defaultChecked: false,
     disabled: false,
-    checked: false,
     onCheck: null,
     labelText: '',
     name: '',

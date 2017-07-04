@@ -3,7 +3,7 @@ import { Button } from '../basic';
 import SubjectInfo from './parts/subject_info';
 import KeyInfo from './parts/key_info';
 import Provider from './parts/provider';
-import SelfSigned from './parts/self_signed';
+import Options from './parts/options';
 import enLang from '../../langs/en.json';
 import countriesData from '../../constants/countries.json';
 import parametersData from '../../constants/parameters.json';
@@ -49,10 +49,10 @@ export default class Body extends Component {
 
   onCreateHandler = () => {
     const { onCreate } = this.props;
-    const { subjectNode, keyNode, signedNode } = this;
+    const { subjectNode, keyNode, optionsNode } = this;
     const subjectInfoValid = subjectNode.isValidFields();
     const keyInfoValid = keyNode.isValidFields();
-    const selfSigned = signedNode.getData().selfSigned;
+    const selfSigned = optionsNode.getData().selfSigned;
 
     if (subjectInfoValid && keyInfoValid) {
       const subjectInfoData = subjectNode.getData();
@@ -60,7 +60,7 @@ export default class Body extends Component {
       const data = Object.assign(subjectInfoData, keyInfoData);
 
       if (onCreate) {
-        onCreate(data, selfSigned === 'yes');
+        onCreate(data, selfSigned);
       }
     } else {
       this.createDisabledHandler(true);
@@ -105,8 +105,8 @@ export default class Body extends Component {
             parameters={parameters}
             ref={node => (this.keyNode = node)}
           />
-          <SelfSigned
-            ref={node => (this.signedNode = node)}
+          <Options
+            ref={node => (this.optionsNode = node)}
           />
           <BodyStyled.BtnsContainer>
             <Button
