@@ -8,3 +8,4 @@ export LoadDialog from './load';
 export FortifyAuthorizationDialog from './fortify_authorization';
 export ServerOfflineDialog from './server_offline';
 export EmptyProviders from './empty_providers';
+export RemoveItemErrorDialog from './remove_item_error';

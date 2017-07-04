@@ -25,6 +25,15 @@ export default class Overlay extends Component {
   static propTypes = {
     dialog: PropTypes.string,
     modal: PropTypes.string,
+    provider: PropTypes.oneOfType([
+      PropTypes.object,
+    ]),
+  };
+
+  static defaultProps = {
+    dialog: '',
+    modal: '',
+    provider: {},
   };
 
   static contextTypes = {
@@ -115,12 +124,16 @@ export default class Overlay extends Component {
 
   handleAction = (payload) => {
     const { provider } = this.props;
-    const { type } = payload;
+    const { type, value } = payload;
     const { dispatch } = this.context;
 
     switch (type) {
       case ACTIONS_CONST.WS_REMOVE_ITEM: {
         return dispatch(WSActions.removeItem());
+      }
+
+      case ACTIONS_CONST.DIALOG_OPEN: {
+        return dispatch(DialogActions.open(value));
       }
 
       case ACTIONS_CONST.DIALOG_CLOSE: {
@@ -167,6 +180,23 @@ export default class Overlay extends Component {
                 type: ACTIONS_CONST.DIALOG_CLOSE,
               })
             )}
+          />
+          <Dialog.RemoveItemErrorDialog
+            name="remove_item_error"
+            certificateName={selectedItemProps ? selectedItemProps.name : ''}
+            certificateType={selectedItemProps ? selectedItemProps.type : ''}
+            onAccept={() => (
+              this.handleAction({
+                type: ACTIONS_CONST.DIALOG_OPEN,
+                value: 'remove_item',
+              })
+            )}
+            onCancel={() => (
+              this.handleAction({
+                type: ACTIONS_CONST.DIALOG_CLOSE,
+              })
+            )}
+            message={message}
           />
           <Dialog.IncorrectPinDialog
             name="incorrect_pin"

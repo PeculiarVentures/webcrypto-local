@@ -21,6 +21,10 @@
   "Dialog.CertificateImportError.Btn.Accept": "Try again",
   "Dialog.ServerOffline.Title": "Server is offline.\n Wait until the connection is established",
   "Dialog.EmptyProviders.Title": "You do not have any provider. Insert one now.",
+  "Dialog.RemoveCertificateError.Title": "An error occurred while deleting your",
+  "Dialog.RemoveCertificateError.Btn.Accept": "Try again",
+  "Dialog.RemoveCertificateError.Btn.Cancel": "Cancel",
+
   "Sidebar.Footer.Status.Online": "Server is online",
   "Sidebar.Footer.Status.Offline": "Server is offline",
   "Sidebar.Footer.Status.Seaching": "Seaching for server",
