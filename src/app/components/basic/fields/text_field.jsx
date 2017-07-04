@@ -223,7 +223,7 @@ export default class TextField extends Component {
   getValue = () => {
     const { fieldNode } = this;
     const { capitalize } = this.props;
-    const value = fieldNode.value;
+    const value = fieldNode ? fieldNode.value : null;
 
     if (capitalize) return value.charAt(0).toUpperCase() + value.slice(1);
 

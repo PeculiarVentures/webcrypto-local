@@ -74,8 +74,10 @@ export default class Body extends Component {
 
   onValidateHandler = () => {
     const { subjectNode } = this;
-    const subjectInfoValid = subjectNode.isValidFields();
-    this.createDisabledHandler(!subjectInfoValid);
+    if (subjectNode) {
+      const subjectInfoValid = subjectNode.isValidFields();
+      this.createDisabledHandler(!subjectInfoValid);
+    }
   };
 
   createDisabledHandler = (status) => {
