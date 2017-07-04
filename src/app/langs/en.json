@@ -32,10 +32,10 @@
   "Sidebar.Header.Btn.Import": "Import",
   "Sidebar.Header.Btn.Create": "Create new",
 
-  "CertificateCreate.Header.Title": "Create Certificate Request",
+  "CertificateCreate.Header.Title": "Create Self-Signed Certificate",
   "CertificateCreate.Header.Btn.Back": "Back",
   "CertificateCreate.Btn.Cancel": "Cancel",
-  "CertificateCreate.Btn.Create": "Create Request",
+  "CertificateCreate.Btn.Create": "Create",
   "CertificateCreate.Subject.Title": "Subject info",
   "CertificateCreate.Subject.Field.CommonName": "Common name",
   "CertificateCreate.Subject.Field.CommonName.Error": "Common name field must not be empty",

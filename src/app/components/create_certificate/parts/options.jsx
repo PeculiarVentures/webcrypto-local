@@ -58,7 +58,7 @@ export default class Options extends Component {
             <Checkbox
               labelText={enLang['CertificateCreate.Options.SelfSigned']}
               ref={node => (this.checkboxNodes.selfSigned = node)}
-              defaultChecked={false}
+              defaultChecked
             />
           </CheckboxContainer>
         </GroupPart>
