@@ -343,6 +343,7 @@ const CertHelper = {
       || decodedSubject['Email']
       || decodedSubject['Surname']
       || decodedSubject['Organization']
+      || decodedSubject['Organization Unit']
       || '';
 
     return {
@@ -390,6 +391,7 @@ const CertHelper = {
       || decodedSubject['Email']
       || decodedSubject['Surname']
       || decodedSubject['Organization']
+      || decodedSubject['Organization Unit']
       || '';
 
     return {
