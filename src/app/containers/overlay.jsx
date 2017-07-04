@@ -220,6 +220,9 @@ export default class Overlay extends Component {
             name="fortify_authorization"
             message={message}
           />
+          <Dialog.EmptyProviders
+            name="empty_providers"
+          />
         </SegueHandler>
       );
     }

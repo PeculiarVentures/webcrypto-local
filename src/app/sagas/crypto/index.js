@@ -108,6 +108,11 @@ function* webcryptoOnListening() {
     window.location.search,
   );
 
+  if (!providers.length) {
+    yield put(DialogActions.open('empty_providers'));
+    return false;
+  }
+
   for (const prv of providers) {
     const provider = yield Provider.providerGet(prv.id);
 
