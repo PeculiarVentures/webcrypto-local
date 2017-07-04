@@ -33,7 +33,6 @@ export default class Overlay extends Component {
   static defaultProps = {
     dialog: '',
     modal: '',
-    provider: {},
   };
 
   static contextTypes = {
