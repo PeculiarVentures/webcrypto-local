@@ -53,7 +53,7 @@
   "CertificateCreate.Provider.Title": "Provider info",
   "CertificateCreate.Provider.Field.Name": "Name",
   "CertificateCreate.Options.Title": "Options",
-  "CertificateCreate.Options.SelfSigned": "Self signed",
+  "CertificateCreate.Options.SelfSigned": "Make a self-signed certificate instead of a Certificate Request",
 
   "Info.Header.Btn.Download": "Download",
   "Info.Header.Download.Pem": "as PEM",
