@@ -23,6 +23,8 @@ function* errorHandler({ data, action }) {
     errorMessage = 'OFFLINE';
   } else if (message === 'PIN is not approved') {
     errorMessage = 'UNAPPROVED_PIN';
+  } else if (/C_DestroyObject/.test(message)) {
+    errorMessage = 'REMOVE_ITEM';
   }
 
   switch (errorMessage) {
@@ -57,6 +59,12 @@ function* errorHandler({ data, action }) {
 
     case 'UNAPPROVED_PIN': {
       yield put(DialogActions.open('unauthorize_pin'));
+      break;
+    }
+
+    case 'REMOVE_ITEM': {
+      yield put(DialogActions.open('remove_item_error'));
+      EventChannel.emit('DIALOG:SET_MESSAGE', message);
       break;
     }
 
