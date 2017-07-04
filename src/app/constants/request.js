@@ -16,7 +16,6 @@ export const DEFAULT = {
   publicKey: {
     modulusBits: '',
     namedCurve: '',
-    type: '',
     publicExponent: '',
     algorithm: '',
     value: '',

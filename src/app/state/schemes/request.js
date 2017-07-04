@@ -11,7 +11,6 @@ export default new Schema('Request', {
   publicKey: {
     modulusBits: Type.Any,
     namedCurve: Type.Any,
-    type: Type.String,
     publicExponent: Type.Any,
     algorithm: Type.String,
     value: Type.String,

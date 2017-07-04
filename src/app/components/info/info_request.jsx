@@ -61,7 +61,7 @@ const RequestInfo = (props) => {
           { enLang['Info.Body.PublicKeyInfo'] }
         </Title>
         <RowCert>
-          { renderRowContainer(enLang['Info.Body.Algorithm'], publicKey.type) }
+          { renderRowContainer(enLang['Info.Body.Algorithm'], publicKey.algorithm) }
           { renderRowContainer(enLang['Info.Body.ModulusBits'], publicKey.modulusBits) }
           { renderRowContainer(enLang['Info.Body.PublicExponent'], publicKey.publicExponent) }
           { renderRowContainer(enLang['Info.Body.NamedCurve'], publicKey.namedCurve) }

@@ -404,9 +404,8 @@ const CertHelper = {
       publicKey: {
         modulusBits: algorithm.modulusLength,
         namedCurve: algorithm.namedCurve,
-        type: this.getKeyType(algorithm.name),
         publicExponent,
-        algorithm: algorithm.name,
+        algorithm: this.getKeyType(algorithm.name),
         value: this.addSpaceAfterSecondCharset(Convert.ToHex(raw)),
       },
       signature: {
