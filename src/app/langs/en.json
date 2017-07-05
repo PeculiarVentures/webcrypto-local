@@ -20,7 +20,7 @@
   "Dialog.CertificateImportError.Title": "An error occurred import action.\n Please try your request again",
   "Dialog.CertificateImportError.Btn.Accept": "Try again",
   "Dialog.ServerOffline.Title": "Server is offline.\n Wait until the connection is established",
-  "Dialog.EmptyProviders.Title": "You do not have any provider. Insert one now.",
+  "Dialog.EmptyProviders.Title": "An error occurred. You do not appear to have any cryptographic providers registered. This is probably a problem with your installation.",
   "Dialog.RemoveCertificateError.Title": "An error occurred while deleting your",
   "Dialog.RemoveCertificateError.Btn.Accept": "Try again",
   "Dialog.RemoveCertificateError.Btn.Cancel": "Cancel",
