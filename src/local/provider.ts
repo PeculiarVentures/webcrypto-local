@@ -67,13 +67,13 @@ export class LocalProvider extends EventEmitter {
 
         // Add OpenSSL
         const openSsl = new OpenSSLCrypto();
-        this.crypto["286cb673c23e4decbe22bb71fc04e5ea"] = openSsl;
+        // this.crypto["286cb673c23e4decbe22bb71fc04e5ea"] = openSsl;
 
         providers = (await openSsl.info()).providers;
-        providers.forEach((item) => {
-            this.crypto[item.id] = openSsl;
-            this.info.providers.push(new ProviderCryptoProto(item));
-        });
+        // providers.forEach((item) => {
+        //     this.crypto[item.id] = openSsl;
+        //     this.info.providers.push(new ProviderCryptoProto(item));
+        // });
 
         // Add pkcs11
         this.cards.start(CARD_CONFIG_PATH);
@@ -136,21 +136,21 @@ export class LocalProvider extends EventEmitter {
 
         // SoftHSM
         {
-            const library = "/usr/local/lib/softhsm/libsofthsm2.so";
-            if (fs.existsSync(library)) {
-                try {
-                    const crypto = new pkcs11.WebCrypto({
-                        library,
-                        slot: 0,
-                        readWrite: true,
-                    });
-                    const info = getSlotInfo(crypto);
-                    this.info.providers.push(new ProviderCryptoProto(info));
-                    this.crypto[info.id] = crypto;
-                } catch (e) {
-                    console.error("SoftHSM: Cannot to init crypto.");
-                }
-            }
+            // const library = "/usr/local/lib/softhsm/libsofthsm2.so";
+            // if (fs.existsSync(library)) {
+            //     try {
+            //         const crypto = new pkcs11.WebCrypto({
+            //             library,
+            //             slot: 0,
+            //             readWrite: true,
+            //         });
+            //         const info = getSlotInfo(crypto);
+            //         this.info.providers.push(new ProviderCryptoProto(info));
+            //         this.crypto[info.id] = crypto;
+            //     } catch (e) {
+            //         console.error("SoftHSM: Cannot to init crypto.");
+            //     }
+            // }
         }
         // Windows CAPI
         {
@@ -171,7 +171,29 @@ export class LocalProvider extends EventEmitter {
                     console.error("TestPKCS11: Cannot to init pvpkcs11.");
                 }
             } else {
-                console.log("TestPKCS11: Cannot find pkcs#11 lib");
+                console.log("TestPKCS11: Cannot find Windows pvpkcs11.dll");
+            }
+        }
+        // OSX
+        {
+            const library = "/Users/microshine/github/pv/pvpkcs11/out/Debug_x64/libpvpkcs11.dylib";
+            if (fs.existsSync(library)) {
+                try {
+                    const crypto = new pkcs11.WebCrypto({
+                        library,
+                        slot: 0,
+                        readWrite: true,
+                    });
+                    const info = getSlotInfo(crypto);
+                    crypto.isLoggedIn = true;
+                    this.info.providers.push(new ProviderCryptoProto(info));
+                    this.crypto[info.id] = crypto;
+                } catch (e) {
+                    console.error(e);
+                    console.error("TestPKCS11: Cannot to init pvpkcs11.");
+                }
+            } else {
+                console.log("TestPKCS11: Cannot find OSX libpvpkcs11.dylib");
             }
         }
         this.emit("listening", this.getInfo());

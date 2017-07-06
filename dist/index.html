@@ -54,8 +54,8 @@
                         // TestCertStorageGetItemCert("x509-c53021e4c84bd1a9e9dee840ba6a169f77928f91");
                         // TestReset()
                         // TestGetChain()
-                        TestGetCRL()
-                        // TestGetOCSP()
+                        // TestGetCRL()
+                        TestGetOCSP()
                         // TestChainBuilder()
                     })
                     .catch((err) => {
@@ -89,6 +89,20 @@
                 res[i / 2] = parseInt(c, 16);
             }
             return res.buffer;
+        }
+
+        function ArrayToHex(array) {
+            let res = "";
+            array = new Uint8Array(array);
+
+            array.forEach(function(byte) {
+               let hex = byte.toString(16);
+               if (hex.length === 1) {
+                   hex = "0" + hex;
+               }
+               res += hex;
+            });
+            return res;
         }
 
         function TestGetCrypto() {
@@ -980,10 +994,10 @@
                         })
                         .then(() => {
                             const ocspRequest = HexToArray("3060305EA122A420301E311C3009060355040613025255300F06035504031E080054006500730074301F301D301B300706052B0E03021A04047F01020304047F01020302047F010203A2173015301306092B0601050507300102040604047F010203");
-                            return crypto.certStorage.getOCSP("http://www.cryptopro.ru/ocsp/ocsp.srf", ocspRequest, { method: "post" });
+                            return crypto.certStorage.getOCSP("http://ocsp.apple.com/ocsp03-wwdr01", ocspRequest, { method: "post" });
                         })
                         .then((ocsp) => {
-                            console.log(ocsp);
+                            console.log(ArrayToHex(ocsp));
                         })
                 })
                 .catch((err) => {
