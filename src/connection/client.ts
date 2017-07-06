@@ -149,6 +149,10 @@ export class Client extends EventEmitter {
                     })().catch((error) => this.emit("error", new ClientErrorEvent(this, error)));
                 };
                 this.socket.onclose = (e) => {
+                    for (const actionId in this.stack) {
+                        const message = this.stack[actionId];
+                        message.reject(new Error("Cannot finish operation. Session was closed"));
+                    }
                     this.emit("close", new ClientCloseEvent(this, address));
                 };
                 this.socket.onmessage = (e) => {

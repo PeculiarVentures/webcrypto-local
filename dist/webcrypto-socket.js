@@ -3335,6 +3335,10 @@ var Client = (function (_super) {
                 }); })().catch(function (error) { return _this.emit("error", new ClientErrorEvent(_this, error)); });
             };
             _this.socket.onclose = function (e) {
+                for (var actionId in _this.stack) {
+                    var message = _this.stack[actionId];
+                    message.reject(new Error("Cannot finish operation. Session was closed"));
+                }
                 _this.emit("close", new ClientCloseEvent(_this, address));
             };
             _this.socket.onmessage = function (e) {
