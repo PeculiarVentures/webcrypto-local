@@ -3216,7 +3216,7 @@ var ClientListeningEvent = (function (_super) {
 }(ClientEvent));
 var ClientCloseEvent = (function (_super) {
     __extends(ClientCloseEvent, _super);
-    function ClientCloseEvent(target, remoteAddress) {
+    function ClientCloseEvent(target, remoteAddress, reasoneCode, description) {
         var _this = _super.call(this, target, "close") || this;
         _this.remoteAddress = remoteAddress;
         return _this;
@@ -3339,7 +3339,7 @@ var Client = (function (_super) {
                     var message = _this.stack[actionId];
                     message.reject(new Error("Cannot finish operation. Session was closed"));
                 }
-                _this.emit("close", new ClientCloseEvent(_this, address));
+                _this.emit("close", new ClientCloseEvent(_this, address, e.code, e.reason));
             };
             _this.socket.onmessage = function (e) {
                 if (e.data instanceof ArrayBuffer) {
@@ -6682,7 +6682,7 @@ var SocketProvider = (function (_super) {
             _this.emit("listening", address);
         })
             .on("close", function (e) {
-            console.info("Client:Closed");
+            console.info("Client:Closed: " + e.description + " (code: " + e.reasonCode + ")");
             _this.emit("close", e.remoteAddress);
         });
         return this;

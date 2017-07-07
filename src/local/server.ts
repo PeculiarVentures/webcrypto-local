@@ -94,10 +94,9 @@ export class LocalServer extends EventEmitter {
                     this.sessions.push(session);
                 }
             })
-            .on("close", () => {
+            .on("close", (e) => {
                 // TODO: rename event to 'disconnect' and add event 'connect' for session
-                console.log("Session:disconnect");
-
+                console.log(`Session:disconnect: ${e.description} (code: ${e.reasonCode})`);
             })
             .on("error", (e) => {
                 console.log("Server:error");

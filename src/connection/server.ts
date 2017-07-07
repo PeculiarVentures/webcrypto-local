@@ -65,8 +65,10 @@ export class ServerErrorEvent extends ServerEvent {
 export class ServerCloseEvent extends ServerEvent {
 
     public remoteAddress: string;
+    public reasonCode: number;
+    public description: string;
 
-    constructor(target: Server, remoteAddress: string) {
+    constructor(target: Server, remoteAddress: string, reasonCode: number, description: string) {
         super(target, "close");
         this.remoteAddress = remoteAddress;
     }
@@ -282,7 +284,7 @@ export class Server extends EventEmitter {
                 }
             });
             connection.on("close", (reasonCode, description) => {
-                this.emit("close", new ServerCloseEvent(this, connection.remoteAddress));
+                this.emit("close", new ServerCloseEvent(this, connection.remoteAddress, reasonCode, description));
             });
         });
 

@@ -28,7 +28,9 @@ export class ClientListeningEvent extends ClientEvent {
 
 export class ClientCloseEvent extends ClientEvent {
     public remoteAddress: string;
-    constructor(target: Client, remoteAddress: string) {
+    public reasonCode: number;
+    public description: string;
+    constructor(target: Client, remoteAddress: string, reasoneCode: number, description: string) {
         super(target, "close");
         this.remoteAddress = remoteAddress;
     }
@@ -153,7 +155,7 @@ export class Client extends EventEmitter {
                         const message = this.stack[actionId];
                         message.reject(new Error("Cannot finish operation. Session was closed"));
                     }
-                    this.emit("close", new ClientCloseEvent(this, address));
+                    this.emit("close", new ClientCloseEvent(this, address, e.code, e.reason));
                 };
                 this.socket.onmessage = (e) => {
                     if (e.data instanceof ArrayBuffer) {
