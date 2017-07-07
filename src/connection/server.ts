@@ -193,6 +193,8 @@ export class Server extends EventEmitter {
             // *always* verify the connection"s origin and decide whether or not
             // to accept it.
             autoAcceptConnections: false,
+            maxReceivedFrameSize: 128 * 1024 * 1024,    // 128 Mib
+            maxReceivedMessageSize: 128 * 1024 * 1024,  // 128 Mib
         });
 
         this.socketServer.on("request", (request) => {
