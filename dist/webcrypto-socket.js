@@ -3216,9 +3216,11 @@ var ClientListeningEvent = (function (_super) {
 }(ClientEvent));
 var ClientCloseEvent = (function (_super) {
     __extends(ClientCloseEvent, _super);
-    function ClientCloseEvent(target, remoteAddress, reasoneCode, description) {
+    function ClientCloseEvent(target, remoteAddress, reasonCode, description) {
         var _this = _super.call(this, target, "close") || this;
         _this.remoteAddress = remoteAddress;
+        _this.reasonCode = reasonCode;
+        _this.description = description;
         return _this;
     }
     return ClientCloseEvent;
