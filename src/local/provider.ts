@@ -18,7 +18,7 @@ type LocalProviderListeningHandler = (info: IModule[]) => void;
 type LocalProviderErrorHandler = (e: Error) => void;
 type LocalProviderStopHandler = () => void;
 
-interface ProviderCrypto extends Crypto {
+export interface ProviderCrypto extends Crypto {
     isLoggedIn?: boolean;
     login?: (pin: string) => void;
     logout?: () => void;

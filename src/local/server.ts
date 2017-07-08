@@ -29,10 +29,14 @@ import {
     UnwrapKeyActionProto, VerifyActionProto, WrapKeyActionProto,
 } from "../core/protos/subtle";
 import { ServiceCryptoItem } from "./crypto_item";
-import { LocalProvider } from "./provider";
+import { LocalProvider, ProviderCrypto } from "./provider";
 
 import * as asn1js from "asn1js";
-const { CertificateRevocationList, OCSPResponse } = require("pkijs");
+import { isEqualBuffer } from "pvutils";
+import { X509Certificate } from "../pki/x509";
+const {
+    Certificate, CertificateRevocationList, OCSPResponse, CertificateChainValidationEngine, setEngine
+ } = require("pkijs");
 
 // register new attribute for pkcs11 modules
 graphene.registerAttribute("x509Chain", 2147483905, "buffer");
@@ -622,43 +626,118 @@ export class LocalServer extends EventEmitter {
                 }
 
                 // do operation
-                if ("session" in crypto) {
-                    const buffer = (cert as any).p11Object.getAttribute("x509Chain") as Buffer;
-                    console.log(buffer.toString("hex"));
+                const resultProto = new CertificateStorageGetChainResultProto();
+                const pkiEntryCert = await certC2P(crypto, cert);
+                if (pkiEntryCert.subject.isEqual(pkiEntryCert.issuer)) { // self-signed
+                    // Dont build chain for self-signed certificates 
+                    const itemProto = new ChainItemProto();
+                    itemProto.type = "x509";
+                    itemProto.value = pkiEntryCert.toSchema(true).toBER(false);
 
-                    const ulongSize = (cert as any).p11Object.handle.length;
-                    const resultProto = new CertificateStorageGetChainResultProto();
-                    let i = 0;
-                    while (i < buffer.length) {
-                        const itemType = buffer.slice(i, i + 1)[0];
-                        const itemProto = new ChainItemProto();
-                        console.log("itemType:", itemType);
-                        switch (itemType) {
-                            case 1:
-                                itemProto.type = "x509";
-                                break;
-                            case 2:
-                                itemProto.type = "crl";
-                                break;
-                            default:
-                                throw new Error("Unknown type of item of chain");
-                        }
-                        i++;
-                        const itemSizeBuffer = buffer.slice(i, i + ulongSize);
-                        const itemSize = itemSizeBuffer.readInt32LE(0);
-                        console.log("itemSize:", itemSize);
-                        const itemValue = buffer.slice(i + ulongSize, i + ulongSize + itemSize)
-                        console.log("itemValue:", itemValue.toString("hex"));
-                        itemProto.value = new Uint8Array(itemValue).buffer;
-                        resultProto.items.push(itemProto);
-                        i += ulongSize + itemSize;
+                    resultProto.items.push(itemProto);
+                } else if ("session" in crypto) {
+                    let buffer: Buffer;
+                    let isX509ChainSupported = true;
+                    try {
+                        buffer = (cert as any).p11Object.getAttribute("x509Chain") as Buffer;
+                    } catch (e) {
+                        isX509ChainSupported = false;
                     }
-                    data = await resultProto.exportProto();
+
+                    if (isX509ChainSupported) {
+                        const ulongSize = (cert as any).p11Object.handle.length;
+                        let i = 0;
+                        while (i < buffer.length) {
+                            const itemType = buffer.slice(i, i + 1)[0];
+                            const itemProto = new ChainItemProto();
+                            console.log("itemType:", itemType);
+                            switch (itemType) {
+                                case 1:
+                                    itemProto.type = "x509";
+                                    break;
+                                case 2:
+                                    itemProto.type = "crl";
+                                    break;
+                                default:
+                                    throw new Error("Unknown type of item of chain");
+                            }
+                            i++;
+                            const itemSizeBuffer = buffer.slice(i, i + ulongSize);
+                            const itemSize = itemSizeBuffer.readInt32LE(0);
+                            const itemValue = buffer.slice(i + ulongSize, i + ulongSize + itemSize)
+                            itemProto.value = new Uint8Array(itemValue).buffer;
+                            resultProto.items.push(itemProto);
+                            i += ulongSize + itemSize;
+                        }
+                    } else {
+                        // Get all certificates from token
+                        const indexes = await crypto.certStorage.keys();
+                        const trustedCerts = [];
+                        const certs = [];
+                        for (const index of indexes) {
+                            // only certs
+                            const parts = index.split("-");
+                            if (parts[0] !== "x509") {
+                                continue;
+                            }
+
+                            const cryptoCert = await crypto.certStorage.getItem(index);
+                            const pkiCert = await certC2P(crypto, cryptoCert);
+                            // don't add entry cert
+                            // TODO: https://github.com/PeculiarVentures/PKI.js/issues/114
+                            if (isEqualBuffer(pkiEntryCert.tbs, pkiCert.tbs)) {
+                                continue;
+                            }
+                            if (pkiCert.subject.isEqual(pkiCert.issuer)) { // Self-signed cert
+                                trustedCerts.push(pkiCert);
+                            } else {
+                                certs.push(pkiCert);
+                            }
+                        }
+                        // Add entry certificate to the end of array
+                        // NOTE: PKIjs builds chain for the last certificate in list
+                        if (pkiEntryCert.subject.isEqual(pkiEntryCert.issuer)) { // Self-signed cert
+                            trustedCerts.push(pkiEntryCert);
+                        }
+                        certs.push(pkiEntryCert);
+                        // Build chain for certs
+                        setEngine("PKCS#11 provider", crypto, crypto.subtle);
+                        // console.log("Print incoming certificates");
+                        // console.log("Trusted:");
+                        // console.log("=================================");
+                        // await printCertificates(crypto, trustedCerts);
+                        // console.log("Certificates:");
+                        // console.log("=================================");
+                        // await printCertificates(crypto, certs);
+                        const chainBuilder = new CertificateChainValidationEngine({
+                            trustedCerts,
+                            certs,
+                        });
+
+                        const chain = await chainBuilder.verify();
+                        let resultChain = [];
+                        if (chain.result) {
+                            // Chain was created
+                            resultChain = chainBuilder.certs;
+                        } else {
+                            // cannot build chain. Return only entry certificate
+                            resultChain = [pkiEntryCert];
+                        }
+                        // Put certs to result
+                        for (const item of resultChain) {
+                            const itemProto = new ChainItemProto();
+                            itemProto.type = "x509";
+                            itemProto.value = item.toSchema(true).toBER(false);
+
+                            resultProto.items.push(itemProto);
+                        }
+                    }
                 } else {
                     throw new Error("Provider doesn't support GetChain method");
                 }
 
                 // result
+                data = await resultProto.exportProto();
 
                 break;
             }
@@ -831,3 +910,33 @@ function prepareData(data: string) {
         return new Buffer(data, "binary");
     }
 }
+
+
+/**
+ * Converts CryptoCertificate to PKIjs Certificate
+ * 
+ * @param {ProviderCrypto}      crypto      Crypto provider
+ * @param {CryptoCertificate}   cert        Crypto certificate
+ * @returns 
+ */
+async function certC2P(provider: ProviderCrypto, cert: CryptoCertificate) {
+    const certDer = await provider.certStorage.exportCert("raw", cert);
+    const asn1 = asn1js.fromBER(certDer);
+    const pkiCert = new Certificate({ schema: asn1.result });
+    return pkiCert;
+}
+
+// /**
+//  * Prints pkijs certificate's names to console
+//  * 
+//  * @param {ProviderCrypto} crypto 
+//  * @param {any[]} pkiCerts 
+//  */
+// async function printCertificates(crypto: ProviderCrypto, pkiCerts: any[]) {
+//     for (const pkiCert of pkiCerts) {
+//         const cert = await X509Certificate.importCert(crypto, pkiCert.toSchema(true).toBER(false));
+//         console.log("Certificate:");
+//         console.log("\tsubject:", cert.subjectName);
+//         console.log("\tissuer:", cert.issuerName);
+//     }
+// }
