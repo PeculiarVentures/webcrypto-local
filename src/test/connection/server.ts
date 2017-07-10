@@ -17,7 +17,7 @@ import { ResultProto } from "../../core";
 
             e.resolve(new ResultProto(e.message));
         })
-        .on("close", (e) => {
+        .on("disconnect", (e) => {
             console.log("Close");
         });
 

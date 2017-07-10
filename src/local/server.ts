@@ -13,7 +13,7 @@ import {
     CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto, ChainItemProto,
 } from "../core/protos/certstorage";
 import { ArrayStringConverter } from "../core/protos/converter";
-import { IsLoggedInActionProto, LoginActionProto, ResetActionProto } from "../core/protos/crypto";
+import { IsLoggedInActionProto, LoginActionProto, ResetActionProto, CryptoActionProto } from "../core/protos/crypto";
 import {
     KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageIndexOfActionProto,
     KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto,
@@ -58,7 +58,7 @@ export class LocalServer extends EventEmitter {
         this.server = new Server();
         this.provider = new LocalProvider()
             .on("token", (info) => {
-                console.log("Provider:Token raised");
+                this.emit("info", `Provider:Tokens changed (+${info.added.length}/-${info.removed.length})`);
                 this.sessions.forEach((session) => {
                     if (session.cipher && session.authorized) {
                         info.removed.forEach((item, index) => {
@@ -74,6 +74,9 @@ export class LocalServer extends EventEmitter {
                     }
                 });
             })
+            .on("info", (message: string) => {
+                this.emit("info", message);
+            })
             .on("error", (e) => {
                 this.emit("error", e);
             });
@@ -82,45 +85,61 @@ export class LocalServer extends EventEmitter {
     public listen(address: string) {
         this.server.listen(address);
         this.server
-            .on("listening", () => {
-                console.log("Server:listen");
+            .on("listening", (e) => {
+                this.emit("listening", e.address);
                 this.provider.open()
                     .catch((err) => {
-                        console.log("Provider:OpenError");
+                        this.emit("info", "Provider:Open Error");
                         this.emit("error", err);
+                    })
+                    .then(() => {
+                        this.emit("info", "Provider:Opened");
                     });
             })
             .on("connect", (session) => {
-                console.log("Server:Connect");
+                this.emit("info", `Server: New session connect ${session.connection.remoteAddress}`);
                 // check connection in stack
                 if (!(this.sessions.length && this.sessions.some((item) => item === session))) {
-                    console.log("Push session");
+                    this.emit("info", `Server: Push session to stack`);
                     this.sessions.push(session);
                 }
             })
-            .on("close", (e) => {
-                // TODO: rename event to 'disconnect' and add event 'connect' for session
-                console.log(`Session:disconnect: ${e.description} (code: ${e.reasonCode})`);
+            .on("disconnect", (e) => {
+                // TODO: Remove closed session from `this.sessions`
+                this.emit("info", `Server: Close session ${e.description} (code: ${e.reasonCode})`);
             })
             .on("error", (e) => {
-                console.log("Server:error");
                 this.emit("error", e.error);
             })
             .on("message", (e) => {
-                console.log("Session:Message");
-                this.onMessage(e.session, e.message)
-                    .then(e.resolve, e.reject);
+                (async () => {
+                    const sessionIdentitySHA256 = await e.session.cipher.remoteIdentity.signingKey.thumbprint();
+                    let providerID: string;
+                    try {
+                        const cryptoMessage = await CryptoActionProto.importProto(e.message);
+                        providerID = cryptoMessage.providerID;
+                    } catch (err) {
+                        providerID = "";
+                    }
+                    this.emit("info", `Server: session:${sessionIdentitySHA256} ${providerID ? `provider:${providerID}` : ""}${e.message.action}`);
+                    this.onMessage(e.session, e.message)
+                        .then(e.resolve, e.reject);
+                })()
+                    .catch((error) => {
+                        this.on("error", error);
+                    })
             })
             .on("auth", (session) => {
-                console.log("Session:auth");
+                this.emit("info", "Server: session auth");
                 this.server.send(session, new ProviderAuthorizedEventProto())
                     .catch((e) => {
-                        console.error(e);
+                        this.emit("error", e);
                     });
             });
         return this;
     }
 
+    public on(event: "info", cb: (message: string) => void): this;
     public on(event: "listening", cb: Function): this;
     public on(event: "error", cb: Function): this;
     public on(event: "close", cb: Function): this;
@@ -133,7 +152,6 @@ export class LocalServer extends EventEmitter {
         const resultProto = new ResultProto(action);
 
         let data: ArrayBuffer | undefined;
-        console.log("Action:", action.action);
         switch (action.action) {
             // Server
             case ServerIsLoggedInActionProto.ACTION: {
@@ -234,9 +252,7 @@ export class LocalServer extends EventEmitter {
                 if ((keys as CryptoKeyPair).privateKey) {
                     const keyPair = keys as CryptoKeyPair;
                     // CryptoKeyPair
-                    console.log("CryptoKeyPair");
                     // const thumbprint = await GetIdentity(keyPair.publicKey, crypto);
-                    console.log("Identity");
                     const publicKey = new ServiceCryptoItem(getHandle(), keyPair.publicKey, params.providerID);
                     const privateKey = new ServiceCryptoItem(getHandle(), keyPair.privateKey, params.providerID);
                     this.memoryStorage.push(publicKey);
@@ -569,7 +585,6 @@ export class LocalServer extends EventEmitter {
                 const crypto = await this.provider.getCrypto(params.providerID);
                 const cert = this.getItemFromStorage(params.item).item as CryptoCertificate;
                 // do operation
-                // TODO: get item by id
                 const exportedData = await crypto.certStorage.exportCert(params.format, cert);
 
                 // result
@@ -650,7 +665,6 @@ export class LocalServer extends EventEmitter {
                         while (i < buffer.length) {
                             const itemType = buffer.slice(i, i + 1)[0];
                             const itemProto = new ChainItemProto();
-                            console.log("itemType:", itemType);
                             switch (itemType) {
                                 case 1:
                                     itemProto.type = "x509";

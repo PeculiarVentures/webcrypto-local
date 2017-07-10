@@ -34,8 +34,6 @@ export class SocketProvider extends EventEmitter {
         this.client.removeAllListeners();
         this.client.connect(address)
             .on("error", (e) => {
-                console.log("Client:Error");
-                console.error(e.error);
                 this.emit("error", e.error);
             })
             .on("event", (proto) => {
