@@ -33,7 +33,7 @@ import { LocalProvider, ProviderCrypto } from "./provider";
 
 import * as asn1js from "asn1js";
 import { isEqualBuffer } from "pvutils";
-import { X509Certificate } from "../pki/x509";
+// import { X509Certificate } from "../pki/x509";
 const {
     Certificate, CertificateRevocationList, OCSPResponse, CertificateChainValidationEngine, setEngine
  } = require("pkijs");
