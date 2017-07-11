@@ -62,7 +62,7 @@ export class ServerErrorEvent extends ServerEvent {
     }
 }
 
-export class ServerCloseEvent extends ServerEvent {
+export class ServerDisconnectEvent extends ServerEvent {
 
     public remoteAddress: string;
     public reasonCode: number;
@@ -134,16 +134,19 @@ export class Server extends EventEmitter {
     public on(event: "auth", listener: (session: Session) => void): this;
     public on(event: "listening", listener: (e: ServerListeningEvent) => void): this;
     public on(event: "connect", listener: (e: Session) => void): this;
-    public on(event: "close", listener: (e: ServerCloseEvent) => void): this;
+    public on(event: "disconnect", listener: (e: ServerDisconnectEvent) => void): this;
     public on(event: "error", listener: (e: ServerErrorEvent) => void): this;
     public on(event: "message", listener: (e: ServerMessageEvent) => void): this;
     public on(event: string | symbol, listener: Function): this {
         return super.on(event, listener);
     }
 
+    public once(event: "auth", listener: (session: Session) => void): this;
     public once(event: "listening", listener: (e: ServerListeningEvent) => void): this;
-    public once(event: "closed", listener: (e: ServerCloseEvent) => void): this;
+    public once(event: "connect", listener: (e: Session) => void): this;
+    public once(event: "disconnect", listener: (e: ServerDisconnectEvent) => void): this;
     public once(event: "error", listener: (e: ServerErrorEvent) => void): this;
+    public once(event: "message", listener: (e: ServerMessageEvent) => void): this;
     public once(event: string | symbol, listener: Function): this {
         return super.once(event, listener);
     }
@@ -213,8 +216,7 @@ export class Server extends EventEmitter {
             this.emit("connect", session);
             connection.on("message", (message) => {
                 if (message.type === "utf8") {
-                    console.log("Received Message: " + message.utf8Data);
-                    console.log(message.utf8Data);
+                    this.emit("error", new ServerErrorEvent(this, new Error(`Received UTF8 message: ${message.utf8Data}`)));
                 } else if (message.type === "binary") {
                     // console.log("Received Binary Message of " + message.binaryData.length + " bytes");
                     // connection.sendBytes(message.binaryData);
@@ -233,20 +235,17 @@ export class Server extends EventEmitter {
                                 // check remote identity
                                 const ok = await this.storage.isTrusted(session.cipher.remoteIdentity);
                                 if (!ok) {
-                                    console.log("Remote identity is not trusted");
                                     session.authorized = false;
                                     // await this.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
                                 } else {
                                     session.authorized = true;
+                                    await this.storage.saveSession(session.cipher.remoteIdentity.signingKey.id, session.cipher);
                                 }
-                                console.log("Save session");
-                                await this.storage.saveSession(session.cipher.remoteIdentity.signingKey.id, session.cipher);
                             } catch (err) {
                                 throw err;
                             }
                         }
                         if (!session.cipher) {
-                            console.log("load session");
                             session.cipher = await this.storage.loadSession(messageProto.senderKey.id);
                         }
 
@@ -255,7 +254,6 @@ export class Server extends EventEmitter {
                         const actionProto = await ActionProto.importProto(decryptedMessage);
 
                         return new Promise((resolve, reject) => {
-                            console.log("Message:", actionProto.action, session.authorized);
                             if (
                                 session.authorized ||
                                 actionProto.action === ServerIsLoggedInActionProto.ACTION ||
@@ -274,8 +272,7 @@ export class Server extends EventEmitter {
                             .catch((e) => {
                                 (async () => {
                                     const resultProto = new ResultProto(actionProto);
-                                    console.log("Error for action:", actionProto.action);
-                                    console.error(e);
+                                    this.emit("error", new ServerErrorEvent(this, e));
                                     resultProto.error = e.message;
                                     resultProto.status = false;
 
@@ -288,7 +285,12 @@ export class Server extends EventEmitter {
                 }
             });
             connection.on("close", (reasonCode, description) => {
-                this.emit("close", new ServerCloseEvent(this, connection.remoteAddress, reasonCode, description));
+                this.emit("disconnect", new ServerDisconnectEvent(
+                    this,
+                    connection.remoteAddress,
+                    reasonCode,
+                    description,
+                ));
             });
         });
 
@@ -305,7 +307,6 @@ export class Server extends EventEmitter {
         // encrypt data
         const encryptedData = await session.cipher.encrypt(buf);
         buf = await encryptedData.exportProto();
-        console.log("Server:Send answer");
         session.connection.sendBytes(new Buffer(buf));
     }
 

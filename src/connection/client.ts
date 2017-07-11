@@ -161,7 +161,6 @@ export class Client extends EventEmitter {
                 };
                 this.socket.onmessage = (e) => {
                     if (e.data instanceof ArrayBuffer) {
-                        console.log("Message:", e.type);
                         // decrypt
                         MessageSignedProtocol.importProto(e.data)
                             .then((proto) => {
@@ -245,7 +244,6 @@ export class Client extends EventEmitter {
      * Sends and receives
      */
     public send(data?: ActionProto): Promise<ArrayBuffer> {
-        console.log("Send message:", data.action);
         return new Promise((resolve, reject) => {
             this.checkSocketState();
             if (!data) {
@@ -293,7 +291,6 @@ export class Client extends EventEmitter {
                     if (xmlHttp.readyState === 4) {
                         if (xmlHttp.status === 200) {
                             const json = JSON.parse(xmlHttp.responseText);
-                            console.log(json);
                             resolve(json);
                         } else {
                             reject(new Error("Cannot GET response"));

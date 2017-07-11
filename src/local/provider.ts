@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 import * as fs from "fs";
 import * as pkcs11 from "node-webcrypto-p11";
+import * as os from "os";
 import * as path from "path";
 import { ProviderCryptoProto, ProviderInfoProto } from "../core/protos/provider";
 import { OpenSSLCrypto } from "./ossl";
@@ -45,6 +46,7 @@ export class LocalProvider extends EventEmitter {
     public on(event: "listening", listener: LocalProviderListeningHandler): this;
     public on(event: "token", listener: LocalProviderTokenHandler): this;
     public on(event: "error", listener: LocalProviderErrorHandler): this;
+    public on(event: "info", listener: (message: string) => void): this;
     // public on(event: string | symbol, listener: Function): this;
     public on(event: string | symbol, listener: Function) {
         return super.on(event, listener);
@@ -54,6 +56,7 @@ export class LocalProvider extends EventEmitter {
     public once(event: "listening", listener: LocalProviderListeningHandler): this;
     public once(event: "token", listener: LocalProviderTokenHandler): this;
     public once(event: "error", listener: LocalProviderErrorHandler): this;
+    public once(event: "info", listener: (message: string) => void): this;
     // public once(event: string | symbol, listener: Function): this;
     public once(event: string | symbol, listener: Function) {
         return super.once(event, listener);
@@ -64,6 +67,45 @@ export class LocalProvider extends EventEmitter {
         this.info.name = "WebcryptoLocal";
         this.info.providers = [];
         let providers: IProvider[] = [];
+
+        // System via pvpkcs11
+        let pvpkcs11Path: string;
+        if ((process.versions as any)["electron"]) {
+            pvpkcs11Path = path.join(__dirname, "../../../../pvpkcs11.dll");
+        } else {
+            // Dev paths for different os
+            switch (os.platform()) {
+                case "win32":
+                    pvpkcs11Path = "/github/pvpkcs11/build/Debug/pvpkcs11.dll";
+                    break;
+                case "darwin":
+                    pvpkcs11Path = "/Users/microshine/github/pv/pvpkcs11/out/Debug_x64/libpvpkcs11.dylib";
+                    break;
+                default:
+                    // Use SoftHSM by default
+                    pvpkcs11Path = "/usr/local/lib/softhsm/libsofthsm2.so";
+            }
+        }
+        {
+            if (fs.existsSync(pvpkcs11Path)) {
+                try {
+                    const crypto = new pkcs11.WebCrypto({
+                        library: pvpkcs11Path,
+                        slot: 0,
+                        readWrite: true,
+                    });
+                    const info = getSlotInfo(crypto);
+                    this.emit("info", `Provider: Add crypto ${info.name} ${info.id}`);
+                    crypto.isLoggedIn = true;
+                    this.info.providers.push(new ProviderCryptoProto(info));
+                    this.crypto[info.id] = crypto;
+                } catch (e) {
+                    this.emit("error", e);
+                }
+            } else {
+                this.emit("error", new Error(`TestPKCS11: Cannot find pvpkcs11 by path ${pvpkcs11Path}`));
+            }
+        }
 
         // Add OpenSSL
         const openSsl = new OpenSSLCrypto();
@@ -100,6 +142,7 @@ export class LocalProvider extends EventEmitter {
                         readWrite: !card.readOnly,
                     });
                     const info = getSlotInfo(crypto);
+                    this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
                     info.atr = Convert.ToHex(card.atr);
                     info.library = card.library;
                     this.info.providers.push(new ProviderCryptoProto(info));
@@ -119,9 +162,9 @@ export class LocalProvider extends EventEmitter {
                     removed: [],
                 };
                 this.info.providers = this.info.providers.filter((provider) => {
-                    console.log("Filter:", provider.library, card.library);
                     if (provider.library === card.library) {
                         // remove crypto
+                        this.emit("info", `Provider: Crypto removed '${provider.name}' ${provider.id}`);
                         delete this.crypto[provider.id];
                         info.removed.push(provider);
                         return false;
@@ -134,68 +177,6 @@ export class LocalProvider extends EventEmitter {
                 }
             });
 
-        // SoftHSM
-        {
-            // const library = "/usr/local/lib/softhsm/libsofthsm2.so";
-            // if (fs.existsSync(library)) {
-            //     try {
-            //         const crypto = new pkcs11.WebCrypto({
-            //             library,
-            //             slot: 0,
-            //             readWrite: true,
-            //         });
-            //         const info = getSlotInfo(crypto);
-            //         this.info.providers.push(new ProviderCryptoProto(info));
-            //         this.crypto[info.id] = crypto;
-            //     } catch (e) {
-            //         console.error("SoftHSM: Cannot to init crypto.");
-            //     }
-            // }
-        }
-        // Windows CAPI
-        {
-            const library = "/github/pvpkcs11/build/Debug/pvpkcs11.dll";
-            if (fs.existsSync(library)) {
-                try {
-                    const crypto = new pkcs11.WebCrypto({
-                        library,
-                        slot: 0,
-                        readWrite: true,
-                    });
-                    const info = getSlotInfo(crypto);
-                    crypto.isLoggedIn = true;
-                    this.info.providers.push(new ProviderCryptoProto(info));
-                    this.crypto[info.id] = crypto;
-                } catch (e) {
-                    console.error(e);
-                    console.error("TestPKCS11: Cannot to init pvpkcs11.");
-                }
-            } else {
-                console.log("TestPKCS11: Cannot find Windows pvpkcs11.dll");
-            }
-        }
-        // OSX
-        {
-            const library = "/Users/microshine/github/pv/pvpkcs11/out/Debug_x64/libpvpkcs11.dylib";
-            if (fs.existsSync(library)) {
-                try {
-                    const crypto = new pkcs11.WebCrypto({
-                        library,
-                        slot: 0,
-                        readWrite: true,
-                    });
-                    const info = getSlotInfo(crypto);
-                    crypto.isLoggedIn = true;
-                    this.info.providers.push(new ProviderCryptoProto(info));
-                    this.crypto[info.id] = crypto;
-                } catch (e) {
-                    console.error(e);
-                    console.error("TestPKCS11: Cannot to init pvpkcs11.");
-                }
-            } else {
-                console.log("TestPKCS11: Cannot find OSX libpvpkcs11.dylib");
-            }
-        }
         this.emit("listening", this.getInfo());
     }
 
@@ -205,7 +186,6 @@ export class LocalProvider extends EventEmitter {
 
     public async getInfo(): Promise<ProviderInfoProto> {
         const resProto = new ProviderInfoProto();
-        console.log(resProto);
         return resProto;
     }
 

@@ -4,11 +4,13 @@ import { LocalServer } from "../../local";
 
 const server = new LocalServer();
 
-
 server.listen("localhost:8080")
     .on("listening", (e: any) => {
-        console.log(`${e.address}`);
+        console.log(`${e}`);
         fs.writeFileSync("C:/tmp/log.md", `$User profile: {process.env["USERPROFILE"]}\n`);
+    })
+    .on("info", (msg) => {
+        console.log(msg);
     })
     .on("error", (e: Error) => {
         console.error(e);
