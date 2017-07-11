@@ -38,6 +38,26 @@ npm run build:ws
 npm run server:ws
 ```
 
+> NOTE: There is a [problem with ES5 PKIjs](https://github.com/PeculiarVentures/PKI.js/issues/113). To fix this you need to do steps described bellow
+
+Enter to pkijs folder
+```
+cd node_modules/pkijs
+```
+
+Install `babel-polyfill`
+```
+npm i babel-polyfill
+```
+
+Update `src/index.js` by adding `require("babel-polyfill");` at the beginning.
+
+Rebuild PKIjs (run command from `pkijs` folder)
+
+```
+npm run build
+```
+
 #### Tests combined with Chrome native webcrypto
 
 Open `test/index.html`
