@@ -71,7 +71,18 @@ export class LocalProvider extends EventEmitter {
         // System via pvpkcs11
         let pvpkcs11Path: string;
         if ((process.versions as any)["electron"]) {
-            pvpkcs11Path = path.join(__dirname, "../../../../pvpkcs11.dll");
+            let libName = "";
+            switch (os.platform()) {
+                case "win32":
+                    libName = "pvpkcs11.dll";
+                    break;
+                case "darwin":
+                    libName = "libpvpkcs11.dylib";
+                    break;
+                default:
+                    libName = "pvpkcs11.so";
+            }
+            pvpkcs11Path = path.join(__dirname, "..", "..", "..", "..", libName);
         } else {
             // Dev paths for different os
             switch (os.platform()) {
