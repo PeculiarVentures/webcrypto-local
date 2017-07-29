@@ -244,13 +244,15 @@ const CertHelper = {
 
       // Add params for Public key
       if (algorithm.name === 'RSA') {
+        algorithm.name = "RSASSA-PKCS1-v1_5";
         algorithm.modulusBits = modulus.valueBlock.valueHex.byteLength << 3;
         algorithm.publicExponent = publicExponent.valueBlock.valueHex;
       } else if (algorithm.name === 'EC') {
+        algorithm.name = "ECDSA";
         algorithm.namedCurve = json.subjectPublicKeyInfo.crv;
       }
 
-      const signature = this.prepareAlgorithm(json.signature || json.signatureAlgorithm);
+      // const signature = this.prepareAlgorithm(json.signature || json.signatureAlgorithm);
 
       return {
         type,
@@ -258,7 +260,7 @@ const CertHelper = {
         usages: ['verify'],
         algorithm: {
           ...algorithm,
-          ...signature,
+          // ...signature,
         },
       };
     }
