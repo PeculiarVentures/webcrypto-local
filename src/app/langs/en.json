@@ -7,7 +7,7 @@
   "Dialog.RemoveCertificate.Type.Request": "request",
   "Dialog.RemoveCertificate.Type.Key": "key",
   "Dialog.FortifyAuthorization.Title": "Fortify Authorization",
-  "Dialog.FortifyAuthorization.Description": "Compare this code to the one shown by your operating system for Fortify",
+  "Dialog.FortifyAuthorization.Description": "Compare this code to the one shown by Foritfy outside your browser.",
   "Dialog.IncorrectPin.Title": "You entered an incorrect pin",
   "Dialog.IncorrectPin.Btn.Accept": "Try again",
   "Dialog.TimeoutPin.Title": "Enter pin timeout",
