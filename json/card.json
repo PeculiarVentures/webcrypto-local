@@ -2,6 +2,11 @@
     "$schema": "./card.schema.json",
     "cards": [
         {
+            "atr": "3BD518008131FE7D8073C82110F4",
+            "name": "SafeNet eToken 5100",
+            "driver": "39b3d7a3662c4b48bb120d008dd18648"
+        },
+        {
             "atr": "3bff1100008131fe4d8025a00000005657444b3333300600d0",
             "name": "Datakey 32K PKI Smart Card Model 330",
             "driver": "39b3d7a3662c4b48bb120d008dd18648"
@@ -112,7 +117,8 @@
             "id": "39b3d7a3662c4b48bb120d008dd18648",
             "name": "SafeNET",
             "file": {
-                "windows": "/Windows/System32/eTPKCS11.dll"
+                "windows": "/Windows/System32/eTPKCS11.dll",
+                "osx": "/usr/local/lib/libeTPkcs11.dylib"
             }
         },
         {
