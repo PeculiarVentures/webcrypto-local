@@ -32,7 +32,7 @@
   "Sidebar.Header.Btn.Import": "Import",
   "Sidebar.Header.Btn.Create": "Create new",
 
-  "CertificateCreate.Header.Title": "Create Self-Signed Certificate",
+  "CertificateCreate.Header.Title": "Create Certificate Request or Self-Signed Certificate",
   "CertificateCreate.Header.Btn.Back": "Back",
   "CertificateCreate.Btn.Cancel": "Cancel",
   "CertificateCreate.Btn.Create": "Create",
