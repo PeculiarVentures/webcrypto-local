@@ -39,26 +39,26 @@ This is a link to a [Pull Request that added support for this device](https://gi
 
 We basically do the following in this PR:
 - Add a definition for the given ATR
-
-```
-     "cards": [
-          {
-             "atr": "3BD518008131FE7D8073C82110F4",
-             "name": "SafeNet eToken 5100",
-             "driver": "39b3d7a3662c4b48bb120d008dd18648"
-         },
- ```
- 
- - Ensure the reference driver knows where to find the PKCS#11 library on each platform
- 
- ```
-              {
-              "id": "39b3d7a3662c4b48bb120d008dd18648",
-              "name": "SafeNET",
-              "file": {
-                 "windows": "/Windows/System32/eTPKCS11.dll",
-                 "osx": "/usr/local/lib/libeTPkcs11.dylib"
-              }
- ```
- 
+- Ensure the reference driver knows where to find the PKCS#11 library on each platform
+  
  With these changes now webcrypto-local knows which PKCS#11 to load for this device.
+ 
+ So for this device we add something like:
+ 
+ ```
+ {
+	"cards": [{
+		"atr": "3BD518008131FE7D8073C82110F4",
+		"name": "SafeNet eToken 5100",
+		"driver": "39b3d7a3662c4b48bb120d008dd18648"
+	}],
+	"drivers": [{
+		"id": "39b3d7a3662c4b48bb120d008dd18648",
+		"name": "SafeNET",
+		"file": {
+			"windows": "/Windows/System32/eTPKCS11.dll",
+			"osx": "/usr/local/lib/libeTPkcs11.dylib"
+		}
+	}]
+}
+```
