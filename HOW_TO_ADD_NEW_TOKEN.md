@@ -33,9 +33,9 @@ Testing SCardListReaders         : Command successful.
 
 ```
 
-Here you see the `Current Reader ATR Value` and the `Current Reader Name`, with these we can update the card.json so webcrypto-local knows which driver to load for which card.
+Here you see the `Current Reader ATR Value` and the `Current Reader Name`, for 'token' form-factor devices this is all we need to update the card.json so webcrypto-local knows which driver to load for which card. For card form-factor devices we will need to [look up the name of the device](https://smartcard-atr.appspot.com). 
 
-This is a link to a [Pull Request that added support for this device](https://github.com/PeculiarVentures/webcrypto-local/commit/02e272b8e3efa64b96de8c841884dd97d55960b4).
+This is a link to a [Pull Request that added support for the above device](https://github.com/PeculiarVentures/webcrypto-local/commit/02e272b8e3efa64b96de8c841884dd97d55960b4).
 
 We basically do the following in this PR:
 - Add a definition for the given ATR
