@@ -43,7 +43,7 @@ We basically do the following in this PR:
   
  With these changes now webcrypto-local knows which PKCS#11 to load for this device.
  
- So for this device we add something like:
+ So for this device we would need a card.json that included something like:
  
  ```
  {
