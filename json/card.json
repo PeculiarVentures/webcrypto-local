@@ -133,10 +133,11 @@
 	],
 	"drivers": [{
 			"id": "39b3d7a3662c4b48bb120d008dd18648",
-			"name": "SafeNET",
+			"name": "SafeNet Authentication Client",
 			"file": {
 				"windows": "/Windows/System32/eTPKCS11.dll",
-				"osx": "/usr/local/lib/libeTPkcs11.dylib"
+				"osx": "/usr/local/lib/libeTPkcs11.dylib",
+				"linux": "/usr/lib/libeTPkcs11.so"
 			}
 		},
 		{
