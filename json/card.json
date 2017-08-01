@@ -16,6 +16,11 @@
 			"driver": "993988460d8f49a2ac519a2935f00533"
 		},
 		{
+			"atr": "3BF81300008131FE15597562696B657934D4",
+			"name": "Yubico Yubikey 4 OTP+U2F+CCID",
+			"driver": "993988460d8f49a2ac519a2935f00533"
+		},
+		{
 			"atr": "3BFE9400FF80B1FA451F0345737445494420",
 			"name": "Broken EstEID 1.1 warm",
 			"readOnly": true,
