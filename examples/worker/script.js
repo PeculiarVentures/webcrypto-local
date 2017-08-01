@@ -3,7 +3,7 @@
 // @ts-ignore
 var ws = new WebcryptoSocket.SocketProvider();
 
-ws.connect("localhost:8080")
+ws.connect("localhost:31337")
     .on("error", (e) => {
         console.error(e.error);
     })

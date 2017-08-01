@@ -4,7 +4,7 @@ import { LocalServer } from "../../local";
 
 const server = new LocalServer();
 
-server.listen("localhost:8080")
+server.listen("localhost:31337")
     .on("listening", (e: any) => {
         console.log(`${e}`);
         fs.writeFileSync("C:/tmp/log.md", `$User profile: {process.env["USERPROFILE"]}\n`);

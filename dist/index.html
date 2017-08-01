@@ -18,7 +18,7 @@
         const PROVIDER_ID = 0;
 
         var ws = new WebcryptoSocket.SocketProvider();
-        ws.connect("127.0.0.1:8080")
+        ws.connect("127.0.0.1:31337")
             .on("error", (e) => {
                 console.error(e.error);
             })
