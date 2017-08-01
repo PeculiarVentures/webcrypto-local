@@ -75,14 +75,16 @@ export class LocalProvider extends EventEmitter {
             switch (os.platform()) {
                 case "win32":
                     libName = "pvpkcs11.dll";
+                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", "..", "..", "..", libName);
                     break;
                 case "darwin":
                     libName = "libpvpkcs11.dylib";
+                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", "..", libName);
                     break;
                 default:
                     libName = "pvpkcs11.so";
+                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", "..", libName);
             }
-            pvpkcs11Path = path.join(__dirname, "..", "..", "..", "..", libName);
         } else {
             // Dev paths for different os
             switch (os.platform()) {
@@ -111,6 +113,7 @@ export class LocalProvider extends EventEmitter {
                     this.info.providers.push(new ProviderCryptoProto(info));
                     this.crypto[info.id] = crypto;
                 } catch (e) {
+                    this.emit("error", `Cannot load library by path ${pvpkcs11Path}`);
                     this.emit("error", e);
                 }
             } else {
