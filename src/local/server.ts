@@ -121,13 +121,13 @@ export class LocalServer extends EventEmitter {
                     } catch (err) {
                         providerID = "";
                     }
-                    this.emit("info", `Server: session:${sessionIdentitySHA256} ${providerID ? `provider:${providerID}` : ""}${e.message.action}`);
+                    this.emit("info", `Server: session:${sessionIdentitySHA256} ${providerID ? `provider:${providerID}` : ""} ${e.message.action}`);
                     this.onMessage(e.session, e.message)
                         .then(e.resolve, e.reject);
                 })()
                     .catch((error) => {
                         this.on("error", error);
-                    })
+                    });
             })
             .on("auth", (session) => {
                 this.emit("info", "Server: session auth");
