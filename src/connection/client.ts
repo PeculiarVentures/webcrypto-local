@@ -115,7 +115,7 @@ export class Client extends EventEmitter {
         this.getServerInfo(address)
             .then((info) => {
                 this.serviceInfo = info;
-                this.socket = new WebSocket(`ws://${address}`);
+                this.socket = new WebSocket(`wss://${address}`);
                 this.socket.binaryType = "arraybuffer";
                 this.socket.onerror = (e: any) => {
                     this.emit("error", new ClientErrorEvent(this, e.error));
@@ -271,7 +271,7 @@ export class Client extends EventEmitter {
      */
     protected getServerInfo(address: string): Promise<ServerInfo> {
         return new Promise((resolve, reject) => {
-            const url = `http://${address}${SERVER_WELL_KNOWN}`;
+            const url = `https://${address}${SERVER_WELL_KNOWN}`;
             if (self.fetch) {
                 fetch(url)
                     .then((response) => {

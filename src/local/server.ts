@@ -1,5 +1,6 @@
 import { EventEmitter } from "events";
 import * as graphene from "graphene-pk11";
+import * as https from "https";
 import { Convert } from "pvtsutils";
 import * as request from "request";
 import { ObjectProto } from "tsprotobuf";
@@ -52,10 +53,10 @@ export class LocalServer extends EventEmitter {
 
     protected memoryStorage: ServiceCryptoItem[] = [];
 
-    constructor() {
+    constructor(options: https.ServerOptions) {
         super();
 
-        this.server = new Server();
+        this.server = new Server(options);
         this.provider = new LocalProvider()
             .on("token", (info) => {
                 this.emit("info", `Provider:Tokens changed (+${info.added.length}/-${info.removed.length})`);

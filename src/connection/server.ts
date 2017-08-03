@@ -2,6 +2,7 @@ import { AsymmetricRatchet, Identity, PreKeyBundleProtocol } from "2key-ratchet"
 import { MessageSignedProtocol, PreKeyMessageProtocol } from "2key-ratchet";
 import { EventEmitter } from "events";
 import * as http from "http";
+import * as https from "https";
 import { assign, Convert } from "pvtsutils";
 import { ObjectProto } from "tsprotobuf";
 import * as url from "url";
@@ -128,8 +129,15 @@ export class Server extends EventEmitter {
     public identity: Identity;
     public storage: OpenSSLStorage;
 
-    protected httpServer: http.Server;
+    protected httpServer: https.Server;
     protected socketServer: WebSocket.server;
+    protected options: https.ServerOptions;
+
+    constructor(options: https.ServerOptions) {
+        super();
+
+        this.options = options;
+    }
 
     public on(event: "auth", listener: (session: Session) => void): this;
     public on(event: "listening", listener: (e: ServerListeningEvent) => void): this;
@@ -152,7 +160,7 @@ export class Server extends EventEmitter {
     }
 
     public listen(address: string) {
-        this.httpServer = http.createServer((request, response) => {
+        this.httpServer = https.createServer(this.options, (request: http.IncomingMessage, response: http.ServerResponse) => {
             (async () => {
                 if (request.method === "GET") {
                     const requestUrl = url.parse(request.url);
@@ -189,7 +197,7 @@ export class Server extends EventEmitter {
             });
 
         this.socketServer = new WebSocket.server({
-            httpServer: this.httpServer,
+            httpServer: this.httpServer as any,
             // You should not use autoAcceptConnections for production
             // applications, as it defeats all standard cross-origin protection
             // facilities built into the protocol and the browser.  You should

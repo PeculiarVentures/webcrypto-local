@@ -1,9 +1,16 @@
+import * as fs from "fs";
+import * as https from "https";
 import { Server } from "../../connection/server";
 import { ResultProto } from "../../core";
 
 (async () => {
 
-    const server = new Server();
+    const options: https.ServerOptions = {
+        cert: fs.readFileSync("/tmp/cert.pem"),
+        key: fs.readFileSync("/tmp/key.pem"),
+    };
+
+    const server = new Server(options);
 
     server.listen("localhost:8081")
         .on("listening", (e) => {
