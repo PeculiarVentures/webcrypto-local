@@ -1,13 +1,17 @@
 import * as fs from "fs";
+import * as https from "https";
 import { Notification } from "../../core/notification";
 import { LocalServer } from "../../local";
 
-const server = new LocalServer();
+const options: https.ServerOptions = {
+    cert: fs.readFileSync("/tmp/cert.pem"),
+    key: fs.readFileSync("/tmp/key.pem"),
+};
+const server = new LocalServer(options);
 
 server.listen("localhost:31337")
     .on("listening", (e: any) => {
         console.log(`${e}`);
-        fs.writeFileSync("C:/tmp/log.md", `$User profile: {process.env["USERPROFILE"]}\n`);
     })
     .on("info", (msg) => {
         console.log(msg);
