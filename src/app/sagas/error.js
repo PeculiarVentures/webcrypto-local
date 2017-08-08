@@ -11,7 +11,7 @@ function* errorHandler({ data, action }) {
   const { message, stack } = data;
   let errorMessage = '';
 
-  if (browserInfo() === 'Safari' || /Client.prototype.getServerInfo/.test(stack)) {
+  if (/Client.prototype.getServerInfo/.test(stack)) {
     errorMessage = 'NOT_SUPPORTED_LOCALHOST';
   } else if (action === 'request_create') {
     errorMessage = 'REQUEST_CREATE';
