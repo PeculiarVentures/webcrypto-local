@@ -13,7 +13,7 @@
     "lint": "eslint src",
     "lint-fix": "eslint src --fix",
     "test": "",
-    "deploy:gh-pages": "./scripts/deploy-ghpages.sh",
+    "deploy:gh-pages": "npm run build && ./scripts/deploy-ghpages.sh",
     "build:lib": "rollup -c rollup.config.lib.js",
     "build:web": "rollup -c",
     "build:server": "tsc",
