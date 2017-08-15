@@ -145,6 +145,7 @@ export class Server extends EventEmitter {
     public on(event: "disconnect", listener: (e: ServerDisconnectEvent) => void): this;
     public on(event: "error", listener: (e: ServerErrorEvent) => void): this;
     public on(event: "message", listener: (e: ServerMessageEvent) => void): this;
+    public on(event: "info", listener: (message: string) => void): this;
     public on(event: string | symbol, listener: Function): this {
         return super.on(event, listener);
     }
@@ -155,6 +156,7 @@ export class Server extends EventEmitter {
     public once(event: "disconnect", listener: (e: ServerDisconnectEvent) => void): this;
     public once(event: "error", listener: (e: ServerErrorEvent) => void): this;
     public once(event: "message", listener: (e: ServerMessageEvent) => void): this;
+    public once(event: "info", listener: (message: string) => void): this;
     public once(event: string | symbol, listener: Function): this {
         return super.once(event, listener);
     }
@@ -237,6 +239,8 @@ export class Server extends EventEmitter {
                             messageProto = await MessageSignedProtocol.importProto(buffer);
                         } catch (err) {
                             try {
+                                this.emit("info", `Cannot parse MessageSignedProtocol`);
+                                this.emit("error", new ServerErrorEvent(this, err))
                                 const preKeyProto = await PreKeyMessageProtocol.importProto(buffer);
                                 messageProto = preKeyProto.signedMessage;
                                 session.cipher = await AsymmetricRatchet.create(this.identity, preKeyProto);

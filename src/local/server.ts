@@ -109,6 +109,9 @@ export class LocalServer extends EventEmitter {
                 // TODO: Remove closed session from `this.sessions`
                 this.emit("info", `Server: Close session ${e.description} (code: ${e.reasonCode})`);
             })
+            .on("info", (message) => {
+                this.emit("info", message);
+            })
             .on("error", (e) => {
                 this.emit("error", e.error);
             })
@@ -582,7 +585,9 @@ export class LocalServer extends EventEmitter {
             }
             case CertificateStorageExportActionProto.ACTION: {
                 // prepare incoming data
+                this.emit("info", "CertificateStorageExportActionProto.importProto:Before");
                 const params = await CertificateStorageExportActionProto.importProto(action);
+                this.emit("info", "CertificateStorageExportActionProto.importProto:After");
                 const crypto = await this.provider.getCrypto(params.providerID);
                 const cert = this.getItemFromStorage(params.item).item as CryptoCertificate;
                 // do operation
