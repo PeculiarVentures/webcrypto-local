@@ -738,14 +738,14 @@ var ArrayBufferConverter = (function () {
     ArrayBufferConverter.set = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2, new Uint8Array(value)];
+                return [2 /*return*/, new Uint8Array(value)];
             });
         });
     };
     ArrayBufferConverter.get = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2, new Uint8Array(value).buffer];
+                return [2 /*return*/, new Uint8Array(value).buffer];
             });
         });
     };
@@ -754,7 +754,7 @@ var ArrayBufferConverter = (function () {
 function ProtobufElement(params) {
     return function (target) {
         var t = target;
-        t.localName = params.name || t.name;
+        t.localName = params.name || t.name || t.toString().match(/^function\s*([^\s(]+)/)[1];
         t.items = t.items || {};
         t.target = target;
         t.items = assign({}, t.items);
@@ -831,10 +831,10 @@ var ObjectProto = (function () {
                 switch (_a.label) {
                     case 0:
                         res = new this();
-                        return [4, res.importProto(data)];
+                        return [4 /*yield*/, res.importProto(data)];
                     case 1:
                         _a.sent();
-                        return [2, res];
+                        return [2 /*return*/, res];
                 }
             });
         });
@@ -865,23 +865,23 @@ var ObjectProto = (function () {
     };
     ObjectProto.prototype.importProto = function (data) {
         return __awaiter(this, void 0, void 0, function () {
-            var thisStatic, that, scheme, raw, _a, _b, _i, key, item, schemeValues, _c, schemeValues_1, schemeValue, _d, _e, _f, _g;
-            return __generator(this, function (_h) {
-                switch (_h.label) {
+            var thisStatic, that, scheme, raw, _a, _b, _i, key, item, schemeValues, _c, schemeValues_1, schemeValue, _d, _e, _f, _g, _h;
+            return __generator(this, function (_j) {
+                switch (_j.label) {
                     case 0:
                         thisStatic = this.constructor;
                         that = this;
-                        if (!(data instanceof ObjectProto)) return [3, 2];
-                        return [4, data.exportProto()];
+                        if (!(data instanceof ObjectProto)) return [3 /*break*/, 2];
+                        return [4 /*yield*/, data.exportProto()];
                     case 1:
-                        raw = _h.sent();
-                        return [3, 3];
+                        raw = _j.sent();
+                        return [3 /*break*/, 3];
                     case 2:
                         raw = data;
-                        _h.label = 3;
+                        _j.label = 3;
                     case 3:
                         try {
-                            scheme = thisStatic.protobuf.decode(new Uint8Array(raw)).toObject();
+                            scheme = thisStatic.protobuf.decode(new Uint8Array(raw));
                         }
                         catch (e) {
                             throw new Error("Error: Cannot decode message for " + thisStatic.localName + ".\n$ProtobufError: " + e.message);
@@ -890,9 +890,9 @@ var ObjectProto = (function () {
                         for (_b in thisStatic.items)
                             _a.push(_b);
                         _i = 0;
-                        _h.label = 4;
+                        _j.label = 4;
                     case 4:
-                        if (!(_i < _a.length)) return [3, 11];
+                        if (!(_i < _a.length)) return [3 /*break*/, 11];
                         key = _a[_i];
                         item = thisStatic.items[key];
                         schemeValues = scheme[item.name];
@@ -911,32 +911,32 @@ var ObjectProto = (function () {
                             that[key] = [];
                         }
                         _c = 0, schemeValues_1 = schemeValues;
-                        _h.label = 5;
+                        _j.label = 5;
                     case 5:
-                        if (!(_c < schemeValues_1.length)) return [3, 10];
+                        if (!(_c < schemeValues_1.length)) return [3 /*break*/, 10];
                         schemeValue = schemeValues_1[_c];
-                        if (!item.repeated) return [3, 7];
+                        if (!item.repeated) return [3 /*break*/, 7];
                         _e = (_d = that[key]).push;
-                        return [4, this.importItem(item, schemeValue)];
+                        return [4 /*yield*/, this.importItem(item, schemeValue)];
                     case 6:
-                        _e.apply(_d, [_h.sent()]);
-                        return [3, 9];
+                        _e.apply(_d, [_j.sent()]);
+                        return [3 /*break*/, 9];
                     case 7:
-                        _f = that;
-                        _g = key;
-                        return [4, this.importItem(item, schemeValue)];
+                        _g = that;
+                        _h = key;
+                        return [4 /*yield*/, this.importItem(item, schemeValue)];
                     case 8:
-                        _f[_g] = _h.sent();
-                        _h.label = 9;
+                        _g[_h] = _j.sent();
+                        _j.label = 9;
                     case 9:
                         _c++;
-                        return [3, 5];
+                        return [3 /*break*/, 5];
                     case 10:
                         _i++;
-                        return [3, 4];
+                        return [3 /*break*/, 4];
                     case 11:
                         this.raw = raw;
-                        return [2];
+                        return [2 /*return*/];
                 }
             });
         });
@@ -948,7 +948,7 @@ var ObjectProto = (function () {
                 switch (_d.label) {
                     case 0:
                         if (!this.hasChanged()) {
-                            return [2, this.raw];
+                            return [2 /*return*/, this.raw];
                         }
                         thisStatic = this.constructor;
                         that = this;
@@ -959,7 +959,7 @@ var ObjectProto = (function () {
                         _i = 0;
                         _d.label = 1;
                     case 1:
-                        if (!(_i < _a.length)) return [3, 6];
+                        if (!(_i < _a.length)) return [3 /*break*/, 6];
                         key = _a[_i];
                         item = thisStatic.items[key];
                         values = that[key];
@@ -969,9 +969,9 @@ var ObjectProto = (function () {
                         _c = 0, values_1 = values;
                         _d.label = 2;
                     case 2:
-                        if (!(_c < values_1.length)) return [3, 5];
+                        if (!(_c < values_1.length)) return [3 /*break*/, 5];
                         value = values_1[_c];
-                        return [4, this.exportItem(item, value)];
+                        return [4 /*yield*/, this.exportItem(item, value)];
                     case 3:
                         protobufValue = _d.sent();
                         if (item.repeated) {
@@ -986,13 +986,13 @@ var ObjectProto = (function () {
                         _d.label = 4;
                     case 4:
                         _c++;
-                        return [3, 2];
+                        return [3 /*break*/, 2];
                     case 5:
                         _i++;
-                        return [3, 1];
+                        return [3 /*break*/, 1];
                     case 6:
                         this.raw = new Uint8Array(thisStatic.protobuf.encode(protobuf).finish()).buffer;
-                        return [2, this.raw];
+                        return [2 /*return*/, this.raw];
                 }
             });
         });
@@ -1004,9 +1004,9 @@ var ObjectProto = (function () {
                 switch (_a.label) {
                     case 0:
                         thisStatic = this.constructor;
-                        if (!template.parser) return [3, 2];
+                        if (!template.parser) return [3 /*break*/, 2];
                         obj = value;
-                        return [4, obj.exportProto()];
+                        return [4 /*yield*/, obj.exportProto()];
                     case 1:
                         raw = _a.sent();
                         if (template.required && !raw) {
@@ -1015,25 +1015,25 @@ var ObjectProto = (function () {
                         if (raw) {
                             result = new Uint8Array(raw);
                         }
-                        return [3, 6];
+                        return [3 /*break*/, 6];
                     case 2:
                         if (template.required && value === void 0) {
                             throw new Error("Error: Paramter '" + template.name + "' is required in '" + thisStatic.localName + "' protobuf message.");
                         }
-                        if (!template.converter) return [3, 5];
-                        if (!value) return [3, 4];
-                        return [4, template.converter.set(value)];
+                        if (!template.converter) return [3 /*break*/, 5];
+                        if (!value) return [3 /*break*/, 4];
+                        return [4 /*yield*/, template.converter.set(value)];
                     case 3:
                         result = _a.sent();
                         _a.label = 4;
-                    case 4: return [3, 6];
+                    case 4: return [3 /*break*/, 6];
                     case 5:
                         if (value instanceof ArrayBuffer) {
                             value = new Uint8Array(value);
                         }
                         result = value;
                         _a.label = 6;
-                    case 6: return [2, result];
+                    case 6: return [2 /*return*/, result];
                 }
             });
         });
@@ -1045,36 +1045,36 @@ var ObjectProto = (function () {
                 switch (_a.label) {
                     case 0:
                         thisStatic = this.constructor;
-                        if (!template.parser) return [3, 4];
+                        if (!template.parser) return [3 /*break*/, 4];
                         parser = template.parser;
-                        if (!(value && value.byteLength)) return [3, 2];
-                        return [4, parser.importProto(new Uint8Array(value).buffer)];
+                        if (!(value && value.byteLength)) return [3 /*break*/, 2];
+                        return [4 /*yield*/, parser.importProto(new Uint8Array(value).buffer)];
                     case 1:
                         result = _a.sent();
-                        return [3, 3];
+                        return [3 /*break*/, 3];
                     case 2:
                         if (template.required) {
                             throw new Error("Error: Parameter '" + template.name + "' is required in '" + thisStatic.localName + "' protobuf message.");
                         }
                         _a.label = 3;
-                    case 3: return [3, 9];
+                    case 3: return [3 /*break*/, 9];
                     case 4:
-                        if (!template.converter) return [3, 8];
-                        if (!(value && value.byteLength)) return [3, 6];
-                        return [4, template.converter.get(value)];
+                        if (!template.converter) return [3 /*break*/, 8];
+                        if (!(value && value.byteLength)) return [3 /*break*/, 6];
+                        return [4 /*yield*/, template.converter.get(value)];
                     case 5:
                         result = _a.sent();
-                        return [3, 7];
+                        return [3 /*break*/, 7];
                     case 6:
                         if (template.required) {
                             throw new Error("Error: Parameter '" + template.name + "' is required in '" + thisStatic.localName + "' protobuf message.");
                         }
                         _a.label = 7;
-                    case 7: return [3, 9];
+                    case 7: return [3 /*break*/, 9];
                     case 8:
                         result = value;
                         _a.label = 9;
-                    case 9: return [2, result];
+                    case 9: return [2 /*return*/, result];
                 }
             });
         });
@@ -1182,10 +1182,10 @@ var Curve = (function () {
             });
         });
     };
+    Curve.NAMED_CURVE = "P-256";
+    Curve.DIGEST_ALGORITHM = "SHA-512";
     return Curve;
 }());
-Curve.NAMED_CURVE = "P-256";
-Curve.DIGEST_ALGORITHM = "SHA-512";
 
 var AES_ALGORITHM = { name: "AES-CBC", length: 256 };
 var Secret = (function () {
@@ -1262,9 +1262,9 @@ var Secret = (function () {
             });
         });
     };
+    Secret.subtle = crypto$1.subtle;
     return Secret;
 }());
-Secret.subtle = crypto$1.subtle;
 
 var ECPublicKey = (function () {
     function ECPublicKey() {
@@ -1629,14 +1629,14 @@ var BaseProtocol = (function (_super) {
     function BaseProtocol() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    __decorate([
+        ProtobufProperty({ id: 0, type: "uint32", defaultValue: 1 })
+    ], BaseProtocol.prototype, "version", void 0);
+    BaseProtocol = __decorate([
+        ProtobufElement({ name: "Base" })
+    ], BaseProtocol);
     return BaseProtocol;
 }(ObjectProto));
-__decorate([
-    ProtobufProperty({ id: 0, type: "uint32", defaultValue: 1 })
-], BaseProtocol.prototype, "version", void 0);
-BaseProtocol = __decorate([
-    ProtobufElement({ name: "Base" })
-], BaseProtocol);
 
 var ECDSAPublicKeyConverter = (function () {
     function ECDSAPublicKeyConverter() {
@@ -1696,11 +1696,12 @@ var DateConverter = (function () {
     return DateConverter;
 }());
 
-var IdentityProtocol = IdentityProtocol_1 = (function (_super) {
+var IdentityProtocol = (function (_super) {
     __extends(IdentityProtocol, _super);
     function IdentityProtocol() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    IdentityProtocol_1 = IdentityProtocol;
     IdentityProtocol.fill = function (identity) {
         return __awaiter(this, void 0, void 0, function () {
             var res;
@@ -1757,47 +1758,47 @@ var IdentityProtocol = IdentityProtocol_1 = (function (_super) {
             });
         });
     };
+    __decorate([
+        ProtobufProperty({ id: 1, converter: ECDSAPublicKeyConverter })
+    ], IdentityProtocol.prototype, "signingKey", void 0);
+    __decorate([
+        ProtobufProperty({ id: 2, converter: ECDHPublicKeyConverter })
+    ], IdentityProtocol.prototype, "exchangeKey", void 0);
+    __decorate([
+        ProtobufProperty({ id: 3 })
+    ], IdentityProtocol.prototype, "signature", void 0);
+    __decorate([
+        ProtobufProperty({ id: 4, converter: DateConverter })
+    ], IdentityProtocol.prototype, "createdAt", void 0);
+    IdentityProtocol = IdentityProtocol_1 = __decorate([
+        ProtobufElement({ name: "Identity" })
+    ], IdentityProtocol);
     return IdentityProtocol;
+    var IdentityProtocol_1;
 }(BaseProtocol));
-__decorate([
-    ProtobufProperty({ id: 1, converter: ECDSAPublicKeyConverter })
-], IdentityProtocol.prototype, "signingKey", void 0);
-__decorate([
-    ProtobufProperty({ id: 2, converter: ECDHPublicKeyConverter })
-], IdentityProtocol.prototype, "exchangeKey", void 0);
-__decorate([
-    ProtobufProperty({ id: 3 })
-], IdentityProtocol.prototype, "signature", void 0);
-__decorate([
-    ProtobufProperty({ id: 4, converter: DateConverter })
-], IdentityProtocol.prototype, "createdAt", void 0);
-IdentityProtocol = IdentityProtocol_1 = __decorate([
-    ProtobufElement({ name: "Identity" })
-], IdentityProtocol);
-var IdentityProtocol_1;
 
 var MessageProtocol = (function (_super) {
     __extends(MessageProtocol, _super);
     function MessageProtocol() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    __decorate([
+        ProtobufProperty({ id: 1, converter: ECDHPublicKeyConverter, required: true })
+    ], MessageProtocol.prototype, "senderRatchetKey", void 0);
+    __decorate([
+        ProtobufProperty({ id: 2, type: "uint32", required: true })
+    ], MessageProtocol.prototype, "counter", void 0);
+    __decorate([
+        ProtobufProperty({ id: 3, type: "uint32", required: true })
+    ], MessageProtocol.prototype, "previousCounter", void 0);
+    __decorate([
+        ProtobufProperty({ id: 4, converter: ArrayBufferConverter, required: true })
+    ], MessageProtocol.prototype, "cipherText", void 0);
+    MessageProtocol = __decorate([
+        ProtobufElement({ name: "Message" })
+    ], MessageProtocol);
     return MessageProtocol;
 }(BaseProtocol));
-__decorate([
-    ProtobufProperty({ id: 1, converter: ECDHPublicKeyConverter, required: true })
-], MessageProtocol.prototype, "senderRatchetKey", void 0);
-__decorate([
-    ProtobufProperty({ id: 2, type: "uint32", required: true })
-], MessageProtocol.prototype, "counter", void 0);
-__decorate([
-    ProtobufProperty({ id: 3, type: "uint32", required: true })
-], MessageProtocol.prototype, "previousCounter", void 0);
-__decorate([
-    ProtobufProperty({ id: 4, converter: ArrayBufferConverter, required: true })
-], MessageProtocol.prototype, "cipherText", void 0);
-MessageProtocol = __decorate([
-    ProtobufElement({ name: "Message" })
-], MessageProtocol);
 
 var MessageSignedProtocol = (function (_super) {
     __extends(MessageSignedProtocol, _super);
@@ -1865,66 +1866,66 @@ var MessageSignedProtocol = (function (_super) {
             });
         });
     };
+    __decorate([
+        ProtobufProperty({ id: 1, converter: ECDSAPublicKeyConverter, required: true })
+    ], MessageSignedProtocol.prototype, "senderKey", void 0);
+    __decorate([
+        ProtobufProperty({ id: 2, parser: MessageProtocol, required: true })
+    ], MessageSignedProtocol.prototype, "message", void 0);
+    __decorate([
+        ProtobufProperty({ id: 3, required: true })
+    ], MessageSignedProtocol.prototype, "signature", void 0);
+    MessageSignedProtocol = __decorate([
+        ProtobufElement({ name: "MessageSigned" })
+    ], MessageSignedProtocol);
     return MessageSignedProtocol;
 }(BaseProtocol));
-__decorate([
-    ProtobufProperty({ id: 1, converter: ECDSAPublicKeyConverter, required: true })
-], MessageSignedProtocol.prototype, "senderKey", void 0);
-__decorate([
-    ProtobufProperty({ id: 2, parser: MessageProtocol, required: true })
-], MessageSignedProtocol.prototype, "message", void 0);
-__decorate([
-    ProtobufProperty({ id: 3, required: true })
-], MessageSignedProtocol.prototype, "signature", void 0);
-MessageSignedProtocol = __decorate([
-    ProtobufElement({ name: "MessageSigned" })
-], MessageSignedProtocol);
 
 var PreKeyMessageProtocol = (function (_super) {
     __extends(PreKeyMessageProtocol, _super);
     function PreKeyMessageProtocol() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    __decorate([
+        ProtobufProperty({ id: 1, type: "uint32", required: true })
+    ], PreKeyMessageProtocol.prototype, "registrationId", void 0);
+    __decorate([
+        ProtobufProperty({ id: 2, type: "uint32" })
+    ], PreKeyMessageProtocol.prototype, "preKeyId", void 0);
+    __decorate([
+        ProtobufProperty({ id: 3, type: "uint32", required: true })
+    ], PreKeyMessageProtocol.prototype, "preKeySignedId", void 0);
+    __decorate([
+        ProtobufProperty({ id: 4, converter: ECDHPublicKeyConverter, required: true })
+    ], PreKeyMessageProtocol.prototype, "baseKey", void 0);
+    __decorate([
+        ProtobufProperty({ id: 5, parser: IdentityProtocol, required: true })
+    ], PreKeyMessageProtocol.prototype, "identity", void 0);
+    __decorate([
+        ProtobufProperty({ id: 6, parser: MessageSignedProtocol, required: true })
+    ], PreKeyMessageProtocol.prototype, "signedMessage", void 0);
+    PreKeyMessageProtocol = __decorate([
+        ProtobufElement({ name: "PreKeyMessage" })
+    ], PreKeyMessageProtocol);
     return PreKeyMessageProtocol;
 }(BaseProtocol));
-__decorate([
-    ProtobufProperty({ id: 1, type: "uint32", required: true })
-], PreKeyMessageProtocol.prototype, "registrationId", void 0);
-__decorate([
-    ProtobufProperty({ id: 2, type: "uint32" })
-], PreKeyMessageProtocol.prototype, "preKeyId", void 0);
-__decorate([
-    ProtobufProperty({ id: 3, type: "uint32", required: true })
-], PreKeyMessageProtocol.prototype, "preKeySignedId", void 0);
-__decorate([
-    ProtobufProperty({ id: 4, converter: ECDHPublicKeyConverter, required: true })
-], PreKeyMessageProtocol.prototype, "baseKey", void 0);
-__decorate([
-    ProtobufProperty({ id: 5, parser: IdentityProtocol, required: true })
-], PreKeyMessageProtocol.prototype, "identity", void 0);
-__decorate([
-    ProtobufProperty({ id: 6, parser: MessageSignedProtocol, required: true })
-], PreKeyMessageProtocol.prototype, "signedMessage", void 0);
-PreKeyMessageProtocol = __decorate([
-    ProtobufElement({ name: "PreKeyMessage" })
-], PreKeyMessageProtocol);
 
 var PreKeyProtocol = (function (_super) {
     __extends(PreKeyProtocol, _super);
     function PreKeyProtocol() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    __decorate([
+        ProtobufProperty({ id: 1, type: "uint32", required: true })
+    ], PreKeyProtocol.prototype, "id", void 0);
+    __decorate([
+        ProtobufProperty({ id: 2, converter: ECDHPublicKeyConverter, required: true })
+    ], PreKeyProtocol.prototype, "key", void 0);
+    PreKeyProtocol = __decorate([
+        ProtobufElement({ name: "PreKey" })
+    ], PreKeyProtocol);
     return PreKeyProtocol;
 }(BaseProtocol));
-__decorate([
-    ProtobufProperty({ id: 1, type: "uint32", required: true })
-], PreKeyProtocol.prototype, "id", void 0);
-__decorate([
-    ProtobufProperty({ id: 2, converter: ECDHPublicKeyConverter, required: true })
-], PreKeyProtocol.prototype, "key", void 0);
-PreKeyProtocol = __decorate([
-    ProtobufElement({ name: "PreKey" })
-], PreKeyProtocol);
 
 var PreKeySignedProtocol = (function (_super) {
     __extends(PreKeySignedProtocol, _super);
@@ -1949,37 +1950,37 @@ var PreKeySignedProtocol = (function (_super) {
     PreKeySignedProtocol.prototype.verify = function (key) {
         return Curve.verify(key, this.key.serialize(), this.signature);
     };
+    __decorate([
+        ProtobufProperty({ id: 3, converter: ArrayBufferConverter, required: true })
+    ], PreKeySignedProtocol.prototype, "signature", void 0);
+    PreKeySignedProtocol = __decorate([
+        ProtobufElement({ name: "PreKeySigned" })
+    ], PreKeySignedProtocol);
     return PreKeySignedProtocol;
 }(PreKeyProtocol));
-__decorate([
-    ProtobufProperty({ id: 3, converter: ArrayBufferConverter, required: true })
-], PreKeySignedProtocol.prototype, "signature", void 0);
-PreKeySignedProtocol = __decorate([
-    ProtobufElement({ name: "PreKeySigned" })
-], PreKeySignedProtocol);
 
 var PreKeyBundleProtocol = (function (_super) {
     __extends(PreKeyBundleProtocol, _super);
     function PreKeyBundleProtocol() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    __decorate([
+        ProtobufProperty({ id: 1, type: "uint32", required: true })
+    ], PreKeyBundleProtocol.prototype, "registrationId", void 0);
+    __decorate([
+        ProtobufProperty({ id: 2, parser: IdentityProtocol, required: true })
+    ], PreKeyBundleProtocol.prototype, "identity", void 0);
+    __decorate([
+        ProtobufProperty({ id: 3, parser: PreKeyProtocol })
+    ], PreKeyBundleProtocol.prototype, "preKey", void 0);
+    __decorate([
+        ProtobufProperty({ id: 4, parser: PreKeySignedProtocol, required: true })
+    ], PreKeyBundleProtocol.prototype, "preKeySigned", void 0);
+    PreKeyBundleProtocol = __decorate([
+        ProtobufElement({ name: "PreKeyBundle" })
+    ], PreKeyBundleProtocol);
     return PreKeyBundleProtocol;
 }(BaseProtocol));
-__decorate([
-    ProtobufProperty({ id: 1, type: "uint32", required: true })
-], PreKeyBundleProtocol.prototype, "registrationId", void 0);
-__decorate([
-    ProtobufProperty({ id: 2, parser: IdentityProtocol, required: true })
-], PreKeyBundleProtocol.prototype, "identity", void 0);
-__decorate([
-    ProtobufProperty({ id: 3, parser: PreKeyProtocol })
-], PreKeyBundleProtocol.prototype, "preKey", void 0);
-__decorate([
-    ProtobufProperty({ id: 4, parser: PreKeySignedProtocol, required: true })
-], PreKeyBundleProtocol.prototype, "preKeySigned", void 0);
-PreKeyBundleProtocol = __decorate([
-    ProtobufElement({ name: "PreKeyBundle" })
-], PreKeyBundleProtocol);
 
 var Stack = (function () {
     function Stack(maxSize) {
@@ -2241,9 +2242,9 @@ var ReceivingRatchet = (function (_super) {
     return ReceivingRatchet;
 }(SymmetricRatchet));
 
-function authenticate(flag, IKa, EKa, IKb, SPKb, OPKb) {
+function authenticateA(IKa, EKa, IKb, SPKb, OPKb) {
     return __awaiter(this, void 0, void 0, function () {
-        var DH1, DH2, DH3, DH4, DH, F, KM, keys;
+        var DH1, DH2, DH3, DH4, F, KM, keys;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4, Curve.deriveBytes(IKa.exchangeKey.privateKey, SPKb)];
@@ -2262,9 +2263,40 @@ function authenticate(flag, IKa, EKa, IKb, SPKb, OPKb) {
                     DH4 = _a.sent();
                     _a.label = 5;
                 case 5:
-                    DH = flag ? combine(DH1, DH2) : combine(DH2, DH1);
                     F = new Uint8Array(32).map(function () { return 0xff; }).buffer;
-                    KM = combine(F, DH, DH3, DH4);
+                    KM = combine(F, DH1, DH2, DH3, DH4);
+                    return [4, Secret.HKDF(KM, 1, void 0, INFO_TEXT)];
+                case 6:
+                    keys = _a.sent();
+                    return [4, Secret.importHMAC(keys[0])];
+                case 7: return [2, _a.sent()];
+            }
+        });
+    });
+}
+function authenticateB(IKb, SPKb, IKa, EKa, OPKb) {
+    return __awaiter(this, void 0, void 0, function () {
+        var DH1, DH2, DH3, DH4, F, KM, keys;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4, Curve.deriveBytes(SPKb.privateKey, IKa)];
+                case 1:
+                    DH1 = _a.sent();
+                    return [4, Curve.deriveBytes(IKb.exchangeKey.privateKey, EKa)];
+                case 2:
+                    DH2 = _a.sent();
+                    return [4, Curve.deriveBytes(SPKb.privateKey, EKa)];
+                case 3:
+                    DH3 = _a.sent();
+                    DH4 = new ArrayBuffer(0);
+                    if (!OPKb) return [3, 5];
+                    return [4, Curve.deriveBytes(OPKb, EKa)];
+                case 4:
+                    DH4 = _a.sent();
+                    _a.label = 5;
+                case 5:
+                    F = new Uint8Array(32).map(function () { return 0xff; }).buffer;
+                    KM = combine(F, DH1, DH2, DH3, DH4);
                     return [4, Secret.HKDF(KM, 1, void 0, INFO_TEXT)];
                 case 6:
                     keys = _a.sent();
@@ -2311,7 +2343,7 @@ var AsymmetricRatchet = (function (_super) {
                         ratchet.remoteIdentity.id = protocol.registrationId;
                         ratchet.remotePreKeyId = protocol.preKey.id;
                         ratchet.remotePreKeySignedId = protocol.preKeySigned.id;
-                        return [4, authenticate(true, identity, ratchet.currentRatchetKey, protocol.identity.exchangeKey, protocol.preKeySigned.key, protocol.preKey.key)];
+                        return [4, authenticateA(identity, ratchet.currentRatchetKey, protocol.identity.exchangeKey, protocol.preKeySigned.key, protocol.preKey.key)];
                     case 4:
                         rootKey = _b.sent();
                         return [3, 8];
@@ -2325,12 +2357,10 @@ var AsymmetricRatchet = (function (_super) {
                             throw new Error("Error: PreKey with id " + protocol.preKeySignedId + " not found");
                         }
                         preKey = void 0;
-                        if (protocol.preKeyId) {
-                            preKey = identity.preKeys[protocol.preKeyId];
-                        }
+                        preKey = identity.preKeys[protocol.preKeyId];
                         ratchet.remoteIdentity = RemoteIdentity.fill(protocol.identity);
                         ratchet.currentRatchetKey = signedPreKey;
-                        return [4, authenticate(false, identity, ratchet.currentRatchetKey, protocol.identity.exchangeKey, protocol.signedMessage.message.senderRatchetKey, preKey && preKey.publicKey)];
+                        return [4, authenticateB(identity, ratchet.currentRatchetKey, protocol.identity.exchangeKey, protocol.signedMessage.message.senderRatchetKey, preKey && preKey.privateKey)];
                     case 7:
                         rootKey = _b.sent();
                         _b.label = 8;
