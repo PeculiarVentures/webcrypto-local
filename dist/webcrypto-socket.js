@@ -2244,7 +2244,7 @@ var ReceivingRatchet = (function (_super) {
 
 function authenticateA(IKa, EKa, IKb, SPKb, OPKb) {
     return __awaiter(this, void 0, void 0, function () {
-        var DH1, DH2, DH3, DH4, F, KM, keys;
+        var DH1, DH2, DH3, DH4, _F, i, F, KM, keys;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4, Curve.deriveBytes(IKa.exchangeKey.privateKey, SPKb)];
@@ -2263,7 +2263,11 @@ function authenticateA(IKa, EKa, IKb, SPKb, OPKb) {
                     DH4 = _a.sent();
                     _a.label = 5;
                 case 5:
-                    F = new Uint8Array(32).map(function () { return 0xff; }).buffer;
+                    _F = new Uint8Array(32);
+                    for (i = 0; i < _F.length; i++) {
+                        _F[i] = 0xff;
+                    }
+                    F = _F.buffer;
                     KM = combine(F, DH1, DH2, DH3, DH4);
                     return [4, Secret.HKDF(KM, 1, void 0, INFO_TEXT)];
                 case 6:
@@ -2276,7 +2280,7 @@ function authenticateA(IKa, EKa, IKb, SPKb, OPKb) {
 }
 function authenticateB(IKb, SPKb, IKa, EKa, OPKb) {
     return __awaiter(this, void 0, void 0, function () {
-        var DH1, DH2, DH3, DH4, F, KM, keys;
+        var DH1, DH2, DH3, DH4, _F, i, F, KM, keys;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4, Curve.deriveBytes(SPKb.privateKey, IKa)];
@@ -2295,7 +2299,11 @@ function authenticateB(IKb, SPKb, IKa, EKa, OPKb) {
                     DH4 = _a.sent();
                     _a.label = 5;
                 case 5:
-                    F = new Uint8Array(32).map(function () { return 0xff; }).buffer;
+                    _F = new Uint8Array(32);
+                    for (i = 0; i < _F.length; i++) {
+                        _F[i] = 0xff;
+                    }
+                    F = _F.buffer;
                     KM = combine(F, DH1, DH2, DH3, DH4);
                     return [4, Secret.HKDF(KM, 1, void 0, INFO_TEXT)];
                 case 6:
