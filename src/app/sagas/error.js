@@ -5,15 +5,15 @@ import { DialogActions } from '../actions/ui';
 import { WSActions } from '../actions/state';
 import { WSController } from '../controllers/webcrypto_socket';
 import { EventChannel } from '../controllers';
-import { browserInfo } from '../helpers';
 
 function* errorHandler({ data, action }) {
   const { message, stack } = data;
   let errorMessage = '';
 
-  if (/Client.prototype.getServerInfo/.test(stack)) {
-    errorMessage = 'NOT_SUPPORTED_LOCALHOST';
-  } else if (action === 'request_create') {
+  // if (/Client.prototype.getServerInfo/.test(stack)) {
+  //   errorMessage = 'NOT_SUPPORTED_LOCALHOST';
+  // } else
+  if (action === 'request_create') {
     errorMessage = 'REQUEST_CREATE';
   } else if (action === 'import_item') {
     errorMessage = 'IMPORT_ITEM';
