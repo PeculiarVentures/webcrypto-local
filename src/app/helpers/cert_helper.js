@@ -237,22 +237,18 @@ const CertHelper = {
       }
 
       const json = cert.toJSON();
-      const algorithm = {
-        name: json.subjectPublicKeyInfo.kty,
-      };
+      const algorithm = this.prepareAlgorithm(json.signature);
       const { modulus, publicExponent } = cert.subjectPublicKeyInfo.parsedKey;
 
-      // Add params for Public key
-      if (algorithm.name === 'RSA') {
-        algorithm.name = "RSASSA-PKCS1-v1_5";
+      const algName = json.subjectPublicKeyInfo.kty;
+      if (algName === 'RSA') {
+        algorithm.name = 'RSASSA-PKCS1-v1_5';
         algorithm.modulusBits = modulus.valueBlock.valueHex.byteLength << 3;
         algorithm.publicExponent = publicExponent.valueBlock.valueHex;
-      } else if (algorithm.name === 'EC') {
-        algorithm.name = "ECDSA";
+      } else if (algName === 'EC') {
+        algorithm.name = 'ECDSA';
         algorithm.namedCurve = json.subjectPublicKeyInfo.crv;
       }
-
-      // const signature = this.prepareAlgorithm(json.signature || json.signatureAlgorithm);
 
       return {
         type,
@@ -260,7 +256,6 @@ const CertHelper = {
         usages: ['verify'],
         algorithm: {
           ...algorithm,
-          // ...signature,
         },
       };
     }
