@@ -64,19 +64,19 @@ export function* certificateImport(crypto, data) {
         try {
           importCert = yield crypto.certStorage.importCert('request', raw, algorithm(), usages);
         } catch (error) {
-          yield put(ErrorActions.error(error, 'import_certificate'));
+          yield put(ErrorActions.error(error, 'import_item'));
         }
       } else { // else certificate
         try {
           importCert = yield crypto.certStorage.importCert('x509', raw, algorithm(), usages);
         } catch (error) {
-          yield put(ErrorActions.error(error, 'import_certificate'));
+          yield put(ErrorActions.error(error, 'import_item'));
         }
       }
 
       return yield certificateSet(crypto, importCert);
     } catch (error) {
-      yield put(ErrorActions.error(error, 'import_certificate'));
+      yield put(ErrorActions.error(error, 'import_item'));
       return false;
     }
   }
