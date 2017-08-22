@@ -2,6 +2,10 @@
 	"$schema": "./card.schema.json",
 	"cards": [{
 			"atr": "3BD518008131FE7D8073C82110F4",
+			"name": "Aladdin eToken PRO USB 72K Java",
+			"driver": "39b3d7a3662c4b48bb120d008dd18648"
+		}, {
+			"atr": "3BD518008131FE7D8073C82110F4",
 			"name": "SafeNet eToken 5100",
 			"driver": "39b3d7a3662c4b48bb120d008dd18648"
 		},
