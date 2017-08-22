@@ -828,7 +828,7 @@ export class LocalServer extends EventEmitter {
                         // POST
                         options.method = "post";
                         options.headers = { "Content-Type": "application/ocsp-request" };
-                        options.body = new Buffer(params.request).toString("binary");
+                        options.body = new Buffer(params.request);
                     }
                     request(url, options, (err, response, body) => {
                         try {
