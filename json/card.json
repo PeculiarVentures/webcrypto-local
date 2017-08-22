@@ -16,7 +16,7 @@
 		},
 		{
 			"atr": "3BFC1300008131FE15597562696B65794E454F7233E1",
-			"name": "YubiKey NEO (PKI)",
+			"name": "Yubico Yubikey NEO OTP+U2F+CCID",
 			"driver": "993988460d8f49a2ac519a2935f00533"
 		},
 		{
