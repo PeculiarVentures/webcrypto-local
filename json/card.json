@@ -1,6 +1,10 @@
 {
 	"$schema": "./card.schema.json",
 	"cards": [{
+			"atr": "3B8980014A434F5032343252324A",
+			"name": "NXP JCOP J3D",
+			"driver": "993988460d8f49a2ac519a2935f11533"
+		},{
 			"atr": "3BD518008131FE7D8073C82110F4",
 			"name": "Aladdin eToken PRO USB 72K Java",
 			"driver": "39b3d7a3662c4b48bb120d008dd18648"
