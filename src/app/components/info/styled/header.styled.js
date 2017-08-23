@@ -46,7 +46,7 @@ export const Title = styled.div`
   line-height: 75px;
   vertical-align: middle;
   display: inline-block;
-  width: calc(100% - 110px);
+  width: calc(100% - 110px - 16px - 20px);
   ${props => props.theme.mixins.truncateText}
   padding-right: 20px;
   @media ${props => props.theme.media.mobile} {
@@ -195,4 +195,13 @@ export const HeaderBtn = styled.div`
     }
     return '';
   }}
+`;
+
+export const IconContainer = styled.div`
+  display: inline-block;
+  vertical-align: middle;
+  width: 16px;
+  margin-right: 20px;
+  fill: rgba(112, 125, 134, .6);
+  margin-top: 6px;
 `;

@@ -3,7 +3,7 @@ import { SelectField, SelectItem, SelectNative } from '../basic';
 import { ModalActions } from '../../actions/ui';
 import { ProviderActions, AppActions } from '../../actions/state';
 import enLang from '../../langs/en.json';
-import { ReloadIcon } from '../svg';
+import { ReloadIcon, Logo } from '../svg';
 import * as S from './styled/header.styled';
 
 export default class SidebarHeader extends Component {
@@ -65,7 +65,7 @@ export default class SidebarHeader extends Component {
     return (
       <S.SidebarHeader>
         <S.Logo>
-          Fortify <span>App</span>
+          <Logo />
         </S.Logo>
         <S.BtnsContainer>
           <S.Btn

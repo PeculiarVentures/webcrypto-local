@@ -99,11 +99,11 @@ export function getTheme(palette = defaultPalette) {
       iconColor: palette.secondaryButtonColor,
     },
     dialog: {
-      backgroundOverlay: colorManipulator.fade(palette.primaryColor, 0.8),
+      backgroundOverlay: colorManipulator.fade(palette.secondaryColor, 0.9),
       background: palette.white,
       borderColor: palette.secondaryTextColor1,
-      color: palette.primaryColor,
-      colorDescr: colorManipulator.fade(palette.primaryColor, 0.7),
+      color: '#606D76',
+      colorDescr: colorManipulator.fade('#707D86', 0.65),
       authorization: {
         borderColorNumber: colorManipulator.fade(palette.secondaryTextColor1, 0.4),
       },

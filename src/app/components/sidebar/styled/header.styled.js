@@ -2,16 +2,9 @@ import styled from 'styled-components';
 import { ImportIcon, CreateIcon } from '../../svg';
 import { Button } from '../../basic';
 
-export const Logo = styled.h1`
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 27px;
-  letter-spacing: 0.029em;
-  padding: 36px 33px 0;
-  color: #4DA3FC;
-  span {
-    color: #707D86;
-  }
+export const Logo = styled.div`
+  margin-left: 31px;
+  width: 92px;
 `;
 
 export const CreateIc = styled(CreateIcon)`
@@ -96,6 +89,7 @@ export const Btn = styled(Button)`
 `;
 
 export const SidebarHeader = styled.div`
+  padding-top: 27px;
   height: 279px;
   z-index: 1;
   position: relative;

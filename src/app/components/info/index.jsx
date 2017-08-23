@@ -174,6 +174,7 @@ export default class Info extends Component {
               onDownload={this.onDownloadhandler}
               onRemove={this.onRemoveHandler}
               onMenu={this.onMenuHandler}
+              type={selectedItem.type}
             />
           </HeaderContainer>
           <InfoContainer>

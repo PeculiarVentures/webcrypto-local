@@ -19,11 +19,11 @@ export const BtnsContainer = styled.div`
 `;
 
 export const Title = styled.div`
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 600;
-  letter-spacing: 0.036em;
+  letter-spacing: 0.026em;
   color: ${props => props.theme.dialog.color};
-  line-height: 24px;
+  line-height: 23px;
   white-space: pre-line;
   @media ${props => props.theme.media.mobile} {
     font-size: 15px;

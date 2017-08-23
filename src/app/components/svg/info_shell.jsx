@@ -10,17 +10,17 @@ const InfoShellIcon = props => (
   >
     <defs>
       <linearGradient id="i_gradient" data-filter="i_gradient" x1="0" x2="1" y1="0" y2="0">
-        <stop offset="0%" stopColor="#282E32" stopOpacity="0.3" />
-        <stop offset="10%" stopColor="#282E32" stopOpacity="0.3" />
-        <stop offset="20%" stopColor="#282E32" stopOpacity="0.3" />
-        <stop offset="30%" stopColor="#282E32" stopOpacity="0.3" />
-        <stop offset="40%" stopColor="#282E32" stopOpacity="0.3" />
-        <stop offset="50%" stopColor="#282E32" stopOpacity="0.3" />
-        <stop offset="60%" stopColor="#282E32" stopOpacity="0.3" />
-        <stop offset="70%" stopColor="#282E32" stopOpacity="0.3" />
-        <stop offset="80%" stopColor="#282E32" stopOpacity="0.3" />
-        <stop offset="90%" stopColor="#282E32" stopOpacity="0.3" />
-        <stop offset="100%" stopColor="#282E32" stopOpacity="0.3" />
+        <stop offset="0%" stopColor="#97A1A9" stopOpacity="0.3" />
+        <stop offset="10%" stopColor="#97A1A9" stopOpacity="0.3" />
+        <stop offset="20%" stopColor="#97A1A9" stopOpacity="0.3" />
+        <stop offset="30%" stopColor="#97A1A9" stopOpacity="0.3" />
+        <stop offset="40%" stopColor="#97A1A9" stopOpacity="0.3" />
+        <stop offset="50%" stopColor="#97A1A9" stopOpacity="0.3" />
+        <stop offset="60%" stopColor="#97A1A9" stopOpacity="0.3" />
+        <stop offset="70%" stopColor="#97A1A9" stopOpacity="0.3" />
+        <stop offset="80%" stopColor="#97A1A9" stopOpacity="0.3" />
+        <stop offset="90%" stopColor="#97A1A9" stopOpacity="0.3" />
+        <stop offset="100%" stopColor="#97A1A9" stopOpacity="0.3" />
       </linearGradient>
     </defs>
     <path

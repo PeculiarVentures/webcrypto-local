@@ -19,9 +19,24 @@ import {
   DropdownItemContainer,
   DropdownItemStyled,
   HeaderBtn,
+  IconContainer,
 } from './styled/header.styled';
+import { DocCertIcon, DocRequestIcon, DocKeyIcon } from '../svg';
 
 export default class Header extends Component {
+
+  static renderIcon(certType) {
+    switch (certType) {
+      case 'request':
+        return <DocRequestIcon />;
+      case 'certificate':
+        return <DocCertIcon />;
+      case 'key':
+        return <DocKeyIcon />;
+      default:
+        return null;
+    }
+  }
 
   static propTypes = {
     name: PropTypes.string,
@@ -32,6 +47,7 @@ export default class Header extends Component {
     loaded: PropTypes.bool,
     isKey: PropTypes.bool,
     readOnly: PropTypes.bool,
+    type: PropTypes.string,
   };
 
   static defaultProps = {
@@ -43,6 +59,7 @@ export default class Header extends Component {
     onMenu: () => {},
     isKey: false,
     readOnly: false,
+    type: '',
   };
 
   static contextTypes = {
@@ -275,6 +292,7 @@ export default class Header extends Component {
     const {
       loaded,
       name,
+      type,
     } = this.props;
     const { windowSize } = this.context;
     const { device } = windowSize;
@@ -286,6 +304,11 @@ export default class Header extends Component {
     return (
       <HeaderRoot>
         { this.renderMenuButton() }
+        {type && (
+          <IconContainer>
+            { Header.renderIcon(type) }
+          </IconContainer>
+        )}
         <Title>
           { name }
         </Title>
