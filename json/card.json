@@ -3,7 +3,7 @@
 		"cards": [{
 				"atr": "3bff0000008131004380318065b000000000120ffe82900000",
 				"name": "Gemalto IDPrime v2+ .NET",
-				"driver": "39b3d7a3662c4b48bb120d008dd18648"
+				"driver": "993988460d8f49a2ac519a5555f00533"
 			}, {
 				"atr": "3B8980014A434F5032343252324A",
 				"name": "NXP JCOP J3D",
@@ -186,7 +186,8 @@
 				"id": "993988460d8f49a2ac519a5555f00533",
 				"name": "Gemalto IDPrime MD 840 (PKI)",
 				"file": {
-					"osx": "/usr/lib/pkcs11/libidprimepkcs11.dylib"
+					"osx": "/usr/lib/pkcs11/libidprimepkcs11.dylib",
+					"windows": "/Program Files/Gemalto/DotNet PKCS11/gtop11dotnet64.dll"
 				}
 			}
 		]
