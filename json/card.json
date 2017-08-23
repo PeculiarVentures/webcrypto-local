@@ -1,7 +1,7 @@
 	{
 		"$schema": "./card.schema.json",
 		"cards": [{
-				"atr": "3B16964173747269643B021450",
+				"atr": "3bff0000008131004380318065b000000000120ffe82900000",
 				"name": "Gemalto IDPrime v2+ .NET",
 				"driver": "39b3d7a3662c4b48bb120d008dd18648"
 			}, {
