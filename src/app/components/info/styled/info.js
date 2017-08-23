@@ -79,7 +79,7 @@ export const ColCert = styled.div`
   ${props => (
     props.monospace
       ? 'font-family: Monaco, monospace !important;'
-      : 'font-family: inherit;font-weight: 600'
+      : 'font-family: inherit;'
   )};
   font-size: 12px;
   letter-spacing: 0.04em;

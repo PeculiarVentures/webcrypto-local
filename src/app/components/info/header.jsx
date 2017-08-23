@@ -1,5 +1,4 @@
 import React, { PropTypes, Component } from 'react';
-// import { SplitButton } from '../basic';
 import enLang from '../../langs/en.json';
 import {
   StyledShellTitle,
@@ -13,13 +12,14 @@ import {
   ArrowBackIconStyled,
   TripleDotIconStyled,
   MobileButtonStyled,
-  // StyledButton,
   DropdownMenu,
   DropdownItemsWrapper,
   DropdownItemContainer,
   DropdownItemStyled,
   HeaderBtn,
   IconContainer,
+  BtnDropdown,
+  BtnDropdownItem,
 } from './styled/header.styled';
 import { DocCertIcon, DocRequestIcon, DocKeyIcon } from '../svg';
 
@@ -238,17 +238,19 @@ export default class Header extends Component {
               title={enLang['Info.Header.Btn.Download']}
             >
               <DownloadIconStyled />
+            <BtnDropdown data-class="dropdown">
+              <BtnDropdownItem
+                onClick={(e) => { e.stopPropagation();this.handleDownload('pem'); }}
+              >
+                PEM
+              </BtnDropdownItem>
+              <BtnDropdownItem
+                onClick={(e) => { e.stopPropagation();this.handleDownload('raw'); }}
+              >
+                DER
+              </BtnDropdownItem>
+            </BtnDropdown>
             </HeaderBtn>
-          // : <SplitButton
-          //   secondary
-          //   disabled={!loaded}
-          //   onClick={() => this.handleDownload('pem')}
-          //   onSelect={value => this.handleDownload(value.toLowerCase())}
-          //   list={['PEM', 'DER']}
-          // >
-          //   <DownloadIconStyled />
-          //   { enLang['Info.Header.Btn.Download'] }
-          // </SplitButton>
         }
         {
           isKey
@@ -260,23 +262,7 @@ export default class Header extends Component {
             >
               <CopyIconStyled />
             </HeaderBtn>
-            // : <StyledButton
-            //   onClick={this.bindedHandleCopy}
-            //   secondary
-            //   disabled={!loaded}
-            // >
-            //   <CopyIconStyled />
-            //   { enLang['Info.Header.Btn.Copy'] }
-            // </StyledButton>
         }
-        {/*<StyledButton*/}
-          {/*onClick={this.bindedHandleRemove}*/}
-          {/*secondary*/}
-          {/*disabled={!loaded || readOnly}*/}
-        {/*>*/}
-          {/*<RemoveIconStyled />*/}
-          {/*{ enLang['Info.Header.Btn.Remove'] }*/}
-        {/*</StyledButton>*/}
         <HeaderBtn
           onClick={this.bindedHandleRemove}
           disabled={!loaded || readOnly}
