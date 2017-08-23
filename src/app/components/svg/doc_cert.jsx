@@ -1,49 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
-import uuid from 'uuid';
 
 const SVG = styled.svg``;
 
-const uuid1 = uuid();
-const uuid2 = uuid();
-const uuid3 = uuid();
-
 const DocCertIcon = props => (
   <SVG
-    viewBox="0 0 46 46"
+    viewBox="0 0 20 30"
     {...props}
   >
-    <defs>
-      <rect id={uuid1} width="34" height="42" rx="1" />
-      <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id={uuid3}>
-        <feOffset dy="2" in="SourceAlpha" result="shadowOffsetOuter1" />
-        <feGaussianBlur stdDeviation="20" in="shadowOffsetOuter1" result="shadowBlurOuter1" />
-        <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1" />
-        <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.0241168478 0" in="shadowBlurOuter1" />
-      </filter>
-      <mask id={uuid2} x="0" y="0" width="34" height="42" fill="#fff">
-        <use xlinkHref={`#${uuid1}`} />
-      </mask>
-    </defs>
-    <g transform="translate(6 1)" fill="none" fillRule="evenodd">
-      <use fill="#000" filter={`url(#${uuid3})`} xlinkHref={`#${uuid1}`} />
-      <use strokeOpacity=".1" stroke="#445059" mask={`url(#${uuid2})`} strokeWidth="2" fill="#FFF" xlinkHref={`#${uuid1}`} />
-      <rect fill="#445059" opacity=".5" x="6" y="8" width="22" height="2" rx="1" />
-      <rect fill="#445059" opacity=".5" x="9" y="12" width="16" height="2" rx="1" />
-      <rect fill="#445059" opacity=".25" x="8" y="19" width="18" height="1" rx=".5" />
-      <rect fill="#445059" opacity=".25" x="8" y="21" width="18" height="1" rx=".5" />
-      <rect fill="#445059" opacity=".25" x="8" y="23" width="18" height="1" rx=".5" />
-      <rect fill="#445059" opacity=".25" x="8" y="25" width="18" height="1" rx=".5" />
-      <rect fill="#445059" opacity=".25" x="8" y="27" width="18" height="1" rx=".5" />
-      <rect fill="#445059" opacity=".25" x="8" y="29" width="18" height="1" rx=".5" />
-      <rect fill="#445059" opacity=".25" x="8" y="31" width="18" height="1" rx=".5" />
-      <rect fill="#445059" opacity=".25" x="8" y="33" width="18" height="1" rx=".5" />
-      <circle fill="#009CFB" cx="29" cy="37" r="8" />
-      <path
-        d="M28.52 38.105l-1.4-1.398c-.392-.393-1.022-.39-1.413 0-.393.393-.39 1.024 0 1.414l2.046 2.047c.043.07.094.137.154.197.393.393.998.365 1.356-.057l4.36-5.13c.36-.424.33-1.08-.06-1.47-.392-.393-.997-.365-1.355.057l-3.69 4.34z"
-        fill="#FFF"
-      />
-    </g>
+    <path
+      d="M10.007 18L5.6 29.477 3.877 25.6 0 27.328l4.353-11.34C2.323 14.337 1.026 11.82 1.026 9c0-4.97 4.03-9 9-9s9 4.03 9 9c0 2.82-1.297 5.337-3.327 6.987l4.352 11.34-3.876-1.726-1.725 3.877L10.046 18h-.038zm-1.047-.062c-1.375-.163-2.655-.635-3.768-1.345l-3.398 8.852 2.584-1.15 1.15 2.583 3.432-8.94zm5.9-1.345c-1.113.71-2.393 1.182-3.768 1.345l3.432 8.94 1.15-2.584 2.584 1.15-3.398-8.85zM10.026 17c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c-3.314 0-6-2.686-6-6s2.686-6 6-6 6 2.686 6 6-2.686 6-6 6zm0-1c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5z"
+      fillRule="nonzero"
+    />
   </SVG>
 );
 

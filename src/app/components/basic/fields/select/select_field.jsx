@@ -6,11 +6,11 @@ import { ArrowSelectDownIcon } from '../../../svg';
 import { isEqual } from '../../../../helpers';
 
 const ArrowIconStyled = styled(ArrowSelectDownIcon)`
-  fill: ${props => props.theme.field.select.iconColor};
+  fill: rgba(112, 125, 134, 0.5);
   width: 8px;
   position: absolute;
   right: 10px;
-  bottom: 10px;
+  bottom: 12px;
   display: block;
   transform: rotateX(${props => (
     props.opened

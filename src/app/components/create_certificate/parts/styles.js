@@ -1,11 +1,12 @@
 import styled from 'styled-components';
 
 export const Title = styled.div`
-  font-size: 18px;
-  line-height: 24px;
+  font-size: 13px;
+  line-height: 18px;
   font-weight: 600;
-  letter-spacing: 0.036em;
-  color: ${props => props.theme.certificateCreate.colorBodyTitle};
+  letter-spacing: 0.09em;
+  color: #40484F;
+  text-transform: uppercase;
   @media ${props => props.theme.media.mobile} {
     font-size: 15px;
     line-height: 21px;
@@ -13,9 +14,9 @@ export const Title = styled.div`
 `;
 
 export const GroupContainer = styled.div`
-  margin-top: 54px;
-  padding: 0 5px 54px 5px;
-  border-bottom: 1px solid ${props => props.theme.certificateCreate.borderColorBodyGroup};;
+  margin-top: 30px;
+  padding: 0 20px 30px;
+  border-bottom: 1px solid rgba(214, 219, 222, .3);
   &:first-child {
     margin-top: 0;
   }
@@ -27,10 +28,7 @@ export const GroupContainer = styled.div`
 
 export const GroupPart = styled.div`
   font-size: 0;
-  margin-top: 28px;
-  &:nth-child(2) {
-    margin-top: 33px;
-  }
+  margin-top: 29px;
   @media ${props => props.theme.media.mobile} {
     margin-top: 15px;
     &:nth-child(2) {

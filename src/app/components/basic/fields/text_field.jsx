@@ -7,21 +7,21 @@ function getRandomNumber() {
 }
 
 const FieldLabelStyled = styled.label`
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 11px;
+  line-height: 15px;
   display: block;
   width: 100%;
   letter-spacing: 0.04em;
-  color: ${props => props.theme.field.text.labelColor};
-  margin-bottom: 4px;
+  color: rgba(112, 125, 134, .38);
+  margin-bottom: 8px;
 `;
 
 const ErrorTextStyled = styled.div`
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 2px);
   left: 0;
   width: 100%;
-  font-size: 12px;
+  font-size: 10px;
   line-height: 1.1;
   color: ${props => props.theme.field.text.colorInvalid};
   @media ${props => props.theme.media.mobile} {
@@ -32,9 +32,9 @@ const ErrorTextStyled = styled.div`
 const fieldReadyStyles = (props) => {
   const { theme, multiline, valid, disabled } = props;
   const transition = `${theme.basicTransition}ms`;
-  let placeholderColor = theme.field.text.placeholderColor;
-  let color = theme.field.text.color;
-  let borderColor = theme.field.text.borderColor;
+  let placeholderColor = 'rgba(97, 110, 119, .2)';
+  let color = '#616E77';
+  let borderColor = 'rgba(214, 219, 222, 0.62)';
   let borderColorActive = theme.field.text.borderColorActive;
 
   if (!valid) {
@@ -43,18 +43,18 @@ const fieldReadyStyles = (props) => {
   }
 
   if (disabled) {
-    placeholderColor = theme.field.text.placeholderColorDisabled;
-    color = theme.field.text.colorDisabled;
-    borderColor = theme.field.text.borderColorDisabled;
+    placeholderColor = 'rgba(97, 110, 119, .1)';
+    color = 'rgba(97, 110, 119, .6)';
+    borderColor = 'rgba(214, 219, 222, 0.4)';
     borderColorActive = borderColor;
   }
 
   return `
     width: 100%;
-    font-size: 12px;
+    font-size: 13px;
     letter-spacing: 0.07em;
     padding: ${multiline ? '10' : '0 10'}px;
-    height: ${multiline ? 100 : 28}px;
+    height: ${multiline ? 100 : 31}px;
     border-radius: ${theme.borderRadius}px;
     transition: border-color ${transition}, color ${transition};
     border: 1px solid ${borderColor};

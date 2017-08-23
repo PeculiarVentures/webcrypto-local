@@ -32,13 +32,13 @@ const defineBtnTypeStyles = (btnTheme, primary, secondary, disabled) => {
 };
 
 export const ButtonStyled = styled.button`
-  font-size: 13px;
+  font-size: 12px;
   letter-spacing: 0.03em;
   display: inline-block;
   vertical-align: top;
   padding: 0 20px;
   cursor: pointer;
-  height: 36px;
+  height: 32px;
   border-width: 1px;
   border-style: solid;
   font-family: inherit;

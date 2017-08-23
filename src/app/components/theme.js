@@ -1,18 +1,18 @@
 import { colorManipulator, stylesMixins } from '../helpers';
 
 export const defaultPalette = {
-  primaryColor: '#282E32',
+  primaryColor: '#404F48',
   secondaryColor: '#3D4346',
   secondaryTextColor1: '#97A1A9',
   secondaryTextColor2: '#EFEFEF',
   white: '#ffffff',
   black: '#000000',
-  gray: '#EBEDEF',
+  gray: '#D6DBDE',
   secondaryGray: '#9CA6AE',
-  primaryButtonColor: '#77D042',
+  primaryButtonColor: '#0ABE55',
   secondaryButtonColor: '#009CFB',
   errorColor: '#D92323',
-  statusOnline: '#65BB22',
+  statusOnline: '#0ABE55',
 };
 
 const media = {
@@ -49,9 +49,9 @@ export function getTheme(palette = defaultPalette) {
         background: palette.white,
       },
       default: {
-        color: palette.secondaryTextColor1,
-        borderColor: colorManipulator.fade(palette.secondaryTextColor1, 0.5),
-        background: '#FCFCFC',
+        color: '#707D86',
+        borderColor: '#D6DBDE',
+        background: 'transparent',
       },
       disabled: {
         color: palette.secondaryTextColor1,
@@ -62,7 +62,7 @@ export function getTheme(palette = defaultPalette) {
     snackbar: {
       color: '#40484F',
       backgroundColor: defaultPalette.white,
-      borderColor: defaultPalette.secondaryButtonColor,
+      borderColor: colorManipulator.fade(defaultPalette.secondaryGray, 0.2),
       shadow: `0px 2px 30px 0px ${colorManipulator.fade(palette.black, 0.1)}`,
       error: {
         borderColor: colorManipulator.fade(defaultPalette.errorColor, 0.5),
@@ -109,19 +109,22 @@ export function getTheme(palette = defaultPalette) {
       },
     },
     info: {
+      background: '#FEFDFD',
       header: {
         titleColor: palette.primaryColor,
-        borderColor: palette.gray,
+        borderColor: colorManipulator.fade(palette.gray, 0.3),
         burgerColor: palette.secondaryGray,
         activeBurgerColor: palette.secondaryButtonColor,
         dropdownColor: colorManipulator.fade(palette.white, 0.95),
         dropdownItemColor: palette.secondaryButtonColor,
         arrowBackColor: '#9CA6AE',
+        iconColor: colorManipulator.fade('#707D86', 0.5),
+        iconColorRed: '#DF2D2D',
       },
       infoTable: {
-        rowBorderColor: palette.gray,
-        mainTitleColor: palette.primaryColor,
-        subTitleColor: palette.secondaryTextColor1,
+        rowBorderColor: colorManipulator.fade(palette.gray, 0.3),
+        mainTitleColor: colorManipulator.fade(palette.primaryColor, 0.2),
+        subTitleColor: colorManipulator.fade(palette.primaryColor, 0.5),
         valueColor: palette.primaryColor,
       },
       empty: {
@@ -129,7 +132,7 @@ export function getTheme(palette = defaultPalette) {
       },
     },
     sidebar: {
-      background: palette.primaryColor,
+      background: palette.white,
       backgroundHeader: palette.secondaryColor,
       borderColorFooter: palette.secondaryColor,
       borderColorCert: palette.secondaryColor,

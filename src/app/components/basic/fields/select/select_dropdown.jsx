@@ -9,7 +9,7 @@ const DropdownStyled = styled.div`
   width: 100%;
   border-radius: ${props => props.theme.borderRadius}px;
   background: ${props => props.theme.field.select.backgroundDropdown};
-  border: 1px solid ${props => props.theme.field.select.borderColorDropdown};
+  border: 1px solid rgba(214, 219, 222, 0.62);
   max-height: 200px;
   overflow: auto;
   z-index: 1;

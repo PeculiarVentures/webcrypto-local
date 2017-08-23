@@ -8,7 +8,7 @@ const SelectItemStyled = styled.div`
     : props.theme.field.select.colorDropdownItem
   )};
   padding: 6px 10px;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 14px;
   letter-spacing: 0.075em;
   cursor: ${props => (

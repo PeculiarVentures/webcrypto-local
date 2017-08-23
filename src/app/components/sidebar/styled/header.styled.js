@@ -2,6 +2,18 @@ import styled from 'styled-components';
 import { ImportIcon, CreateIcon } from '../../svg';
 import { Button } from '../../basic';
 
+export const Logo = styled.h1`
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 27px;
+  letter-spacing: 0.029em;
+  padding: 36px 33px 0;
+  color: #4DA3FC;
+  span {
+    color: #707D86;
+  }
+`;
+
 export const CreateIc = styled(CreateIcon)`
   width: 14px;
   margin-top: -3px;
@@ -13,38 +25,25 @@ export const ImportIc = styled(ImportIcon)`
 `;
 
 export const BtnsContainer = styled.div`
-  background: ${props => props.theme.sidebar.backgroundHeader};
-  padding: 24px 30px;
+  padding: 40px 30px 26px;
+  position: relative;
+  &:after {
+    position: absolute;
+    width: calc(100% - 60px);
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 0);
+    content: '';
+    height: 1px;
+    background: ${props => props.theme.info.header.borderColor};
+  }
   @media ${props => props.theme.media.mobile} {
     padding: 12px;
   }
 `;
 
 export const Container = styled.div`
-  padding: 24px 25px 8px;
-  label {
-    color: rgba(151, 161, 169, 0.5);
-  }
-  input, select {
-    background: transparent;
-    color: ${props => (
-      props.disabled
-        ? 'rgba(151, 161, 169, 0.5)'
-        : '#D6DBDE'
-    )};
-    border-color: ${props => (
-      props.disabled
-        ? 'rgba(151, 161, 169, 0.5)'
-        : '#D6DBDE'
-    )};
-  }
-  svg {
-    fill: ${props => (
-      props.disabled
-        ? 'rgba(151, 161, 169, 0.5)'
-        : '#D6DBDE'
-    )};
-  }
+  padding: 40px 30px 30px;
   @media ${props => props.theme.media.mobile} {
     padding: 13px 12px 5px;
   }
@@ -63,15 +62,11 @@ export const ReloadBtn = styled.div`
   width: 40px;
   border-width: 1px;
   border-style: solid;
-  border-color: ${props => (
-    props.disabled
-      ? 'rgba(151, 161, 169, 0.5)'
-      : '#D6DBDE'
-  )};
+  border-color: rgba(214, 219, 222, 0.62);
   transition: border-color ${props => props.theme.basicTransition}ms;
   border-radius: 3px;
   margin-left: 6px;
-  height: 28px;
+  height: 31px;
   cursor: ${props => (
     props.disabled
       ? 'default'
@@ -82,16 +77,13 @@ export const ReloadBtn = styled.div`
     display: inline-block;
     vertical-align: middle;
     width: 16px;
-    fill: ${props => (
-      props.disabled
-      ? 'rgba(151, 161, 169, 0.5)'
-      : '#D6DBDE'
-    )};
+    fill: rgba(112, 125, 134, 0.5);
     transition: fill ${props => props.theme.basicTransition}ms;
   }
 `;
 
 export const Btn = styled(Button)`
+  text-align: left;
   margin-left: 6px;
   width: calc(50% - 3px);
   padding: 0 10px !important;
@@ -99,10 +91,12 @@ export const Btn = styled(Button)`
     margin-left: 0;
   }
   position: relative;
+  border: none;
+  background: transparent;
 `;
 
 export const SidebarHeader = styled.div`
-  height: 164px;
+  height: 279px;
   z-index: 1;
   position: relative;
   @media ${props => props.theme.media.mobile} {

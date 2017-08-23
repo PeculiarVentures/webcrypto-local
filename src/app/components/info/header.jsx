@@ -1,5 +1,5 @@
 import React, { PropTypes, Component } from 'react';
-import { SplitButton } from '../basic';
+// import { SplitButton } from '../basic';
 import enLang from '../../langs/en.json';
 import {
   StyledShellTitle,
@@ -13,11 +13,12 @@ import {
   ArrowBackIconStyled,
   TripleDotIconStyled,
   MobileButtonStyled,
-  StyledButton,
+  // StyledButton,
   DropdownMenu,
   DropdownItemsWrapper,
   DropdownItemContainer,
   DropdownItemStyled,
+  HeaderBtn,
 } from './styled/header.styled';
 
 export default class Header extends Component {
@@ -214,37 +215,58 @@ export default class Header extends Component {
         {
           isKey
           ? null
-          : <SplitButton
-            secondary
-            disabled={!loaded}
-            onClick={() => this.handleDownload('pem')}
-            onSelect={value => this.handleDownload(value.toLowerCase())}
-            list={['PEM', 'DER']}
-          >
-            <DownloadIconStyled />
-            { enLang['Info.Header.Btn.Download'] }
-          </SplitButton>
+            : <HeaderBtn
+              onClick={() => this.handleDownload('pem')}
+              disabled={!loaded}
+              title={enLang['Info.Header.Btn.Download']}
+            >
+              <DownloadIconStyled />
+            </HeaderBtn>
+          // : <SplitButton
+          //   secondary
+          //   disabled={!loaded}
+          //   onClick={() => this.handleDownload('pem')}
+          //   onSelect={value => this.handleDownload(value.toLowerCase())}
+          //   list={['PEM', 'DER']}
+          // >
+          //   <DownloadIconStyled />
+          //   { enLang['Info.Header.Btn.Download'] }
+          // </SplitButton>
         }
         {
           isKey
             ? null
-            : <StyledButton
+            : <HeaderBtn
               onClick={this.bindedHandleCopy}
-              secondary
               disabled={!loaded}
+              title={enLang['Info.Header.Btn.Copy']}
             >
               <CopyIconStyled />
-              { enLang['Info.Header.Btn.Copy'] }
-            </StyledButton>
+            </HeaderBtn>
+            // : <StyledButton
+            //   onClick={this.bindedHandleCopy}
+            //   secondary
+            //   disabled={!loaded}
+            // >
+            //   <CopyIconStyled />
+            //   { enLang['Info.Header.Btn.Copy'] }
+            // </StyledButton>
         }
-        <StyledButton
+        {/*<StyledButton*/}
+          {/*onClick={this.bindedHandleRemove}*/}
+          {/*secondary*/}
+          {/*disabled={!loaded || readOnly}*/}
+        {/*>*/}
+          {/*<RemoveIconStyled />*/}
+          {/*{ enLang['Info.Header.Btn.Remove'] }*/}
+        {/*</StyledButton>*/}
+        <HeaderBtn
           onClick={this.bindedHandleRemove}
-          secondary
           disabled={!loaded || readOnly}
+          title={enLang['Info.Header.Btn.Remove']}
         >
           <RemoveIconStyled />
-          { enLang['Info.Header.Btn.Remove'] }
-        </StyledButton>
+        </HeaderBtn>
       </ButtonsContainer>
     );
   }

@@ -18,7 +18,7 @@ export const Btn = styled(Button)`
 `;
 
 export const Container = styled.div`
-  max-width: 890px;
+  max-width: 800px;
   padding: 0 10px;
   margin: 0 auto;
   @media ${props => props.theme.media.mobile} {
@@ -27,9 +27,9 @@ export const Container = styled.div`
 `;
 
 export const Body = styled.div`
-  height: calc(100% - 84px);
+  height: calc(100% - 76px);
   overflow: auto;
-  padding: 75px 0 80px;
+  padding: 80px 0;
   @media ${props => props.theme.media.mobile} {
     height: calc(100% - 56px);
     padding: 36px 0;

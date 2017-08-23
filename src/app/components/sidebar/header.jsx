@@ -64,22 +64,23 @@ export default class SidebarHeader extends Component {
 
     return (
       <S.SidebarHeader>
+        <S.Logo>
+          Fortify <span>App</span>
+        </S.Logo>
         <S.BtnsContainer>
           <S.Btn
             disabled={!loaded || readOnly}
-            primary
-            onClick={this.onClickImportHandler}
-          >
-            <S.ImportIc />
-            { enLang['Sidebar.Header.Btn.Import'] }
-          </S.Btn>
-          <S.Btn
-            disabled={!loaded || readOnly}
-            primary
             onClick={this.onClickCreateHandler}
           >
             <S.CreateIc />
             { enLang['Sidebar.Header.Btn.Create'] }
+          </S.Btn>
+          <S.Btn
+            disabled={!loaded || readOnly}
+            onClick={this.onClickImportHandler}
+          >
+            <S.ImportIc />
+            { enLang['Sidebar.Header.Btn.Import'] }
           </S.Btn>
         </S.BtnsContainer>
         <S.Container disabled={!providers.length}>

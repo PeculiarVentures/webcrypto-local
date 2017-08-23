@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import enLang from '../../langs/en.json';
 
 const SidebarFooterStyled = styled.div`
-  border-top: 1px solid ${props => props.theme.sidebar.borderColorFooter};
-  padding: 13px 30px;
-  height: 44px;
+  padding: 28px 10px;
+  height: 73px;
+  text-align: center;
   @media ${props => props.theme.media.mobile} {
     height: 34px;
     padding: 8px 12px;
@@ -13,8 +13,8 @@ const SidebarFooterStyled = styled.div`
 `;
 
 const StatusIconStyled = styled.div`
-  width: 7px;
-  height: 7px;
+  width: 9px;
+  height: 9px;
   display: inline-block;
   vertical-align: top;
   border-radius: 50%;
@@ -29,18 +29,18 @@ const StatusIconStyled = styled.div`
     }
     return '';
   }};
-  margin-right: 9px;
-  margin-top: 5px;
+  margin-right: 11px;
+  margin-top: 4px;
   transition: background ${props => props.theme.basicTransition}ms;
 `;
 
 const StatusTextStyled = styled.div`
   font-size: 12px;
-  line-height: 16px;
+  line-height: 17px;
   letter-spacing: 0.02em;
   display: inline-block;
   vertical-align: top;
-  color: ${props => props.theme.sidebar.colorFooter};
+  color: #BDC5C9;
   @media ${props => props.theme.media.mobile} {
     font-size: 11px;
   }

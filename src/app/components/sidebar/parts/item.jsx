@@ -4,41 +4,38 @@ import { ItemActions } from '../../../actions/state';
 import { DocCertIcon, DocRequestIcon, DocKeyIcon } from '../../svg';
 
 const AlgName = styled.div`
-  font-size: 12px;
+  font-size: 10px;
   line-height: 16px;
   letter-spacing: 0.02em;
-  margin-top: 1px;
+  margin-top: 4px;
   display: inline-block;
   vertical-align: top;
   ${props => props.theme.mixins.truncateText}
-  width: calc(100% - 85px);
+  width: calc(100% - 60px);
   padding-right: 5px;
-  color: ${props => props.theme.sidebar.colorCertDescr};
-  @media ${props => props.theme.media.mobile} {
-    font-size: 11px;
-  }
+  opacity: 0.5;
+  transition: color 300ms;
 `;
 
 const Size = styled(AlgName)`
-  width: 85px;
+  width: 60px;
   padding-right: 0;
   text-align: right;
 `;
 
 const Name = styled.div`
-  font-size: 16px;
-  line-height: 22px;
-  font-weight: 600;
+  font-size: 14px;
+  line-height: 19px;
   letter-spacing: 0.03em;
-  color: ${props => props.theme.sidebar.colorCertName};
+  transition: color 300ms;
   ${props => props.theme.mixins.truncateText}
 `;
 
 const CertDescrStyled = styled.div`
   display: inline-block;
-  vertical-align: top;
-  margin-left: 16px;
-  width: calc(100% - 16px - 46px);
+  vertical-align: middle;
+  margin-left: 25px;
+  width: calc(100% - 25px - 20px);
   @media ${props => props.theme.media.mobile} {
     margin-left: 10px;
     width: calc(100% - 10px - 46px);
@@ -47,39 +44,36 @@ const CertDescrStyled = styled.div`
 
 const ContainerStyled = styled.div`
   font-size: 0;
-  padding: 27px 0;
-  border-bottom: 1px solid ${props => props.theme.sidebar.borderColorCert};
-  @media ${props => props.theme.media.mobileLandscape} {
-    padding: 16px 0;
-  }
 `;
 
 const IconStyled = styled.div`
   display: inline-block;
-  vertical-align: top;
-  width: 46px;
+  vertical-align: middle;
+  width: 20px;
+  transition: fill 300ms;
 `;
 
 const CertificateStyled = styled.div`
-  cursor: ${props => (
-    props.selected
-      ? 'default'
-      : 'pointer'
-  )};
-  padding: 0 20px;
-  transition: background ${props => props.theme.basicTransition}ms;
-  background: ${props => (
-    props.selected
-      ? props.theme.sidebar.backgroundCertActive
-      : 'transparent'
-  )};
+  cursor: pointer;
+  padding: 15px 30px 15px 50px;
+  color: #5F6B73;
+  fill: rgba(112, 125, 134, .8);
+  transition: opacity 300ms;
   &:hover {
-    background: ${props => props.theme.sidebar.backgroundCertActive};
+    color: #4DA3FC;
+    fill: #4DA3FC;
+    opacity: .6;
   }
-  margin-top: -1px;
-  @media ${props => props.theme.media.mobileLandscape} {
-    padding: 0 15px;
-  }
+  ${props => {
+    if (props.selected) {
+      return `
+        pointer-events: none;
+        color: #4DA3FC;
+        fill: #4DA3FC;
+      `;
+    }
+    return '';
+  }}
 `;
 
 const Item = (props, context) => {

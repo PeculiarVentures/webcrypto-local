@@ -27,8 +27,8 @@ const LoaderContainer = styled(RootStyled)`
 `;
 
 const HeaderContainer = styled.div`
-  padding: 0 25px;
-  height: 86px;
+  padding: 0 30px;
+  height: 76px;
   @media ${props => props.theme.media.mobile} {
     height: 56px;
     padding: 0 10px;
@@ -36,7 +36,7 @@ const HeaderContainer = styled.div`
 `;
 
 const InfoContainer = styled.div`
-  height: calc(100% - 86px);
+  height: calc(100% - 76px);
   overflow: auto;
   @media ${props => props.theme.media.mobile} {
     height: calc(100% - 56px);

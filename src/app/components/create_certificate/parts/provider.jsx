@@ -10,7 +10,7 @@ const TextFieldContainer = styled.div`
   width: calc(33.3% - 16px);
   vertical-align: top;
   margin-left: 24px;
-  margin-top: 28px;
+  margin-top: 17px;
   &:nth-child(3n-2) {
     margin-left: 0;
   }
