@@ -79,7 +79,7 @@
   "dependencies": {
     "2key-ratchet": "^1.0.6",
     "@types/asn1js": "0.0.1",
-    "@types/long": "^3.0.31",
+    "@types/long": "^3.0.32",
     "@types/node": "^7.0.42",
     "@types/node-notifier": "0.0.28",
     "@types/request": "0.0.44",
@@ -93,7 +93,7 @@
     "node-webcrypto-p11": "^1.1.16",
     "pcsclite": "^0.5.0",
     "pkcs11js": "^1.0.9",
-    "pkijs": "^2.0.60",
+    "pkijs": "^2.0.61",
     "preact": "^8.2.1",
     "preact-compat": "^3.17.0",
     "pvtsutils": "^1.0.2",
@@ -108,7 +108,7 @@
     "rollup-watch": "^3.2.2",
     "tslib": "^1.7.1",
     "tsprotobuf": "^1.0.12",
-    "typescript": "^2.5.0",
+    "typescript": "^2.5.1",
     "websocket": "^1.0.24"
   }
 }
