@@ -8,7 +8,7 @@ const SidebarBodyStyled = styled.div`
   height: calc(100% - 279px - 73px);
   overflow: auto;
   @media ${props => props.theme.media.mobile} {
-    height: calc(100% - 122px - 34px);
+    height: calc(100% - 194px - 34px);
   }
 `;
 

@@ -13,8 +13,10 @@ export const Title = styled.div`
   margin: 0 auto;
   text-align: center;
   @media ${props => props.theme.media.mobile} {
-    font-size: 16px;
+    font-size: 13px;
     line-height: 56px;
+    ${props => props.theme.mixins.truncateText}
+    width: calc(100% - 110px);
   }
 `;
 

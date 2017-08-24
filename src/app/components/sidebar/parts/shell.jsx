@@ -7,13 +7,7 @@ const StyledIcon = StyledAnimatedIcon(SidebarShellIcon, 's_gradient');
 export default class Shell extends Component {
   render() {
     return (
-      <div
-        style={{
-          padding: '27px 20px',
-        }}
-      >
-        <StyledIcon />
-      </div>
+      <StyledIcon />
     );
   }
 }

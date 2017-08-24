@@ -5,6 +5,9 @@ import { Button } from '../../basic';
 export const Logo = styled.div`
   margin-left: 31px;
   width: 92px;
+  @media ${props => props.theme.media.mobile} {
+    margin-left: 14px;
+  }
 `;
 
 export const CreateIc = styled(CreateIcon)`
@@ -32,6 +35,9 @@ export const BtnsContainer = styled.div`
   }
   @media ${props => props.theme.media.mobile} {
     padding: 12px;
+    &:after {
+      width: calc(100% - 24px);
+    }
   }
 `;
 
@@ -102,6 +108,6 @@ export const SidebarHeader = styled.div`
   z-index: 1;
   position: relative;
   @media ${props => props.theme.media.mobile} {
-    height: 122px;
+    height: 194px;
   }
 `;

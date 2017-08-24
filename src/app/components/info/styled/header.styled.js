@@ -51,7 +51,7 @@ export const Title = styled.div`
   @media ${props => props.theme.media.mobile} {
     font-size: 18px;
     text-align: center;
-    width: calc(100% - 38px - 38px);
+    width: calc(100% - 38px - 75px);
     line-height: 56px;
     margin: 0 auto;
     padding: 0;
@@ -149,7 +149,9 @@ export const DropdownItemStyled = styled.div`
   cursor: pointer;
   svg {
     margin-right: 8px;
+    margin-top: -4px;
     fill: ${props => props.theme.info.header.dropdownItemColor};
+    vertical-align: middle;
   }
 `;
 
