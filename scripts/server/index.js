@@ -50,7 +50,7 @@ export default (mode, config) => {
   }
 
   return new Promise((resolve, reject) => {
-    app.listen(3001, err => (
+    app.listen(3000, err => (
       err ? reject(err) : resolve()
     ));
   });

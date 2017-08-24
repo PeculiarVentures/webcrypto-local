@@ -50,31 +50,6 @@ export const Title = styled.div`
   }
 `;
 
-export const Col = styled.div`
-  display: inline-block;
-  width: calc(100% / 3);
-  vertical-align: top;
-  padding: 0 5px;
-  margin-top: 27px;
-  &:nth-child(-n+4) {
-    margin-top: 32px;
-  }
-  &:nth-child(3n+2) {
-    padding-left: 0;
-  }
-  &:nth-child(3n+4) {
-    padding-right: 0;
-  }
-  @media ${props => props.theme.media.mobile} {
-    width: calc(100% / 2);
-    margin-top: 20px !important;
-    padding: 0 0 0 6px !important;
-    &:nth-child(2n) {
-      padding-left: 0 !important;
-    }
-  }
-`;
-
 export const ColCert = styled.div`
   ${props => (
     props.monospace
@@ -106,26 +81,4 @@ export const ColCert = styled.div`
       margin-top: 2px;
     }
   }
-`;
-
-export const SubTitle = styled.div`
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  color: ${props => props.theme.info.infoTable.subTitleColor};
-  -webkit-user-select: auto;
-  -moz-user-select: auto;
-  -ms-user-select: auto;
-  user-select: auto;
-`;
-
-export const Value = styled.div`
-  margin-top: 4px;
-  font-size: 14px;
-  line-height: 18px;
-  letter-spacing: 0.05em;
-  color: ${props => props.theme.info.infoTable.valueColor};
-  -webkit-user-select: auto;
-  -moz-user-select: auto;
-  -ms-user-select: auto;
-  user-select: auto;
 `;

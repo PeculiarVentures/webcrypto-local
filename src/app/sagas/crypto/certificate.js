@@ -1,5 +1,10 @@
 import { put } from 'redux-saga/effects';
-import * as pkijs from 'pkijs';
+import CertificationRequest from 'pkijs/build/CertificationRequest';
+import Attribute from 'pkijs/build/Attribute';
+import Extensions from 'pkijs/build/Extensions';
+import Extension from 'pkijs/build/Extension';
+import Certificate from 'pkijs/build/Certificate';
+import { setEngine } from 'pkijs/build/common';
 import * as asn1js from 'asn1js';
 import { ErrorActions } from '../../actions/state';
 import { CertHelper } from '../../helpers';
@@ -109,7 +114,7 @@ export function* certificateCreate(crypto, data) {
       publicExponent: new Uint8Array([1, 0, 1]),
     }, data.keyInfo.algorithm))();
     const algorithmHash = algorithm.hash;
-    let pkcs10 = new pkijs.CertificationRequest();
+    let pkcs10 = new CertificationRequest();
 
     try {
       const {
@@ -117,7 +122,7 @@ export function* certificateCreate(crypto, data) {
         privateKey,
       } = yield crypto.subtle.generateKey(algorithm, extractable, usages);
 
-      pkijs.setEngine('Crypto', crypto, crypto.subtle);
+      setEngine('Crypto', crypto, crypto.subtle);
       pkcs10.version = 0;
       pkcs10 = CertHelper.decoratePkcs10Subject(pkcs10, data);
       pkcs10.attributes = [];
@@ -128,11 +133,11 @@ export function* certificateCreate(crypto, data) {
         { name: algorithmHash },
         pkcs10.subjectPublicKeyInfo.subjectPublicKey.valueBlock.valueHex,
       );
-      const attribute = new pkijs.Attribute({
+      const attribute = new Attribute({
         type: '1.2.840.113549.1.9.14',
-        values: [(new pkijs.Extensions({
+        values: [(new Extensions({
           extensions: [
-            new pkijs.Extension({
+            new Extension({
               extnID: '2.5.29.14',
               critical: false,
               extnValue: (new asn1js.OctetString({ valueHex: hash })).toBER(false),
@@ -174,7 +179,7 @@ export function* CMSCreate(crypto, data) {
 
     try {
       // Set engine
-      yield pkijs.setEngine('MsCAPI PKCS#11', crypto, crypto.subtle);
+      yield setEngine('MsCAPI PKCS#11', crypto, crypto.subtle);
 
       // Generate key
       const {
@@ -183,7 +188,7 @@ export function* CMSCreate(crypto, data) {
       } = yield crypto.subtle.generateKey(algorithm, false, usages);
 
       // Generate new certificate
-      let certificate = new pkijs.Certificate();
+      let certificate = new Certificate();
       certificate.version = 2;
       certificate.serialNumber = new asn1js.Integer({ value: 1 });
 
@@ -194,19 +199,19 @@ export function* CMSCreate(crypto, data) {
       certificate.notAfter.value.setFullYear(certificate.notAfter.value.getFullYear() + 1);
 
       certificate.extensions = [];
-      
+
       // "KeyUsage" extension
       const bitArray = new ArrayBuffer(1);
       const bitView = new Uint8Array(bitArray);
       bitView[0] |= 0x80; // digitalSignature
       const keyUsage = new asn1js.BitString({ valueHex: bitArray });
-      
+
       certificate.extensions.push(
-        new pkijs.Extension({
-          extnID: "2.5.29.15",
+        new Extension({
+          extnID: '2.5.29.15',
           critical: false,
           extnValue: keyUsage.toBER(false),
-          parsedValue: keyUsage // Parsed value for well-known extensions
+          parsedValue: keyUsage, // Parsed value for well-known extensions
         }),
       );
 

@@ -35,6 +35,7 @@ export default {
       async: true,
     }),
     new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en|ru/),
   ],
   module: {
     loaders: [],

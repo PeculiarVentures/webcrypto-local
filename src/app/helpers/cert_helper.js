@@ -1,12 +1,12 @@
 import * as asn1js from 'asn1js';
-import * as pkijs from 'pkijs';
+import Certificate from 'pkijs/build/Certificate';
+import CertificationRequest from 'pkijs/build/CertificationRequest';
+import AttributeTypeAndValue from 'pkijs/build/AttributeTypeAndValue';
 import moment from 'moment';
 import UUID from 'uuid';
 import { Convert } from 'pvtsutils';
 import { OIDS } from '../constants';
 import { regExps } from '../helpers';
-
-window.Convert = Convert;
 
 const OID = {
   '2.5.4.3': {
@@ -154,7 +154,7 @@ const CertHelper = {
 
   certRawToJson: function certRawToJson(raw) {
     const asn1 = asn1js.fromBER(raw);
-    const x509 = new pkijs.Certificate({ schema: asn1.result });
+    const x509 = new Certificate({ schema: asn1.result });
     const json = x509.toJSON();
 
     // Public Key
@@ -224,11 +224,11 @@ const CertHelper = {
       let type = '';
 
       try {
-        cert = new pkijs.Certificate({ schema: asn1.result });
+        cert = new Certificate({ schema: asn1.result });
         type = 'certificate';
       } catch (_error) {
         try {
-          cert = new pkijs.CertificationRequest({ schema: asn1.result });
+          cert = new CertificationRequest({ schema: asn1.result });
           type = 'request';
         } catch (error) {
           console.error(error);
@@ -266,7 +266,7 @@ const CertHelper = {
   decoratePkcs10Subject: function decoratePkcs10Subject(pkcs10, data) {
     Object.keys(data).map((key) => {
       if ({}.hasOwnProperty.call(subjectTypesAndValues, key) && data[key]) {
-        pkcs10.subject.typesAndValues.push(new pkijs.AttributeTypeAndValue({
+        pkcs10.subject.typesAndValues.push(new AttributeTypeAndValue({
           type: subjectTypesAndValues[key],
           value: new asn1js.Utf8String({ value: data[key] }),
         }));
@@ -279,11 +279,11 @@ const CertHelper = {
   decorateCertificateSubject: function decorateCertificateSubject(certificate, data) {
     Object.keys(data).map((key) => {
       if ({}.hasOwnProperty.call(subjectTypesAndValues, key) && data[key]) {
-        certificate.issuer.typesAndValues.push(new pkijs.AttributeTypeAndValue({
+        certificate.issuer.typesAndValues.push(new AttributeTypeAndValue({
           type: subjectTypesAndValues[key],
           value: new asn1js.BmpString({ value: data[key] }),
         }));
-        certificate.subject.typesAndValues.push(new pkijs.AttributeTypeAndValue({
+        certificate.subject.typesAndValues.push(new AttributeTypeAndValue({
           type: subjectTypesAndValues[key],
           value: new asn1js.BmpString({ value: data[key] }),
         }));

@@ -168,7 +168,7 @@ export default class Info extends Component {
             <Header
               readOnly={provider.readOnly}
               loaded={loaded}
-              name={selectedItem.name}
+              name={selectedItem.name || selectedItem.algorithm}
               isKey={selectedItem.type === 'key'}
               onCopy={this.onCopyHandler}
               onDownload={this.onDownloadhandler}

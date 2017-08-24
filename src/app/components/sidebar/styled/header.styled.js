@@ -11,12 +11,12 @@ export const Logo = styled.div`
 `;
 
 export const CreateIc = styled(CreateIcon)`
-  width: 14px;
+  width: 18px;
   margin-top: -3px;
 `;
 
 export const ImportIc = styled(ImportIcon)`
-  width: 17px;
+  width: 22px;
   margin-top: -2px;
 `;
 
@@ -100,6 +100,10 @@ export const Btn = styled(Button)`
   position: relative;
   border: none;
   background: transparent;
+  svg {
+    max-width: 23px;
+    max-height: 20px;
+  }
 `;
 
 export const SidebarHeader = styled.div`
