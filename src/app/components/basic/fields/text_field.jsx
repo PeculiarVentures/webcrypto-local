@@ -12,7 +12,7 @@ const FieldLabelStyled = styled.label`
   display: block;
   width: 100%;
   letter-spacing: 0.04em;
-  color: rgba(112, 125, 134, .38);
+  color: ${props => props.theme.field.text.labelColor};
   margin-bottom: 8px;
 `;
 
@@ -32,9 +32,9 @@ const ErrorTextStyled = styled.div`
 const fieldReadyStyles = (props) => {
   const { theme, multiline, valid, disabled } = props;
   const transition = `${theme.basicTransition}ms`;
-  let placeholderColor = 'rgba(97, 110, 119, .2)';
-  let color = '#616E77';
-  let borderColor = 'rgba(214, 219, 222, 0.62)';
+  let placeholderColor = theme.field.text.placeholderColor;
+  let color = theme.field.text.color;
+  let borderColor = theme.field.text.borderColor;
   let borderColorActive = theme.field.text.borderColorActive;
 
   if (!valid) {
@@ -43,9 +43,9 @@ const fieldReadyStyles = (props) => {
   }
 
   if (disabled) {
-    placeholderColor = 'rgba(97, 110, 119, .1)';
-    color = 'rgba(97, 110, 119, .6)';
-    borderColor = 'rgba(214, 219, 222, 0.4)';
+    placeholderColor = theme.field.text.placeholderColorDisabled;
+    color = theme.field.text.colorDisabled;
+    borderColor = theme.field.text.borderColorDisabled;
     borderColorActive = borderColor;
   }
 
