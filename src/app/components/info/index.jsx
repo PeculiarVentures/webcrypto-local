@@ -143,8 +143,8 @@ export default class Info extends Component {
             <div
               style={{
                 width: '100%',
-                maxWidth: 700,
-                padding: '75px 20px',
+                maxWidth: 780,
+                padding: '85px 10px',
                 margin: '0 auto',
               }}
             >

@@ -35,7 +35,7 @@ export default class SidebarBody extends Component {
 
     if (windowSize.device === 'mobile') {
       return (
-        <EmptyBody blackBg />
+        <EmptyBody />
       );
     }
     return null;
