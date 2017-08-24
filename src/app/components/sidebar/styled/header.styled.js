@@ -46,6 +46,14 @@ export const SelectContainer = styled.div`
   display: inline-block;
   vertical-align: bottom;
   width: calc(100% - 6px - 40px);
+  [data-class="field"] {
+    background: #F9FAFB;
+    box-shadow: 0 3px 10px 0 rgba(64,72,79,0.05);
+    height: 40px;
+  }
+  [data-class="select_arrow"] {
+    bottom: 16px;
+  }
 `;
 
 export const ReloadBtn = styled.div`
@@ -59,7 +67,7 @@ export const ReloadBtn = styled.div`
   transition: border-color ${props => props.theme.basicTransition}ms;
   border-radius: 3px;
   margin-left: 6px;
-  height: 31px;
+  height: 40px;
   cursor: ${props => (
     props.disabled
       ? 'default'

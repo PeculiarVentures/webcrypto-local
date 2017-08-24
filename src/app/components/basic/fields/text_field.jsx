@@ -298,6 +298,7 @@ export default class TextField extends Component {
           onClick={this.onClickHandler}
           onDrop={onDrop}
           readOnly={readOnly}
+          data-class="field"
         />
         {
           type === 'date' && deviceType === 'phone'

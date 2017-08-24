@@ -10,8 +10,8 @@ export const defaultPalette = {
   gray: '#D6DBDE',
   secondaryGray: '#9CA6AE',
   primaryButtonColor: '#0ABE55',
-  secondaryButtonColor: '#009CFB',
-  errorColor: '#D92323',
+  secondaryButtonColor: '#4DA3FC',
+  errorColor: '#DF2D2D',
   statusOnline: '#0ABE55',
 };
 

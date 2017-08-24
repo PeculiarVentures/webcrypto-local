@@ -192,6 +192,7 @@ export default class SelectField extends Component {
         />
         <ArrowIconStyled
           opened={opened}
+          data-class="select_arrow"
         />
         { this.renderDropdown() }
       </SelectFieldContainerStyled>
