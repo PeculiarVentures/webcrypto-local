@@ -193,8 +193,23 @@ export function* CMSCreate(crypto, data) {
       certificate.notAfter.value = new Date();
       certificate.notAfter.value.setFullYear(certificate.notAfter.value.getFullYear() + 1);
 
-      // Extensions are not a part of certificate by default, it's an optional array
       certificate.extensions = [];
+      
+      // "KeyUsage" extension
+      const bitArray = new ArrayBuffer(1);
+      const bitView = new Uint8Array(bitArray);
+      bitView[0] |= 0x80; // digitalSignature
+      const keyUsage = new asn1js.BitString({ valueHex: bitArray });
+      
+      certificate.extensions.push(
+        new pkijs.Extension({
+          extnID: "2.5.29.15",
+          critical: false,
+          extnValue: keyUsage.toBER(false),
+          parsedValue: keyUsage // Parsed value for well-known extensions
+        }),
+      );
+
 
       yield certificate.subjectPublicKeyInfo.importKey(publicKey);
       yield certificate.sign(privateKey, 'SHA-256');
