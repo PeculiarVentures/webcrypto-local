@@ -121,6 +121,7 @@ export default class SidebarHeader extends Component {
             }
           </S.SelectContainer>
           <S.ReloadBtn
+            title="Reload"
             disabled={disabledReload}
             onClick={() => {
               if (!disabledReload) {

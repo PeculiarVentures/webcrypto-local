@@ -94,6 +94,8 @@
     "pcsclite": "^0.5.0",
     "pkcs11js": "^1.0.9",
     "pkijs": "^2.0.60",
+    "preact": "^8.2.1",
+    "preact-compat": "^3.17.0",
     "pvtsutils": "^1.0.2",
     "pvutils": "^1.0.8",
     "quantizer": "^2.1.0",

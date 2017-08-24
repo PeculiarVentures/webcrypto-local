@@ -51,7 +51,7 @@
   "CertificateCreate.KeyInfo.Field.PublicExponent": "Public exponent",
   "CertificateCreate.KeyInfo.Usage.Title": "Usage",
   "CertificateCreate.Provider.Title": "Provider info",
-  "CertificateCreate.Provider.Field.Name": "Name",
+  "CertificateCreate.Provider.Field.Name": "Select Provider",
   "CertificateCreate.Options.Title": "Options",
   "CertificateCreate.Options.SelfSigned": "Make a self-signed certificate instead of a Certificate Request",
 
