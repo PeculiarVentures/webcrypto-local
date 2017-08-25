@@ -3328,7 +3328,6 @@ var Client = (function (_super) {
             };
             _this.socket.onopen = function (e) {
                 (function () { return __awaiter(_this, void 0, void 0, function () {
-                    var _this = this;
                     var storage, identity, remoteIdentityId, bundle, _a;
                     return __generator(this, function (_b) {
                         switch (_b.label) {
@@ -3359,15 +3358,6 @@ var Client = (function (_super) {
                                 return [4, storage.saveRemoteIdentity(remoteIdentityId, this.cipher.remoteIdentity)];
                             case 8:
                                 _b.sent();
-                                this.cipher.on("update", function () {
-                                    _this.cipher.toJSON()
-                                        .then(function (json) {
-                                        storage.saveSession(remoteIdentityId, _this.cipher);
-                                    })
-                                        .catch(function (error) {
-                                        console.error(error);
-                                    });
-                                });
                                 this.emit("listening", new ClientListeningEvent(this, address));
                                 return [2];
                         }
@@ -6346,14 +6336,30 @@ var SocketSubtleCrypto = (function (_super) {
     };
     SocketSubtleCrypto.prototype.digest = function (algorithm, data) {
         return __awaiter(this, void 0, void 0, function () {
-            var alg, buffer, algProto, action, result;
+            var res, alg, err_1, buffer, algProto, action, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         alg = PrepareAlgorithm(algorithm);
+                        if (!self.crypto) return [3, 4];
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4, self.crypto.subtle.digest(alg, data)];
+                    case 2:
+                        res = _a.sent();
+                        return [3, 4];
+                    case 3:
+                        err_1 = _a.sent();
+                        console.warn("Cannot do native digest for algorithm '" + alg.name + "'");
+                        return [3, 4];
+                    case 4:
+                        if (res) {
+                            return [2, res];
+                        }
                         buffer = PrepareData(data, "data");
                         return [4, _super.prototype.digest.call(this, alg, buffer)];
-                    case 1:
+                    case 5:
                         _a.sent();
                         algProto = new AlgorithmProto();
                         algProto.fromAlgorithm(alg);
@@ -6362,7 +6368,7 @@ var SocketSubtleCrypto = (function (_super) {
                         action.data = buffer.buffer;
                         action.providerID = this.service.id;
                         return [4, this.service.client.send(action)];
-                    case 2:
+                    case 6:
                         result = _a.sent();
                         return [2, result];
                 }
