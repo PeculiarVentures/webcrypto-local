@@ -9,7 +9,7 @@ const DropdownStyled = styled.div`
   width: 100%;
   border-radius: ${props => props.theme.borderRadius}px;
   background: ${props => props.theme.field.select.backgroundDropdown};
-  border: 1px solid rgba(214, 219, 222, 0.62);
+  border: 1px solid ${props => props.theme.field.text.borderColor};
   max-height: 200px;
   overflow: auto;
   z-index: 1;
@@ -31,6 +31,12 @@ export default class SelectDropdown extends Component {
       ]),
       index: PropTypes.number,
     }),
+  };
+
+  static defaultProps = {
+    children: [],
+    onChange: null,
+    selectedItemData: {},
   };
 
   constructor(props) {

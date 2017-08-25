@@ -6,6 +6,10 @@ const Browser = {
   Firefox: 'Firefox',
 };
 
+/**
+ * Detect browser name
+ * @returns {string} - browser name
+ */
 export default function browserInfo() {
   const userAgent = window.navigator.userAgent;
 

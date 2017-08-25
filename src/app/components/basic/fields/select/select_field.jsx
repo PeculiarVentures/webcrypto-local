@@ -60,6 +60,16 @@ export default class SelectField extends Component {
     disabled: PropTypes.bool,
   };
 
+  static defaultProps = {
+    labelText: '',
+    placeholder: '',
+    children: [],
+    onChange: null,
+    validation: '',
+    errorText: '',
+    disabled: false,
+  };
+
   constructor(props) {
     super();
 

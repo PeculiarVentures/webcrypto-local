@@ -1,6 +1,11 @@
 import { put } from 'redux-saga/effects';
 import { ErrorActions } from '../../actions/state';
 
+/**
+ * Get provider key IDs
+ * @param {object} crypto
+ * @returns {Promise|Array}
+ */
 export function* keyGetIDs(crypto) {
   if (crypto) {
     try {
@@ -13,6 +18,12 @@ export function* keyGetIDs(crypto) {
   return [];
 }
 
+/**
+ * Set provider key
+ * @param {object} crypto
+ * @param {string} key
+ * @returns {Promise|[]}
+ */
 export function* keySet(crypto, key) {
   if (crypto) {
     try {
@@ -25,6 +36,12 @@ export function* keySet(crypto, key) {
   return [];
 }
 
+/**
+ * Get provider key
+ * @param {object} crypto
+ * @param {string} id
+ * @returns {Promise|Boolean}
+ */
 export function* keyGet(crypto, id) {
   if (crypto) {
     try {
@@ -37,7 +54,12 @@ export function* keyGet(crypto, id) {
   return false;
 }
 
-
+/**
+ * Remove provider key
+ * @param {object} crypto
+ * @param {string} id
+ * @returns {boolean}
+ */
 export function* keyRemove(crypto, id) {
   if (crypto) {
     try {

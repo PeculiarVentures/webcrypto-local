@@ -85,7 +85,7 @@ export function getTheme(palette = defaultPalette) {
         iconColor: palette.secondaryButtonColor,
         backgroundDropdown: palette.white,
         borderColorDropdown: colorManipulator.fade(palette.secondaryTextColor1, 0.5),
-        borderColorDropdownItem: colorManipulator.fade(palette.secondaryTextColor1, 0.3),
+        borderColorDropdownItem: colorManipulator.fade(palette.secondaryTextColor1, 0.1),
         colorDropdownItem: palette.primaryColor,
         colorDropdownItemSelected: palette.secondaryButtonColor,
       },

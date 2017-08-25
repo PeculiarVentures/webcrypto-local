@@ -95,6 +95,24 @@ const subjectNames = {
   '1.3.6.1.2.1.1.5': 'Host Name',
 };
 
+/**
+ * Certificate decode/encode helper
+ * @type {{
+ *   name2str: CertHelper.name2str,
+ *   formatDer: CertHelper.formatDer,
+ *   getKeyType: CertHelper.getKeyType,
+ *   prepareAlgorithm: CertHelper.prepareAlgorithm,
+ *   addSpaceAfterSecondCharset: CertHelper.addSpaceAfterSecondCharset,
+ *   certRawToJson: CertHelper.certRawToJson,
+ *   prepareCertToImport: CertHelper.prepareCertToImport,
+ *   decoratePkcs10Subject: CertHelper.decoratePkcs10Subject,
+ *   decorateCertificateSubject: CertHelper.decorateCertificateSubject,
+ *   keyDataHandler: CertHelper.keyDataHandler,
+ *   certDataHandler: CertHelper.certDataHandler,
+ *   requestDataHandler: CertHelper.requestDataHandler,
+ *   decodeSubjectString: CertHelper.decodeSubjectString
+ * }}
+ */
 const CertHelper = {
   name2str: function name2str(name, splitter) {
     splitter = splitter || ',';
@@ -122,6 +140,16 @@ const CertHelper = {
     return algorithm;
   },
 
+  /**
+   * Decode algorithm OID
+   * @param {{
+   *   algorithmId: string
+   * }} pkiAlg
+   * @returns {{
+   *   name: string
+   *   hash: string
+   * }}
+   */
   prepareAlgorithm: function prepareAlgorithm(pkiAlg) {
     switch (pkiAlg.algorithmId) {
       case '1.2.840.113549.1.1.5': {
@@ -148,10 +176,36 @@ const CertHelper = {
     }
   },
 
+  /**
+   * Add space symbol after all second charset
+   * @param {string} string
+   * @returns {string}
+   */
   addSpaceAfterSecondCharset: function addSpaceAfterSecondCharset(string) {
     return string.replace(/(.{2})/g, '$1 ').trim().toUpperCase();
   },
 
+  /**
+   * Decode certificate raw format
+   * @param {string} raw
+   * @returns {{
+   *   version: number,
+   *   serialNumber: *,
+   *   notBefore: Date,
+   *   notAfter: Date,
+   *   issuerName: *,
+   *   subjectName: *,
+   *   publicKey: {
+   *     algorithm: {name},
+   *     value: *
+   *   },
+   *   extensions: Array,
+   *   signature: {
+   *    algorithm: *,
+   *    value: *
+   *   }
+   * }}
+   */
   certRawToJson: function certRawToJson(raw) {
     const asn1 = asn1js.fromBER(raw);
     const x509 = new Certificate({ schema: asn1.result });
@@ -337,9 +391,9 @@ const CertHelper = {
     const decodedIssuer = this.decodeSubjectString(issuerName);
     const decodedSubject = this.decodeSubjectString(subjectName);
     const name = decodedSubject['Common Name']
-      || decodedSubject['Email']
-      || decodedSubject['Surname']
-      || decodedSubject['Organization']
+      || decodedSubject.Email
+      || decodedSubject.Surname
+      || decodedSubject.Organization
       || decodedSubject['Organization Unit']
       || '';
 
@@ -385,9 +439,9 @@ const CertHelper = {
       publicExponent = algorithm.publicExponent.byteLength === 3 ? 65537 : 3;
     }
     const name = decodedSubject['Common Name']
-      || decodedSubject['Email']
-      || decodedSubject['Surname']
-      || decodedSubject['Organization']
+      || decodedSubject.Email
+      || decodedSubject.Surname
+      || decodedSubject.Organization
       || decodedSubject['Organization Unit']
       || '';
 
