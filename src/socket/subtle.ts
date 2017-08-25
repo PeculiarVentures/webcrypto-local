@@ -67,7 +67,18 @@ export class SocketSubtleCrypto extends SubtleCrypto {
     }
 
     public async digest(algorithm: AlgorithmIdentifier, data: BufferSource) {
+        let res: ArrayBuffer;
         const alg = PrepareAlgorithm(algorithm);
+        if (self.crypto) {
+            try {
+                res = await self.crypto.subtle.digest(alg, data);
+            } catch (err) {
+                console.warn(`Cannot do native digest for algorithm '${alg.name}'`);
+            }
+        }
+        if (res) {
+            return res;
+        }
         const buffer = PrepareData(data, "data");
         await super.digest(alg as any, buffer);
 
