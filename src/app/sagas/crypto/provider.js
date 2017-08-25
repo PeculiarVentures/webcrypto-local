@@ -2,6 +2,10 @@ import { put } from 'redux-saga/effects';
 import { ws } from '../../controllers/webcrypto_socket';
 import { ErrorActions } from '../../actions/state';
 
+/**
+ * Get providers list
+ * @returns {Array}
+ */
 export function* providerGetList() {
   try {
     const info = yield ws.info();
@@ -12,6 +16,11 @@ export function* providerGetList() {
   }
 }
 
+/**
+ * Check provider logged state
+ * @param {object} crypto
+ * @returns {boolean}
+ */
 export function* providerIsLogged(crypto) {
   if (crypto) {
     try {
@@ -24,6 +33,11 @@ export function* providerIsLogged(crypto) {
   return false;
 }
 
+/**
+ * Login provider
+ * @param {object} crypto
+ * @returns {boolean}
+ */
 export function* providerLogin(crypto) {
   if (crypto) {
     try {
@@ -37,6 +51,11 @@ export function* providerLogin(crypto) {
   return false;
 }
 
+/**
+ * Get provider crypto
+ * @param {string} id
+ * @returns {Promise}
+ */
 export function* cryptoGet(id) {
   try {
     return yield ws.getCrypto(id);
@@ -46,6 +65,11 @@ export function* cryptoGet(id) {
   }
 }
 
+/**
+ * Reset provider crypto
+ * @param {string} id
+ * @returns {Promise}
+ */
 export function* cryptoReset(id) {
   try {
     const crypto = yield ws.getCrypto(id);
@@ -56,6 +80,11 @@ export function* cryptoReset(id) {
   }
 }
 
+/**
+ * Get provider
+ * @param {string} id
+ * @returns {Promise}
+ */
 export function* providerGet(id) {
   try {
     const provider = yield cryptoGet(id);

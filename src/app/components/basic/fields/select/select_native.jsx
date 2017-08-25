@@ -207,6 +207,7 @@ export default class SelectNative extends Component {
           onChange={this.onChangeHandler}
           onBlur={this.onBlurHandler}
           valid={valid}
+          data-class="field"
         >
           {
             placeholder

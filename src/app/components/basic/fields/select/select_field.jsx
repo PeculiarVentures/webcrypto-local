@@ -6,11 +6,11 @@ import { ArrowSelectDownIcon } from '../../../svg';
 import { isEqual } from '../../../../helpers';
 
 const ArrowIconStyled = styled(ArrowSelectDownIcon)`
-  fill: ${props => props.theme.field.select.iconColor};
+  fill: rgba(112, 125, 134, 0.5);
   width: 8px;
   position: absolute;
   right: 10px;
-  bottom: 10px;
+  bottom: 12px;
   display: block;
   transform: rotateX(${props => (
     props.opened
@@ -58,6 +58,16 @@ export default class SelectField extends Component {
       index: PropTypes.number,
     }),
     disabled: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    labelText: '',
+    placeholder: '',
+    children: [],
+    onChange: null,
+    validation: '',
+    errorText: '',
+    disabled: false,
   };
 
   constructor(props) {
@@ -192,6 +202,7 @@ export default class SelectField extends Component {
         />
         <ArrowIconStyled
           opened={opened}
+          data-class="select_arrow"
         />
         { this.renderDropdown() }
       </SelectFieldContainerStyled>

@@ -11,7 +11,7 @@ export const LabelStyled = styled.label`
   transition: opacity ${props => props.theme.basicTransition}ms;
   cursor: pointer;
   color: ${props => props.theme.import.colorFile};
-  padding: 9px 0;
+  padding: 7px 0;
   display: block;
   &:hover {
     opacity: 0.6;

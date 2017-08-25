@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Root, Row, Title, Col, SubTitle, Value, RowCertInfo, ColCert, RowCert } from './styled/info';
+import { Root, Row, Title, RowCertInfo, ColCert, RowCert } from './styled/info';
 import enLang from '../../langs/en.json';
 
 const RequestInfo = (props) => {
@@ -8,22 +8,6 @@ const RequestInfo = (props) => {
     publicKey,
     signature,
   } = props;
-
-  const renderInfoContainer = (title, value) => {
-    if (value) {
-      return (
-        <Col>
-          <SubTitle>
-            { title }
-          </SubTitle>
-          <Value>
-            { value }
-          </Value>
-        </Col>
-      );
-    }
-    return null;
-  };
 
   const renderRowContainer = (title, value, monospace) => {
     if (value && title !== 'name') {
@@ -48,12 +32,14 @@ const RequestInfo = (props) => {
         <Title>
           { enLang['Info.Body.SubjectInfo'] }
         </Title>
-        { renderInfoContainer(enLang['Info.Body.CommonName'], subject['Common Name']) }
-        { renderInfoContainer(enLang['Info.Body.Organization'], subject.Organization) }
-        { renderInfoContainer(enLang['Info.Body.OrganizationUnit'], subject['Organization Unit']) }
-        { renderInfoContainer(enLang['Info.Body.Country'], subject.Country) }
-        { renderInfoContainer(enLang['Info.Body.Region'], subject.Region) }
-        { renderInfoContainer(enLang['Info.Body.City'], subject.City) }
+        <RowCert>
+          { renderRowContainer(enLang['Info.Body.CommonName'], subject['Common Name']) }
+          { renderRowContainer(enLang['Info.Body.Organization'], subject.Organization) }
+          { renderRowContainer(enLang['Info.Body.OrganizationUnit'], subject['Organization Unit']) }
+          { renderRowContainer(enLang['Info.Body.Country'], subject.Country) }
+          { renderRowContainer(enLang['Info.Body.Region'], subject.Region) }
+          { renderRowContainer(enLang['Info.Body.City'], subject.City) }
+        </RowCert>
       </Row>
 
       <Row>

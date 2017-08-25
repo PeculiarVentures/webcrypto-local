@@ -8,8 +8,10 @@ const SidebarStyled = styled.div`
   display: inline-block;
   height: 100%;
   vertical-align: top;
-  width: 320px;
+  width: 360px;
   background: ${props => props.theme.sidebar.background};
+  box-shadow: 10px 0 20px 0 rgba(112,125,134,0.05);
+  position: relative;
   @media ${props => props.theme.media.mobile} {
     width: 100%;
     position: fixed;

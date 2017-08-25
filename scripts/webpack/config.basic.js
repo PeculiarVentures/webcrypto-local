@@ -37,6 +37,11 @@ export default (mode) => {
     resolve: {
       modulesDirectories: ['node_modules'],
       extensions: ['', '.ts', '.tsx', '.js', '.jsx'],
+      alias: {
+        react: 'preact-compat',
+        'react-dom': 'preact-compat',
+        'create-react-class': 'preact-compat/lib/create-react-class',
+      },
     },
     module: {
       loaders: [{

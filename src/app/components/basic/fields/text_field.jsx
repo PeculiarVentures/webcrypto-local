@@ -7,21 +7,21 @@ function getRandomNumber() {
 }
 
 const FieldLabelStyled = styled.label`
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 11px;
+  line-height: 15px;
   display: block;
   width: 100%;
   letter-spacing: 0.04em;
   color: ${props => props.theme.field.text.labelColor};
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 `;
 
 const ErrorTextStyled = styled.div`
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 2px);
   left: 0;
   width: 100%;
-  font-size: 12px;
+  font-size: 10px;
   line-height: 1.1;
   color: ${props => props.theme.field.text.colorInvalid};
   @media ${props => props.theme.media.mobile} {
@@ -51,10 +51,10 @@ const fieldReadyStyles = (props) => {
 
   return `
     width: 100%;
-    font-size: 12px;
+    font-size: 13px;
     letter-spacing: 0.07em;
     padding: ${multiline ? '10' : '0 10'}px;
-    height: ${multiline ? 100 : 28}px;
+    height: ${multiline ? 100 : 31}px;
     border-radius: ${theme.borderRadius}px;
     transition: border-color ${transition}, color ${transition};
     border: 1px solid ${borderColor};
@@ -298,6 +298,7 @@ export default class TextField extends Component {
           onClick={this.onClickHandler}
           onDrop={onDrop}
           readOnly={readOnly}
+          data-class="field"
         />
         {
           type === 'date' && deviceType === 'phone'

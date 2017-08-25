@@ -6,13 +6,13 @@ import enLang from '../../langs/en.json';
 const NumberStyled = styled.div`
   display: inline-block;
   vertical-align: top;
-  width: 34px;
-  line-height: 36px;
-  border: 1px solid ${props => props.theme.dialog.authorization.borderColorNumber};
+  width: 30px;
+  line-height: 40px;
+  background: rgba(242, 243, 244, .6);
   border-radius: ${props => props.theme.borderRadius}px;
   font-size: 16px;
   font-weight: 600;
-  margin-left: 2px;
+  margin-left: 10px;
   color: ${props => props.theme.dialog.color};
   &:first-child {
     margin-left: 0;
@@ -20,14 +20,13 @@ const NumberStyled = styled.div`
 `;
 
 const NumbersContainerStyled = styled.div`
-  margin-top: 16px;
+  margin-top: 53px;
   text-align: center;
 `;
 
 const DescrStyled = styled.div`
-  font-size: 11px;
+  font-size: 13px;
   line-height: 18px;
-  margin-top: 24px;
   color: ${props => props.theme.dialog.colorDescr};
 `;
 
@@ -46,7 +45,7 @@ export default class FortifyAuthorizationDialog extends Component {
 
     return (
       <Dialog
-        title={enLang['Dialog.FortifyAuthorization.Title']}
+        title={''}
         acceptText={''}
         cancelText={''}
       >

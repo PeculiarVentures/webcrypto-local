@@ -15,6 +15,9 @@ import * as Provider from './provider';
 import * as Certificate from './certificate';
 import { RoutingController, EventChannel } from '../../controllers';
 
+/**
+ * Get provider keys
+ */
 function* getProviderKeys() {
   const state = yield select();
   const providers = state.find('providers');
@@ -44,6 +47,9 @@ function* getProviderKeys() {
   }
 }
 
+/**
+ * Get provider certificates
+ */
 function* getProviderCertificates() {
   const state = yield select();
   const providers = state.find('providers');
@@ -91,6 +97,10 @@ function* getProviderCertificates() {
   }
 }
 
+/**
+ * On 'listening' webcrypto-socket action
+ * @returns {boolean}
+ */
 function* webcryptoOnListening() {
   yield put(AppActions.setState({
     loaded: false,
@@ -149,6 +159,12 @@ function* webcryptoOnListening() {
   yield put(AppActions.loaded(true));
 }
 
+/**
+ * Login provider
+ * @param {{
+ *  id: string
+ * }}
+ */
 function* providerLogin({ id }) {
   const crypto = yield Provider.cryptoGet(id);
   const isLogged = yield Provider.providerIsLogged(crypto);
@@ -161,6 +177,12 @@ function* providerLogin({ id }) {
   }
 }
 
+/**
+ * Select provider
+ * @param {{
+ *  id: string
+ * }}
+ */
 function* providerSelect({ id }) {
   const state = yield select();
   const providers = state.find('providers');
@@ -175,6 +197,12 @@ function* providerSelect({ id }) {
   }
 }
 
+/**
+ * Reload provider
+ * @param {{
+ *  id: string
+ * }}
+ */
 function* providerReload({ id }) {
   yield put(AppActions.loaded(false));
   yield put(ProviderActions.update({ loaded: false, items: [] }));
@@ -186,6 +214,12 @@ function* providerReload({ id }) {
   }
 }
 
+/**
+ * Dowlnoad provider certificate/request/key
+ * @param {{
+ *  format: string
+ * }}
+ */
 function* downloadItem({ format }) {
   const state = yield select();
   const selectedProvider = state.find('providers').where({ selected: true });
@@ -204,6 +238,9 @@ function* downloadItem({ format }) {
   }
 }
 
+/**
+ * Remove provider certificate/request/key
+ */
 function* removeItem() {
   const state = yield select();
   const selectedProvider = state.find('providers').where({ selected: true });

@@ -1,5 +1,4 @@
 import React, { PropTypes, Component } from 'react';
-import { SplitButton } from '../basic';
 import enLang from '../../langs/en.json';
 import {
   StyledShellTitle,
@@ -13,14 +12,31 @@ import {
   ArrowBackIconStyled,
   TripleDotIconStyled,
   MobileButtonStyled,
-  StyledButton,
   DropdownMenu,
   DropdownItemsWrapper,
   DropdownItemContainer,
   DropdownItemStyled,
+  HeaderBtn,
+  IconContainer,
+  BtnDropdown,
+  BtnDropdownItem,
 } from './styled/header.styled';
+import { DocCertIcon, DocRequestIcon, DocKeyIcon } from '../svg';
 
 export default class Header extends Component {
+
+  static renderIcon(certType) {
+    switch (certType) {
+      case 'request':
+        return <DocRequestIcon />;
+      case 'certificate':
+        return <DocCertIcon />;
+      case 'key':
+        return <DocKeyIcon />;
+      default:
+        return null;
+    }
+  }
 
   static propTypes = {
     name: PropTypes.string,
@@ -31,6 +47,7 @@ export default class Header extends Component {
     loaded: PropTypes.bool,
     isKey: PropTypes.bool,
     readOnly: PropTypes.bool,
+    type: PropTypes.string,
   };
 
   static defaultProps = {
@@ -42,6 +59,7 @@ export default class Header extends Component {
     onMenu: () => {},
     isKey: false,
     readOnly: false,
+    type: '',
   };
 
   static contextTypes = {
@@ -214,37 +232,44 @@ export default class Header extends Component {
         {
           isKey
           ? null
-          : <SplitButton
-            secondary
-            disabled={!loaded}
-            onClick={() => this.handleDownload('pem')}
-            onSelect={value => this.handleDownload(value.toLowerCase())}
-            list={['PEM', 'DER']}
-          >
-            <DownloadIconStyled />
-            { enLang['Info.Header.Btn.Download'] }
-          </SplitButton>
+            : <HeaderBtn
+              onClick={() => this.handleDownload('pem')}
+              disabled={!loaded}
+              title={enLang['Info.Header.Btn.Download']}
+            >
+              <DownloadIconStyled />
+            <BtnDropdown data-class="dropdown">
+              <BtnDropdownItem
+                onClick={(e) => { e.stopPropagation();this.handleDownload('pem'); }}
+              >
+                PEM
+              </BtnDropdownItem>
+              <BtnDropdownItem
+                onClick={(e) => { e.stopPropagation();this.handleDownload('raw'); }}
+              >
+                DER
+              </BtnDropdownItem>
+            </BtnDropdown>
+            </HeaderBtn>
         }
         {
           isKey
             ? null
-            : <StyledButton
+            : <HeaderBtn
               onClick={this.bindedHandleCopy}
-              secondary
               disabled={!loaded}
+              title={enLang['Info.Header.Btn.Copy']}
             >
               <CopyIconStyled />
-              { enLang['Info.Header.Btn.Copy'] }
-            </StyledButton>
+            </HeaderBtn>
         }
-        <StyledButton
+        <HeaderBtn
           onClick={this.bindedHandleRemove}
-          secondary
           disabled={!loaded || readOnly}
+          title={enLang['Info.Header.Btn.Remove']}
         >
           <RemoveIconStyled />
-          { enLang['Info.Header.Btn.Remove'] }
-        </StyledButton>
+        </HeaderBtn>
       </ButtonsContainer>
     );
   }
@@ -253,6 +278,7 @@ export default class Header extends Component {
     const {
       loaded,
       name,
+      type,
     } = this.props;
     const { windowSize } = this.context;
     const { device } = windowSize;
@@ -264,6 +290,11 @@ export default class Header extends Component {
     return (
       <HeaderRoot>
         { this.renderMenuButton() }
+        {type && (
+          <IconContainer>
+            { Header.renderIcon(type) }
+          </IconContainer>
+        )}
         <Title>
           { name }
         </Title>

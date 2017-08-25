@@ -1,12 +1,12 @@
 import * as asn1js from 'asn1js';
-import * as pkijs from 'pkijs';
+import Certificate from 'pkijs/build/Certificate';
+import CertificationRequest from 'pkijs/build/CertificationRequest';
+import AttributeTypeAndValue from 'pkijs/build/AttributeTypeAndValue';
 import moment from 'moment';
 import UUID from 'uuid';
 import { Convert } from 'pvtsutils';
 import { OIDS } from '../constants';
 import { regExps } from '../helpers';
-
-window.Convert = Convert;
 
 const OID = {
   '2.5.4.3': {
@@ -95,6 +95,24 @@ const subjectNames = {
   '1.3.6.1.2.1.1.5': 'Host Name',
 };
 
+/**
+ * Certificate decode/encode helper
+ * @type {{
+ *   name2str: CertHelper.name2str,
+ *   formatDer: CertHelper.formatDer,
+ *   getKeyType: CertHelper.getKeyType,
+ *   prepareAlgorithm: CertHelper.prepareAlgorithm,
+ *   addSpaceAfterSecondCharset: CertHelper.addSpaceAfterSecondCharset,
+ *   certRawToJson: CertHelper.certRawToJson,
+ *   prepareCertToImport: CertHelper.prepareCertToImport,
+ *   decoratePkcs10Subject: CertHelper.decoratePkcs10Subject,
+ *   decorateCertificateSubject: CertHelper.decorateCertificateSubject,
+ *   keyDataHandler: CertHelper.keyDataHandler,
+ *   certDataHandler: CertHelper.certDataHandler,
+ *   requestDataHandler: CertHelper.requestDataHandler,
+ *   decodeSubjectString: CertHelper.decodeSubjectString
+ * }}
+ */
 const CertHelper = {
   name2str: function name2str(name, splitter) {
     splitter = splitter || ',';
@@ -122,6 +140,16 @@ const CertHelper = {
     return algorithm;
   },
 
+  /**
+   * Decode algorithm OID
+   * @param {{
+   *   algorithmId: string
+   * }} pkiAlg
+   * @returns {{
+   *   name: string
+   *   hash: string
+   * }}
+   */
   prepareAlgorithm: function prepareAlgorithm(pkiAlg) {
     switch (pkiAlg.algorithmId) {
       case '1.2.840.113549.1.1.5': {
@@ -148,13 +176,39 @@ const CertHelper = {
     }
   },
 
+  /**
+   * Add space symbol after all second charset
+   * @param {string} string
+   * @returns {string}
+   */
   addSpaceAfterSecondCharset: function addSpaceAfterSecondCharset(string) {
     return string.replace(/(.{2})/g, '$1 ').trim().toUpperCase();
   },
 
+  /**
+   * Decode certificate raw format
+   * @param {string} raw
+   * @returns {{
+   *   version: number,
+   *   serialNumber: *,
+   *   notBefore: Date,
+   *   notAfter: Date,
+   *   issuerName: *,
+   *   subjectName: *,
+   *   publicKey: {
+   *     algorithm: {name},
+   *     value: *
+   *   },
+   *   extensions: Array,
+   *   signature: {
+   *    algorithm: *,
+   *    value: *
+   *   }
+   * }}
+   */
   certRawToJson: function certRawToJson(raw) {
     const asn1 = asn1js.fromBER(raw);
-    const x509 = new pkijs.Certificate({ schema: asn1.result });
+    const x509 = new Certificate({ schema: asn1.result });
     const json = x509.toJSON();
 
     // Public Key
@@ -224,11 +278,11 @@ const CertHelper = {
       let type = '';
 
       try {
-        cert = new pkijs.Certificate({ schema: asn1.result });
+        cert = new Certificate({ schema: asn1.result });
         type = 'certificate';
       } catch (_error) {
         try {
-          cert = new pkijs.CertificationRequest({ schema: asn1.result });
+          cert = new CertificationRequest({ schema: asn1.result });
           type = 'request';
         } catch (error) {
           console.error(error);
@@ -266,7 +320,7 @@ const CertHelper = {
   decoratePkcs10Subject: function decoratePkcs10Subject(pkcs10, data) {
     Object.keys(data).map((key) => {
       if ({}.hasOwnProperty.call(subjectTypesAndValues, key) && data[key]) {
-        pkcs10.subject.typesAndValues.push(new pkijs.AttributeTypeAndValue({
+        pkcs10.subject.typesAndValues.push(new AttributeTypeAndValue({
           type: subjectTypesAndValues[key],
           value: new asn1js.Utf8String({ value: data[key] }),
         }));
@@ -279,11 +333,11 @@ const CertHelper = {
   decorateCertificateSubject: function decorateCertificateSubject(certificate, data) {
     Object.keys(data).map((key) => {
       if ({}.hasOwnProperty.call(subjectTypesAndValues, key) && data[key]) {
-        certificate.issuer.typesAndValues.push(new pkijs.AttributeTypeAndValue({
+        certificate.issuer.typesAndValues.push(new AttributeTypeAndValue({
           type: subjectTypesAndValues[key],
           value: new asn1js.BmpString({ value: data[key] }),
         }));
-        certificate.subject.typesAndValues.push(new pkijs.AttributeTypeAndValue({
+        certificate.subject.typesAndValues.push(new AttributeTypeAndValue({
           type: subjectTypesAndValues[key],
           value: new asn1js.BmpString({ value: data[key] }),
         }));
@@ -337,9 +391,9 @@ const CertHelper = {
     const decodedIssuer = this.decodeSubjectString(issuerName);
     const decodedSubject = this.decodeSubjectString(subjectName);
     const name = decodedSubject['Common Name']
-      || decodedSubject['Email']
-      || decodedSubject['Surname']
-      || decodedSubject['Organization']
+      || decodedSubject.Email
+      || decodedSubject.Surname
+      || decodedSubject.Organization
       || decodedSubject['Organization Unit']
       || '';
 
@@ -385,9 +439,9 @@ const CertHelper = {
       publicExponent = algorithm.publicExponent.byteLength === 3 ? 65537 : 3;
     }
     const name = decodedSubject['Common Name']
-      || decodedSubject['Email']
-      || decodedSubject['Surname']
-      || decodedSubject['Organization']
+      || decodedSubject.Email
+      || decodedSubject.Surname
+      || decodedSubject.Organization
       || decodedSubject['Organization Unit']
       || '';
 

@@ -6,7 +6,9 @@ import { DialogActions } from '../actions/ui';
 import { EventChannel } from '../controllers';
 
 export const ws = new WebcryptoSocket.SocketProvider();
-window.ws = ws;
+if (process.env && process.env.NODE_ENV === 'development') {
+  window.ws = ws;
+}
 
 export const WSController = {
   interval: null,

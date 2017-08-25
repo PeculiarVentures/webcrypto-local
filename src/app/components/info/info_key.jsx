@@ -1,9 +1,6 @@
 import React, { PropTypes } from 'react';
-// import moment from 'moment';
-import { Root, Row, Title, Col, SubTitle, Value } from './styled/info';
+import { Root, Row, Title, RowCertInfo, ColCert, RowCert } from './styled/info';
 import enLang from '../../langs/en.json';
-
-// const lang = navigator.language;
 
 const KeyInfo = (props) => {
   const {
@@ -14,24 +11,23 @@ const KeyInfo = (props) => {
     namedCurve,
   } = props;
 
-  const renderInfoContainer = (title, value) => {
-    if (value) {
+  const renderRowContainer = (title, value, index, monospace) => {
+    if (value && title !== 'name') {
       return (
-        <Col>
-          <SubTitle>
-            { title }
-          </SubTitle>
-          <Value>
+        <RowCertInfo
+          key={index}
+        >
+          <ColCert>
+            { title }{title === 'None' ? '' : ':'}
+          </ColCert>
+          <ColCert monospace={monospace}>
             { value }
-          </Value>
-        </Col>
+          </ColCert>
+        </RowCertInfo>
       );
     }
     return null;
   };
-
-  // const createdAtDate = moment(parseInt(createdAt, 10)).locale(lang).format('LLLL');
-  // const lastUsedDate = moment(parseInt(lastUsed, 10)).locale(lang).format('LLLL');
 
   return (
     <Root>
@@ -40,27 +36,13 @@ const KeyInfo = (props) => {
         <Title>
           { enLang['Info.Body.PublicKeyInfo'] }
         </Title>
-        {/*{*/}
-          {/*renderInfoContainer(*/}
-            {/*enLang['Info.Body.CreatedAt'],*/}
-            {/*createdAtDate !== 'Invalid date'*/}
-              {/*? createdAtDate*/}
-              {/*: createdAt,*/}
-          {/*)*/}
-        {/*}*/}
-        {/*{*/}
-          {/*renderInfoContainer(*/}
-            {/*enLang['Info.Body.LastUsed'],*/}
-            {/*lastUsedDate !== 'Invalid date'*/}
-              {/*? lastUsedDate*/}
-              {/*: lastUsed,*/}
-          {/*)*/}
-        {/*}*/}
-        { renderInfoContainer(enLang['Info.Body.Algorithm'], algorithm) }
-        { renderInfoContainer(enLang['Info.Body.ModulusBits'], modulusLength) }
-        { renderInfoContainer(enLang['Info.Body.PublicExponent'], publicExponent) }
-        { renderInfoContainer(enLang['Info.Body.NamedCurve'], namedCurve) }
-        { renderInfoContainer(enLang['Info.Body.Usages'], usages.join(', ')) }
+        <RowCert>
+          { renderRowContainer(enLang['Info.Body.Algorithm'], algorithm) }
+          { renderRowContainer(enLang['Info.Body.ModulusBits'], modulusLength) }
+          { renderRowContainer(enLang['Info.Body.PublicExponent'], publicExponent) }
+          { renderRowContainer(enLang['Info.Body.NamedCurve'], namedCurve) }
+          { renderRowContainer(enLang['Info.Body.Usages'], usages.join(', ')) }
+        </RowCert>
       </Row>
 
     </Root>
@@ -69,9 +51,9 @@ const KeyInfo = (props) => {
 
 KeyInfo.propTypes = {
   algorithm: PropTypes.string,
-  publicExponent: PropTypes.any,
-  modulusLength: PropTypes.any,
-  namedCurve: PropTypes.any,
+  publicExponent: PropTypes.oneOfType([PropTypes.any]),
+  modulusLength: PropTypes.oneOfType([PropTypes.any]),
+  namedCurve: PropTypes.oneOfType([PropTypes.any]),
   usages: PropTypes.arrayOf(PropTypes.string),
 };
 

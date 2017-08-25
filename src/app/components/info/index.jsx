@@ -27,8 +27,8 @@ const LoaderContainer = styled(RootStyled)`
 `;
 
 const HeaderContainer = styled.div`
-  padding: 0 25px;
-  height: 86px;
+  padding: 0 30px;
+  height: 76px;
   @media ${props => props.theme.media.mobile} {
     height: 56px;
     padding: 0 10px;
@@ -36,7 +36,7 @@ const HeaderContainer = styled.div`
 `;
 
 const InfoContainer = styled.div`
-  height: calc(100% - 86px);
+  height: calc(100% - 76px);
   overflow: auto;
   @media ${props => props.theme.media.mobile} {
     height: calc(100% - 56px);
@@ -143,8 +143,8 @@ export default class Info extends Component {
             <div
               style={{
                 width: '100%',
-                maxWidth: 700,
-                padding: '75px 20px',
+                maxWidth: 780,
+                padding: '85px 10px',
                 margin: '0 auto',
               }}
             >
@@ -168,12 +168,13 @@ export default class Info extends Component {
             <Header
               readOnly={provider.readOnly}
               loaded={loaded}
-              name={selectedItem.name}
+              name={selectedItem.name || selectedItem.algorithm}
               isKey={selectedItem.type === 'key'}
               onCopy={this.onCopyHandler}
               onDownload={this.onDownloadhandler}
               onRemove={this.onRemoveHandler}
               onMenu={this.onMenuHandler}
+              type={selectedItem.type}
             />
           </HeaderContainer>
           <InfoContainer>

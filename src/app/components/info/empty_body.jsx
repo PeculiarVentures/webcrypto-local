@@ -55,4 +55,8 @@ EmptyBody.propTypes = {
   blackBg: PropTypes.bool,
 };
 
+EmptyBody.defaultProps = {
+  blackBg: false,
+};
+
 export default EmptyBody;
