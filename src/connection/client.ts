@@ -139,15 +139,15 @@ export class Client extends EventEmitter {
                         // save new remote identity
                         await storage.saveRemoteIdentity(remoteIdentityId, this.cipher.remoteIdentity);
                         // }
-                        this.cipher.on("update", () => {
-                            this.cipher.toJSON()
-                                .then((json) => {
-                                    storage.saveSession(remoteIdentityId, this.cipher);
-                                })
-                                .catch((error) => {
-                                    console.error(error);
-                                });
-                        });
+                        // this.cipher.on("update", () => {
+                        //     this.cipher.toJSON()
+                        //         .then((json) => {
+                        //             storage.saveSession(remoteIdentityId, this.cipher);
+                        //         })
+                        //         .catch((error) => {
+                        //             console.error(error);
+                        //         });
+                        // });
 
                         this.emit("listening", new ClientListeningEvent(this, address));
                     })().catch((error) => this.emit("error", new ClientErrorEvent(this, error)));

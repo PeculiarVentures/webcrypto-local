@@ -240,7 +240,7 @@ export class Server extends EventEmitter {
                         } catch (err) {
                             try {
                                 this.emit("info", `Cannot parse MessageSignedProtocol`);
-                                this.emit("error", new ServerErrorEvent(this, err))
+                                this.emit("error", new ServerErrorEvent(this, err));
                                 const preKeyProto = await PreKeyMessageProtocol.importProto(buffer);
                                 messageProto = preKeyProto.signedMessage;
                                 session.cipher = await AsymmetricRatchet.create(this.identity, preKeyProto);
@@ -258,7 +258,8 @@ export class Server extends EventEmitter {
                             }
                         }
                         if (!session.cipher) {
-                            session.cipher = await this.storage.loadSession(messageProto.senderKey.id);
+                            throw new Error("Cipher object for 2key session is empty")
+                            // session.cipher = await this.storage.loadSession(messageProto.senderKey.id);
                         }
 
                         // decrypt
