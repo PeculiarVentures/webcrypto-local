@@ -13,7 +13,9 @@ function* errorHandler({ data, action }) {
   // if (/Client.prototype.getServerInfo/.test(stack)) {
   //   errorMessage = 'NOT_SUPPORTED_LOCALHOST';
   // } else
-  if (action === 'request_create') {
+  if (message === 'NetworkError when attempting to fetch resource.') {
+    errorMessage = 'NOT_SUPPORTED_LOCALHOST';
+  } else if (action === 'request_create') {
     errorMessage = 'REQUEST_CREATE';
   } else if (action === 'import_item') {
     errorMessage = 'IMPORT_ITEM';
