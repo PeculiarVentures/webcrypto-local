@@ -22,6 +22,7 @@ const TextStyles = styled.span`
       margin-left: 6px;
       cursor: ${props.disabled ? 'default' : 'pointer'};
       transition: color ${transition};
+      max-width: calc(100% - 16px - 6px);
     `;
   }}
 `;
