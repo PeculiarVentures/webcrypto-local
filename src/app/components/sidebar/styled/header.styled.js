@@ -11,12 +11,12 @@ export const Logo = styled.div`
 `;
 
 export const CreateIc = styled(CreateIcon)`
-  width: 18px;
+  width: 19px;
   margin-top: -3px;
 `;
 
 export const ImportIc = styled(ImportIcon)`
-  width: 22px;
+  width: 17px;
   margin-top: -2px;
 `;
 
