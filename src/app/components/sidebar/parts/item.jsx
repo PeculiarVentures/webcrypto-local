@@ -23,6 +23,11 @@ const Size = styled(AlgName)`
   text-align: right;
 `;
 
+const Issuer = styled(AlgName)`
+  width: 100%;
+  margin-top: 0;
+`;
+
 const Name = styled.div`
   font-size: 14px;
   line-height: 19px;
@@ -84,6 +89,7 @@ const Item = (props, context) => {
     algorithm,
     selected,
     size,
+    issuer,
   } = props;
   const { dispatch, handleRootAction } = context;
 
@@ -122,6 +128,11 @@ const Item = (props, context) => {
           <Name>
             { name }
           </Name>
+          {issuer && (
+            <Issuer>
+              { issuer }
+            </Issuer>
+          )}
           <AlgName>
             { algorithm }
           </AlgName>
@@ -144,6 +155,7 @@ Item.propTypes = {
     PropTypes.string,
     PropTypes.number,
   ]),
+  issuer: PropTypes.string,
 };
 
 Item.defaultProps = {
@@ -153,6 +165,7 @@ Item.defaultProps = {
   algorithm: '',
   selected: false,
   size: '',
+  issuer: '',
 };
 
 Item.contextTypes = {
