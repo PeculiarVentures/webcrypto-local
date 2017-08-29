@@ -1,6 +1,11 @@
 	{
 		"$schema": "./card.schema.json",
 		"cards": [{
+				"atr": "3BFE1800008131FE458031815448534D31738021408107FA",
+				"name": "Nitrokey Nitrokey HSM",
+				"driver": "993988460d8f49a2ac519a2935f11533"
+			},
+			{
 				"atr": "3B941881B1807D1F0319C80050DC",
 				"name": "GoldKey Security PIV Token",
 				"driver": "993988460d8f49a2ac519a2935f00533"
