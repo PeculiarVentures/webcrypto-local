@@ -1100,15 +1100,26 @@ var INFO_TEXT = Convert.FromBinary("InfoText");
 var INFO_RATCHET = Convert.FromBinary("InfoRatchet");
 var INFO_MESSAGE_KEYS = Convert.FromBinary("InfoMessageKeys");
 
-var cryptoPolyfill;
+var engine = null;
 if (typeof self === "undefined") {
     var WebCrypto = require("node-webcrypto-ossl");
-    cryptoPolyfill = new WebCrypto();
+    engine = {
+        crypto: new WebCrypto(),
+        name: "WebCrypto OpenSSL",
+    };
 }
 else {
-    cryptoPolyfill = self.crypto;
+    engine = {
+        crypto: self.crypto,
+        name: "WebCrypto",
+    };
 }
-var crypto$1 = cryptoPolyfill;
+function getEngine() {
+    if (!engine) {
+        throw new Error("WebCrypto engine is empty. Use setEngine to resolve it.");
+    }
+    return engine;
+}
 
 var Curve = (function () {
     function Curve() {
@@ -1121,15 +1132,15 @@ var Curve = (function () {
                     case 0:
                         name = type;
                         usage = type === "ECDSA" ? ["sign", "verify"] : ["deriveKey", "deriveBits"];
-                        return [4, crypto$1.subtle.generateKey({ name: name, namedCurve: this.NAMED_CURVE }, false, usage)];
+                        return [4, getEngine().crypto.subtle.generateKey({ name: name, namedCurve: this.NAMED_CURVE }, false, usage)];
                     case 1:
                         keys = _a.sent();
                         return [4, ECPublicKey.create(keys.publicKey)];
                     case 2:
                         publicKey = _a.sent();
                         res = {
-                            publicKey: publicKey,
                             privateKey: keys.privateKey,
+                            publicKey: publicKey,
                         };
                         return [2, res];
                 }
@@ -1137,15 +1148,16 @@ var Curve = (function () {
         });
     };
     Curve.deriveBytes = function (privateKey, publicKey) {
-        return crypto$1.subtle.deriveBits({ name: "ECDH", public: publicKey.key }, privateKey, 256);
+        return getEngine().crypto.subtle.deriveBits({ name: "ECDH", public: publicKey.key }, privateKey, 256);
     };
     Curve.verify = function (signingKey, message, signature) {
-        return crypto$1.subtle.verify({ name: "ECDSA", hash: this.DIGEST_ALGORITHM }, signingKey.key, signature, message);
+        return getEngine().crypto.subtle
+            .verify({ name: "ECDSA", hash: this.DIGEST_ALGORITHM }, signingKey.key, signature, message);
     };
     Curve.sign = function (signingKey, message) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2, crypto$1.subtle.sign({ name: "ECDSA", hash: this.DIGEST_ALGORITHM }, signingKey, message)];
+                return [2, getEngine().crypto.subtle.sign({ name: "ECDSA", hash: this.DIGEST_ALGORITHM }, signingKey, message)];
             });
         });
     };
@@ -1193,30 +1205,30 @@ var Secret = (function () {
     }
     Secret.randomBytes = function (size) {
         var array = new Uint8Array(size);
-        crypto$1.getRandomValues(array);
+        getEngine().crypto.getRandomValues(array);
         return array.buffer;
     };
     Secret.digest = function (alg, message) {
-        return crypto$1.subtle.digest(alg, message);
+        return getEngine().crypto.subtle.digest(alg, message);
     };
     Secret.encrypt = function (key, data, iv) {
-        return crypto$1.subtle.encrypt({ name: SECRET_KEY_NAME, iv: new Uint8Array(iv) }, key, data);
+        return getEngine().crypto.subtle.encrypt({ name: SECRET_KEY_NAME, iv: new Uint8Array(iv) }, key, data);
     };
     Secret.decrypt = function (key, data, iv) {
-        return crypto$1.subtle.decrypt({ name: SECRET_KEY_NAME, iv: new Uint8Array(iv) }, key, data);
+        return getEngine().crypto.subtle.decrypt({ name: SECRET_KEY_NAME, iv: new Uint8Array(iv) }, key, data);
     };
     Secret.importHMAC = function (raw) {
-        return crypto$1.subtle
+        return getEngine().crypto.subtle
             .importKey("raw", raw, { name: HMAC_NAME, hash: { name: HASH_NAME } }, false, ["sign", "verify"]);
     };
     Secret.importAES = function (raw) {
-        return crypto$1.subtle.importKey("raw", raw, AES_ALGORITHM, false, ["encrypt", "decrypt"]);
+        return getEngine().crypto.subtle.importKey("raw", raw, AES_ALGORITHM, false, ["encrypt", "decrypt"]);
     };
     Secret.sign = function (key, data) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, crypto$1.subtle.sign({ name: HMAC_NAME, hash: HASH_NAME }, key, data)];
+                    case 0: return [4, getEngine().crypto.subtle.sign({ name: HMAC_NAME, hash: HASH_NAME }, key, data)];
                     case 1: return [2, _a.sent()];
                 }
             });
@@ -1262,7 +1274,6 @@ var Secret = (function () {
             });
         });
     };
-    Secret.subtle = crypto$1.subtle;
     return Secret;
 }());
 
@@ -1284,9 +1295,12 @@ var ECPublicKey = (function () {
                             throw new Error("Error: Expected key type to be public but it was not.");
                         }
                         res.key = publicKey;
-                        return [4, crypto$1.subtle.exportKey("jwk", publicKey)];
+                        return [4, getEngine().crypto.subtle.exportKey("jwk", publicKey)];
                     case 1:
                         jwk = _b.sent();
+                        if (!(jwk.x && jwk.y)) {
+                            throw new Error("Wrong JWK data for EC public key. Parameters x and y are required.");
+                        }
                         x = Convert.FromBase64Url(jwk.x);
                         y = Convert.FromBase64Url(jwk.y);
                         xy = Convert.ToBinary(x) + Convert.ToBinary(y);
@@ -1309,13 +1323,13 @@ var ECPublicKey = (function () {
                         x = Convert.ToBase64Url(bytes.slice(0, 32));
                         y = Convert.ToBase64Url(bytes.slice(32));
                         jwk = {
-                            kty: "EC",
                             crv: Curve.NAMED_CURVE,
+                            kty: "EC",
                             x: x,
                             y: y,
                         };
                         usage = (type === "ECDSA" ? ["verify"] : []);
-                        return [4, crypto$1.subtle
+                        return [4, getEngine().crypto.subtle
                                 .importKey("jwk", jwk, { name: type, namedCurve: Curve.NAMED_CURVE }, true, usage)];
                     case 1:
                         key = _a.sent();
@@ -1470,16 +1484,16 @@ var Identity = (function () {
                         return [3, 5];
                     case 8:
                         _h = {
-                            id: this.id
+                            createdAt: this.createdAt.toISOString()
                         };
-                        return [4, Curve.ecKeyPairToJson(this.signingKey)];
-                    case 9:
-                        _h.signingKey = _j.sent();
                         return [4, Curve.ecKeyPairToJson(this.exchangeKey)];
-                    case 10: return [2, (_h.exchangeKey = _j.sent(),
+                    case 9:
+                        _h.exchangeKey = _j.sent(),
+                            _h.id = this.id,
                             _h.preKeys = preKeys,
-                            _h.signedPreKeys = signedPreKeys,
-                            _h.createdAt = this.createdAt.toISOString(),
+                            _h.signedPreKeys = signedPreKeys;
+                        return [4, Curve.ecKeyPairToJson(this.signingKey)];
+                    case 10: return [2, (_h.signingKey = _j.sent(),
                             _h)];
                 }
             });
@@ -1576,18 +1590,18 @@ var RemoteIdentity = (function () {
                 switch (_b.label) {
                     case 0:
                         _a = {
-                            id: this.id
+                            createdAt: this.createdAt.toISOString()
                         };
-                        return [4, this.signingKey.thumbprint()];
+                        return [4, this.exchangeKey.key];
                     case 1:
-                        _a.thumbprint = _b.sent();
+                        _a.exchangeKey = _b.sent(),
+                            _a.id = this.id,
+                            _a.signature = this.signature;
                         return [4, this.signingKey.key];
                     case 2:
                         _a.signingKey = _b.sent();
-                        return [4, this.exchangeKey.key];
-                    case 3: return [2, (_a.exchangeKey = _b.sent(),
-                            _a.signature = this.signature,
-                            _a.createdAt = this.createdAt.toISOString(),
+                        return [4, this.signingKey.thumbprint()];
+                    case 3: return [2, (_a.thumbprint = _b.sent(),
                             _a)];
                 }
             });
@@ -2091,11 +2105,12 @@ var SymmetricRatchet = (function () {
                         return [4, Secret.sign(rootKey, ROOT_KEY_KDF_INPUT)];
                     case 2:
                         nextRootKeyBytes = _b.sent();
-                        _a = {};
+                        _a = {
+                            cipher: cipherKeyBytes
+                        };
                         return [4, Secret.importHMAC(nextRootKeyBytes)];
                     case 3:
                         res = (_a.rootKey = _b.sent(),
-                            _a.cipher = cipherKeyBytes,
                             _a);
                         return [2, res];
                 }
@@ -2148,8 +2163,8 @@ var SendingRatchet = (function (_super) {
                     case 5:
                         cipherText = _a.sent();
                         return [2, {
-                                hmacKey: hmacKey,
                                 cipherText: cipherText,
+                                hmacKey: hmacKey,
                             }];
                 }
             });
@@ -2213,8 +2228,8 @@ var ReceivingRatchet = (function (_super) {
                     case 5:
                         cipherText = _a.sent();
                         return [2, {
-                                hmacKey: hmacKey,
                                 cipherText: cipherText,
+                                hmacKey: hmacKey,
                             }];
                 }
             });
@@ -2365,7 +2380,9 @@ var AsymmetricRatchet = (function (_super) {
                             throw new Error("Error: PreKey with id " + protocol.preKeySignedId + " not found");
                         }
                         preKey = void 0;
-                        preKey = identity.preKeys[protocol.preKeyId];
+                        if (protocol.preKeyId !== void 0) {
+                            preKey = identity.preKeys[protocol.preKeyId];
+                        }
                         ratchet.remoteIdentity = RemoteIdentity.fill(protocol.identity);
                         ratchet.currentRatchetKey = signedPreKey;
                         return [4, authenticateB(identity, ratchet.currentRatchetKey, protocol.identity.exchangeKey, protocol.signedMessage.message.senderRatchetKey, preKey && preKey.privateKey)];
@@ -2468,6 +2485,9 @@ var AsymmetricRatchet = (function (_super) {
                                     _c.label = 2;
                                 case 2:
                                     if (!!this.currentStep.sendingChain) return [3, 4];
+                                    if (!this.currentStep.remoteRatchetKey) {
+                                        throw new Error("currentStep has empty remoteRatchetKey");
+                                    }
                                     _b = this.currentStep;
                                     return [4, this.createChain(this.currentRatchetKey.privateKey, this.currentStep.remoteRatchetKey, SendingRatchet)];
                                 case 3:
@@ -2554,14 +2574,15 @@ var AsymmetricRatchet = (function (_super) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _a = {};
-                        return [4, this.remoteIdentity.signingKey.thumbprint()];
-                    case 1:
-                        _a.remoteIdentity = _b.sent();
+                        _a = {
+                            counter: this.counter
+                        };
                         return [4, Curve.ecKeyPairToJson(this.currentRatchetKey)];
+                    case 1:
+                        _a.ratchetKey = _b.sent();
+                        return [4, this.remoteIdentity.signingKey.thumbprint()];
                     case 2:
-                        _a.ratchetKey = _b.sent(),
-                            _a.counter = this.counter,
+                        _a.remoteIdentity = _b.sent(),
                             _a.rootKey = this.rootKey;
                         return [4, this.steps.toJSON()];
                     case 3: return [2, (_a.steps = _b.sent(),
@@ -2729,7 +2750,7 @@ var DHRatchetStepStack = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     DHRatchetStepStack.prototype.getStep = function (remoteRatchetKey) {
-        var found = void 0;
+        var found;
         this.items.some(function (step) {
             if (step.remoteRatchetKey.id === remoteRatchetKey.id) {
                 found = step;
@@ -3060,13 +3081,6 @@ var ServerIsLoggedInActionProto = (function (_super) {
     return ServerIsLoggedInActionProto;
 }(ActionProto));
 
-var subtle;
-if (typeof self === "undefined") {
-    subtle = new (require("node-webcrypto-ossl"))().subtle;
-}
-else {
-    subtle = crypto.subtle;
-}
 function challenge(serverIdentity, clientIdentity) {
     return __awaiter(this, void 0, void 0, function () {
         var serverIdentityDigest, clientIdentityDigest, combinedIdentity, digest;
@@ -3079,7 +3093,7 @@ function challenge(serverIdentity, clientIdentity) {
                 case 2:
                     clientIdentityDigest = _a.sent();
                     combinedIdentity = Convert.FromHex(serverIdentityDigest + clientIdentityDigest);
-                    return [4, subtle.digest("SHA-256", combinedIdentity)];
+                    return [4, getEngine().crypto.subtle.digest("SHA-256", combinedIdentity)];
                 case 3:
                     digest = _a.sent();
                     return [2, parseInt(Convert.ToHex(digest), 16).toString().substr(2, 6)];
