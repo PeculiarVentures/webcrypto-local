@@ -3110,6 +3110,66 @@ function challenge(serverIdentity, clientIdentity) {
 
 var SERVER_WELL_KNOWN = "/.well-known/webcrypto-socket";
 
+function isFirefox() {
+    return /firefox/i.test(self.navigator.userAgent);
+}
+var ECDH = { name: "ECDH", namedCurve: "P-256" };
+var ECDSA = { name: "ECDSA", namedCurve: "P-256" };
+var AES_CBC = { name: "AES-CBC", iv: new ArrayBuffer(16) };
+function createEcPublicKey(publicKey) {
+    return __awaiter(this, void 0, void 0, function () {
+        var algName, jwk, x, y, xy, key, serialized, id, _a, _b;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    algName = publicKey.algorithm.name.toUpperCase();
+                    if (!(algName === "ECDH" || algName === "ECDSA")) {
+                        throw new Error("Error: Unsupported asymmetric key algorithm.");
+                    }
+                    if (publicKey.type !== "public") {
+                        throw new Error("Error: Expected key type to be public but it was not.");
+                    }
+                    return [4, getEngine().crypto.subtle.exportKey("jwk", publicKey)];
+                case 1:
+                    jwk = _c.sent();
+                    if (!(jwk.x && jwk.y)) {
+                        throw new Error("Wrong JWK data for EC public key. Parameters x and y are required.");
+                    }
+                    x = Convert.FromBase64Url(jwk.x);
+                    y = Convert.FromBase64Url(jwk.y);
+                    xy = Convert.ToBinary(x) + Convert.ToBinary(y);
+                    key = publicKey;
+                    serialized = Convert.FromBinary(xy);
+                    _b = (_a = Convert).ToHex;
+                    return [4, getEngine().crypto.subtle.digest("SHA-256", serialized)];
+                case 2:
+                    id = _b.apply(_a, [_c.sent()]);
+                    return [2, {
+                            id: id,
+                            key: key,
+                            serialized: serialized,
+                        }];
+            }
+        });
+    });
+}
+function updateEcPublicKey(ecPublicKey, publicKey) {
+    return __awaiter(this, void 0, void 0, function () {
+        var data;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4, createEcPublicKey(publicKey)];
+                case 1:
+                    data = _a.sent();
+                    ecPublicKey.id = data.id;
+                    ecPublicKey.key = data.key;
+                    ecPublicKey.serialized = data.serialized;
+                    return [2];
+            }
+        });
+    });
+}
+
 var BrowserStorage = (function () {
     function BrowserStorage(db) {
         this.db = db;
@@ -3132,34 +3192,116 @@ var BrowserStorage = (function () {
             });
         });
     };
-    BrowserStorage.prototype.loadIdentity = function () {
+    BrowserStorage.prototype.loadWrapKey = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var json, res;
+            var wkey;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, this.db.transaction(BrowserStorage.IDENTITY_STORAGE)
+                            .objectStore(BrowserStorage.IDENTITY_STORAGE).get("wkey")];
+                    case 1:
+                        wkey = _a.sent();
+                        if (wkey) {
+                            AES_CBC.iv = wkey.iv;
+                        }
+                        return [2, wkey || null];
+                }
+            });
+        });
+    };
+    BrowserStorage.prototype.saveWrapKey = function (key) {
+        return __awaiter(this, void 0, void 0, function () {
+            var tx;
+            return __generator(this, function (_a) {
+                tx = this.db.transaction(BrowserStorage.IDENTITY_STORAGE, "readwrite");
+                tx.objectStore(BrowserStorage.IDENTITY_STORAGE).put(key, "wkey");
+                return [2, tx.complete];
+            });
+        });
+    };
+    BrowserStorage.prototype.loadIdentity = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var json, res, wkey, _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0: return [4, this.db.transaction(BrowserStorage.IDENTITY_STORAGE)
                             .objectStore(BrowserStorage.IDENTITY_STORAGE).get("identity")];
                     case 1:
-                        json = _a.sent();
+                        json = _c.sent();
                         res = null;
-                        if (!json) return [3, 3];
-                        return [4, Identity.fromJSON(json)];
+                        if (!json) return [3, 7];
+                        if (!isFirefox()) return [3, 5];
+                        return [4, this.loadWrapKey()];
                     case 2:
-                        res = _a.sent();
-                        _a.label = 3;
-                    case 3: return [2, res];
+                        wkey = _c.sent();
+                        if (!(wkey && json.exchangeKey.privateKey instanceof ArrayBuffer)) {
+                            return [2, null];
+                        }
+                        _a = json.exchangeKey;
+                        return [4, getEngine().crypto.subtle.unwrapKey("jwk", json.exchangeKey.privateKey, wkey.key, AES_CBC, ECDH, false, ["deriveKey", "deriveBits"])];
+                    case 3:
+                        _a.privateKey = _c.sent();
+                        _b = json.signingKey;
+                        return [4, getEngine().crypto.subtle.unwrapKey("jwk", json.signingKey.privateKey, wkey.key, AES_CBC, ECDSA, false, ["sign"])];
+                    case 4:
+                        _b.privateKey = _c.sent();
+                        _c.label = 5;
+                    case 5: return [4, Identity.fromJSON(json)];
+                    case 6:
+                        res = _c.sent();
+                        _c.label = 7;
+                    case 7: return [2, res];
                 }
             });
         });
     };
     BrowserStorage.prototype.saveIdentity = function (value) {
         return __awaiter(this, void 0, void 0, function () {
-            var json, tx;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4, value.toJSON()];
+            var wkey, _a, exchangeKeyPair, signingKeyPair, json, _b, _c, tx;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        if (!isFirefox()) return [3, 7];
+                        _a = {};
+                        return [4, getEngine().crypto.subtle.generateKey({ name: AES_CBC.name, length: 256 }, false, ["wrapKey", "unwrapKey"])];
                     case 1:
-                        json = _a.sent();
+                        wkey = (_a.key = _d.sent(),
+                            _a.iv = getEngine().crypto.getRandomValues(new Uint8Array(AES_CBC.iv)).buffer,
+                            _a);
+                        return [4, this.saveWrapKey(wkey)];
+                    case 2:
+                        _d.sent();
+                        return [4, getEngine().crypto.subtle
+                                .generateKey(value.exchangeKey.privateKey.algorithm, true, ["deriveKey", "deriveBits"])];
+                    case 3:
+                        exchangeKeyPair = _d.sent();
+                        value.exchangeKey.privateKey = exchangeKeyPair.privateKey;
+                        return [4, updateEcPublicKey(value.exchangeKey.publicKey, exchangeKeyPair.publicKey)];
+                    case 4:
+                        _d.sent();
+                        return [4, getEngine().crypto.subtle
+                                .generateKey(value.signingKey.privateKey.algorithm, true, ["sign", "verify"])];
+                    case 5:
+                        signingKeyPair = _d.sent();
+                        value.signingKey.privateKey = signingKeyPair.privateKey;
+                        return [4, updateEcPublicKey(value.signingKey.publicKey, signingKeyPair.publicKey)];
+                    case 6:
+                        _d.sent();
+                        _d.label = 7;
+                    case 7: return [4, value.toJSON()];
+                    case 8:
+                        json = _d.sent();
+                        if (!isFirefox()) return [3, 11];
+                        _b = json.exchangeKey;
+                        return [4, getEngine().crypto.subtle.wrapKey("jwk", value.exchangeKey.privateKey, wkey.key, AES_CBC)];
+                    case 9:
+                        _b.privateKey = (_d.sent());
+                        _c = json.signingKey;
+                        return [4, getEngine().crypto.subtle.wrapKey("jwk", value.signingKey.privateKey, wkey.key, AES_CBC)];
+                    case 10:
+                        _c.privateKey = (_d.sent());
+                        _d.label = 11;
+                    case 11:
                         tx = this.db.transaction(BrowserStorage.IDENTITY_STORAGE, "readwrite");
                         tx.objectStore(BrowserStorage.IDENTITY_STORAGE).put(json, "identity");
                         return [2, tx.complete];

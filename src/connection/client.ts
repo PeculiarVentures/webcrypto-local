@@ -4,17 +4,16 @@ import { Convert } from "pvtsutils";
 import { ActionProto, Event, ServerInfo } from "../core";
 import { ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core";
 import { challenge } from "./challenge";
-// import { challenge } from "./challenge";
 import { SERVER_WELL_KNOWN } from "./const";
 import { BrowserStorage } from "./storages/browser";
 
 export class ClientEvent extends Event<Client> {
 }
 
-export type PromiseStackItem = {
+export interface PromiseStackItem {
     resolve: Function;
     reject: Function;
-};
+}
 
 export class ClientListeningEvent extends ClientEvent {
 
@@ -130,24 +129,10 @@ export class Client extends EventEmitter {
                             await storage.saveIdentity(identity);
                         }
                         const remoteIdentityId = "0";
-                        // const remoteIdentity = await storage.loadRemoteIdentity(remoteIdentityId);
                         const bundle = await PreKeyBundleProtocol.importProto(Convert.FromBase64(info.preKey));
-                        // if (remoteIdentity && await remoteIdentity.signingKey.isEqual(bundle.identity.signingKey)) {
-                        // this.cipher = await storage.loadSession(remoteIdentityId);
-                        // } else {
                         this.cipher = await AsymmetricRatchet.create(identity, bundle);
                         // save new remote identity
                         await storage.saveRemoteIdentity(remoteIdentityId, this.cipher.remoteIdentity);
-                        // }
-                        // this.cipher.on("update", () => {
-                        //     this.cipher.toJSON()
-                        //         .then((json) => {
-                        //             storage.saveSession(remoteIdentityId, this.cipher);
-                        //         })
-                        //         .catch((error) => {
-                        //             console.error(error);
-                        //         });
-                        // });
 
                         this.emit("listening", new ClientListeningEvent(this, address));
                     })().catch((error) => this.emit("error", new ClientErrorEvent(this, error)));
@@ -206,9 +191,9 @@ export class Client extends EventEmitter {
 
     /**
      * Return PIN for current session
-     * 
-     * @returns 
-     * 
+     *
+     * @returns
+     *
      * @memberOf Client
      */
     public async challenge() {
@@ -217,8 +202,8 @@ export class Client extends EventEmitter {
 
     /**
      * Returns true if session is authorized
-     * 
-     * 
+     *
+     *
      * @memberOf Client
      */
     public async isLoggedIn() {
@@ -230,8 +215,8 @@ export class Client extends EventEmitter {
 
     /**
      * Request session authentication
-     * 
-     * 
+     *
+     *
      * @memberOf Client
      */
     public async login() {
