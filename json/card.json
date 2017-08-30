@@ -4,8 +4,15 @@
 				"atr": "3BFE1800008131FE458031815448534D31738021408107FA",
 				"name": "Nitrokey Nitrokey HSM",
 				"driver": "993988460d8f49a2ac519a2935f11533"
-			},
-			{
+			}, {
+				"atr": "3B7D18000000487970734944205333079000",
+				"name": "Safran Morpho YpsID S3",
+				"driver": "fea007cafe404e4fb56a8be39f60dc8f"
+			}, {
+				"atr": "3B7A18000000487970734944205333",
+				"name": "Safran Morpho YpsID S3 - French Customs",
+				"driver": "fea007cafe404e4fb56a8be39f60dc8f"
+			}, {
 				"atr": "3B941881B1807D1F0319C80050DC",
 				"name": "GoldKey Security PIV Token",
 				"driver": "993988460d8f49a2ac519a2935f00533"
@@ -162,6 +169,13 @@
 			}
 		],
 		"drivers": [{
+				"id": "fea007cafe404e4fb56a8be39f60dc8f",
+				"name": "Safran Morpho",
+				"file": {
+					"windows": "/Windows/SysWOW64/CnfPkcs11v220.dll",
+					"osx": "/usr/local/lib/libCnfPkcs11.dylib "
+				}
+			}, {
 				"id": "39b3d7a3662c4b48bb120d008dd18648",
 				"name": "SafeNet Authentication Client",
 				"file": {
