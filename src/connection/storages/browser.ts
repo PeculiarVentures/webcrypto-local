@@ -4,6 +4,7 @@ import { IJsonRemoteIdentity, RemoteIdentity } from "2key-ratchet";
 import { AsymmetricRatchet, getEngine, IJsonAsymmetricRatchet } from "2key-ratchet";
 import { DB } from "idb";
 import { AES_CBC, ECDH, ECDSA, isFirefox, updateEcPublicKey } from "../helper";
+import { Convert } from "pvtsutils";
 
 interface IWrapKey {
     key: CryptoKey;
@@ -57,8 +58,14 @@ export class BrowserStorage {
                     return null;
                 }
                 // Replace private data to CryptoKey
-                json.exchangeKey.privateKey = await getEngine().crypto.subtle.unwrapKey("jwk", json.exchangeKey.privateKey as any, wkey.key, AES_CBC, ECDH, false, ["deriveKey", "deriveBits"]);
-                json.signingKey.privateKey = await getEngine().crypto.subtle.unwrapKey("jwk", json.signingKey.privateKey as any, wkey.key, AES_CBC, ECDSA, false, ["sign"]);
+                json.exchangeKey.privateKey = await getEngine().crypto.subtle.decrypt(AES_CBC, wkey.key, json.exchangeKey.privateKey as any)
+                    .then((buf) =>
+                        getEngine().crypto.subtle.importKey("jwk", JSON.parse(Convert.ToUtf8String(buf)), ECDH, false, ["deriveKey", "deriveBits"]),
+                    );
+                json.signingKey.privateKey = await getEngine().crypto.subtle.decrypt(AES_CBC, wkey.key, json.signingKey.privateKey as any)
+                    .then((buf) =>
+                        getEngine().crypto.subtle.importKey("jwk", JSON.parse(Convert.ToUtf8String(buf)), ECDSA, false, ["sign"]),
+                    );
             }
 
             res = await Identity.fromJSON(json);
@@ -72,7 +79,7 @@ export class BrowserStorage {
             // TODO: Remove after Firefox is fixed
             // Create wrap key
             wkey = {
-                key: await getEngine().crypto.subtle.generateKey({name: AES_CBC.name, length: 256}, false, ["wrapKey", "unwrapKey"]),
+                key: await getEngine().crypto.subtle.generateKey({ name: AES_CBC.name, length: 256 }, false, ["wrapKey", "unwrapKey", "encrypt", "decrypt"]),
                 iv: getEngine().crypto.getRandomValues(new Uint8Array(AES_CBC.iv)).buffer,
             };
             await this.saveWrapKey(wkey);
