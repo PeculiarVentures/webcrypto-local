@@ -9,6 +9,10 @@ export function isFirefox() {
     return /firefox/i.test(self.navigator.userAgent);
 }
 
+export function isEdge() {
+    return /edge\/([\d\.]+)/i.test(self.navigator.userAgent);
+}
+
 export const ECDH = { name: "ECDH", namedCurve: "P-256" };
 export const ECDSA = { name: "ECDSA", namedCurve: "P-256" };
 export const AES_CBC = { name: "AES-CBC", iv: new ArrayBuffer(16) };

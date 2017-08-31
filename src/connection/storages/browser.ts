@@ -3,8 +3,8 @@ import { Identity, IJsonIdentity } from "2key-ratchet";
 import { IJsonRemoteIdentity, RemoteIdentity } from "2key-ratchet";
 import { AsymmetricRatchet, getEngine, IJsonAsymmetricRatchet } from "2key-ratchet";
 import { DB } from "idb";
-import { AES_CBC, ECDH, ECDSA, isFirefox, updateEcPublicKey } from "../helper";
 import { Convert } from "pvtsutils";
+import { AES_CBC, ECDH, ECDSA, isEdge, isFirefox, updateEcPublicKey } from "../helper";
 
 interface IWrapKey {
     key: CryptoKey;
@@ -19,6 +19,7 @@ export class BrowserStorage {
     public static REMOTE_STORAGE = "remoteIdentity";
 
     public static async create() {
+        // await idb.delete(this.STORAGE_NAME);
         const db = await idb.open(this.STORAGE_NAME, 1, (updater) => {
             updater.createObjectStore(this.SESSION_STORAGE);
             updater.createObjectStore(this.IDENTITY_STORAGE);
@@ -37,11 +38,22 @@ export class BrowserStorage {
         const wkey = await this.db.transaction(BrowserStorage.IDENTITY_STORAGE)
             .objectStore(BrowserStorage.IDENTITY_STORAGE).get("wkey") as IWrapKey;
         if (wkey) {
+            if (isEdge()) {
+                if (!(wkey.key instanceof ArrayBuffer)) return null;
+                wkey.key = await getEngine().crypto.subtle.importKey("raw", wkey.key as any, { name: AES_CBC.name, length: 256 }, false, ["encrypt", "decrypt", "wrapKey", "unwrapKey"]) as any;
+            }
             AES_CBC.iv = wkey.iv;
         }
         return wkey || null;
     }
     public async saveWrapKey(key: IWrapKey) {
+        if (isEdge()) {
+            key = {
+                key: await getEngine().crypto.subtle.exportKey("raw", key.key) as any,
+                iv: key.iv,
+            };
+
+        }
         const tx = this.db.transaction(BrowserStorage.IDENTITY_STORAGE, "readwrite");
         tx.objectStore(BrowserStorage.IDENTITY_STORAGE).put(key, "wkey");
         return tx.complete;
@@ -52,9 +64,10 @@ export class BrowserStorage {
             .objectStore(BrowserStorage.IDENTITY_STORAGE).get("identity");
         let res: Identity | null = null;
         if (json) {
-            if (isFirefox()) {
+            if (isFirefox() || isEdge()) {
                 const wkey = await this.loadWrapKey();
-                if (!(wkey && json.exchangeKey.privateKey instanceof ArrayBuffer)) {
+                if (!(wkey && wkey.key.usages.some((usage) => usage === "encrypt")
+                    && json.exchangeKey.privateKey instanceof ArrayBuffer)) {
                     return null;
                 }
                 // Replace private data to CryptoKey
@@ -66,6 +79,11 @@ export class BrowserStorage {
                     .then((buf) =>
                         getEngine().crypto.subtle.importKey("jwk", JSON.parse(Convert.ToUtf8String(buf)), ECDSA, false, ["sign"]),
                     );
+
+                if (isEdge()) {
+                    json.exchangeKey.publicKey = await getEngine().crypto.subtle.unwrapKey("jwk", json.exchangeKey.publicKey as any, wkey.key, AES_CBC, ECDH, true, []);
+                    json.signingKey.publicKey = await getEngine().crypto.subtle.unwrapKey("jwk", json.signingKey.publicKey as any, wkey.key, AES_CBC, ECDSA, true, ["verify"]);
+                }
             }
 
             res = await Identity.fromJSON(json);
@@ -75,11 +93,11 @@ export class BrowserStorage {
 
     public async saveIdentity(value: Identity) {
         let wkey: IWrapKey;
-        if (isFirefox()) {
+        if (isFirefox() || isEdge()) {
             // TODO: Remove after Firefox is fixed
             // Create wrap key
             wkey = {
-                key: await getEngine().crypto.subtle.generateKey({ name: AES_CBC.name, length: 256 }, false, ["wrapKey", "unwrapKey", "encrypt", "decrypt"]),
+                key: await getEngine().crypto.subtle.generateKey({ name: AES_CBC.name, length: 256 }, isEdge(), ["wrapKey", "unwrapKey", "encrypt", "decrypt"]),
                 iv: getEngine().crypto.getRandomValues(new Uint8Array(AES_CBC.iv)).buffer,
             };
             await this.saveWrapKey(wkey);
@@ -98,10 +116,16 @@ export class BrowserStorage {
 
         const json = await value.toJSON();
 
-        if (isFirefox()) {
+        if (isFirefox() || isEdge()) {
             // Replace private key data
             json.exchangeKey.privateKey = await getEngine().crypto.subtle.wrapKey("jwk", value.exchangeKey.privateKey, wkey.key, AES_CBC) as any;
             json.signingKey.privateKey = await getEngine().crypto.subtle.wrapKey("jwk", value.signingKey.privateKey, wkey.key, AES_CBC) as any;
+
+            if (isEdge()) {
+                // Replace public key data, because Edge doesn't support EC
+                json.exchangeKey.publicKey = await getEngine().crypto.subtle.wrapKey("jwk", value.exchangeKey.publicKey.key, wkey.key, AES_CBC) as any;
+                json.signingKey.publicKey = await getEngine().crypto.subtle.wrapKey("jwk", value.signingKey.publicKey.key, wkey.key, AES_CBC) as any;
+            }
         }
 
         const tx = this.db.transaction(BrowserStorage.IDENTITY_STORAGE, "readwrite");

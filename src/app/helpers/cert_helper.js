@@ -322,11 +322,12 @@ const CertHelper = {
       if ({}.hasOwnProperty.call(subjectTypesAndValues, key) && data[key]) {
         pkcs10.subject.typesAndValues.push(new AttributeTypeAndValue({
           type: subjectTypesAndValues[key],
-          value: new asn1js.Utf8String({ value: data[key] }),
+          value: new asn1js.PrintableString({ value: data[key] }),
         }));
       }
       return true;
     });
+    fixName(pkcs10.subject);
     return pkcs10;
   },
 
@@ -335,15 +336,17 @@ const CertHelper = {
       if ({}.hasOwnProperty.call(subjectTypesAndValues, key) && data[key]) {
         certificate.issuer.typesAndValues.push(new AttributeTypeAndValue({
           type: subjectTypesAndValues[key],
-          value: new asn1js.BmpString({ value: data[key] }),
+          value: new asn1js.PrintableString({ value: data[key] }),
         }));
         certificate.subject.typesAndValues.push(new AttributeTypeAndValue({
           type: subjectTypesAndValues[key],
-          value: new asn1js.BmpString({ value: data[key] }),
+          value: new asn1js.PrintableString({ value: data[key] }),
         }));
       }
       return true;
     });
+    fixName(certificate.subject);
+    fixName(certificate.issuer);
     return certificate;
   },
 
@@ -485,5 +488,18 @@ const CertHelper = {
     return subjectObj;
   },
 };
+
+function fixName(name) {
+  // TODO: must be removed if PKIjs fixed
+  if (name.typesAndValues) {
+    const schema = (new asn1js.Sequence({
+      value: Array.from(name.typesAndValues,  element => new asn1js.Set({
+        value: [element.toSchema()]
+      }))
+    }));
+    const der = schema.toBER()
+    name.fromSchema(asn1js.fromBER(der).result);
+  }
+}
 
 export default CertHelper;
