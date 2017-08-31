@@ -1,6 +1,10 @@
 	{
 		"$schema": "./card.schema.json",
 		"cards": [{
+				"atr": "3b9813400aa503010101ad1311",
+				"name": "Belgian eID",
+				"driver": "89648ea52ed24a799aff9f9ff363eef4"
+			}, {
 				"atr": "3BFE1800008131FE458031815448534D31738021408107FA",
 				"name": "Nitrokey Nitrokey HSM",
 				"driver": "993988460d8f49a2ac519a2935f11533"
@@ -220,6 +224,14 @@
 				"file": {
 					"osx": "/usr/lib/pkcs11/libidprimepkcs11.dylib",
 					"windows": "/Program Files/Gemalto/DotNet PKCS11/gtop11dotnet64.dll"
+				}
+			}, {
+				"id": "89648ea52ed24a799aff9f9ff363eef4",
+				"name": "Belgian eID",
+				"file": {
+					"osx": "/usr/local/lib/beid-pkcs11.bundle/Contents/MacOS/libbeidpkcs11.dylib",
+					"linux": "/usr/lib/libbeidpkcs11.so",
+					"windows": "libbeidpkcs11.dll"
 				}
 			}
 		]
