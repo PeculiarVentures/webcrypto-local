@@ -327,6 +327,7 @@ const CertHelper = {
       }
       return true;
     });
+    fixName(pkcs10.subject);
     return pkcs10;
   },
 
@@ -344,6 +345,8 @@ const CertHelper = {
       }
       return true;
     });
+    fixName(certificate.subject);
+    fixName(certificate.issuer);
     return certificate;
   },
 
@@ -485,5 +488,18 @@ const CertHelper = {
     return subjectObj;
   },
 };
+
+function fixName(name) {
+  // TODO: must be removed if PKIjs fixed
+  if (name.typesAndValues) {
+    const schema = (new asn1js.Sequence({
+      value: Array.from(name.typesAndValues,  element => new asn1js.Set({
+        value: [element.toSchema()]
+      }))
+    }));
+    const der = schema.toBER()
+    name.fromSchema(asn1js.fromBER(der).result);
+  }
+}
 
 export default CertHelper;

@@ -150,6 +150,12 @@ export function* certificateCreate(crypto, data) {
       // sign
       yield pkcs10.sign(privateKey, privateKey.algorithm.hash ? privateKey.algorithm.hash.name : 'SHA-1');
 
+      // Fix parameters for algorithms
+      if (!pkcs10.signatureAlgorithm.algorithmParams) {
+        pkcs10.signatureAlgorithm.algorithmParams = new asn1js.Null();
+      }
+
+
       const csrBuffer = pkcs10.toSchema().toBER(false);
 
       let importCert = '';
@@ -217,7 +223,14 @@ export function* CMSCreate(crypto, data) {
 
 
       yield certificate.subjectPublicKeyInfo.importKey(publicKey);
-      yield certificate.sign(privateKey, 'SHA-256');
+      yield certificate.sign(privateKey, 'SHA-1');
+      // Add null param for algorithms
+      if (!certificate.signature.algorithmParams) {
+        certificate.signature.algorithmParams = new asn1js.Null();
+      }
+      if (!certificate.signatureAlgorithm.algorithmParams) { 
+      certificate.signatureAlgorithm.algorithmParams = new asn1js.Null();
+      }
 
       // Convert certificate to DER
       const derCert = certificate.toSchema(true).toBER(false);
@@ -229,6 +242,7 @@ export function* CMSCreate(crypto, data) {
         yield put(ErrorActions.error(error, 'request_create'));
       }
 
+      console.log(new Buffer(derCert).toString("hex"));
       const certId = yield certificateSet(crypto, importCert);
       yield Key.keySet(crypto, privateKey);
       yield Key.keySet(crypto, publicKey);
