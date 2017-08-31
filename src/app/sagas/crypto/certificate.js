@@ -242,7 +242,6 @@ export function* CMSCreate(crypto, data) {
         yield put(ErrorActions.error(error, 'request_create'));
       }
 
-      console.log(new Buffer(derCert).toString("hex"));
       const certId = yield certificateSet(crypto, importCert);
       yield Key.keySet(crypto, privateKey);
       yield Key.keySet(crypto, publicKey);

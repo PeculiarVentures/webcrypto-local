@@ -322,7 +322,7 @@ const CertHelper = {
       if ({}.hasOwnProperty.call(subjectTypesAndValues, key) && data[key]) {
         pkcs10.subject.typesAndValues.push(new AttributeTypeAndValue({
           type: subjectTypesAndValues[key],
-          value: new asn1js.Utf8String({ value: data[key] }),
+          value: new asn1js.PrintableString({ value: data[key] }),
         }));
       }
       return true;
@@ -336,11 +336,11 @@ const CertHelper = {
       if ({}.hasOwnProperty.call(subjectTypesAndValues, key) && data[key]) {
         certificate.issuer.typesAndValues.push(new AttributeTypeAndValue({
           type: subjectTypesAndValues[key],
-          value: new asn1js.BmpString({ value: data[key] }),
+          value: new asn1js.PrintableString({ value: data[key] }),
         }));
         certificate.subject.typesAndValues.push(new AttributeTypeAndValue({
           type: subjectTypesAndValues[key],
-          value: new asn1js.BmpString({ value: data[key] }),
+          value: new asn1js.PrintableString({ value: data[key] }),
         }));
       }
       return true;
