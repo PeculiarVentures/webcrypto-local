@@ -36,7 +36,7 @@
 			}, {
 				"atr": "3BD518008131FE7D8073C82110F4",
 				"name": "SafeNet eToken 5100",
-				"driver": "39b3d7a3662c4b48bb120d008dd18648"
+				"driver": "3e3d68d231b442d381f856cc80d57f18"
 			},
 			{
 				"atr": "3bff1100008131fe4d8025a00000005657444b3333300600d0",
@@ -187,7 +187,16 @@
 					"osx": "/usr/local/lib/libeTPkcs11.dylib",
 					"linux": "/usr/lib/libeTPkcs11.so"
 				}
+			}, {
+				"id": "3e3d68d231b442d381f856cc80d57f18",
+				"name": "SafeNet eToken",
+				"file": {
+					"windows": "/Windows/System32/eToken.dll"
+				}
 			},
+
+
+
 			{
 				"id": "c4e60449442848c48af7b3fcf6a6f4a1",
 				"name": "Estonian ID",
