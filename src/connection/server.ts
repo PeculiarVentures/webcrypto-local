@@ -36,6 +36,7 @@ export interface ServerInfo {
 }
 
 export interface Session {
+    headers: any;
     connection: WebSocket.connection;
     cipher: AsymmetricRatchet;
     authorized: boolean;
@@ -94,9 +95,14 @@ export class ServerMessageEvent extends ServerEvent {
 }
 
 /**
+ * Https/wss server based on 2key-ratchet protocol
  * - generates Identity
  * - store makes PreKey bundle
  * - Stores secure sessions
+ *
+ * @export
+ * @class Server
+ * @extends {EventEmitter}
  */
 export class Server extends EventEmitter {
 
@@ -127,6 +133,12 @@ export class Server extends EventEmitter {
     };
 
     public identity: Identity;
+    /**
+     * Storage for 2key-ratchet identifiers
+     *
+     * @type {OpenSSLStorage}
+     * @memberof Server
+     */
     public storage: OpenSSLStorage;
 
     protected httpServer: https.Server;
@@ -219,6 +231,7 @@ export class Server extends EventEmitter {
             // }
             const connection = request.accept(null, request.origin);
             const session: Session = {
+                headers: (request.httpRequest as any).headers,
                 connection,
                 cipher: null,
                 authorized: false,
@@ -258,7 +271,7 @@ export class Server extends EventEmitter {
                             }
                         }
                         if (!session.cipher) {
-                            throw new Error("Cipher object for 2key session is empty")
+                            throw new Error("Cipher object for 2key session is empty");
                             // session.cipher = await this.storage.loadSession(messageProto.senderKey.id);
                         }
 

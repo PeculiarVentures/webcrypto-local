@@ -10,7 +10,5 @@ dist/webcrypto-socket*.js
 .DS_Store
 *.log
 
-index.d.ts
-
 .idea
 scripts/compiled_env.json

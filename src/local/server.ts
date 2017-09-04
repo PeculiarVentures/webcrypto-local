@@ -6,6 +6,7 @@ import * as request from "request";
 import { ObjectProto } from "tsprotobuf";
 import { challenge } from "../connection/challenge";
 import { Server, Session } from "../connection/server";
+import { RemoteIdentityEx } from "../connection/storages/ossl";
 import { ActionProto, CryptoItemProto, CryptoKeyPairProto, CryptoKeyProto, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core/proto";
 import {
     CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetChainActionProto,
@@ -44,8 +45,21 @@ graphene.registerAttribute("x509Chain", 2147483905, "buffer");
 
 const crypto: Crypto = new (require("node-webcrypto-ossl"))();
 
+/**
+ * Local server
+ *
+ * @export
+ * @class LocalServer
+ * @extends {EventEmitter}
+ */
 export class LocalServer extends EventEmitter {
 
+    /**
+     * Server
+     *
+     * @type {Server}
+     * @memberof LocalServer
+     */
     public server: Server;
     public provider: LocalProvider;
     public cryptos: { [id: string]: Crypto } = {};
@@ -178,7 +192,10 @@ export class LocalServer extends EventEmitter {
                     });
                     const ok = await promise;
                     if (ok) {
-                        this.server.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, session.cipher.remoteIdentity);
+                        const remoteIdentityEx: RemoteIdentityEx = session.cipher.remoteIdentity;
+                        remoteIdentityEx.origin = session.headers.origin;
+                        remoteIdentityEx.userAgent = session.headers["user-agent"];
+                        this.server.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, remoteIdentityEx);
                         session.authorized = true;
                     } else {
                         throw new Error("PIN is not approved");
@@ -650,7 +667,7 @@ export class LocalServer extends EventEmitter {
                 const resultProto = new CertificateStorageGetChainResultProto();
                 const pkiEntryCert = await certC2P(crypto, cert);
                 if (pkiEntryCert.subject.isEqual(pkiEntryCert.issuer)) { // self-signed
-                    // Dont build chain for self-signed certificates 
+                    // Dont build chain for self-signed certificates
                     const itemProto = new ChainItemProto();
                     itemProto.type = "x509";
                     itemProto.value = pkiEntryCert.toSchema(true).toBER(false);
@@ -684,7 +701,7 @@ export class LocalServer extends EventEmitter {
                             i++;
                             const itemSizeBuffer = buffer.slice(i, i + ulongSize);
                             const itemSize = itemSizeBuffer.readInt32LE(0);
-                            const itemValue = buffer.slice(i + ulongSize, i + ulongSize + itemSize)
+                            const itemValue = buffer.slice(i + ulongSize, i + ulongSize + itemSize);
                             itemProto.value = new Uint8Array(itemValue).buffer;
                             resultProto.items.push(itemProto);
                             i += ulongSize + itemSize;
@@ -904,23 +921,17 @@ export class LocalServer extends EventEmitter {
 
 }
 
-// async function GetIdentity(key: CryptoKey, provider: Crypto) {
-//     if (key.type !== "public") {
-//         return getHandle(32);
-//     } else {
-//         const jwk = await provider.subtle.exportKey("jwk", key); // INFO: Not all crypto implementations support spki
-//         const osslKey = await crypto.subtle.importKey("jwk", jwk, key.algorithm as any, true, key.usages);
-//         const raw = await crypto.subtle.exportKey("spki", osslKey);
-//         const thumbprint = await crypto.subtle.digest("SHA-256", raw);
-//         return Convert.ToHex(thumbprint);
-//     }
-// }
-
 function getHandle(size = 20) {
     const rndBytes = crypto.getRandomValues(new Uint8Array(size)) as Uint8Array;
     return Convert.ToHex(rndBytes);
 }
 
+/**
+ * Convert DER/PEM string to buffer
+ *
+ * @param {string}  data    Incoming DER/PEM string
+ * @returns {Buffer}
+ */
 function prepareData(data: string) {
     if (data.indexOf("-----") === 0) {
         // incoming data is PEM encoded string
@@ -931,13 +942,12 @@ function prepareData(data: string) {
     }
 }
 
-
 /**
  * Converts CryptoCertificate to PKIjs Certificate
- * 
+ *
  * @param {ProviderCrypto}      crypto      Crypto provider
  * @param {CryptoCertificate}   cert        Crypto certificate
- * @returns 
+ * @returns
  */
 async function certC2P(provider: ProviderCrypto, cert: CryptoCertificate) {
     const certDer = await provider.certStorage.exportCert("raw", cert);
@@ -945,18 +955,3 @@ async function certC2P(provider: ProviderCrypto, cert: CryptoCertificate) {
     const pkiCert = new Certificate({ schema: asn1.result });
     return pkiCert;
 }
-
-// /**
-//  * Prints pkijs certificate's names to console
-//  * 
-//  * @param {ProviderCrypto} crypto 
-//  * @param {any[]} pkiCerts 
-//  */
-// async function printCertificates(crypto: ProviderCrypto, pkiCerts: any[]) {
-//     for (const pkiCert of pkiCerts) {
-//         const cert = await X509Certificate.importCert(crypto, pkiCert.toSchema(true).toBER(false));
-//         console.log("Certificate:");
-//         console.log("\tsubject:", cert.subjectName);
-//         console.log("\tissuer:", cert.issuerName);
-//     }
-// }

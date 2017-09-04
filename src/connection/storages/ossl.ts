@@ -7,6 +7,17 @@ import * as fs from "fs";
 import { Convert } from "pvtsutils";
 import { DOUBLE_KEY_RATCHET_STORAGE_DIR } from "../../core/const";
 
+export interface RemoteIdentityEx extends RemoteIdentity {
+    userAgent?: string;
+    origin?: string;
+}
+
+/**
+ * Identity key storage base on node-webcrypto-ossl
+ *
+ * @export
+ * @class OpenSSLStorage
+ */
 export class OpenSSLStorage {
 
     public static STORAGE_NAME = DOUBLE_KEY_RATCHET_STORAGE_DIR;
@@ -14,12 +25,32 @@ export class OpenSSLStorage {
     public static SESSION_STORAGE = "sessions";
     public static REMOTE_STORAGE = "remoteIdentity";
 
+    /**
+     * Creates new instance of storage
+     *
+     * @static
+     * @returns
+     * @memberof OpenSSLStorage
+     */
     public static async create() {
         return new this();
     }
 
+    /**
+     * 2key-ratchet identity
+     *
+     * @type {Identity}
+     * @memberof OpenSSLStorage
+     */
     public identity: Identity;
-    public remoteIdentities: { [key: string]: RemoteIdentity } = {};
+
+    /**
+     * Associative array of remote identities
+     *
+     * @type {{ [key: string]: RemoteIdentityEx }}
+     * @memberof OpenSSLStorage
+     */
+    public remoteIdentities: { [key: string]: RemoteIdentityEx } = {};
     public sessions: { [key: string]: AsymmetricRatchet } = {};
 
     private constructor() {
@@ -78,13 +109,40 @@ export class OpenSSLStorage {
         });
     }
 
-    public async loadRemoteIdentity(key: string) {
+    /**
+     * Returns remote identity by key
+     *
+     * @param {string}  key     identifier of identity
+     * @returns {Promise<RemoteIdentityEx>}
+     * @memberof OpenSSLStorage
+     */
+    public async loadRemoteIdentity(key: string): Promise<RemoteIdentityEx> {
         await this.loadRemote();
         return this.remoteIdentities[key];
     }
 
-    public async saveRemoteIdentity(key: string, value: RemoteIdentity) {
+    /**
+     * Adds remote identity to storage
+     *
+     * @param {string}          key     identifier of identity
+     * @param {RemoteIdentity}  value   remote identity
+     * @returns {Promise<void>}
+     * @memberof OpenSSLStorage
+     */
+    public async saveRemoteIdentity(key: string, value: RemoteIdentity): Promise<void> {
         this.remoteIdentities[key] = value;
+        await this.saveRemote();
+    }
+
+    /**
+     * Remove remote identity from storage by key
+     *
+     * @param {string}          key     identifier of identity
+     * @memberof OpenSSLStorage
+     * @returns {Promise<void>}
+     */
+    public async removeRemoteIdentity(key: string) {
+        delete this.remoteIdentities[key];
         await this.saveRemote();
     }
 
@@ -163,7 +221,8 @@ export class OpenSSLStorage {
     protected async saveRemote() {
         const json: any = {};
         for (const key in this.remoteIdentities) {
-            const identity = await this.remoteIdentities[key].toJSON();
+            const remoteIdentity = this.remoteIdentities[key]
+            const identity = await remoteIdentity.toJSON();
             json[key] = {
                 signingKey: await this.ecKeyToBase64(identity.signingKey),
                 exchangeKey: await this.ecKeyToBase64(identity.exchangeKey),
@@ -171,6 +230,8 @@ export class OpenSSLStorage {
                 thumbprint: identity.thumbprint,
                 signature: new Buffer(identity.signature).toString("base64"),
                 createdAt: identity.createdAt,
+                origin: remoteIdentity.origin,
+                userAgent: remoteIdentity.userAgent,
             };
         }
 
@@ -193,6 +254,8 @@ export class OpenSSLStorage {
                 identity.signature = Convert.FromBase64(identity.signature);
                 identity.createdAt = new Date(identity.createdAt);
                 this.remoteIdentities[key] = await RemoteIdentity.fromJSON(identity);
+                this.remoteIdentities[key].origin = identity.origin;
+                this.remoteIdentities[key].userAgent = identity.userAgent;
             }
         }
     }
