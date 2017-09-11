@@ -602,9 +602,7 @@ export class LocalServer extends EventEmitter {
             }
             case CertificateStorageExportActionProto.ACTION: {
                 // prepare incoming data
-                this.emit("info", "CertificateStorageExportActionProto.importProto:Before");
                 const params = await CertificateStorageExportActionProto.importProto(action);
-                this.emit("info", "CertificateStorageExportActionProto.importProto:After");
                 const crypto = await this.provider.getCrypto(params.providerID);
                 const cert = this.getItemFromStorage(params.item).item as CryptoCertificate;
                 // do operation
