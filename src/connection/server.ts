@@ -223,12 +223,12 @@ export class Server extends EventEmitter {
         });
 
         this.socketServer.on("request", (request) => {
-            // if (!originIsAllowed(request.origin)) {
-            //     // Make sure we only accept requests from an allowed origin
-            //     request.reject();
-            //     console.log((new Date()) + " Connection from origin " + request.origin + " rejected.");
-            //     return;
-            // }
+            if (!/^https/.test(request.origin)) {
+                // Make sure we only accept requests from an allowed origin
+                request.reject();
+                console.log((new Date()) + " Connection from unsecure origin " + request.origin + " rejected.");
+                return;
+            }
             const connection = request.accept(null, request.origin);
             const session: Session = {
                 headers: (request.httpRequest as any).headers,
