@@ -5,13 +5,14 @@
   "main": "out/local/index.js",
   "types": "index.d.ts",
   "scripts": {
+    "prepare": "npm run build",
     "test": "",
+    "clear": "rimraf out",
+    "build": "npm run build:web && npm run build:lib && npm run build:server",
     "build:lib": "rollup -c rollup.config.lib.js",
     "build:web": "rollup -c",
     "build:server": "tsc",
-    "build:ws": "rimraf out && npm run build:server && npm run build:web && npm run build:lib",
-    "server:ws": "npm run build:ws && node out/test/local",
-    "install": "npm run build:ws"
+    "server:ws": "npm run build:ws && node out/test/local"
   },
   "repository": {
     "type": "git",
@@ -24,22 +25,25 @@
   },
   "homepage": "https://github.com/PeculiarVentures/webcrypto-local#readme",
   "devDependencies": {
-    "uuid": "^3.1.0",
-    "webcrypto-core": "^0.1.16"
-  },
-  "dependencies": {
-    "2key-ratchet": "^1.0.6",
     "@types/asn1js": "0.0.1",
     "@types/long": "^3.0.32",
     "@types/node": "^7.0.43",
-    "@types/node-notifier": "0.0.28",
     "@types/request": "0.0.44",
     "@types/websocket": "^0.0.33",
+    "rimraf": "^2.6.1",
+    "rollup": "^0.41.4",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-plugin-typescript": "^0.8.1",
+    "rollup-watch": "^3.2.2",
+    "typescript": "^2.5.1"
+  },
+  "dependencies": {
+    "2key-ratchet": "^1.0.6",
     "asn1js": "^2.0.15",
     "event-emitter": "^0.3.5",
     "graphene-pk11": "^2.0.27",
     "idb": "^2.0.3",
-    "node-notifier": "^5.0.2",
     "node-webcrypto-ossl": "^1.0.30",
     "node-webcrypto-p11": "^1.1.16",
     "pcsclite": "^0.5.0",
@@ -48,15 +52,8 @@
     "pvtsutils": "^1.0.2",
     "pvutils": "^1.0.8",
     "request": "^2.81.0",
-    "rimraf": "^2.6.1",
-    "rollup": "^0.41.4",
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-resolve": "^2.0.0",
-    "rollup-plugin-typescript": "^0.8.1",
-    "rollup-watch": "^3.2.2",
     "tslib": "^1.7.1",
     "tsprotobuf": "^1.0.12",
-    "typescript": "^2.5.1",
     "websocket": "^1.0.24"
   }
 }

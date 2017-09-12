@@ -1,14 +1,9 @@
 # working dirs
-.certstorage
-.keystorage
-.vscode
-.webcrypto
 node_modules
 
-# react app
-.babelrc
-.eslintignore
-.eslintrc
-env
-src/app
-scripts
+examples
+dist/index.html
+out/socket
+src
+ts*.json
+rollup*.js
