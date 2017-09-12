@@ -3923,11 +3923,9 @@ var ResetActionProto = (function (_super) {
     return ResetActionProto;
 }(CryptoActionProto));
 
+// Copyright (c) 2017, Peculiar Ventures, All rights reserved.
+
 function printf(text) {
-    var args = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        args[_i - 1] = arguments[_i];
-    }
     var msg = text;
     var regFind = /[^%](%\d+)/g;
     var match;
@@ -3959,9 +3957,9 @@ var WebCryptoError = (function (_super) {
         _this.stack = error.stack;
         return _this;
     }
+    WebCryptoError.NOT_SUPPORTED = "Method is not supported";
     return WebCryptoError;
 }(Error));
-WebCryptoError.NOT_SUPPORTED = "Method is not supported";
 var AlgorithmError = (function (_super) {
     __extends(AlgorithmError, _super);
     function AlgorithmError() {
@@ -3969,14 +3967,14 @@ var AlgorithmError = (function (_super) {
         _this.code = 1;
         return _this;
     }
+    AlgorithmError.PARAM_REQUIRED = "Algorithm hasn't got required paramter '%1'";
+    AlgorithmError.PARAM_WRONG_TYPE = "Algorithm has got wrong type for paramter '%1'. Must be %2";
+    AlgorithmError.PARAM_WRONG_VALUE = "Algorithm has got wrong value for paramter '%1'. Must be %2";
+    AlgorithmError.WRONG_ALG_NAME = "Algorithm has got wrong name '%1'. Must be '%2'";
+    AlgorithmError.UNSUPPORTED_ALGORITHM = "Algorithm '%1' is not supported";
+    AlgorithmError.WRONG_USAGE = "Algorithm doesn't support key usage '%1'";
     return AlgorithmError;
 }(WebCryptoError));
-AlgorithmError.PARAM_REQUIRED = "Algorithm hasn't got required paramter '%1'";
-AlgorithmError.PARAM_WRONG_TYPE = "Algorithm has got wrong type for paramter '%1'. Must be %2";
-AlgorithmError.PARAM_WRONG_VALUE = "Algorithm has got wrong value for paramter '%1'. Must be %2";
-AlgorithmError.WRONG_ALG_NAME = "Algorithm has got wrong name '%1'. Must be '%2'";
-AlgorithmError.UNSUPPORTED_ALGORITHM = "Algorithm '%1' is not supported";
-AlgorithmError.WRONG_USAGE = "Algorithm doesn't support key usage '%1'";
 var CryptoKeyError = (function (_super) {
     __extends(CryptoKeyError, _super);
     function CryptoKeyError() {
@@ -3984,16 +3982,16 @@ var CryptoKeyError = (function (_super) {
         _this.code = 3;
         return _this;
     }
+    CryptoKeyError.EMPTY_KEY = "CryptoKey is empty";
+    CryptoKeyError.WRONG_KEY_ALG = "CryptoKey has wrong algorithm '%1'. Must be '%2'";
+    CryptoKeyError.WRONG_KEY_TYPE = "CryptoKey has wrong type '%1'. Must be '%2'";
+    CryptoKeyError.WRONG_KEY_USAGE = "CryptoKey has wrong key usage. Must be '%1'";
+    CryptoKeyError.NOT_EXTRACTABLE = "CryptoKey is not extractable";
+    CryptoKeyError.WRONG_FORMAT = "CryptoKey has '%1' type. It can be used with '%2' format";
+    CryptoKeyError.UNKNOWN_FORMAT = "Unknown format in use '%1'. Must be one of 'raw', 'pkcs8', 'spki'  or 'jwk'";
+    CryptoKeyError.ALLOWED_FORMAT = "Wrong format value '%1'. Must be %2";
     return CryptoKeyError;
 }(WebCryptoError));
-CryptoKeyError.EMPTY_KEY = "CryptoKey is empty";
-CryptoKeyError.WRONG_KEY_ALG = "CryptoKey has wrong algorithm '%1'. Must be '%2'";
-CryptoKeyError.WRONG_KEY_TYPE = "CryptoKey has wrong type '%1'. Must be '%2'";
-CryptoKeyError.WRONG_KEY_USAGE = "CryptoKey has wrong key usage. Must be '%1'";
-CryptoKeyError.NOT_EXTRACTABLE = "CryptoKey is not extractable";
-CryptoKeyError.WRONG_FORMAT = "CryptoKey has '%1' type. It can be used with '%2' format";
-CryptoKeyError.UNKNOWN_FORMAT = "Unknown format in use '%1'. Must be one of 'raw', 'pkcs8', 'spki'  or 'jwk'";
-CryptoKeyError.ALLOWED_FORMAT = "Wrong format value '%1'. Must be %2";
 
 function PrepareAlgorithm(alg) {
     var res;
@@ -4246,10 +4244,10 @@ var Aes = (function (_super) {
             resolve(undefined);
         });
     };
+    Aes.ALG_NAME = "";
+    Aes.KEY_USAGES = [];
     return Aes;
 }(BaseCrypto));
-Aes.ALG_NAME = "";
-Aes.KEY_USAGES = [];
 var AesAlgorithmError = (function (_super) {
     __extends(AesAlgorithmError, _super);
     function AesAlgorithmError() {
@@ -4306,17 +4304,17 @@ var AesEncrypt = (function (_super) {
             resolve(undefined);
         });
     };
+    AesEncrypt.KEY_USAGES = ["encrypt", "decrypt", "wrapKey", "unwrapKey"];
     return AesEncrypt;
 }(AesWrapKey));
-AesEncrypt.KEY_USAGES = ["encrypt", "decrypt", "wrapKey", "unwrapKey"];
 var AesECB = (function (_super) {
     __extends(AesECB, _super);
     function AesECB() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    AesECB.ALG_NAME = AlgorithmNames.AesECB;
     return AesECB;
 }(AesEncrypt));
-AesECB.ALG_NAME = AlgorithmNames.AesECB;
 var AesCBC = (function (_super) {
     __extends(AesCBC, _super);
     function AesCBC() {
@@ -4334,9 +4332,9 @@ var AesCBC = (function (_super) {
             throw new AesAlgorithmError(AesAlgorithmError.PARAM_WRONG_VALUE, "iv", "ArrayBufferView or ArrayBuffer with size 16");
         }
     };
+    AesCBC.ALG_NAME = AlgorithmNames.AesCBC;
     return AesCBC;
 }(AesEncrypt));
-AesCBC.ALG_NAME = AlgorithmNames.AesCBC;
 var AesCTR = (function (_super) {
     __extends(AesCTR, _super);
     function AesCTR() {
@@ -4354,9 +4352,9 @@ var AesCTR = (function (_super) {
             throw new AesAlgorithmError(AesAlgorithmError.PARAM_WRONG_VALUE, "length", "number [1-128]");
         }
     };
+    AesCTR.ALG_NAME = AlgorithmNames.AesCTR;
     return AesCTR;
 }(AesEncrypt));
-AesCTR.ALG_NAME = AlgorithmNames.AesCTR;
 var AesGCM = (function (_super) {
     __extends(AesGCM, _super);
     function AesGCM() {
@@ -4384,9 +4382,9 @@ var AesGCM = (function (_super) {
             }
         }
     };
+    AesGCM.ALG_NAME = AlgorithmNames.AesGCM;
     return AesGCM;
 }(AesEncrypt));
-AesGCM.ALG_NAME = AlgorithmNames.AesGCM;
 var AesKW = (function (_super) {
     __extends(AesKW, _super);
     function AesKW() {
@@ -4395,10 +4393,10 @@ var AesKW = (function (_super) {
     AesKW.checkAlgorithmParams = function (alg) {
         this.checkAlgorithm(alg);
     };
+    AesKW.ALG_NAME = AlgorithmNames.AesKW;
+    AesKW.KEY_USAGES = ["wrapKey", "unwrapKey"];
     return AesKW;
 }(AesWrapKey));
-AesKW.ALG_NAME = AlgorithmNames.AesKW;
-AesKW.KEY_USAGES = ["wrapKey", "unwrapKey"];
 
 var ShaAlgorithms = [AlgorithmNames.Sha1, AlgorithmNames.Sha256, AlgorithmNames.Sha384, AlgorithmNames.Sha512].join(" | ");
 var Sha = (function (_super) {
@@ -4511,10 +4509,10 @@ var Ec = (function (_super) {
             resolve(undefined);
         });
     };
+    Ec.ALG_NAME = "";
+    Ec.KEY_USAGES = [];
     return Ec;
 }(BaseCrypto));
-Ec.ALG_NAME = "";
-Ec.KEY_USAGES = [];
 var EcAlgorithmError = (function (_super) {
     __extends(EcAlgorithmError, _super);
     function EcAlgorithmError() {
@@ -4549,10 +4547,10 @@ var EcDSA = (function (_super) {
             resolve(undefined);
         });
     };
+    EcDSA.ALG_NAME = AlgorithmNames.EcDSA;
+    EcDSA.KEY_USAGES = ["sign", "verify", "deriveKey", "deriveBits"];
     return EcDSA;
 }(Ec));
-EcDSA.ALG_NAME = AlgorithmNames.EcDSA;
-EcDSA.KEY_USAGES = ["sign", "verify", "deriveKey", "deriveBits"];
 var EcDH = (function (_super) {
     __extends(EcDH, _super);
     function EcDH() {
@@ -4599,10 +4597,10 @@ var EcDH = (function (_super) {
             resolve(undefined);
         });
     };
+    EcDH.ALG_NAME = AlgorithmNames.EcDH;
+    EcDH.KEY_USAGES = ["deriveKey", "deriveBits"];
     return EcDH;
 }(Ec));
-EcDH.ALG_NAME = AlgorithmNames.EcDH;
-EcDH.KEY_USAGES = ["deriveKey", "deriveBits"];
 
 var Hmac = (function (_super) {
     __extends(Hmac, _super);
@@ -4679,10 +4677,10 @@ var Hmac = (function (_super) {
             resolve(undefined);
         });
     };
+    Hmac.ALG_NAME = AlgorithmNames.Hmac;
+    Hmac.KEY_USAGES = ["sign", "verify"];
     return Hmac;
 }(BaseCrypto));
-Hmac.ALG_NAME = AlgorithmNames.Hmac;
-Hmac.KEY_USAGES = ["sign", "verify"];
 
 var Pbkdf2 = (function (_super) {
     __extends(Pbkdf2, _super);
@@ -4772,10 +4770,10 @@ var Pbkdf2 = (function (_super) {
             }
         });
     };
+    Pbkdf2.ALG_NAME = AlgorithmNames.Pbkdf2;
+    Pbkdf2.KEY_USAGES = ["deriveKey", "deriveBits"];
     return Pbkdf2;
 }(BaseCrypto));
-Pbkdf2.ALG_NAME = AlgorithmNames.Pbkdf2;
-Pbkdf2.KEY_USAGES = ["deriveKey", "deriveBits"];
 
 var RsaKeyGenParamsError = (function (_super) {
     __extends(RsaKeyGenParamsError, _super);
@@ -4876,10 +4874,10 @@ var Rsa = (function (_super) {
             resolve(undefined);
         });
     };
+    Rsa.ALG_NAME = "";
+    Rsa.KEY_USAGES = [];
     return Rsa;
 }(BaseCrypto));
-Rsa.ALG_NAME = "";
-Rsa.KEY_USAGES = [];
 var RsaSSA = (function (_super) {
     __extends(RsaSSA, _super);
     function RsaSSA() {
@@ -4901,10 +4899,10 @@ var RsaSSA = (function (_super) {
             resolve(undefined);
         });
     };
+    RsaSSA.ALG_NAME = AlgorithmNames.RsaSSA;
+    RsaSSA.KEY_USAGES = ["sign", "verify"];
     return RsaSSA;
 }(Rsa));
-RsaSSA.ALG_NAME = AlgorithmNames.RsaSSA;
-RsaSSA.KEY_USAGES = ["sign", "verify"];
 var RsaPSSParamsError = (function (_super) {
     __extends(RsaPSSParamsError, _super);
     function RsaPSSParamsError() {
@@ -4929,9 +4927,9 @@ var RsaPSS = (function (_super) {
             throw new RsaPSSParamsError("Parameter 'saltLength' is outside of numeric range");
         }
     };
+    RsaPSS.ALG_NAME = AlgorithmNames.RsaPSS;
     return RsaPSS;
 }(RsaSSA));
-RsaPSS.ALG_NAME = AlgorithmNames.RsaPSS;
 var RsaOAEPParamsError = (function (_super) {
     __extends(RsaOAEPParamsError, _super);
     function RsaOAEPParamsError() {
@@ -4988,10 +4986,10 @@ var RsaOAEP = (function (_super) {
             resolve(undefined);
         });
     };
+    RsaOAEP.ALG_NAME = AlgorithmNames.RsaOAEP;
+    RsaOAEP.KEY_USAGES = ["encrypt", "decrypt", "wrapKey", "unwrapKey"];
     return RsaOAEP;
 }(Rsa));
-RsaOAEP.ALG_NAME = AlgorithmNames.RsaOAEP;
-RsaOAEP.KEY_USAGES = ["encrypt", "decrypt", "wrapKey", "unwrapKey"];
 
 var SubtleCrypto = (function () {
     function SubtleCrypto() {

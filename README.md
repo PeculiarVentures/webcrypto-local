@@ -2,28 +2,6 @@
 
 `webcrypto-local` is a cross platform service that provides access to PKCS#11 implementations over a `ProtoBuf` based protocol we call `webcrypto-socket`. It provides for message confidentiality and integrity via `2key-ratchet` and implements a security policy mechanism that allows the user to approve which peers can interact with it.
 
-## UI
-
-#### Quick Development Start
-
- * Clone latest version this repository
- * `npm install`
- * `npm run development`
-
-#### Quick Production Start
-
- * Clone latest version this repository
- * `npm install`
- * `npm run production`
-
-#### Clear
-
-* `npm run clear`
-
-#### Automatic deploy to GitHub pages
-
-* `npm run deploy`
-
 ## webcrypto-socket
 
 #### Build
