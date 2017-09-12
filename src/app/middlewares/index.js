@@ -1,1 +1,0 @@
-export AppMiddleware from './app';

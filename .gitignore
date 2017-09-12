@@ -1,6 +1,5 @@
 .vscode
 node_modules
-dist_ui
 out
 dist/webcrypto-socket*.js
 
@@ -11,4 +10,3 @@ dist/webcrypto-socket*.js
 *.log
 
 .idea
-scripts/compiled_env.json
