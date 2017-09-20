@@ -149,26 +149,35 @@ export class LocalProvider extends EventEmitter {
                         error: `Cannot find PKCS#11 library ${card.library}`,
                     });
                 }
-                try {
-                    const crypto = new pkcs11.WebCrypto({
-                        library: card.library,
-                        slot: 0,
-                        readWrite: !card.readOnly,
+                Promise.resolve()
+                .then(() => {
+                        // Delay for lib loading
+                        // NOTE: This is not good. It would be better to try WebCrypto init until success and limited by times.
+                        return new Promise((resolve) => {
+                            setTimeout(resolve, 1000);
+                        });
+                    })
+                    .then(() => {
+                        const crypto = new pkcs11.WebCrypto({
+                            library: card.library,
+                            slot: 0,
+                            readWrite: !card.readOnly,
+                        });
+                        const info = getSlotInfo(crypto);
+                        this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
+                        info.atr = Convert.ToHex(card.atr);
+                        info.library = card.library;
+                        this.info.providers.push(new ProviderCryptoProto(info));
+                        this.crypto[info.id] = crypto;
+                        // fire token event
+                        this.emit("token", {
+                            added: [info],
+                            removed: [],
+                        });
+                    })
+                    .catch((e) => {
+                        this.emit("error", e);
                     });
-                    const info = getSlotInfo(crypto);
-                    this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
-                    info.atr = Convert.ToHex(card.atr);
-                    info.library = card.library;
-                    this.info.providers.push(new ProviderCryptoProto(info));
-                    this.crypto[info.id] = crypto;
-                    // fire token event
-                    this.emit("token", {
-                        added: [info],
-                        removed: [],
-                    });
-                } catch (e) {
-                    this.emit("error", e);
-                }
             })
             .on("remove", (card) => {
                 const info: any = {
