@@ -299,7 +299,12 @@ export class Server extends EventEmitter {
                                 (async () => {
                                     const resultProto = new ResultProto(actionProto);
                                     this.emit("error", new ServerErrorEvent(this, e));
-                                    resultProto.error = e.message;
+                                    if (e) {
+                                        // NOTE: Some errors can have simple test format
+                                        resultProto.error = e.message || e.toString();
+                                    } else {
+                                        resultProto.error = "Empty exception";
+                                    }
                                     resultProto.status = false;
 
                                     this.send(session, resultProto);
