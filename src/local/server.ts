@@ -235,6 +235,7 @@ export class LocalServer extends EventEmitter {
                     const promise = new Promise<string>((resolve, reject) => {
                         this.emit("notify", {
                             type: "pin",
+                            origin: session.headers.origin,
                             resolve,
                             reject,
                         });
