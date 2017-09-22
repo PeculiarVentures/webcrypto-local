@@ -59,7 +59,7 @@ export class LocalProvider extends EventEmitter {
     public on(event: string | symbol, listener: Function) {
         return super.on(event, listener);
     }
-    
+
     public once(event: "close", listener: LocalProviderStopHandler): this;
     public once(event: "listening", listener: LocalProviderListeningHandler): this;
     public once(event: "token", listener: LocalProviderTokenHandler): this;
@@ -163,6 +163,7 @@ export class LocalProvider extends EventEmitter {
                 return this.emit("token_new", card);
             })
             .on("insert", (card) => {
+                this.emit("info", `Provider:Token:Insert name:${card.name} atr:${card.atr.toString("hex")}`);
                 if (!fs.existsSync(card.library)) {
                     return this.emit("token", {
                         added: [],
@@ -201,6 +202,7 @@ export class LocalProvider extends EventEmitter {
                     });
             })
             .on("remove", (card) => {
+                this.emit("info", `Provider:Token:Remove name:${card.name} atr:${card.atr.toString("hex")}`);
                 const info: any = {
                     added: [],
                     removed: [],
