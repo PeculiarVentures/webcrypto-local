@@ -5,7 +5,7 @@ import * as os from "os";
 import * as path from "path";
 import { ProviderCryptoProto, ProviderInfoProto } from "../core/protos/provider";
 import { OpenSSLCrypto } from "./ossl";
-import { CardWatcher } from "./pcsc_watcher";
+import { CardWatcher, PCSCCard } from "./pcsc_watcher";
 
 // TODO must be fixed in pkcs11 layer
 const utils = require("node-webcrypto-p11/built/utils");
@@ -14,7 +14,14 @@ import { Convert } from "pvtsutils";
 
 const CARD_CONFIG_PATH = path.join(__dirname, "../../json/card.json");
 
-type LocalProviderTokenHandler = (info: { removed: IProvider[], added: IProvider[], error: Error }) => void;
+interface TokenInfo {
+    removed: IProvider[];
+    added: IProvider[];
+    error?: string;
+}
+
+type LocalProviderTokenHandler = (info: TokenInfo) => void;
+type LocalProviderTokenNewHandler = (info: PCSCCard) => void;
 type LocalProviderListeningHandler = (info: IModule[]) => void;
 type LocalProviderErrorHandler = (e: Error) => void;
 type LocalProviderStopHandler = () => void;
@@ -45,21 +52,32 @@ export class LocalProvider extends EventEmitter {
     public on(event: "close", listener: LocalProviderStopHandler): this;
     public on(event: "listening", listener: LocalProviderListeningHandler): this;
     public on(event: "token", listener: LocalProviderTokenHandler): this;
+    public on(event: "token_new", listener: LocalProviderTokenNewHandler): this;
     public on(event: "error", listener: LocalProviderErrorHandler): this;
     public on(event: "info", listener: (message: string) => void): this;
     // public on(event: string | symbol, listener: Function): this;
     public on(event: string | symbol, listener: Function) {
         return super.on(event, listener);
     }
-
+    
     public once(event: "close", listener: LocalProviderStopHandler): this;
     public once(event: "listening", listener: LocalProviderListeningHandler): this;
     public once(event: "token", listener: LocalProviderTokenHandler): this;
+    public once(event: "token_new", listener: LocalProviderTokenNewHandler): this;
     public once(event: "error", listener: LocalProviderErrorHandler): this;
     public once(event: "info", listener: (message: string) => void): this;
     // public once(event: string | symbol, listener: Function): this;
     public once(event: string | symbol, listener: Function) {
         return super.once(event, listener);
+    }
+
+    public emit(event: "token", info: TokenInfo): boolean;
+    public emit(event: "token_new", info: PCSCCard): boolean;
+    public emit(event: "info", message: string): boolean;
+    public emit(event: "error", error: Error | string): boolean;
+    public emit(event: "listening", info: ProviderInfoProto): boolean;
+    public emit(event: string | symbol, ...args: any[]) {
+        return super.emit(event, ...args);
     }
 
     public async open() {
@@ -141,6 +159,9 @@ export class LocalProvider extends EventEmitter {
                     error: error.message,
                 });
             })
+            .on("new", (card) => {
+                return this.emit("token_new", card);
+            })
             .on("insert", (card) => {
                 if (!fs.existsSync(card.library)) {
                     return this.emit("token", {
@@ -150,7 +171,7 @@ export class LocalProvider extends EventEmitter {
                     });
                 }
                 Promise.resolve()
-                .then(() => {
+                    .then(() => {
                         // Delay for lib loading
                         // NOTE: This is not good. It would be better to try WebCrypto init until success and limited by times.
                         return new Promise((resolve) => {
@@ -200,7 +221,7 @@ export class LocalProvider extends EventEmitter {
                 }
             });
 
-        this.emit("listening", this.getInfo());
+        this.emit("listening", await this.getInfo());
     }
 
     public stop() {

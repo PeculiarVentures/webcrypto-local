@@ -102,12 +102,23 @@ interface JsonDriver {
         windows: string;
         linux: string;
         osx: string;
-    }
+    };
 }
 
 interface JsonCardConfig {
     cards: JsonCard[];
     drivers: JsonDriver[];
+}
+
+export interface PCSCCard {
+    /**
+     * Name of PCSC reader
+     */
+    reader: string;
+    /**
+     * ATR of device
+     */
+    atr: Buffer;
 }
 
 interface Card {
@@ -222,7 +233,10 @@ export class CardWatcher extends EventEmitter {
                     this.add(card);
                     this.emit("insert", card);
                 } else {
-                    this.emit("error", new Error(`Unsupported card in use. ${e.reader.name} ${e.atr.toString("hex")}`));
+                    this.emit("new", {
+                        reader: e.reader.name,
+                        atr: e.atr,
+                    });
                 }
             })
             .on("remove", (e) => {
@@ -236,6 +250,7 @@ export class CardWatcher extends EventEmitter {
 
     public on(event: "error", cb: (err: Error) => void): this;
     public on(event: "insert", cb: (card: Card) => void): this;
+    public on(event: "new", cb: (card: PCSCCard) => void): this;
     public on(event: "remove", cb: (card: Card) => void): this;
     public on(event: string, cb: Function) {
         return super.on(event, cb);

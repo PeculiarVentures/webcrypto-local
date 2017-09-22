@@ -195,6 +195,17 @@ export class Server extends EventEmitter {
 
 }
 
+export interface PCSCCard {
+    /**
+     * Name of PCSC reader
+     */
+    reader: string;
+    /**
+     * ATR of device
+     */
+    atr: Buffer;
+}
+
 /**
  * Local server
  *
@@ -221,6 +232,7 @@ export class LocalServer extends EventEmitter {
 
     public on(event: "info", cb: (message: string) => void): this;
     public on(event: "listening", cb: Function): this;
+    public on(event: "token_new", cb: (card: PCSCCard) => void): this;
     public on(event: "error", cb: Function): this;
     public on(event: "close", cb: Function): this;
     public on(event: "notify", cb: Function): this;

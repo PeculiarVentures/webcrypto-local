@@ -24,6 +24,9 @@ server.listen(SERVER_ADDRESS)
     .on("info", (msg) => {
         console.log(msg);
     })
+    .on("token_new", (card) => {
+        console.log(card);
+    })
     .on("error", (e: Error) => {
         console.error(e);
     })

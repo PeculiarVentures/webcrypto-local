@@ -35,6 +35,7 @@ import { LocalProvider, ProviderCrypto } from "./provider";
 
 import * as asn1js from "asn1js";
 import { isEqualBuffer } from "pvutils";
+import { PCSCCard } from "./pcsc_watcher";
 // import { X509Certificate } from "../pki/x509";
 const {
     Certificate, CertificateRevocationList, OCSPResponse, CertificateChainValidationEngine, setEngine
@@ -72,22 +73,29 @@ export class LocalServer extends EventEmitter {
 
         this.server = new Server(options);
         this.provider = new LocalProvider()
+            .on("token_new", (info) => {
+                this.emit("token_new", info);
+            })
             .on("token", (info) => {
-                this.emit("info", `Provider:Tokens changed (+${info.added.length}/-${info.removed.length})`);
-                this.sessions.forEach((session) => {
-                    if (session.cipher && session.authorized) {
-                        info.removed.forEach((item, index) => {
-                            info.removed[index] = new ProviderCryptoProto(item);
-                        });
-                        info.added.forEach((item, index) => {
-                            info.added[index] = new ProviderCryptoProto(item);
-                        });
-                        this.server.send(session, new ProviderTokenEventProto(info))
-                            .catch((e) => {
-                                console.error(e);
+                if (info.error) {
+                    this.emit("error", info.error);
+                } else {
+                    this.emit("info", `Provider:Token Amount of tokens was changed (+${info.added.length}/-${info.removed.length})`);
+                    this.sessions.forEach((session) => {
+                        if (session.cipher && session.authorized) {
+                            info.removed.forEach((item, index) => {
+                                info.removed[index] = new ProviderCryptoProto(item);
                             });
-                    }
-                });
+                            info.added.forEach((item, index) => {
+                                info.added[index] = new ProviderCryptoProto(item);
+                            });
+                            this.server.send(session, new ProviderTokenEventProto(info))
+                                .catch((e) => {
+                                    this.emit("error", e);
+                                });
+                        }
+                    });
+                }
             })
             .on("info", (message: string) => {
                 this.emit("info", message);
@@ -158,6 +166,7 @@ export class LocalServer extends EventEmitter {
     }
 
     public on(event: "info", cb: (message: string) => void): this;
+    public on(event: "token_new", cb: (info: PCSCCard) => void): this;
     public on(event: "listening", cb: Function): this;
     public on(event: "error", cb: Function): this;
     public on(event: "close", cb: Function): this;
