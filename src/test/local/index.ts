@@ -1,15 +1,23 @@
 import * as fs from "fs";
 import * as https from "https";
+import * as os from "os";
+import * as path from "path";
 import { Notification } from "../../core/notification";
 import { LocalServer } from "../../local";
 
+const APP_DATA_DIR = path.join(os.homedir(), ".fortify");
+const CERT_FILE = path.join(APP_DATA_DIR, "cert.pem");
+const KEY_FILE = path.join(APP_DATA_DIR, "key.pem");
+
+const SERVER_ADDRESS = "127.0.0.1:31337";
+
 const options: https.ServerOptions = {
-    cert: fs.readFileSync("/tmp/cert.pem"),
-    key: fs.readFileSync("/tmp/key.pem"),
+    cert: fs.readFileSync(CERT_FILE),
+    key: fs.readFileSync(KEY_FILE),
 };
 const server = new LocalServer(options);
 
-server.listen("localhost:31337")
+server.listen(SERVER_ADDRESS)
     .on("listening", (e: any) => {
         console.log(`${e}`);
     })
