@@ -1,22 +1,27 @@
 	{
 		"$schema": "./card.schema.json",
-		"cards": [{
+		"cards": [
+			{
 				"atr": "3b9813400aa503010101ad1311",
 				"name": "Belgian eID",
 				"driver": "89648ea52ed24a799aff9f9ff363eef4"
-			}, {
+			},
+			{
 				"atr": "3BFE1800008131FE458031815448534D31738021408107FA",
 				"name": "Nitrokey Nitrokey HSM",
 				"driver": "993988460d8f49a2ac519a2935f11533"
-			}, {
+			},
+			{
 				"atr": "3B7D18000000487970734944205333079000",
 				"name": "Safran Morpho YpsID S3",
 				"driver": "fea007cafe404e4fb56a8be39f60dc8f"
-			}, {
+			},
+			{
 				"atr": "3B7A18000000487970734944205333",
 				"name": "Safran Morpho YpsID S3 - French Customs",
 				"driver": "fea007cafe404e4fb56a8be39f60dc8f"
-			}, {
+			},
+			{
 				"atr": "3B941881B1807D1F0319C80050DC",
 				"name": "GoldKey Security PIV Token",
 				"driver": "993988460d8f49a2ac519a2935f00533"
@@ -25,23 +30,28 @@
 				"atr": "3bff0000008131004380318065b000000000120ffe82900000",
 				"name": "Gemalto IDPrime v2+ .NET",
 				"driver": "993988460d8f49a2ac519a5555f00533"
-			}, {
+			},
+			{
 				"atr": "3B8980014A434F5032343252324A",
 				"name": "NXP JCOP J3D",
 				"driver": "993988460d8f49a2ac519a2935f11533"
-			}, {
+			},
+			{
 				"atr": "3BD518008131FE7D8073C82110F4",
 				"name": "Aladdin eToken PRO USB 72K Java",
 				"driver": "39b3d7a3662c4b48bb120d008dd18648"
-			}, {
+			},
+			{
 				"atr": "3BD518008131FE7D8073C82110F4",
 				"name": "SafeNet eToken 5100",
 				"driver": "3e3d68d231b442d381f856cc80d57f18"
-			}, {
+			},
+			{
 				"atr": "3BD5180081313A7D8073C8211030",
 				"name": "SafeNet eToken 5110",
 				"driver": "3e3d68d231b442d381f856cc80d57f18"
-			},{
+			},
+			{
 				"atr": "3bff1100008131fe4d8025a00000005657444b3333300600d0",
 				"name": "Datakey 32K PKI Smart Card Model 330",
 				"driver": "39b3d7a3662c4b48bb120d008dd18648"
@@ -173,14 +183,16 @@
 				"driver": "993988460d8f49a2ac519a5555f00533"
 			}
 		],
-		"drivers": [{
+		"drivers": [
+			{
 				"id": "fea007cafe404e4fb56a8be39f60dc8f",
 				"name": "Safran Morpho",
 				"file": {
 					"windows": "/Windows/SysWOW64/CnfPkcs11v220.dll",
 					"osx": "/usr/local/lib/libCnfPkcs11.dylib "
 				}
-			}, {
+			},
+			{
 				"id": "39b3d7a3662c4b48bb120d008dd18648",
 				"name": "SafeNet Authentication Client",
 				"file": {
@@ -188,16 +200,14 @@
 					"osx": "/usr/local/lib/libeTPkcs11.dylib",
 					"linux": "/usr/lib/libeTPkcs11.so"
 				}
-			}, {
+			},
+			{
 				"id": "3e3d68d231b442d381f856cc80d57f18",
 				"name": "SafeNet eToken",
 				"file": {
 					"windows": "/Windows/System32/eToken.dll"
 				}
 			},
-
-
-
 			{
 				"id": "c4e60449442848c48af7b3fcf6a6f4a1",
 				"name": "Estonian ID",
@@ -235,7 +245,8 @@
 					"osx": "/usr/lib/pkcs11/libidprimepkcs11.dylib",
 					"windows": "/Program Files/Gemalto/DotNet PKCS11/gtop11dotnet64.dll"
 				}
-			}, {
+			},
+			{
 				"id": "89648ea52ed24a799aff9f9ff363eef4",
 				"name": "Belgian eID",
 				"file": {
