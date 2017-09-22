@@ -253,7 +253,6 @@ export class Server extends EventEmitter {
                         } catch (err) {
                             try {
                                 this.emit("info", `Cannot parse MessageSignedProtocol`);
-                                this.emit("error", new ServerErrorEvent(this, err));
                                 const preKeyProto = await PreKeyMessageProtocol.importProto(buffer);
                                 messageProto = preKeyProto.signedMessage;
                                 session.cipher = await AsymmetricRatchet.create(this.identity, preKeyProto);
