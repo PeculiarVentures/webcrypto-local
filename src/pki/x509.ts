@@ -4,7 +4,7 @@ import { Certificate } from "./cert";
 import { nameToString } from "./x500_name";
 
 const pkijs = require("pkijs");
-const { setEngine } = pkijs;
+const { setEngine, CryptoEngine } = pkijs;
 const PKICertificate = pkijs.Certificate;
 
 export declare type DigestAlgorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
@@ -67,8 +67,8 @@ export class X509Certificate extends Certificate implements CryptoX509Certificat
     public exportKey(provider: Crypto): Promise<CryptoKey>;
     public exportKey(provider: Crypto, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoKey>;
     public async exportKey(provider: Crypto, algorithm?: Algorithm, usages?: string[]): Promise<CryptoKey> {
-        setEngine("unknown", provider, provider.subtle);
-        return this.asn1.getPublicKey(algorithm ? { algorithm: {algorithm, usages} } : null)
+        setEngine("unknown", provider, new CryptoEngine({ name: "unknown", crypto: provider, subtle: provider.subtle }));
+        return this.asn1.getPublicKey(algorithm ? { algorithm: { algorithm, usages } } : null)
             .then((key: CryptoKey) => {
                 return key;
             });

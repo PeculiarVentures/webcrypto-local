@@ -2,7 +2,7 @@ import * as Asn1Js from "asn1js";
 import { Certificate } from "./cert";
 import { nameToString } from "./x500_name";
 
-const { CertificationRequest, setEngine } = require("pkijs");
+const { CertificationRequest, setEngine, CryptoEngine } = require("pkijs");
 
 export declare type DigestAlgorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
 
@@ -41,8 +41,8 @@ export class X509CertificateRequest extends Certificate implements CryptoX509Cer
     public exportKey(provider: Crypto): Promise<CryptoKey>;
     public exportKey(provider: Crypto, algorithm: Algorithm, usages: string[]): Promise<CryptoKey>;
     public async exportKey(provider: Crypto, algorithm?: Algorithm, usages?: string[]): Promise<CryptoKey> {
-        setEngine("unknown", provider, provider.subtle);
-        return this.asn1.getPublicKey(algorithm ? { algorithm: {algorithm, usages} } : null)
+        setEngine("unknown", provider, new CryptoEngine({ name: "unknown", crypto: provider, subtle: provider.subtle }));
+        return this.asn1.getPublicKey(algorithm ? { algorithm: { algorithm, usages } } : null)
             .then((key: CryptoKey) => {
                 return key;
             });

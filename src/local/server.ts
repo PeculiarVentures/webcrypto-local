@@ -38,7 +38,7 @@ import { isEqualBuffer } from "pvutils";
 import { PCSCCard } from "./pcsc_watcher";
 // import { X509Certificate } from "../pki/x509";
 const {
-    Certificate, CertificateRevocationList, OCSPResponse, CertificateChainValidationEngine, setEngine
+    Certificate, CertificateRevocationList, OCSPResponse, CertificateChainValidationEngine, setEngine, CryptoEngine
  } = require("pkijs");
 
 // register new attribute for pkcs11 modules
@@ -747,7 +747,7 @@ export class LocalServer extends EventEmitter {
                         }
                         certs.push(pkiEntryCert);
                         // Build chain for certs
-                        setEngine("PKCS#11 provider", crypto, crypto.subtle);
+                        setEngine("PKCS#11 provider", crypto, new CryptoEngine({ name: "", crypto, subtle: crypto.subtle }));
                         // console.log("Print incoming certificates");
                         // console.log("Trusted:");
                         // console.log("=================================");
