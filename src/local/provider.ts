@@ -1,3 +1,4 @@
+import * as crypto from "crypto";
 import { EventEmitter } from "events";
 import * as fs from "fs";
 import * as pkcs11 from "node-webcrypto-p11";
@@ -12,6 +13,7 @@ const utils = require("node-webcrypto-p11/built/utils");
 import * as graphene from "graphene-pk11";
 import { Convert } from "pvtsutils";
 
+const PROV_ID_HASH = "sha256";
 const CARD_CONFIG_PATH = path.join(__dirname, "../../json/card.json");
 
 interface TokenInfo {
@@ -163,7 +165,7 @@ export class LocalProvider extends EventEmitter {
                 return this.emit("token_new", card);
             })
             .on("insert", (card) => {
-                this.emit("info", `Provider:Token:Insert name:${card.name} atr:${card.atr.toString("hex")}`);
+                this.emit("info", `Provider:Token:Insert reader:'${card.reader}' name:'${card.name}' atr:${card.atr.toString("hex")}`);
                 if (!fs.existsSync(card.library)) {
                     return this.emit("token", {
                         added: [],
@@ -186,11 +188,13 @@ export class LocalProvider extends EventEmitter {
                             readWrite: !card.readOnly,
                         });
                         const info = getSlotInfo(crypto);
-                        this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
                         info.atr = Convert.ToHex(card.atr);
                         info.library = card.library;
+                        const provId = digest(PROV_ID_HASH, card.reader + card.atr).toString("hex");
+                        info.id = provId;
+                        this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
                         this.info.providers.push(new ProviderCryptoProto(info));
-                        this.crypto[info.id] = crypto;
+                        this.crypto[provId] = crypto;
                         // fire token event
                         this.emit("token", {
                             added: [info],
@@ -202,16 +206,17 @@ export class LocalProvider extends EventEmitter {
                     });
             })
             .on("remove", (card) => {
-                this.emit("info", `Provider:Token:Remove name:${card.name} atr:${card.atr.toString("hex")}`);
+                this.emit("info", `Provider:Token:Remove reader:'${card.reader}' name:'${card.name}' atr:${card.atr.toString("hex")}`);
                 const info: any = {
                     added: [],
                     removed: [],
                 };
+                const provId = digest(PROV_ID_HASH, card.reader + card.atr).toString("hex");
+                delete this.crypto[provId];
                 this.info.providers = this.info.providers.filter((provider) => {
-                    if (provider.library === card.library) {
-                        // remove crypto
+                    if (provider.id === provId) {
                         this.emit("info", `Provider: Crypto removed '${provider.name}' ${provider.id}`);
-                        delete this.crypto[provider.id];
+                        // remove crypto
                         info.removed.push(provider);
                         return false;
                     }
@@ -250,4 +255,10 @@ function getSlotInfo(p11Crypto: any) {
     const info = utils.getProviderInfo(session.slot) as IProvider;
     info.readOnly = !(session.flags & graphene.SessionFlag.RW_SESSION);
     return info;
+}
+
+function digest(alg: string, data: string) {
+    const hash = crypto.createHash(alg);
+    hash.update(data);
+    return hash.digest();
 }

@@ -122,6 +122,7 @@ export interface PCSCCard {
 }
 
 interface Card {
+    reader?: string;
     name: string;
     atr: Buffer;
     mask?: Buffer;
@@ -210,9 +211,6 @@ export class CardWatcher extends EventEmitter {
 
     /**
      * List of allowed cards
-     *
-     * @type {Card[]}
-     * @memberOf CardWatcher
      */
     public cards: Card[] = [];
 
@@ -229,6 +227,7 @@ export class CardWatcher extends EventEmitter {
             })
             .on("insert", (e) => {
                 const card = this.config.getItem(e.atr);
+                card.reader = e.reader.name;
                 if (card) {
                     this.add(card);
                     this.emit("insert", card);
@@ -241,6 +240,7 @@ export class CardWatcher extends EventEmitter {
             })
             .on("remove", (e) => {
                 const card = this.config.getItem(e.atr);
+                card.reader = e.reader.name;
                 if (card) {
                     this.remove(card);
                     this.emit("remove", card);
