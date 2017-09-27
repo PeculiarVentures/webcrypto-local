@@ -5,6 +5,7 @@ interface IProvider {
     library?: string;
     atr?: string;
     algorithms: string[];
+    isHardware: boolean;
     isRemovable: boolean;
 }
 

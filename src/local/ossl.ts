@@ -26,6 +26,7 @@ export class OpenSSLCrypto extends OSSLCrypto {
                     id: "286cb673c23e4decbe22bb71fc04e5ea",
                     name: "OpenSSL",
                     readOnly: false,
+                    isHardware: false,
                     isRemovable: false,
                     algorithms: [
                         AlgorithmNames.Sha1,

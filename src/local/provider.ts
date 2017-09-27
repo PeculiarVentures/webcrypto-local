@@ -252,7 +252,9 @@ export class LocalProvider extends EventEmitter {
 
 function getSlotInfo(p11Crypto: any) {
     const session: graphene.Session = p11Crypto.session;
+    const slot = session.slot;
     const info = utils.getProviderInfo(session.slot) as IProvider;
+    info.isHardware = !!(slot.flags & graphene.SlotFlag.HW_SLOT);
     info.readOnly = !(session.flags & graphene.SessionFlag.RW_SESSION);
     return info;
 }
