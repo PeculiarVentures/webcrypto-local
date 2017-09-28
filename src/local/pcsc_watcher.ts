@@ -22,6 +22,7 @@ export class PCSCWatcher extends EventEmitter {
             this.emit("error", err);
         });
         this.pcsc.on("reader", (reader) => {
+            console.log(reader.name);
             // console.log("New reader detected", reader.name);
             let atr: Buffer | null;
             reader.on("error", (err) => {
@@ -44,11 +45,11 @@ export class PCSCWatcher extends EventEmitter {
                         }
                     } else if ((changes & reader.SCARD_STATE_PRESENT) && (status.state & reader.SCARD_STATE_PRESENT)) {
                         // card insert
-                        atr = status.atr;
                         const event: PCSCWatcherEvent = {
                             reader,
                         };
-                        if (atr) {
+                        if (status.atr && status.atr.byteLength) {
+                            atr = status.atr;
                             event.atr = atr;
                         }
                         this.emit("insert", event);
@@ -65,6 +66,7 @@ export class PCSCWatcher extends EventEmitter {
                         atr,
                     };
                     this.emit("remove", event);
+                    atr = null;
                 }
             });
         });
