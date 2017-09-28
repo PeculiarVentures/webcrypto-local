@@ -15,7 +15,7 @@ import {
     CertificateStorageKeysActionProto, CertificateStorageRemoveItemActionProto, CertificateStorageSetItemActionProto, ChainItemProto,
 } from "../core/protos/certstorage";
 import { ArrayStringConverter } from "../core/protos/converter";
-import { IsLoggedInActionProto, LoginActionProto, ResetActionProto, CryptoActionProto } from "../core/protos/crypto";
+import { CryptoActionProto, IsLoggedInActionProto, LoginActionProto, LogoutActionProto, ResetActionProto } from "../core/protos/crypto";
 import {
     KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageIndexOfActionProto,
     KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto,
@@ -251,6 +251,16 @@ export class LocalServer extends EventEmitter {
                     });
                     const pin = await promise;
                     crypto.login(pin);
+                }
+                break;
+            }
+            case LogoutActionProto.ACTION: {
+                const params = await LogoutActionProto.importProto(action);
+
+                const crypto = await this.provider.getCrypto(params.providerID);
+
+                if (crypto.logout) {
+                    crypto.logout();
                 }
                 break;
             }
