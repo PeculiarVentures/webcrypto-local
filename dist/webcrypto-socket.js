@@ -3775,6 +3775,9 @@ var ProviderCryptoProto = (function (_super) {
     __decorate([
         ProtobufProperty({ id: ProviderCryptoProto_1.INDEX++, type: "string" })
     ], ProviderCryptoProto.prototype, "atr", void 0);
+    __decorate([
+        ProtobufProperty({ id: ProviderCryptoProto_1.INDEX++, type: "bool", defaultValue: false })
+    ], ProviderCryptoProto.prototype, "isHardware", void 0);
     ProviderCryptoProto = ProviderCryptoProto_1 = __decorate([
         ProtobufElement({})
     ], ProviderCryptoProto);
@@ -3897,6 +3900,18 @@ var LoginActionProto = (function (_super) {
         ProtobufElement({})
     ], LoginActionProto);
     return LoginActionProto;
+}(CryptoActionProto));
+var LogoutActionProto = (function (_super) {
+    __extends(LogoutActionProto, _super);
+    function LogoutActionProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    LogoutActionProto.INDEX = CryptoActionProto.INDEX;
+    LogoutActionProto.ACTION = "crypto/logout";
+    LogoutActionProto = __decorate([
+        ProtobufElement({})
+    ], LogoutActionProto);
+    return LogoutActionProto;
 }(CryptoActionProto));
 var IsLoggedInActionProto = (function (_super) {
     __extends(IsLoggedInActionProto, _super);
@@ -6838,6 +6853,16 @@ var SocketCrypto = (function () {
             var action;
             return __generator(this, function (_a) {
                 action = new LoginActionProto();
+                action.providerID = this.id;
+                return [2, this.client.send(action)];
+            });
+        });
+    };
+    SocketCrypto.prototype.logout = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var action;
+            return __generator(this, function (_a) {
+                action = new LogoutActionProto();
                 action.providerID = this.id;
                 return [2, this.client.send(action)];
             });

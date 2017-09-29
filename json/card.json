@@ -228,7 +228,9 @@
 				"id": "7d3a38d2d8294234a53d5845d6d116c4",
 				"name": "Rutoken",
 				"file": {
-					"windows": "/Windows/System32/rtPKCS11ECP.dll"
+					"windows": "/Windows/System32/rtPKCS11ECP.dll",
+					"osx": "/usr/local/lib/librtpkcs11ecp.dylib",
+					"linux": "/usr/local/lib/librtpkcs11ecp.so"
 				}
 			},
 			{

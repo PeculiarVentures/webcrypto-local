@@ -21,6 +21,14 @@ export class LoginActionProto extends CryptoActionProto {
 }
 
 @ProtobufElement({})
+export class LogoutActionProto extends CryptoActionProto {
+
+    public static INDEX = CryptoActionProto.INDEX;
+    public static ACTION = "crypto/logout";
+
+}
+
+@ProtobufElement({})
 export class IsLoggedInActionProto extends CryptoActionProto {
 
     public static INDEX = CryptoActionProto.INDEX;

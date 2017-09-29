@@ -22,6 +22,7 @@ export class PCSCWatcher extends EventEmitter {
             this.emit("error", err);
         });
         this.pcsc.on("reader", (reader) => {
+            console.log(reader.name);
             // console.log("New reader detected", reader.name);
             let atr: Buffer | null;
             reader.on("error", (err) => {
@@ -44,11 +45,11 @@ export class PCSCWatcher extends EventEmitter {
                         }
                     } else if ((changes & reader.SCARD_STATE_PRESENT) && (status.state & reader.SCARD_STATE_PRESENT)) {
                         // card insert
-                        atr = status.atr;
                         const event: PCSCWatcherEvent = {
                             reader,
                         };
-                        if (atr) {
+                        if (status.atr && status.atr.byteLength) {
+                            atr = status.atr;
                             event.atr = atr;
                         }
                         this.emit("insert", event);
@@ -65,6 +66,7 @@ export class PCSCWatcher extends EventEmitter {
                         atr,
                     };
                     this.emit("remove", event);
+                    atr = null;
                 }
             });
         });
@@ -122,6 +124,7 @@ export interface PCSCCard {
 }
 
 interface Card {
+    reader?: string;
     name: string;
     atr: Buffer;
     mask?: Buffer;
@@ -210,9 +213,6 @@ export class CardWatcher extends EventEmitter {
 
     /**
      * List of allowed cards
-     *
-     * @type {Card[]}
-     * @memberOf CardWatcher
      */
     public cards: Card[] = [];
 
@@ -229,6 +229,7 @@ export class CardWatcher extends EventEmitter {
             })
             .on("insert", (e) => {
                 const card = this.config.getItem(e.atr);
+                card.reader = e.reader.name;
                 if (card) {
                     this.add(card);
                     this.emit("insert", card);
@@ -241,6 +242,7 @@ export class CardWatcher extends EventEmitter {
             })
             .on("remove", (e) => {
                 const card = this.config.getItem(e.atr);
+                card.reader = e.reader.name;
                 if (card) {
                     this.remove(card);
                     this.emit("remove", card);
