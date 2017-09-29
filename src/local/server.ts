@@ -554,7 +554,7 @@ export class LocalServer extends EventEmitter {
                 const crypto = await this.provider.getCrypto(params.providerID);
 
                 // do operation
-                await crypto.certStorage.clear();
+                await crypto.keyStorage.clear();
                 // result
                 break;
             }
