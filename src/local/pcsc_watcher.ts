@@ -22,12 +22,14 @@ export class PCSCWatcher extends EventEmitter {
             this.emit("error", err);
         });
         this.pcsc.on("reader", (reader) => {
-            // console.log("New reader detected", reader.name);
+            console.log("New reader detected", reader.name);
             let atr: Buffer | null;
+            reader.state = 0;
             reader.on("error", (err) => {
                 this.emit("error", err);
             });
             reader.on("status", (status) => {
+                // console.log("----name:'%s' atr:%s reader_state:%s state:%s", reader.name, status.atr.toString("hex"), reader.state, status.state);
                 // check what has changed
                 const changes = reader.state ^ status.state;
                 if (changes) {

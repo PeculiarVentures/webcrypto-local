@@ -23,7 +23,7 @@ declare class CardReader extends EventEmitter {
 
     public name: string;
     public connected: boolean;
-    public state: number;
+    public state?: number;
 
     // Share Mode
     public SCARD_SHARE_SHARED: number;

@@ -164,65 +164,68 @@ export class LocalProvider extends EventEmitter {
             })
             .on("insert", (card) => {
                 const EVENT_LOG = "Provider:Token:Insert";
-                (async () => {
-                    this.emit("info", `${EVENT_LOG} reader:'${card.reader}' name:'${card.name}' atr:${card.atr.toString("hex")}`);
-                    if (!fs.existsSync(card.library)) {
-                        this.emit("token", {
-                            added: [],
-                            removed: [],
-                            error: `Cannot find PKCS#11 library ${card.library}`,
+                Promise.resolve()
+                    .then(() => {
+                        this.emit("info", `${EVENT_LOG} reader:'${card.reader}' name:'${card.name}' atr:${card.atr.toString("hex")}`);
+                        if (!fs.existsSync(card.library)) {
+                            this.emit("token", {
+                                added: [],
+                                removed: [],
+                                error: `Cannot find PKCS#11 library ${card.library}`,
+                            });
+                            return;
+                        }
+                        // Delay for lib loading
+                        // NOTE: This is not good. It would be better to try WebCrypto init until success and limited by times.
+                    })
+                    .then(() => {
+                        // return delay(1e3);
+                    })
+                    .then(() => {
+                        const mod = graphene.Module.load(card.library, card.name);
+                        try {
+                            mod.initialize();
+                        } catch {
+                            // error on module initialization
+                        }
+
+                        const slots = mod.getSlots();
+                        let slotIndex = -1;
+                        this.emit("info", `${EVENT_LOG} Looking for ${card.reader} into ${slots.length} slot(s)`);
+                        for (let i = 0; i < slots.length; i++) {
+                            const slot = slots.items(i);
+                            if (!slot) {
+                                continue;
+                            }
+                            this.emit("info", `${EVENT_LOG} Slot description: ${i} '${slot.slotDescription}'`);
+                            if (slot.slotDescription === card.reader) {
+                                this.emit("info", `${EVENT_LOG} Index found ${slot.slotDescription} ${i}`);
+                                slotIndex = i;
+                                break;
+                            }
+                        }
+                        if (slotIndex < 0) {
+                            throw new Error(`${EVENT_LOG} Cannot find slot with description '${card.reader}'`);
+                        }
+
+                        const crypto = new pkcs11.WebCrypto({
+                            library: card.library,
+                            slot: slotIndex,
+                            readWrite: !card.readOnly,
                         });
-                        return;
-                    }
-
-                    // Delay for lib loading
-                    // NOTE: This is not good. It would be better to try WebCrypto init until success and limited by times.
-                    await delay(1e3);
-
-                    const mod = graphene.Module.load(card.library, card.name);
-                    try {
-                        mod.initialize();
-                    } catch {
-                        // error on module initialization
-                    }
-
-                    const slots = mod.getSlots();
-                    let slotIndex = -1;
-                    this.emit("info", `${EVENT_LOG} Looking for ${card.reader} into ${slots.length} slot(s)`);
-                    for (let i = 0; i < slots.length; i++) {
-                        const slot = slots.items(i);
-                        if (!slot) {
-                            continue;
-                        }
-                        this.emit("info", `${EVENT_LOG} Slot description: ${i} '${slot.slotDescription}'`);
-                        if (slot.slotDescription === card.reader) {
-                            this.emit("info", `${EVENT_LOG} Index found ${slot.slotDescription} ${i}`);
-                            slotIndex = i;
-                            break;
-                        }
-                    }
-                    if (slotIndex < 0) {
-                        throw new Error(`${EVENT_LOG} Cannot find slot with description '${card.reader}'`);
-                    }
-
-                    const crypto = new pkcs11.WebCrypto({
-                        library: card.library,
-                        slot: slotIndex,
-                        readWrite: !card.readOnly,
-                    });
-                    const info = getSlotInfo(crypto);
-                    info.atr = Convert.ToHex(card.atr);
-                    info.library = card.library;
-                    info.id = digest(PROV_ID_HASH, card.reader + card.atr).toString("hex");
-                    this.emit("info", `${EVENT_LOG} Add crypto '${info.name}' ${info.id}`);
-                    this.info.providers.push(new ProviderCryptoProto(info));
-                    this.crypto[info.id] = crypto;
-                    // fire token event
-                    this.emit("token", {
-                        added: [info],
-                        removed: [],
-                    });
-                })()
+                        const info = getSlotInfo(crypto);
+                        info.atr = Convert.ToHex(card.atr);
+                        info.library = card.library;
+                        info.id = digest(PROV_ID_HASH, card.reader + card.atr).toString("hex");
+                        this.emit("info", `${EVENT_LOG} Add crypto '${info.name}' ${info.id}`);
+                        this.info.providers.push(new ProviderCryptoProto(info));
+                        this.crypto[info.id] = crypto;
+                        // fire token event
+                        this.emit("token", {
+                            added: [info],
+                            removed: [],
+                        });
+                    })
                     .catch((err) => {
                         this.emit("error", err);
                     });
@@ -287,8 +290,10 @@ function digest(alg: string, data: string) {
     return hash.digest();
 }
 
-function delay(ms: number) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, 1e3);
-    });
-}
+// function delay(ms: number) {
+//     return new Promise((resolve) => {
+//         setTimeout(() => {
+//             resolve();
+//         }, ms);
+//     });
+// }
