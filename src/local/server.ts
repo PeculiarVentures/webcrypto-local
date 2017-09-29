@@ -152,7 +152,7 @@ export class LocalServer extends EventEmitter {
                         .then(e.resolve, e.reject);
                 })()
                     .catch((error) => {
-                        this.on("error", error);
+                        this.emit("error", error);
                     });
             })
             .on("auth", (session) => {
