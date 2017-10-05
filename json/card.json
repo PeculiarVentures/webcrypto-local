@@ -177,10 +177,11 @@
 				"driver": "993988460d8f49a2ac519a2935f11533"
 			},
 			{
-				"atr": "3B7F96000080318065B0850300EF120FFE829000",
+			   "cards": [{
+				"atr": "3B7F96000080318065B084413DF6120FFE829000",
 				"name": "Gemalto IDPrime MD 840 (PKI)",
-				"readOnly": true,
-				"driver": "993988460d8f49a2ac519a5555f00533"
+				"driver": "39b3d7a3662c4b48bb120d008dd18648"
+			   }]
 			}
 		],
 		"drivers": [
