@@ -53,7 +53,10 @@ export class PCSCWatcher extends EventEmitter {
                             atr = status.atr;
                             event.atr = atr;
                         }
-                        this.emit("insert", event);
+                        // Delay for lib loading
+                        setTimeout(() => {
+                            this.emit("insert", event);
+                        }, 1e3);
                     }
                 }
             });

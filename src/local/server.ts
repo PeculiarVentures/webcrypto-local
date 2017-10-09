@@ -1,13 +1,14 @@
 import { EventEmitter } from "events";
 import * as graphene from "graphene-pk11";
 import * as https from "https";
+import { WebCrypto } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
 import * as request from "request";
 import { ObjectProto } from "tsprotobuf";
 import { challenge } from "../connection/challenge";
 import { Server, Session } from "../connection/server";
 import { RemoteIdentityEx } from "../connection/storages/ossl";
-import { ActionProto, CryptoItemProto, CryptoKeyPairProto, CryptoKeyProto, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core/proto";
+import { ActionProto, CryptoKeyPairProto, CryptoKeyProto, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core/proto";
 import {
     CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetChainActionProto,
     CertificateStorageGetChainResultProto, CertificateStorageGetCRLActionProto, CertificateStorageGetItemActionProto,
@@ -31,7 +32,8 @@ import {
     UnwrapKeyActionProto, VerifyActionProto, WrapKeyActionProto,
 } from "../core/protos/subtle";
 import { ServiceCryptoItem } from "./crypto_item";
-import { LocalProvider, ProviderCrypto } from "./provider";
+import { MemoryStorage } from "./memory_storage";
+import { LocalProvider } from "./provider";
 
 import * as asn1js from "asn1js";
 import { isEqualBuffer } from "pvutils";
@@ -43,8 +45,6 @@ const {
 
 // register new attribute for pkcs11 modules
 graphene.registerAttribute("x509Chain", 2147483905, "buffer");
-
-const crypto: Crypto = new (require("node-webcrypto-ossl"))();
 
 /**
  * Local server
@@ -66,7 +66,7 @@ export class LocalServer extends EventEmitter {
     public cryptos: { [id: string]: Crypto } = {};
     public sessions: Session[] = [];
 
-    protected memoryStorage: ServiceCryptoItem[] = [];
+    protected memoryStorage = new MemoryStorage();
 
     constructor(options: https.ServerOptions) {
         super();
@@ -85,6 +85,8 @@ export class LocalServer extends EventEmitter {
                         if (session.cipher && session.authorized) {
                             info.removed.forEach((item, index) => {
                                 info.removed[index] = new ProviderCryptoProto(item);
+                                // remove objects from memory storage
+                                this.memoryStorage.removeByProvider(info.removed[index].id);
                             });
                             info.added.forEach((item, index) => {
                                 info.added[index] = new ProviderCryptoProto(item);
@@ -294,11 +296,10 @@ export class LocalServer extends EventEmitter {
                 if ((keys as CryptoKeyPair).privateKey) {
                     const keyPair = keys as CryptoKeyPair;
                     // CryptoKeyPair
-                    // const thumbprint = await GetIdentity(keyPair.publicKey, crypto);
-                    const publicKey = new ServiceCryptoItem(getHandle(), keyPair.publicKey, params.providerID);
-                    const privateKey = new ServiceCryptoItem(getHandle(), keyPair.privateKey, params.providerID);
-                    this.memoryStorage.push(publicKey);
-                    this.memoryStorage.push(privateKey);
+                    const publicKey = new ServiceCryptoItem(keyPair.publicKey, params.providerID);
+                    const privateKey = new ServiceCryptoItem(keyPair.privateKey, params.providerID);
+                    this.memoryStorage.add(publicKey);
+                    this.memoryStorage.add(privateKey);
 
                     // convert `keys` to CryptoKeyPairProto
                     const keyPairProto = new CryptoKeyPairProto();
@@ -308,9 +309,8 @@ export class LocalServer extends EventEmitter {
                 } else {
                     // CryptoKey
                     const key: CryptoKey = keys as any;
-                    // const thumbprint = await GetIdentity(key, crypto);
-                    const secretKey = new ServiceCryptoItem(getHandle(), key, params.providerID);
-                    this.memoryStorage.push(secretKey);
+                    const secretKey = new ServiceCryptoItem(key, params.providerID);
+                    this.memoryStorage.add(secretKey);
 
                     keyProto = secretKey.toProto();
                 }
@@ -323,7 +323,7 @@ export class LocalServer extends EventEmitter {
 
                 const crypto = await this.provider.getCrypto(params.providerID);
 
-                const key = this.getItemFromStorage(params.key).item as CryptoKey;
+                const key = this.memoryStorage.item(params.key.id).item as CryptoKey;
                 data = await crypto.subtle.sign(params.algorithm.toAlgorithm(), key, params.data);
                 break;
             }
@@ -332,7 +332,7 @@ export class LocalServer extends EventEmitter {
 
                 const crypto = await this.provider.getCrypto(params.providerID);
 
-                const key = this.getItemFromStorage(params.key).item as CryptoKey;
+                const key = this.memoryStorage.item(params.key.id).item as CryptoKey;
                 const ok = await crypto.subtle.verify(params.algorithm.toAlgorithm(), key, params.signature, params.data);
 
                 data = new Uint8Array([ok ? 1 : 0]).buffer;
@@ -342,7 +342,7 @@ export class LocalServer extends EventEmitter {
                 const params = await EncryptActionProto.importProto(action);
 
                 const crypto = await this.provider.getCrypto(params.providerID);
-                const key = this.getItemFromStorage(params.key).item as CryptoKey;
+                const key = this.memoryStorage.item(params.key.id).item as CryptoKey;
 
                 data = await crypto.subtle.encrypt(params.algorithm.toAlgorithm(), key, params.data);
                 break;
@@ -351,7 +351,7 @@ export class LocalServer extends EventEmitter {
                 const params = await DecryptActionProto.importProto(action);
 
                 const crypto = await this.provider.getCrypto(params.providerID);
-                const key = this.getItemFromStorage(params.key).item as CryptoKey;
+                const key = this.memoryStorage.item(params.key.id).item as CryptoKey;
 
                 data = await crypto.subtle.decrypt(params.algorithm.toAlgorithm(), key, params.data);
                 break;
@@ -360,10 +360,10 @@ export class LocalServer extends EventEmitter {
                 const params = await DeriveBitsActionProto.importProto(action);
 
                 const crypto = await this.provider.getCrypto(params.providerID);
-                const key = this.getItemFromStorage(params.key).item as CryptoKey;
+                const key = this.memoryStorage.item(params.key.id).item as CryptoKey;
                 const alg = params.algorithm.toAlgorithm();
                 const publicKey = await CryptoKeyProto.importProto(alg.public);
-                alg.public = this.getItemFromStorage(publicKey).item as CryptoKey;
+                alg.public = this.memoryStorage.item(publicKey.id).item as CryptoKey;
 
                 data = await crypto.subtle.deriveBits(alg, key, params.length);
                 break;
@@ -372,17 +372,16 @@ export class LocalServer extends EventEmitter {
                 const params = await DeriveKeyActionProto.importProto(action);
 
                 const crypto = await this.provider.getCrypto(params.providerID);
-                const key = this.getItemFromStorage(params.key).item as CryptoKey;
+                const key = this.memoryStorage.item(params.key.id).item as CryptoKey;
                 const alg = params.algorithm.toAlgorithm();
                 const publicKey = await CryptoKeyProto.importProto(alg.public);
-                alg.public = this.getItemFromStorage(publicKey).item as CryptoKey;
+                alg.public = this.memoryStorage.item(publicKey.id).item as CryptoKey;
 
                 const derivedKey = await crypto.subtle.deriveKey(alg, key, params.derivedKeyType, params.extractable, params.usage);
 
                 // put key to memory storage
-                // const thumbprint = await GetIdentity(derivedKey, crypto);
-                const resKey = new ServiceCryptoItem(getHandle(), derivedKey, params.providerID);
-                this.memoryStorage.push(resKey);
+                const resKey = new ServiceCryptoItem(derivedKey, params.providerID);
+                this.memoryStorage.add(resKey);
 
                 data = await resKey.toProto().exportProto();
                 break;
@@ -391,8 +390,8 @@ export class LocalServer extends EventEmitter {
                 const params = await WrapKeyActionProto.importProto(action);
 
                 const crypto = await this.provider.getCrypto(params.providerID);
-                const key = await this.getItemFromStorage(params.key).item as CryptoKey;
-                const wrappingKey = this.getItemFromStorage(params.wrappingKey).item as CryptoKey;
+                const key = await this.memoryStorage.item(params.key.id).item as CryptoKey;
+                const wrappingKey = this.memoryStorage.item(params.wrappingKey.id).item as CryptoKey;
 
                 data = await crypto.subtle.wrapKey(
                     params.format,
@@ -406,7 +405,7 @@ export class LocalServer extends EventEmitter {
                 const params = await UnwrapKeyActionProto.importProto(action);
 
                 const crypto = await this.provider.getCrypto(params.providerID);
-                const unwrappingKey = await this.getItemFromStorage(params.unwrappingKey).item as CryptoKey;
+                const unwrappingKey = await this.memoryStorage.item(params.unwrappingKey.id).item as CryptoKey;
 
                 const key = await crypto.subtle.unwrapKey(
                     params.format,
@@ -419,9 +418,8 @@ export class LocalServer extends EventEmitter {
                 );
 
                 // put key to memory storage
-                // const thumbprint = await GetIdentity(key, crypto);
-                const resKey = new ServiceCryptoItem(getHandle(), key, params.providerID);
-                this.memoryStorage.push(resKey);
+                const resKey = new ServiceCryptoItem(key, params.providerID);
+                this.memoryStorage.add(resKey);
 
                 data = await resKey.toProto().exportProto();
                 break;
@@ -430,7 +428,7 @@ export class LocalServer extends EventEmitter {
                 const params = await ExportKeyActionProto.importProto(action);
 
                 const crypto = await this.provider.getCrypto(params.providerID);
-                const key = await this.getItemFromStorage(params.key).item as CryptoKey;
+                const key = await this.memoryStorage.item(params.key.id).item as CryptoKey;
 
                 const exportedData = await crypto.subtle.exportKey(
                     params.format,
@@ -468,9 +466,8 @@ export class LocalServer extends EventEmitter {
                 );
 
                 // put key to memory storage
-                // const thumbprint = await GetIdentity(key, crypto);
-                const resKey = new ServiceCryptoItem(getHandle(), key, params.providerID);
-                this.memoryStorage.push(resKey);
+                const resKey = new ServiceCryptoItem(key, params.providerID);
+                this.memoryStorage.add(resKey);
 
                 data = await resKey.toProto().exportProto();
                 break;
@@ -493,9 +490,8 @@ export class LocalServer extends EventEmitter {
                     if (!key) {
                         throw new Error(`Cannot get key by identity '${params.key}'`);
                     }
-                    // const thumbprint = await GetIdentity(key, crypto);
-                    const cryptoKey = new ServiceCryptoItem(getHandle(), key, params.providerID);
-                    this.memoryStorage.push(cryptoKey);
+                    const cryptoKey = new ServiceCryptoItem(key, params.providerID);
+                    this.memoryStorage.add(cryptoKey);
 
                     data = await cryptoKey.toProto().exportProto();
                 }
@@ -504,13 +500,13 @@ export class LocalServer extends EventEmitter {
             case KeyStorageSetItemActionProto.ACTION: {
                 // prepare incoming data
                 const params = await KeyStorageSetItemActionProto.importProto(action);
-                const key = this.getItemFromStorage(params.item).item as CryptoKey;
+                const key = this.memoryStorage.item(params.item.id).item as CryptoKey;
                 const crypto = await this.provider.getCrypto(params.providerID);
                 // do operation
                 if ((key.algorithm as any).toAlgorithm) {
                     (key as any).algorithm = (key.algorithm as any).toAlgorithm();
                 }
-                const index = await crypto.keyStorage.setItem(key);
+                const index = await crypto.keyStorage.setItem(key as any);
                 data = Convert.FromUtf8String(index);
                 // result
                 break;
@@ -538,10 +534,10 @@ export class LocalServer extends EventEmitter {
                 // load cert storage
                 const params = await KeyStorageIndexOfActionProto.importProto(action);
                 const crypto = await this.provider.getCrypto(params.providerID);
-                const key = this.getItemFromStorage(params.item).item as CryptoKey;
+                const key = this.memoryStorage.item(params.item.id).item as CryptoKey;
 
                 // do operation
-                const index = await crypto.keyStorage.indexOf(key);
+                const index = await crypto.keyStorage.indexOf(key as any);
                 // result
                 if (index) {
                     data = Convert.FromUtf8String(index);
@@ -572,15 +568,16 @@ export class LocalServer extends EventEmitter {
 
                 if (item) {
                     // add key to memory storage
-                    // const thumbprint = await GetIdentity(item.publicKey, crypto);
-                    const cryptoKey = new ServiceCryptoItem(getHandle(), item.publicKey, params.providerID);
-                    this.memoryStorage.push(cryptoKey);
+                    const cryptoKey = new ServiceCryptoItem(item.publicKey, params.providerID);
+                    this.memoryStorage.add(cryptoKey);
                     // add cert to memory storage
-                    const cryptoCert = new ServiceCryptoItem(getHandle(), item, params.providerID);
-                    this.memoryStorage.push(cryptoCert);
+                    const cryptoCert = new ServiceCryptoItem(item, params.providerID);
+                    this.memoryStorage.add(cryptoCert);
 
                     // create Cert proto
-                    data = await cryptoCert.toProto().exportProto();
+                    const certProto = await cryptoCert.toProto();
+                    (certProto as any).publicKey = cryptoKey.toProto();
+                    data = await certProto.exportProto();
                 }
                 break;
             }
@@ -588,9 +585,9 @@ export class LocalServer extends EventEmitter {
                 // prepare incoming data
                 const params = await CertificateStorageSetItemActionProto.importProto(action);
                 const crypto = await this.provider.getCrypto(params.providerID);
-                const cert = this.getItemFromStorage(params.item).item as CryptoCertificate;
+                const cert = this.memoryStorage.item(params.item.id).item as CryptoCertificate;
                 // do operation
-                const index = await crypto.certStorage.setItem(cert);
+                const index = await crypto.certStorage.setItem(cert as any);
                 data = Convert.FromUtf8String(index);
                 // result
                 break;
@@ -611,23 +608,24 @@ export class LocalServer extends EventEmitter {
                 // do operation
                 const item = await crypto.certStorage.importCert(params.type, params.data, params.algorithm, params.keyUsages);
                 // add key to memory storage
-                // const thumbprint = await GetIdentity(item.publicKey, crypto);
-                const cryptoKey = new ServiceCryptoItem(getHandle(), item.publicKey, params.providerID);
-                this.memoryStorage.push(cryptoKey);
+                const cryptoKey = new ServiceCryptoItem(item.publicKey, params.providerID);
+                this.memoryStorage.add(cryptoKey);
                 // add cert to memory storage
-                const cryptoCert = new ServiceCryptoItem(getHandle(), item, params.providerID);
-                this.memoryStorage.push(cryptoCert);
+                const cryptoCert = new ServiceCryptoItem(item, params.providerID);
+                this.memoryStorage.add(cryptoCert);
                 // result
-                data = await cryptoCert.toProto().exportProto();
+                const certProto = await cryptoCert.toProto();
+                (certProto as any).publicKey = cryptoKey.toProto();
+                data = await certProto.exportProto();
                 break;
             }
             case CertificateStorageExportActionProto.ACTION: {
                 // prepare incoming data
                 const params = await CertificateStorageExportActionProto.importProto(action);
                 const crypto = await this.provider.getCrypto(params.providerID);
-                const cert = this.getItemFromStorage(params.item).item as CryptoCertificate;
+                const cert = this.memoryStorage.item(params.item.id).item as CryptoCertificate;
                 // do operation
-                const exportedData = await crypto.certStorage.exportCert(params.format, cert);
+                const exportedData = await crypto.certStorage.exportCert(params.format, cert as any);
 
                 // result
                 if (exportedData instanceof ArrayBuffer) {
@@ -662,10 +660,10 @@ export class LocalServer extends EventEmitter {
                 // load cert storage
                 const params = await CertificateStorageIndexOfActionProto.importProto(action);
                 const crypto = await this.provider.getCrypto(params.providerID);
-                const cert = this.getItemFromStorage(params.item).item as CryptoCertificate;
+                const cert = this.memoryStorage.item(params.item.id);
 
                 // do operation
-                const index = await crypto.certStorage.indexOf(cert);
+                const index = await crypto.certStorage.indexOf(cert as any);
                 // result
                 if (index) {
                     data = Convert.FromUtf8String(index);
@@ -676,7 +674,7 @@ export class LocalServer extends EventEmitter {
                 // load cert storage
                 const params = await CertificateStorageGetChainActionProto.importProto(action);
                 const crypto = await this.provider.getCrypto(params.providerID);
-                const cert = this.getItemFromStorage(params.item).item as CryptoCertificate;
+                const cert = this.memoryStorage.item(params.item.id).item as CryptoCertificate;
                 // Get chain works only for x509 item type
                 if (cert.type !== "x509") {
                     throw new Error("Wrong item type, must be 'x509'");
@@ -919,30 +917,6 @@ export class LocalServer extends EventEmitter {
         return resultProto;
     }
 
-    protected getItemFromStorage(cryptoItem: CryptoItemProto) {
-        let foundKey: ServiceCryptoItem;
-        this.memoryStorage.some((item) => {
-            if (item.id === cryptoItem.id &&
-                item.providerID === cryptoItem.providerID &&
-                item.item.type === cryptoItem.type
-            ) {
-                foundKey = item;
-            }
-            return !!foundKey;
-        });
-        if (!foundKey) {
-            if (!crypto) {
-                throw new Error(`Cannot get CryptoItem by ID '${cryptoItem.id}'`);
-            }
-        }
-        return foundKey;
-    }
-
-}
-
-function getHandle(size = 20) {
-    const rndBytes = crypto.getRandomValues(new Uint8Array(size)) as Uint8Array;
-    return Convert.ToHex(rndBytes);
 }
 
 /**
@@ -968,8 +942,8 @@ function prepareData(data: string) {
  * @param {CryptoCertificate}   cert        Crypto certificate
  * @returns
  */
-async function certC2P(provider: ProviderCrypto, cert: CryptoCertificate) {
-    const certDer = await provider.certStorage.exportCert("raw", cert);
+async function certC2P(provider: WebCrypto, cert: CryptoCertificate) {
+    const certDer = await provider.certStorage.exportCert("raw", cert as any);
     const asn1 = asn1js.fromBER(certDer);
     const pkiCert = new Certificate({ schema: asn1.result });
     return pkiCert;
