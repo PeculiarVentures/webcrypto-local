@@ -1,6 +1,7 @@
 	{
 		"$schema": "./card.schema.json",
-		"cards": [{
+		"cards": [
+			{
 				"atr": "3b9813400aa503010101ad1311",
 				"name": "Belgian eID",
 				"driver": "89648ea52ed24a799aff9f9ff363eef4"
@@ -181,21 +182,18 @@
 				"driver": "993988460d8f49a2ac519a2935f11533"
 			},
 			{
-				"cards": [{
-					"atr": "3B7F96000080318065B084413DF6120FFE829000",
-					"name": "Gemalto IDPrime MD 840 (PKI)",
-					"driver": "39b3d7a3662c4b48bb120d008dd18648"
-				}]
+				"atr": "3B7F96000080318065B084413DF6120FFE829000",
+				"name": "Gemalto IDPrime MD 840 (PKI)",
+				"driver": "39b3d7a3662c4b48bb120d008dd18648"
 			},
 			{
-				"cards": [{
-					"atr": "3B D2 18 02 C1 0A 31 FE 58 C8 0D 51",
-					"name": "Siemens Card CardOS M4.4",
-					"driver": "25fb0440047947539fd871831ac8477c"
-				}]
+				"atr": "3BD21802C10A31FE58C80D51",
+				"name": "Siemens Card CardOS M4.4",
+				"driver": "25fb0440047947539fd871831ac8477c"
 			}
 		],
-		"drivers": [{
+		"drivers": [
+			{
 				"id": "25fb0440047947539fd871831ac8477c",
 				"name": "Siemens Card CardOS M4.4",
 				"file": {
