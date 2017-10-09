@@ -18,7 +18,6 @@ export class ServiceCryptoItem {
         const p11Object = (item as any).p11Object;
         const id = providerID + p11Object.session.handle.toString() + p11Object.handle.toString() + item.type;
         this.id = digest(DEFAULT_HASH_ALG, id).toString("hex");
-        console.log("-------ID: ", this.id, item.type, providerID);
         this.item = item;
         this.providerID = providerID;
     }
