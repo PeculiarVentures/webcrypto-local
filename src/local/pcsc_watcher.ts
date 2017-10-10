@@ -233,8 +233,8 @@ export class CardWatcher extends EventEmitter {
             })
             .on("insert", (e) => {
                 const card = this.config.getItem(e.atr);
-                card.reader = e.reader.name;
                 if (card) {
+                    card.reader = e.reader.name;
                     this.add(card);
                     this.emit("insert", card);
                 } else {
