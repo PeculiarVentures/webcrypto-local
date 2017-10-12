@@ -175,7 +175,16 @@ export class LocalProvider extends EventEmitter {
                         // error on module initialization
                     }
 
-                    const slots = mod.getSlots();
+                    const slots = mod.getSlots(true);
+                    if (!slots.length) {
+                        this.emit("info", `${EVENT_LOG} No slots found. It's possible token ${card.atr} uses wrong PKCS#11 lib ${card.library}`);
+                        this.emit("token", {
+                            added: [],
+                            removed: [],
+                            error: `Token not initialized or unknown card state. No slots found.`,
+                        });
+                        return;
+                    }
                     let slotIndex = -1;
                     this.emit("info", `${EVENT_LOG} Looking for ${card.reader} into ${slots.length} slot(s)`);
                     for (let i = 0; i < slots.length; i++) {
@@ -191,7 +200,12 @@ export class LocalProvider extends EventEmitter {
                         }
                     }
                     if (slotIndex < 0) {
-                        throw new Error(`${EVENT_LOG} Cannot find slot with description '${card.reader}'`);
+                        this.emit("token", {
+                            added: [],
+                            removed: [],
+                            error: `Cannot find matching slot for '${card.reader}' reader`,
+                        });
+                        return;
                     }
 
                     const crypto = new pkcs11.WebCrypto({
