@@ -78,7 +78,7 @@ export class LocalServer extends EventEmitter {
             })
             .on("token", (info) => {
                 if (info.error) {
-                    this.emit("error", info.error);
+                    this.emit("token_error", info.error);
                 } else {
                     this.emit("info", `Provider:Token Amount of tokens was changed (+${info.added.length}/-${info.removed.length})`);
                     this.sessions.forEach((session) => {
@@ -169,6 +169,7 @@ export class LocalServer extends EventEmitter {
 
     public on(event: "info", cb: (message: string) => void): this;
     public on(event: "token_new", cb: (info: PCSCCard) => void): this;
+    public on(event: "token_error", cb: (message: string) => void): this;
     public on(event: "listening", cb: Function): this;
     public on(event: "error", cb: Function): this;
     public on(event: "close", cb: Function): this;

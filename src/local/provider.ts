@@ -226,31 +226,43 @@ export class LocalProvider extends EventEmitter {
                         removed: [],
                     });
                 } catch (err) {
-                    this.emit("error", err);
+                    this.emit("token", {
+                        added: [],
+                        removed: [],
+                        error: `Unexpected error on token inserting. ${err.message}`,
+                    });
                 }
             })
             .on("remove", (card) => {
-                const EVENT_REMOVE = "Provider:Token:Remove";
-                this.emit("info", `${EVENT_REMOVE} reader:'${card.reader}' name:'${card.name}' atr:${card.atr.toString("hex")}`);
-                const info: any = {
-                    added: [],
-                    removed: [],
-                };
-                const provId = digest(DEFAULT_HASH_ALG, card.reader + card.atr).toString("hex");
-                delete this.crypto[provId];
-                this.info.providers = this.info.providers.filter((provider) => {
-                    this.emit("info", `${EVENT_REMOVE} Filtering providers ${provider.id} ${provId}`);
-                    if (provider.id === provId) {
-                        this.emit("info", `${EVENT_REMOVE} Crypto removed '${provider.name}' ${provider.id}`);
-                        // remove crypto
-                        info.removed.push(provider);
-                        return false;
+                try {
+                    const EVENT_REMOVE = "Provider:Token:Remove";
+                    this.emit("info", `${EVENT_REMOVE} reader:'${card.reader}' name:'${card.name}' atr:${card.atr.toString("hex")}`);
+                    const info: any = {
+                        added: [],
+                        removed: [],
+                    };
+                    const provId = digest(DEFAULT_HASH_ALG, card.reader + card.atr).toString("hex");
+                    delete this.crypto[provId];
+                    this.info.providers = this.info.providers.filter((provider) => {
+                        this.emit("info", `${EVENT_REMOVE} Filtering providers ${provider.id} ${provId}`);
+                        if (provider.id === provId) {
+                            this.emit("info", `${EVENT_REMOVE} Crypto removed '${provider.name}' ${provider.id}`);
+                            // remove crypto
+                            info.removed.push(provider);
+                            return false;
+                        }
+                        return true;
+                    });
+                    // fire token event
+                    if (info.removed.length) {
+                        this.emit("token", info);
                     }
-                    return true;
-                });
-                // fire token event
-                if (info.removed.length) {
-                    this.emit("token", info);
+                } catch (err) {
+                    this.emit("token", {
+                        added: [],
+                        removed: [],
+                        error: `Unexpected error on token removing. ${err.message}`,
+                    });
                 }
             });
 
