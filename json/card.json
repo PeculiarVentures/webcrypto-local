@@ -184,7 +184,7 @@
 			{
 				"atr": "3B7F96000080318065B084413DF6120FFE829000",
 				"name": "Gemalto IDPrime MD 840 (PKI)",
-				"driver": "39b3d7a3662c4b48bb120d008dd18648"
+				"driver": "0ca280b5af17d6aa91af084f2d39d2a3"
 			},
 			{
 				"atr": "3BD21802C10A31FE58C80D51",
@@ -265,6 +265,13 @@
 					"linux": "/usr/lib/libbeidpkcs11.so",
 					"windows": "libbeidpkcs11.dll"
 				}
+			},
+			{
+				"id": "0ca280b5af17d6aa91af084f2d39d2a3",
+				"name": "Gemalto IDPrime MD",
+				"file": {
+					"osx": "/usr/local/lib/libidprimepkcs11.0.dylib"
+				}	
 			}
 		]
 	}
