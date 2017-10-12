@@ -145,6 +145,7 @@ export class LocalProvider extends EventEmitter {
         this.cards.start(CARD_CONFIG_PATH);
         this.cards
             .on("error", (error) => {
+                this.emit("error", error);
                 return this.emit("token", {
                     added: [],
                     removed: [],

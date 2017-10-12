@@ -232,24 +232,32 @@ export class CardWatcher extends EventEmitter {
                 this.emit("error", err);
             })
             .on("insert", (e) => {
-                const card = this.config.getItem(e.atr);
-                if (card) {
-                    card.reader = e.reader.name;
-                    this.add(card);
-                    this.emit("insert", card);
-                } else {
-                    this.emit("new", {
-                        reader: e.reader.name,
-                        atr: e.atr,
-                    });
+                try {
+                    const card = this.config.getItem(e.atr);
+                    if (card) {
+                        card.reader = e.reader.name;
+                        this.add(card);
+                        this.emit("insert", card);
+                    } else {
+                        this.emit("new", {
+                            reader: e.reader.name,
+                            atr: e.atr,
+                        });
+                    }
+                } catch (e) {
+                    this.emit("error", e);
                 }
             })
             .on("remove", (e) => {
-                const card = this.config.getItem(e.atr);
-                card.reader = e.reader.name;
-                if (card) {
-                    this.remove(card);
-                    this.emit("remove", card);
+                try {
+                    const card = this.config.getItem(e.atr);
+                    if (card) {
+                        card.reader = e.reader.name;
+                        this.remove(card);
+                        this.emit("remove", card);
+                    }
+                } catch (e) {
+                    this.emit("error", e);
                 }
             });
     }
