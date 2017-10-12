@@ -256,7 +256,7 @@
 					"osx": "/Library/OpenSC/lib/pkcs11/opensc-pkcs11.so",
 					"linux": "/usr/lib/opensc-pkcs11.so"
 				}
-			}},
+			},
 			{
 				"id": "89648ea52ed24a799aff9f9ff363eef4",
 				"name": "Belgian eID",
