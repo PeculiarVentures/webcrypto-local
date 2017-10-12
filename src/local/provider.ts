@@ -177,7 +177,7 @@ export class LocalProvider extends EventEmitter {
 
                     const slots = mod.getSlots(true);
                     if (!slots.length) {
-                        this.emit("info", `${EVENT_LOG} No slots found. It's possible token ${card.atr} uses wrong PKCS#11 lib ${card.library}`);
+                        this.emit("info", `${EVENT_LOG} No slots found. It's possible token ${card.atr.toString("hex")} uses wrong PKCS#11 lib ${card.library}`);
                         this.emit("token", {
                             added: [],
                             removed: [],
