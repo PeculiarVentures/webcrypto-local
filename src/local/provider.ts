@@ -163,7 +163,7 @@ export class LocalProvider extends EventEmitter {
                         this.emit("token", {
                             added: [],
                             removed: [],
-                            error: `Cannot find PKCS#11 library ${card.library}`,
+                            error: `The inserted smart card is supported by Fortify but we were unable to find middleware for the card. Make sure '${card.library}' exists, if not install the smart cards middleware and try again.`,
                         });
                         return;
                     }
