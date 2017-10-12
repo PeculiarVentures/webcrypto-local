@@ -239,7 +239,7 @@ export class LocalProvider extends EventEmitter {
                 const provId = digest(DEFAULT_HASH_ALG, card.reader + card.atr).toString("hex");
                 delete this.crypto[provId];
                 this.info.providers = this.info.providers.filter((provider) => {
-                    this.emit("info", `${EVENT_REMOVE} Filtering providers ${provider.id} ${info.id}`);
+                    this.emit("info", `${EVENT_REMOVE} Filtering providers ${provider.id} ${provId}`);
                     if (provider.id === provId) {
                         this.emit("info", `${EVENT_REMOVE} Crypto removed '${provider.name}' ${provider.id}`);
                         // remove crypto
