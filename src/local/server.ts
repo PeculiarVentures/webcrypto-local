@@ -398,7 +398,7 @@ export class LocalServer extends EventEmitter {
                     params.format,
                     key,
                     wrappingKey,
-                    params.wrapAlgorithm.toAlgorithm()
+                    params.wrapAlgorithm.toAlgorithm(),
                 );
                 break;
             }
@@ -488,9 +488,6 @@ export class LocalServer extends EventEmitter {
 
                 if (key) {
                     // add keys to memory storage
-                    if (!key) {
-                        throw new Error(`Cannot get key by identity '${params.key}'`);
-                    }
                     const cryptoKey = new ServiceCryptoItem(key, params.providerID);
                     this.memoryStorage.add(cryptoKey);
 
