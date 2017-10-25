@@ -114,6 +114,7 @@ interface JsonDriver {
 }
 
 interface JsonCardConfig {
+    vars?: { [key: string]: string; };
     cards: JsonCard[];
     drivers: JsonDriver[];
 }
@@ -202,9 +203,13 @@ export class CardConfig {
             if (!driver) {
                 throw new Error(`Cannot find driver for card ${item.name} (${item.atr})`);
             }
-            const library = driver.file[system];
+            let library = driver.file[system];
             // Don't add card without library
             if (library) {
+                library = replaceTemplates(library, process.env, "%");
+                if (json.vars) {
+                    library = replaceTemplates(library, json.vars, "<");
+                }
                 card.library = library;
                 cards[card.atr.toString("hex")] = card;
             }
@@ -306,4 +311,27 @@ export class CardWatcher extends EventEmitter {
         this.cards.filter((item) => item !== card);
     }
 
+}
+
+/**
+ * Replace <prefix><vane> (e.g. %WINDIR, <myvar) by values from given arguments
+ * @param text String text which must be updated
+ * @param args list of arguments with values
+ * @param prefix prefix of template
+ */
+function replaceTemplates(text: string, args: { [key: string]: string }, prefix: string) {
+    // search <prefix><name> and replace by ARGS
+    // if ENV not exists don't change name
+    const envReg = new RegExp(`\\${prefix}([\\w\\d]+)`, "g");
+    let res: RegExpExecArray;
+    let resText = text;
+    // tslint:disable-next-line:no-conditional-assignment
+    while (res = envReg.exec(text)) {
+        const argsName = res[1];
+        const argsValue = args[argsName];
+        if (argsValue) {
+            resText = resText.replace(new RegExp(`\\${prefix}${argsName}`), argsValue);
+        }
+    }
+    return resText;
 }
