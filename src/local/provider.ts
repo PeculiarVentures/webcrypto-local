@@ -9,10 +9,8 @@ import { Convert } from "pvtsutils";
 import { ProviderCryptoProto, ProviderInfoProto } from "../core/protos/provider";
 import { DEFAULT_HASH_ALG } from "./const";
 import { digest } from "./helper";
-import { OpenSSLCrypto } from "./ossl";
 import { CardWatcher, PCSCCard } from "./pcsc_watcher";
-
-const CARD_CONFIG_PATH = path.join(__dirname, "../../json/card.json");
+import { IProviderConfig } from "./server";
 
 interface TokenInfo {
     removed: IProvider[];
@@ -34,11 +32,17 @@ export class LocalProvider extends EventEmitter {
     public crypto: CryptoMap = {};
 
     protected cards: CardWatcher;
+    protected config: IProviderConfig;
 
-    constructor() {
+    /**
+     * 
+     * @param config Config params
+     */
+    constructor(config: IProviderConfig) {
         super();
 
         this.cards = new CardWatcher();
+        this.config = config;
     }
 
     public on(event: "close", listener: LocalProviderStopHandler): this;
@@ -76,9 +80,8 @@ export class LocalProvider extends EventEmitter {
         this.info = new ProviderInfoProto();
         this.info.name = "WebcryptoLocal";
         this.info.providers = [];
-        let providers: IProvider[] = [];
 
-        // System via pvpkcs11
+        //#region System via pvpkcs11
         let pvpkcs11Path: string;
         if ((process.versions as any)["electron"]) {
             let libName = "";
@@ -117,11 +120,9 @@ export class LocalProvider extends EventEmitter {
                         slot: 0,
                         readWrite: true,
                     });
-                    const info = getSlotInfo(crypto);
-                    this.emit("info", `Provider: Add crypto ${info.name} ${info.id}`);
+
                     crypto.isLoggedIn = true;
-                    this.info.providers.push(new ProviderCryptoProto(info));
-                    this.crypto[info.id] = crypto;
+                    this.addProvider(crypto);
                 } catch (e) {
                     this.emit("error", `Cannot load library by path ${pvpkcs11Path}`);
                     this.emit("error", e);
@@ -130,19 +131,34 @@ export class LocalProvider extends EventEmitter {
                 this.emit("error", new Error(`TestPKCS11: Cannot find pvpkcs11 by path ${pvpkcs11Path}`));
             }
         }
+        //#endregion
 
-        // Add OpenSSL
-        const openSsl = new OpenSSLCrypto();
-        // this.crypto["286cb673c23e4decbe22bb71fc04e5ea"] = openSsl;
+        //#region Add providers from config list
+        this.config.providers = this.config.providers || [];
+        for (const prov of this.config.providers) {
+            prov.slots = prov.slots || [0];
+            for (const slot of prov.slots) {
+                if (fs.existsSync(prov.lib)) {
+                    try {
+                        const crypto = new pkcs11.WebCrypto({
+                            library: prov.lib,
+                            slot,
+                            readWrite: true,
+                        });
+                        this.addProvider(crypto);
+                    } catch (e) {
+                        this.emit("error", `Cannot load library by path ${prov.lib}`);
+                        this.emit("error", e);
+                    }
+                } else {
+                    this.emit("error", new Error(`PKCS11: Cannot find pvpkcs11 by path ${prov.lib}`));
+                }
+            }
+        }
+        //#endregion
 
-        providers = (await openSsl.info()).providers;
-        // providers.forEach((item) => {
-        //     this.crypto[item.id] = openSsl;
-        //     this.info.providers.push(new ProviderCryptoProto(item));
-        // });
-
-        // Add pkcs11
-        this.cards.start(CARD_CONFIG_PATH);
+        //#region Add pkcs11
+        this.cards.start(this.config.cards);
         this.cards
             .on("error", (error) => {
                 this.emit("error", error);
@@ -217,9 +233,9 @@ export class LocalProvider extends EventEmitter {
                     info.atr = Convert.ToHex(card.atr);
                     info.library = card.library;
                     info.id = digest(DEFAULT_HASH_ALG, card.reader + card.atr).toString("hex");
-                    this.emit("info", `${EVENT_LOG} Add crypto '${info.name}' ${info.id}`);
-                    this.info.providers.push(new ProviderCryptoProto(info));
-                    this.crypto[info.id] = crypto;
+
+                    this.addProvider(crypto);
+
                     // fire token event
                     this.emit("token", {
                         added: [info],
@@ -265,8 +281,16 @@ export class LocalProvider extends EventEmitter {
                     });
                 }
             });
+        //#endregion
 
         this.emit("listening", await this.getInfo());
+    }
+
+    public addProvider(crypto: pkcs11.WebCrypto) {
+        const info = getSlotInfo(crypto);
+        this.emit("info", `Provider: Add crypto ${info.name} ${info.id}`);
+        this.info.providers.push(new ProviderCryptoProto(info));
+        this.crypto[info.id] = crypto;
     }
 
     public stop() {

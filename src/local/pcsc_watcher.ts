@@ -22,7 +22,7 @@ export class PCSCWatcher extends EventEmitter {
             this.emit("error", err);
         });
         this.pcsc.on("reader", (reader) => {
-            console.log("New reader detected", reader.name);
+            this.emit("info", `New reader detected ${reader.name}`);
             let atr: Buffer | null;
             reader.state = 0;
             reader.on("error", (err) => {
