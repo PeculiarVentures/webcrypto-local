@@ -206,6 +206,32 @@ export interface PCSCCard {
     atr: Buffer;
 }
 
+export interface IServerProvider {
+    /**
+     * Path to PKCS#11 lib
+     */
+    lib: string;
+    /**
+     * indexes of using slots. Default [0]
+     */
+    slots?: number[];
+}
+
+export interface IProviderConfig {
+    /**
+     * List of addition providers
+     */
+    providers?: IServerProvider[];
+    /**
+     * Path to card.json
+     */
+    cards: string;
+}
+
+export interface IServerOptions extends https.ServerOptions {
+    config: IProviderConfig;
+}
+
 /**
  * Local server
  *
@@ -226,7 +252,7 @@ export class LocalServer extends EventEmitter {
     public cryptos: { [id: string]: Crypto };
     public sessions: Session[];
 
-    constructor(options: https.ServerOptions);
+    constructor(options: IServerOptions);
 
     public listen(address: string): this;
 
