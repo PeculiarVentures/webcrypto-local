@@ -22,7 +22,7 @@ export class PCSCWatcher extends EventEmitter {
             this.emit("error", err);
         });
         this.pcsc.on("reader", (reader) => {
-            this.emit("info", `New reader detected ${reader.name}`);
+            this.emit("info", `PCSCWatcher: New reader detected ${reader.name}`);
             let atr: Buffer | null;
             reader.state = 0;
             reader.on("error", (err) => {
@@ -53,6 +53,7 @@ export class PCSCWatcher extends EventEmitter {
                             atr = status.atr;
                             event.atr = atr;
                         }
+                        this.emit("info", `PCSCWatcher:Insert reader:'${reader.name}' ATR:${atr && atr.toString("hex")}`);
                         // Delay for lib loading
                         setTimeout(() => {
                             this.emit("insert", event);
@@ -83,6 +84,7 @@ export class PCSCWatcher extends EventEmitter {
         }
     }
 
+    public on(event: "info", cb: (message: string) => void): this;
     public on(event: "insert", cb: (e: PCSCWatcherEvent) => void): this;
     public on(event: "remove", cb: (e: PCSCWatcherEvent) => void): this;
     public on(event: "error", cb: (err: Error) => void): this;
@@ -221,13 +223,16 @@ export class CardWatcher extends EventEmitter {
     public cards: Card[] = [];
 
     protected watcher: PCSCWatcher;
-    protected config: CardConfig;
+    protected config = new CardConfig();
 
     constructor() {
         super();
 
         this.watcher = new PCSCWatcher();
         this.watcher
+            .on("info", (message) => {
+                this.emit("info", message);
+            })
             .on("error", (err) => {
                 this.emit("error", err);
             })
@@ -262,6 +267,7 @@ export class CardWatcher extends EventEmitter {
             });
     }
 
+    public on(event: "info", cb: (message: string) => void): this;
     public on(event: "error", cb: (err: Error) => void): this;
     public on(event: "insert", cb: (card: Card) => void): this;
     public on(event: "new", cb: (card: PCSCCard) => void): this;
@@ -278,7 +284,11 @@ export class CardWatcher extends EventEmitter {
      * @memberOf CardWatcher
      */
     public start(config: string) {
-        this.config = CardConfig.readFile(config);
+        try {
+            this.config = CardConfig.readFile(config);
+        } catch (e) {
+            this.emit("error", e.message);
+        }
         this.watcher.start();
     }
 

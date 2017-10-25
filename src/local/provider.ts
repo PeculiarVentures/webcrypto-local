@@ -158,7 +158,6 @@ export class LocalProvider extends EventEmitter {
         //#endregion
 
         //#region Add pkcs11
-        this.cards.start(this.config.cards);
         this.cards
             .on("error", (error) => {
                 this.emit("error", error);
@@ -167,6 +166,9 @@ export class LocalProvider extends EventEmitter {
                     removed: [],
                     error: error.message,
                 });
+            })
+            .on("info", (message) => {
+                this.emit("info", message);
             })
             .on("new", (card) => {
                 return this.emit("token_new", card);
@@ -280,7 +282,8 @@ export class LocalProvider extends EventEmitter {
                         error: `Unexpected error on token removing. ${err.message}`,
                     });
                 }
-            });
+            })
+            .start(this.config.cards);
         //#endregion
 
         this.emit("listening", await this.getInfo());
