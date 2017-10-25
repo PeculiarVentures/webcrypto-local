@@ -22,7 +22,7 @@ export class PCSCWatcher extends EventEmitter {
             this.emit("error", err);
         });
         this.pcsc.on("reader", (reader) => {
-            console.log("New reader detected", reader.name);
+            this.emit("info", `PCSCWatcher: New reader detected ${reader.name}`);
             let atr: Buffer | null;
             reader.state = 0;
             reader.on("error", (err) => {
@@ -53,6 +53,7 @@ export class PCSCWatcher extends EventEmitter {
                             atr = status.atr;
                             event.atr = atr;
                         }
+                        this.emit("info", `PCSCWatcher:Insert reader:'${reader.name}' ATR:${atr && atr.toString("hex")}`);
                         // Delay for lib loading
                         setTimeout(() => {
                             this.emit("insert", event);
@@ -83,6 +84,7 @@ export class PCSCWatcher extends EventEmitter {
         }
     }
 
+    public on(event: "info", cb: (message: string) => void): this;
     public on(event: "insert", cb: (e: PCSCWatcherEvent) => void): this;
     public on(event: "remove", cb: (e: PCSCWatcherEvent) => void): this;
     public on(event: "error", cb: (err: Error) => void): this;
@@ -112,6 +114,7 @@ interface JsonDriver {
 }
 
 interface JsonCardConfig {
+    vars?: { [key: string]: string; };
     cards: JsonCard[];
     drivers: JsonDriver[];
 }
@@ -200,9 +203,13 @@ export class CardConfig {
             if (!driver) {
                 throw new Error(`Cannot find driver for card ${item.name} (${item.atr})`);
             }
-            const library = driver.file[system];
+            let library = driver.file[system];
             // Don't add card without library
             if (library) {
+                library = replaceTemplates(library, process.env, "%");
+                if (json.vars) {
+                    library = replaceTemplates(library, json.vars, "<");
+                }
                 card.library = library;
                 cards[card.atr.toString("hex")] = card;
             }
@@ -221,13 +228,16 @@ export class CardWatcher extends EventEmitter {
     public cards: Card[] = [];
 
     protected watcher: PCSCWatcher;
-    protected config: CardConfig;
+    protected config = new CardConfig();
 
     constructor() {
         super();
 
         this.watcher = new PCSCWatcher();
         this.watcher
+            .on("info", (message) => {
+                this.emit("info", message);
+            })
             .on("error", (err) => {
                 this.emit("error", err);
             })
@@ -262,6 +272,7 @@ export class CardWatcher extends EventEmitter {
             });
     }
 
+    public on(event: "info", cb: (message: string) => void): this;
     public on(event: "error", cb: (err: Error) => void): this;
     public on(event: "insert", cb: (card: Card) => void): this;
     public on(event: "new", cb: (card: PCSCCard) => void): this;
@@ -278,7 +289,11 @@ export class CardWatcher extends EventEmitter {
      * @memberOf CardWatcher
      */
     public start(config: string) {
-        this.config = CardConfig.readFile(config);
+        try {
+            this.config = CardConfig.readFile(config);
+        } catch (e) {
+            this.emit("error", e.message);
+        }
         this.watcher.start();
     }
 
@@ -296,4 +311,27 @@ export class CardWatcher extends EventEmitter {
         this.cards.filter((item) => item !== card);
     }
 
+}
+
+/**
+ * Replace <prefix><vane> (e.g. %WINDIR, <myvar) by values from given arguments
+ * @param text String text which must be updated
+ * @param args list of arguments with values
+ * @param prefix prefix of template
+ */
+function replaceTemplates(text: string, args: { [key: string]: string }, prefix: string) {
+    // search <prefix><name> and replace by ARGS
+    // if ENV not exists don't change name
+    const envReg = new RegExp(`\\${prefix}([\\w\\d]+)`, "g");
+    let res: RegExpExecArray;
+    let resText = text;
+    // tslint:disable-next-line:no-conditional-assignment
+    while (res = envReg.exec(text)) {
+        const argsName = res[1];
+        const argsValue = args[argsName];
+        if (argsValue) {
+            resText = resText.replace(new RegExp(`\\${prefix}${argsName}`), argsValue);
+        }
+    }
+    return resText;
 }
