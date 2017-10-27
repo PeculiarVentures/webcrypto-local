@@ -88,6 +88,11 @@
                 "$ref": "#/definitions/driver"
             }
         },
+        "version": {
+            "description": "Version of file",
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
         "vars": {
             "description": "List of variables",
             "type": "object",
@@ -95,5 +100,10 @@
                 "$ref": "#/definitions/vars"
             }
         }
-    }
+    },
+    "required": [
+        "version",
+        "cards",
+        "drivers"
+    ]
 }
