@@ -102,7 +102,7 @@ export class LocalProvider extends EventEmitter {
             // Dev paths for different os
             switch (os.platform()) {
                 case "win32":
-                    pvpkcs11Path = "/github/pvpkcs11/build/Debug/pvpkcs11.dll";
+                    pvpkcs11Path = "/github/pv/pvpkcs11/build/Debug/pvpkcs11.dll";
                     break;
                 case "darwin":
                     pvpkcs11Path = "/Users/microshine/Library/Developer/Xcode/DerivedData/config-hkruqzwffnciyjeujlpxkaxbdiun/Build/Products/Debug/libpvpkcs11.dylib";
