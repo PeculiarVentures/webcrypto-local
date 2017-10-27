@@ -1,8 +1,7 @@
 import * as fs from "fs";
-import * as https from "https";
 import * as os from "os";
 import * as path from "path";
-import { Notification } from "../../core/notification";
+import { IServerOptions } from "../../../index";
 import { LocalServer } from "../../local";
 
 const APP_DATA_DIR = path.join(os.homedir(), ".fortify");
@@ -11,9 +10,12 @@ const KEY_FILE = path.join(APP_DATA_DIR, "key.pem");
 
 const SERVER_ADDRESS = "127.0.0.1:31337";
 
-const options: https.ServerOptions = {
+const options: IServerOptions = {
     cert: fs.readFileSync(CERT_FILE),
     key: fs.readFileSync(KEY_FILE),
+    config: {
+        cards: path.join(__dirname, "..", "..", "..", ".fortify", "card.json"),
+    },
 };
 const server = new LocalServer(options);
 
@@ -25,7 +27,7 @@ server.listen(SERVER_ADDRESS)
         console.log(msg);
     })
     .on("token_new", (card) => {
-        console.log(card);
+        console.log("New token:", card);
     })
     .on("error", (e: Error) => {
         console.error(e);
@@ -35,13 +37,13 @@ server.listen(SERVER_ADDRESS)
 
         switch (p.type) {
             case "2key": {
-                Notification.question(`Is it correct pin ${p.pin}?`)
-                    .then(p.resolve, p.reject);
+                // auto approve all connections
+                p.resolve(true);
                 break;
             }
             case "pin": {
-                Notification.prompt("Enter PIN for PKCS#11 token: ")
-                    .then(p.resolve, p.reject);
+                // auto PIN for all token's
+                p.resolve("12345678");
                 break;
             }
             default:
