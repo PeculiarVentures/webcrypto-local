@@ -182,10 +182,20 @@
 				"driver": "993988460d8f49a2ac519a2935f11533"
 			},
 			{
+				"atr": "3BF81800FF8131FE454A434F507632343143",
+				"name": "AET Smartcard",
+				"driver": "3bcf3e1d4952cfa3e486934887f45a0f"
+			},			
+			{
 				"atr": "3B7F96000080318065B084413DF6120FFE829000",
+				"name": "Gemalto IDPrime MD",
+				"driver": "0ca280b5af17d6aa91af084f2d39d2a3"
+			},			
+			{
+				"atr": "3B7F96000080318065B0850300EF120FFE829000",
 				"name": "Gemalto IDPrime MD 840 (PKI)",
 				"driver": "0ca280b5af17d6aa91af084f2d39d2a3"
-			},
+			},			
 			{
 				"atr": "3BD21802C10A31FE58C80D51",
 				"name": "Siemens Card CardOS M4.4",
@@ -197,14 +207,15 @@
 				"id": "25fb0440047947539fd871831ac8477c",
 				"name": "Siemens Card CardOS M4.4",
 				"file": {
-					"osx": "/usr/local/lib/libcardos11.dylib"
+					"osx": "/usr/local/lib/libcardos11.dylib",
+					"windows": "%WINDIR/System32/siecap11.dll"
 				}
 			},
 			{
 				"id": "fea007cafe404e4fb56a8be39f60dc8f",
 				"name": "Safran Morpho",
 				"file": {
-					"windows": "/Windows/SysWOW64/CnfPkcs11v220.dll",
+					"windows": "%WINDIR/SysWOW64/CnfPkcs11v220.dll",
 					"osx": "/usr/local/lib/libCnfPkcs11.dylib "
 				}
 			},
@@ -212,7 +223,7 @@
 				"id": "39b3d7a3662c4b48bb120d008dd18648",
 				"name": "SafeNet Authentication Client",
 				"file": {
-					"windows": "/Windows/System32/eTPKCS11.dll",
+					"windows": "%WINDIR/System32/eTPKCS11.dll",
 					"osx": "/usr/local/lib/libeTPkcs11.dylib",
 					"linux": "/usr/lib/libeTPkcs11.so"
 				}
@@ -221,7 +232,7 @@
 				"id": "3e3d68d231b442d381f856cc80d57f18",
 				"name": "SafeNet eToken",
 				"file": {
-					"windows": "/Windows/System32/eToken.dll"
+					"windows": "%WINDIR/System32/eToken.dll"
 				}
 			},
 			{
@@ -237,14 +248,14 @@
 				"file": {
 					"osx": "/usr/local/lib/libykcs11.dylib",
 					"linux": "/usr/local/lib/libykcs11.so",
-					"windows": "/Windows/System32/libykcs11-1.dll"
+					"windows": "%WINDIR/System32/libykcs11-1.dll"
 				}
 			},
 			{
 				"id": "7d3a38d2d8294234a53d5845d6d116c4",
 				"name": "Aktiv Rutoken ECP",
 				"file": {
-					"windows": "/Windows/System32/rtPKCS11ECP.dll",
+					"windows": "%WINDIR/System32/rtPKCS11ECP.dll",
 					"osx": "/usr/local/lib/librtpkcs11ecp.dylib",
 					"linux": "/usr/local/lib/librtpkcs11ecp.so"
 				}
@@ -270,8 +281,16 @@
 				"id": "0ca280b5af17d6aa91af084f2d39d2a3",
 				"name": "Gemalto IDPrime MD",
 				"file": {
-					"osx": "/usr/local/lib/libidprimepkcs11.0.dylib"
+					"osx": "/usr/local/lib/libidprimepkcs11.0.dylib",
+					"windows": "%WINDIR/System32/axaltocm.dll"
 				}	
+			},
+			{
+				"id": "3bcf3e1d4952cfa3e486934887f45a0f",
+				"name": "AET",
+				"file": {
+					"windows": "%WINDIR/System32/aetpkss1.dll"
+				}
 			}
 		]
 	}
