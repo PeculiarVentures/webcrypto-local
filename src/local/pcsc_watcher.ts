@@ -102,14 +102,21 @@ interface JsonCard {
     driver: HexString;
 }
 
+interface JsonOsArch {
+    x64: string;
+    x86: string;
+}
+
+type JsonOsType = string | JsonOsArch;
+
 interface JsonDriver {
     id?: HexString;
     name?: string;
     file: {
-        [os: string]: string;
-        windows: string;
-        linux: string;
-        osx: string;
+        [os: string]: JsonOsType;
+        windows: JsonOsType;
+        linux: JsonOsType;
+        osx: JsonOsType;
     };
 }
 
@@ -203,7 +210,19 @@ export class CardConfig {
             if (!driver) {
                 throw new Error(`Cannot find driver for card ${item.name} (${item.atr})`);
             }
-            let library = driver.file[system];
+            let library: string | undefined;
+            const driverLib = driver.file[system];
+            if (driverLib) {
+                if (typeof driverLib === "string") {
+                    library = driverLib;
+                } else {
+                    if (process.arch === "x64") {
+                        library = driverLib.x64;
+                    } else {
+                        library = driverLib.x86;
+                    }
+                }
+            }
             // Don't add card without library
             if (library) {
                 library = replaceTemplates(library, process.env, "%");
