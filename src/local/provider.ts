@@ -247,7 +247,7 @@ export class LocalProvider extends EventEmitter {
                     this.emit("token", {
                         added: [],
                         removed: [],
-                        error: `Unexpected error on token inserting. ${err.message}`,
+                        error: `Unexpected error on token insertion. ${err.message}`,
                     });
                 }
             })
