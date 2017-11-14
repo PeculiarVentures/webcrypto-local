@@ -37,6 +37,30 @@
                 "driver"
             ]
         },
+        "os": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "x86": {
+                            "description": "OS architecture x86",
+                            "type": "string"
+                        },
+                        "x64": {
+                            "description": "OS architecture x64",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "x86",
+                        "x64"
+                    ]
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
         "driver": {
             "type": "object",
             "properties": {
@@ -52,13 +76,13 @@
                     "description": "List of paths for PKCS#11 libraries",
                     "properties": {
                         "windows": {
-                            "type": "string"
+                            "$ref": "#/definitions/os"
                         },
                         "linux": {
-                            "type": "string"
+                            "$ref": "#/definitions/os"
                         },
                         "osx": {
-                            "type": "string"
+                            "$ref": "#/definitions/os"
                         }
                     },
                     "minProperties": 1

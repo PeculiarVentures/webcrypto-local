@@ -19,6 +19,7 @@
         ],
         "no-console": [
             false
-        ]
+        ],
+        "unified-signatures": false
     }
 }
