@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 import * as fs from "fs";
 import * as os from "os";
+import * as path from "path";
 const pcsc: () => PCSCLite.PCSCLite = require("pcsclite");
 
 interface PCSCWatcherEvent {
@@ -88,7 +89,7 @@ export class PCSCWatcher extends EventEmitter {
     public on(event: "insert", cb: (e: PCSCWatcherEvent) => void): this;
     public on(event: "remove", cb: (e: PCSCWatcherEvent) => void): this;
     public on(event: "error", cb: (err: Error) => void): this;
-    public on(event: string, cb: Function): this {
+    public on(event: string, cb: (...args: any[]) => void): this {
         return super.on(event, cb);
     }
 
@@ -143,24 +144,24 @@ interface Card {
     atr: Buffer;
     mask?: Buffer;
     readOnly: boolean;
-    library: string;
+    libraries: string[];
 }
 
 export class CardConfig {
 
-    public static readFile(path: string) {
+    public static readFile(fPath: string) {
         const res = new this();
-        res.readFile(path);
+        res.readFile(fPath);
         return res;
     }
 
     public cards: { [atr: string]: Card } = {};
 
-    public readFile(path: string) {
-        if (!fs.existsSync(path)) {
-            throw new Error(`Cannot find file '${path}'`);
+    public readFile(fPath: string) {
+        if (!fs.existsSync(fPath)) {
+            throw new Error(`Cannot find file '${fPath}'`);
         }
-        const data = fs.readFileSync(path);
+        const data = fs.readFileSync(fPath);
         let json: JsonCardConfig;
         try {
             json = JSON.parse(data.toString());
@@ -210,26 +211,35 @@ export class CardConfig {
             if (!driver) {
                 throw new Error(`Cannot find driver for card ${item.name} (${item.atr})`);
             }
-            let library: string | undefined;
+            let library: string[] = [];
             const driverLib = driver.file[system];
             if (driverLib) {
                 if (typeof driverLib === "string") {
-                    library = driverLib;
+                    library = [driverLib];
                 } else {
                     if (process.arch === "x64") {
-                        library = driverLib.x64;
+                        if (driverLib.x64) {
+                            library.push(driverLib.x64);
+                        }
+                        if (driverLib.x86) {
+                            library.push(driverLib.x86);
+                        }
                     } else {
-                        library = driverLib.x86;
+                        if (driverLib.x86) {
+                            library.push(driverLib.x86);
+                        }
                     }
                 }
             }
             // Don't add card without library
-            if (library) {
-                library = replaceTemplates(library, process.env, "%");
-                if (json.vars) {
-                    library = replaceTemplates(library, json.vars, "<");
-                }
-                card.library = library;
+            if (library.length) {
+                card.libraries = library.map((lib) => {
+                    let res = replaceTemplates(lib, process.env, "%");
+                    if (json.vars) {
+                        res = replaceTemplates(lib, json.vars, "<");
+                    }
+                    return path.normalize(res);
+                });
                 cards[card.atr.toString("hex")] = card;
             }
         });
@@ -296,7 +306,7 @@ export class CardWatcher extends EventEmitter {
     public on(event: "insert", cb: (card: Card) => void): this;
     public on(event: "new", cb: (card: PCSCCard) => void): this;
     public on(event: "remove", cb: (card: Card) => void): this;
-    public on(event: string, cb: Function) {
+    public on(event: string, cb: (...args: any[]) => void) {
         return super.on(event, cb);
     }
 

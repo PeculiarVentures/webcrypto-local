@@ -14,7 +14,8 @@ const options: IServerOptions = {
     cert: fs.readFileSync(CERT_FILE),
     key: fs.readFileSync(KEY_FILE),
     config: {
-        cards: path.join(__dirname, "..", "..", "..", ".fortify", "card.json"),
+        // cards: path.join(__dirname, "..", "..", "..", ".fortify", "card.json"),
+        cards: path.join(os.homedir(), ".fortify", "card.json"),
     },
 };
 const server = new LocalServer(options);
@@ -28,6 +29,9 @@ server.listen(SERVER_ADDRESS)
     })
     .on("token_new", (card) => {
         console.log("New token:", card);
+    })
+    .on("token_error", (err) => {
+        console.log("Token error:", err);
     })
     .on("error", (e: Error) => {
         console.error(e);

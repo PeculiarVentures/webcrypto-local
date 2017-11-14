@@ -24,7 +24,9 @@ type LocalProviderListeningHandler = (info: IModule[]) => void;
 type LocalProviderErrorHandler = (e: Error) => void;
 type LocalProviderStopHandler = () => void;
 
-type CryptoMap = { [id: string]: pkcs11.WebCrypto };
+interface CryptoMap {
+    [id: string]: pkcs11.WebCrypto;
+}
 
 export class LocalProvider extends EventEmitter {
 
@@ -35,7 +37,7 @@ export class LocalProvider extends EventEmitter {
     protected config: IProviderConfig;
 
     /**
-     * 
+     *
      * @param config Config params
      */
     constructor(config: IProviderConfig) {
@@ -52,7 +54,7 @@ export class LocalProvider extends EventEmitter {
     public on(event: "error", listener: LocalProviderErrorHandler): this;
     public on(event: "info", listener: (message: string) => void): this;
     // public on(event: string | symbol, listener: Function): this;
-    public on(event: string | symbol, listener: Function) {
+    public on(event: string | symbol, listener: (...args: any[]) => void) {
         return super.on(event, listener);
     }
 
@@ -63,7 +65,7 @@ export class LocalProvider extends EventEmitter {
     public once(event: "error", listener: LocalProviderErrorHandler): this;
     public once(event: "info", listener: (message: string) => void): this;
     // public once(event: string | symbol, listener: Function): this;
-    public once(event: string | symbol, listener: Function) {
+    public once(event: string | symbol, listener: (...args: any[]) => void) {
         return super.once(event, listener);
     }
 
@@ -83,7 +85,7 @@ export class LocalProvider extends EventEmitter {
 
         //#region System via pvpkcs11
         let pvpkcs11Path: string;
-        if ((process.versions as any)["electron"]) {
+        if ((process.versions as any).electron) {
             let libName = "";
             switch (os.platform()) {
                 case "win32":
@@ -159,12 +161,12 @@ export class LocalProvider extends EventEmitter {
 
         //#region Add pkcs11
         this.cards
-            .on("error", (error) => {
-                this.emit("error", error);
+            .on("error", (err) => {
+                this.emit("error", err);
                 return this.emit("token", {
                     added: [],
                     removed: [],
-                    error: error.message,
+                    error: err.message,
                 });
             })
             .on("info", (message) => {
@@ -174,80 +176,82 @@ export class LocalProvider extends EventEmitter {
                 return this.emit("token_new", card);
             })
             .on("insert", (card) => {
-                try {
-                    const EVENT_LOG = "Provider:Token:Insert";
-                    this.emit("info", `${EVENT_LOG} reader:'${card.reader}' name:'${card.name}' atr:${card.atr.toString("hex")}`);
-                    if (!fs.existsSync(card.library)) {
-                        this.emit("token", {
-                            added: [],
-                            removed: [],
-                            error: `The inserted smart card is supported by Fortify but we were unable to find middleware for the card. Make sure '${card.library}' exists, if not install the smart cards middleware and try again.`,
-                        });
-                        return;
-                    }
-
-                    const mod = graphene.Module.load(card.library, card.name);
+                const EVENT_LOG = "Provider:Token:Insert";
+                this.emit("info", `${EVENT_LOG} reader:'${card.reader}' name:'${card.name}' atr:${card.atr.toString("hex")}`);
+                let lastError = "";
+                for (const library of card.libraries) {
                     try {
-                        mod.initialize();
-                    } catch {
-                        // error on module initialization
-                    }
-
-                    const slots = mod.getSlots(true);
-                    if (!slots.length) {
-                        this.emit("info", `${EVENT_LOG} No slots found. It's possible token ${card.atr.toString("hex")} uses wrong PKCS#11 lib ${card.library}`);
-                        this.emit("token", {
-                            added: [],
-                            removed: [],
-                            error: `Token not initialized or unknown card state. No slots found.`,
-                        });
-                        return;
-                    }
-                    let slotIndex = -1;
-                    this.emit("info", `${EVENT_LOG} Looking for ${card.reader} into ${slots.length} slot(s)`);
-                    for (let i = 0; i < slots.length; i++) {
-                        const slot = slots.items(i);
-                        if (!slot) {
+                        if (!fs.existsSync(library)) {
+                            lastError = `The inserted smart card is supported by Fortify but we were unable to find middleware for the card. Make sure '${library}' exists, if not install the smart cards middleware and try again.`;
                             continue;
                         }
-                        this.emit("info", `${EVENT_LOG} Slot description: ${i} '${slot.slotDescription}'`);
-                        if (slot.slotDescription === card.reader) {
-                            this.emit("info", `${EVENT_LOG} Index found ${slot.slotDescription} ${i}`);
-                            slotIndex = i;
-                            break;
+
+                        const mod = graphene.Module.load(library, card.name);
+                        try {
+                            mod.initialize();
+                        } catch (err) {
+                            if (!/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
+                                this.emit("error", `${EVENT_LOG} Cannot initialize PKCS#11 lib ${library}. ${err.stack}`);
+                                continue;
+                            } else {
+                                lastError = err.message;
+                            }
                         }
-                    }
-                    if (slotIndex < 0) {
-                        this.emit("token", {
-                            added: [],
-                            removed: [],
-                            error: `Cannot find matching slot for '${card.reader}' reader`,
+
+                        const slots = mod.getSlots(true);
+                        if (!slots.length) {
+                            this.emit("error", `${EVENT_LOG} No slots found. It's possible token ${card.atr.toString("hex")} uses wrong PKCS#11 lib ${card.libraries}`);
+                            lastError = `Token not initialized or unknown card state. No slots found.`;
+                            continue;
+                        }
+                        let slotIndex = -1;
+                        this.emit("info", `${EVENT_LOG} Looking for ${card.reader} into ${slots.length} slot(s)`);
+                        for (let i = 0; i < slots.length; i++) {
+                            const slot = slots.items(i);
+                            if (!slot) {
+                                continue;
+                            }
+                            this.emit("info", `${EVENT_LOG} Slot description: ${i} '${slot.slotDescription}'`);
+                            if (slot.slotDescription === card.reader) {
+                                this.emit("info", `${EVENT_LOG} Index found ${slot.slotDescription} ${i}`);
+                                slotIndex = i;
+                                break;
+                            }
+                        }
+                        if (slotIndex < 0) {
+                            lastError = `Cannot find matching slot for '${card.reader}' reader`;
+                            continue;
+                        }
+
+                        const crypto = new pkcs11.WebCrypto({
+                            library,
+                            slot: slotIndex,
+                            readWrite: !card.readOnly,
                         });
-                        return;
+                        const info = getSlotInfo(crypto);
+                        info.atr = Convert.ToHex(card.atr);
+                        info.library = library;
+                        info.id = digest(DEFAULT_HASH_ALG, card.reader + card.atr).toString("hex");
+
+                        this.addProvider(crypto);
+
+                        // fire token event
+                        this.emit("token", {
+                            added: [info],
+                            removed: [],
+                        });
+                        lastError = "";
+                        break;
+                    } catch (err) {
+                        lastError = `Unexpected error on token insertion. ${err.message}`;
+                        continue;
                     }
-
-                    const crypto = new pkcs11.WebCrypto({
-                        library: card.library,
-                        slot: slotIndex,
-                        readWrite: !card.readOnly,
-                    });
-                    const info = getSlotInfo(crypto);
-                    info.atr = Convert.ToHex(card.atr);
-                    info.library = card.library;
-                    info.id = digest(DEFAULT_HASH_ALG, card.reader + card.atr).toString("hex");
-
-                    this.addProvider(crypto);
-
-                    // fire token event
-                    this.emit("token", {
-                        added: [info],
-                        removed: [],
-                    });
-                } catch (err) {
+                }
+                if (lastError) {
                     this.emit("token", {
                         added: [],
                         removed: [],
-                        error: `Unexpected error on token insertion. ${err.message}`,
+                        error: lastError,
                     });
                 }
             })
