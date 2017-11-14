@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "cards": [
     {
       "atr": "3b9813400aa503010101ad1311",
@@ -200,7 +200,8 @@
     {
       "atr": "3BD21802C10A31FE58C80D51",
       "name": "Siemens Card CardOS M4.4",
-      "driver": "25fb0440047947539fd871831ac8477c"
+      "driver": "25fb0440047947539fd871831ac8477c",
+      "readOnly": true
     }
   ],
   "drivers": [
@@ -209,7 +210,10 @@
       "name": "Siemens Card CardOS M4.4",
       "file": {
         "osx": "/usr/local/lib/libcardos11.dylib",
-        "windows": "%WINDIR/System32/siecap11.dll"
+        "windows": {
+          "x86": "%WINDIR/System32/cardos11.dll",
+          "x64": "%WINDIR/SysWOW64/cardos11.dll"
+        }
       }
     },
     {
@@ -283,7 +287,10 @@
       "name": "Gemalto IDPrime MD",
       "file": {
         "osx": "/usr/local/lib/libidprimepkcs11.0.dylib",
-        "windows": "%WINDIR/System32/axaltocm.dll"
+        "windows": {
+          "x86": "%WINDIR/System32/eTPKCS11.dll",
+          "x64": "%WINDIR/SysWOW64/eTPKCS11.dll"
+        }
       }
     },
     {
