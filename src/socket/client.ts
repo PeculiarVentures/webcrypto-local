@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 import { Client } from "../connection/client";
 import { ProviderAuthorizedEventProto, ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderInfoProto, ProviderTokenEventProto } from "../core/protos/provider";
+import { CardReader } from "./card_reader";
 import { SocketCrypto } from "./crypto";
 
 /**
@@ -19,8 +20,12 @@ export class SocketProvider extends EventEmitter {
         return this.client.state;
     }
 
+    public cardReader: CardReader;
+
     constructor() {
         super();
+
+        this.cardReader = new CardReader(this.client);
     }
 
     /**
@@ -31,7 +36,6 @@ export class SocketProvider extends EventEmitter {
      * 2. Create 2key-ratchet session from PreKeyBundle
      */
     public connect(address: string): this {
-        this.client.removeAllListeners();
         this.client.connect(address)
             .on("error", (e) => {
                 this.emit("error", e.error);

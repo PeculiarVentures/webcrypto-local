@@ -140,6 +140,7 @@ export class Server extends EventEmitter {
      * @memberof Server
      */
     public storage: OpenSSLStorage;
+    public sessions: Session[] = [];
 
     protected httpServer: https.Server;
     protected socketServer: WebSocket.server;
@@ -236,6 +237,7 @@ export class Server extends EventEmitter {
                 cipher: null,
                 authorized: false,
             };
+            this.sessions.push(session);
             this.emit("connect", session);
             connection.on("message", (message) => {
                 if (message.type === "utf8") {
@@ -284,7 +286,14 @@ export class Server extends EventEmitter {
                                 actionProto.action === ServerIsLoggedInActionProto.ACTION ||
                                 actionProto.action === ServerLoginActionProto.ACTION
                             ) {
-                                this.emit("message", new ServerMessageEvent(this, session, actionProto, resolve, reject));
+                                (async () => {
+                                    const sessionIdentitySHA256 = await session.cipher.remoteIdentity.signingKey.thumbprint();
+                                    this.emit("info", `Server: session:${sessionIdentitySHA256} ${actionProto.action}`);
+                                    this.emit("message", new ServerMessageEvent(this, session, actionProto, resolve, reject));
+                                })()
+                                    .catch((err) => {
+                                        this.emit("error", err);
+                                    });
                             } else {
                                 // If session is not authorized throw error
                                 throw new Error("404: Not authorized");
@@ -315,6 +324,9 @@ export class Server extends EventEmitter {
                 }
             });
             connection.on("close", (reasonCode, description) => {
+                // remove session from list with the same connection
+                this.sessions = this.sessions.filter((session) => session.connection !== connection);
+
                 this.emit("disconnect", new ServerDisconnectEvent(
                     this,
                     connection.remoteAddress,

@@ -38,6 +38,7 @@ import { LocalProvider } from "./provider";
 import * as asn1js from "asn1js";
 import { isEqualBuffer } from "pvutils";
 import { PCSCCard } from "./pcsc_watcher";
+import { CardReaderService } from "./services/card_reader";
 // import { X509Certificate } from "../pki/x509";
 const {
     Certificate, CertificateRevocationList, OCSPResponse, CertificateChainValidationEngine, setEngine, CryptoEngine
@@ -92,6 +93,8 @@ export class LocalServer extends EventEmitter {
     public cryptos: { [id: string]: Crypto } = {};
     public sessions: Session[] = [];
 
+    public cardReader: CardReaderService;
+
     protected memoryStorage = new MemoryStorage();
 
     constructor(options: IServerOptions) {
@@ -131,6 +134,8 @@ export class LocalServer extends EventEmitter {
             .on("error", (e) => {
                 this.emit("error", e);
             });
+
+        this.cardReader = new CardReaderService(this.server);
     }
 
     public listen(address: string) {
