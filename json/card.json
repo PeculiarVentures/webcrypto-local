@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "cards": [
     {
       "atr": "3b9813400aa503010101ad1311",
@@ -128,6 +128,18 @@
       "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
     },
     {
+      "atr": "3BF9180000C00A31FE4553462D3443432D303181",
+      "name": "Estonian ID card",
+      "readOnly": true,
+      "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
+    },
+    {
+      "atr": "3BF81300008131FE454A434F5076323431B7",
+      "name": "Estonian ID card",
+      "readOnly": true,
+      "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
+    },
+    {
       "atr": "3BFA1800008031FE45FE654944202F20504B4903",
       "name": "EstEID 3.5 cold",
       "readOnly": true,
@@ -244,6 +256,7 @@
       "id": "c4e60449442848c48af7b3fcf6a6f4a1",
       "name": "Estonian ID",
       "file": {
+        "windows": "%WINDIR/System32/onepin-opensc-pkcs11.dll",
         "osx": "/Library/EstonianIDCard/lib/esteid-pkcs11-onepin.so"
       }
     },
