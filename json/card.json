@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "cards": [
     {
       "atr": "3b9813400aa503010101ad1311",
@@ -214,9 +214,22 @@
       "name": "Siemens Card CardOS M4.4",
       "driver": "25fb0440047947539fd871831ac8477c",
       "readOnly": true
+    },
+    {
+      "atr": "3B7D94000080318065B0831100C883009000",
+      "name": "Personal identity card (ID card) of Republic of Lithuania",
+      "driver": "f5cb17017c16189db5ed669a81ce65755d1d9a8a"
     }
   ],
   "drivers": [
+    {
+      "id": "f5cb17017c16189db5ed669a81ce65755d1d9a8a",
+      "name": "PKCS #11 driver for CryptoTech smart cards",
+      "file": {
+        "windows": "%PROGRAMFILES(X86)%/CryptoTech/CryptoCard/CCPkiP11.dll",
+        "osx": "/usr/lib/ccs/libccpkip11.so"
+      }
+    },
     {
       "id": "25fb0440047947539fd871831ac8477c",
       "name": "Siemens Card CardOS M4.4",
