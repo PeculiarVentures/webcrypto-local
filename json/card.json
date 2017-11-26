@@ -227,7 +227,8 @@
       "name": "PKCS #11 driver for CryptoTech smart cards",
       "file": {
         "windows": "%PROGRAMFILES(X86)%/CryptoTech/CryptoCard/CCPkiP11.dll",
-        "osx": "/usr/lib/ccs/libccpkip11.so"
+        "osx": "/Library/Security/tokend/CCSuite.tokend/Contents/Frameworks/libccpkip11.dylib",
+        "linux": "/usr/lib/ccs/libccpkip11.so"
       }
     },
     {
