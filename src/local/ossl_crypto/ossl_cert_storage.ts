@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import { Convert } from "pvtsutils";
-import { Certificate } from "../pki/cert";
-import { X509CertificateRequest } from "../pki/request";
-import { X509Certificate } from "../pki/x509";
+import { Certificate } from "./pki/cert";
+import { X509CertificateRequest } from "./pki/request";
+import { X509Certificate } from "./pki/x509";
 
 const crypto: Crypto = new (require("node-webcrypto-ossl"))();
 

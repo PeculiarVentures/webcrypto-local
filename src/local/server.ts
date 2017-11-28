@@ -50,7 +50,7 @@ export class LocalServer extends EventEmitter {
                 this.emit("token_new", e);
             })
             .on("token_error", (e) => {
-                this.emit("token_new", e);
+                this.emit("token_error", e);
             });
     }
 

@@ -1,6 +1,5 @@
 import * as asn1js from "asn1js";
 import * as graphene from "graphene-pk11";
-import { WebCrypto } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
 import { isEqualBuffer } from "pvutils";
 import * as request from "request";
@@ -20,6 +19,10 @@ graphene.registerAttribute("x509Chain", 2147483905, "buffer");
 
 export class CertificateStorageService extends Service<CryptoService> {
 
+    public get ossl() {
+        return this.object.ossl;
+    }
+
     constructor(server: Server, crypto: CryptoService) {
         super(server, crypto, [
             //#region List of actions
@@ -38,7 +41,7 @@ export class CertificateStorageService extends Service<CryptoService> {
         ]);
     }
 
-    public async getCrypto(id: string) {
+    public async getCrypto(id: string): Promise<CryptoEx> {
         return await this.object.getCrypto(id);
     }
 
@@ -103,8 +106,17 @@ export class CertificateStorageService extends Service<CryptoService> {
                 // prepare incoming data
                 const params = await P.CertificateStorageImportActionProto.importProto(action);
                 const crypto = await this.getCrypto(params.providerID);
+
                 // do operation
-                const item = await crypto.certStorage.importCert(params.type, params.data, params.algorithm, params.keyUsages);
+                const args = [params.type, params.data, params.algorithm, params.keyUsages];
+                let item: CryptoCertificate;
+                let providerID = params.providerID;
+                try {
+                    item = await crypto.certStorage.importCert.apply(crypto.certStorage, args);
+                } catch (err) {
+                    item = await this.ossl.certStorage.importCert.apply(this.ossl.certStorage, args);
+                    providerID = this.ossl.info.id;
+                }
                 // add key to memory storage
                 const cryptoKey = new ServiceCryptoItem(item.publicKey, params.providerID);
                 this.getMemoryStorage().add(cryptoKey);
@@ -119,19 +131,25 @@ export class CertificateStorageService extends Service<CryptoService> {
             }
             // exportCert
             case P.CertificateStorageExportActionProto.ACTION: {
-                // prepare incoming data
+                //#region prepare incoming data
                 const params = await P.CertificateStorageExportActionProto.importProto(action);
-                const crypto = await this.getCrypto(params.providerID);
-                const cert = this.getMemoryStorage().item(params.item.id).item as CryptoCertificate;
-                // do operation
-                const exportedData = await crypto.certStorage.exportCert(params.format, cert as any);
 
-                // result
+                let crypto = await this.getCrypto(params.providerID);
+                if (params.item.providerID === this.ossl.info.id) {
+                    crypto = this.ossl;
+                }
+                const cert = this.getMemoryStorage().item(params.item.id).item as CryptoCertificate;
+                //#endregion
+                //#region do operation
+                const exportedData = await crypto.certStorage.exportCert(params.format, cert as any);
+                ////#endregion
+                //#region result
                 if (exportedData instanceof ArrayBuffer) {
                     result.data = exportedData;
                 } else {
                     result.data = Convert.FromUtf8String(exportedData);
                 }
+                //#endregion
                 break;
             }
             // keys
@@ -444,7 +462,7 @@ function prepareData(data: string) {
  * @param crypto      Crypto provider
  * @param cert        Crypto certificate
  */
-async function certC2P(provider: WebCrypto, cert: CryptoCertificate) {
+async function certC2P(provider: CryptoEx, cert: CryptoCertificate) {
     const certDer = await provider.certStorage.exportCert("raw", cert as any);
     const asn1 = asn1js.fromBER(certDer);
     const pkiCert = new pkijs.Certificate({ schema: asn1.result });

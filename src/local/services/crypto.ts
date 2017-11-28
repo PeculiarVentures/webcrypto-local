@@ -20,6 +20,10 @@ export type CryptoNotifyEventHandler = (e: CryptoNotifyEvent) => void;
 
 export class CryptoService extends Service<ProviderService> {
 
+    public get ossl() {
+        return this.object.ossl;
+    }
+
     constructor(server: Server, provider: ProviderService) {
         super(server, provider, [
             //#region List of actions
