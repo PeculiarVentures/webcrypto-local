@@ -48,7 +48,7 @@ function __decorate(decorators, target, key, desc) {
 function __awaiter(thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
@@ -622,8 +622,6 @@ EventHandlers.prototype = Object.create(null);
 function EventEmitter() {
   EventEmitter.init.call(this);
 }
-// nodejs oddity
-// require('events') === require('events').EventEmitter
 EventEmitter.EventEmitter = EventEmitter;
 
 EventEmitter.usingDomains = false;
@@ -3107,8 +3105,10 @@ function challenge(serverIdentity, clientIdentity) {
         });
     });
 }
+//# sourceMappingURL=challenge.js.map
 
 var SERVER_WELL_KNOWN = "/.well-known/webcrypto-socket";
+//# sourceMappingURL=const.js.map
 
 function isFirefox() {
     return /firefox/i.test(self.navigator.userAgent);
@@ -3172,6 +3172,7 @@ function updateEcPublicKey(ecPublicKey, publicKey) {
         });
     });
 }
+//# sourceMappingURL=helper.js.map
 
 var BrowserStorage = (function () {
     function BrowserStorage(db) {
@@ -3871,6 +3872,161 @@ var ProviderTokenEventProto = (function (_super) {
     return ProviderTokenEventProto;
     var ProviderTokenEventProto_1;
 }(ActionProto));
+
+var CardReaderActionProto = (function (_super) {
+    __extends(CardReaderActionProto, _super);
+    function CardReaderActionProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CardReaderActionProto.INDEX = ActionProto.INDEX;
+    CardReaderActionProto.ACTION = "cardReader";
+    CardReaderActionProto = __decorate([
+        ProtobufElement({})
+    ], CardReaderActionProto);
+    return CardReaderActionProto;
+}(ActionProto));
+var CardReaderGetReadersActionProto = (function (_super) {
+    __extends(CardReaderGetReadersActionProto, _super);
+    function CardReaderGetReadersActionProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CardReaderGetReadersActionProto.INDEX = ActionProto.INDEX;
+    CardReaderGetReadersActionProto.ACTION = "cardReader/readers";
+    CardReaderGetReadersActionProto = __decorate([
+        ProtobufElement({})
+    ], CardReaderGetReadersActionProto);
+    return CardReaderGetReadersActionProto;
+}(ActionProto));
+var CardReaderEventProto = (function (_super) {
+    __extends(CardReaderEventProto, _super);
+    function CardReaderEventProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CardReaderEventProto_1 = CardReaderEventProto;
+    CardReaderEventProto.fromObject = function (e) {
+        var res = new this();
+        res.fromObject(e);
+        return res;
+    };
+    CardReaderEventProto.prototype.fromObject = function (e) {
+        this.reader = e.reader.name;
+        this.atr = e.atr.toString("hex");
+    };
+    CardReaderEventProto.INDEX = CardReaderActionProto.INDEX;
+    __decorate([
+        ProtobufProperty({ id: CardReaderEventProto_1.INDEX++, required: true, type: "string", defaultValue: "" })
+    ], CardReaderEventProto.prototype, "reader", void 0);
+    __decorate([
+        ProtobufProperty({ id: CardReaderEventProto_1.INDEX++, required: true, converter: HexStringConverter })
+    ], CardReaderEventProto.prototype, "atr", void 0);
+    CardReaderEventProto = CardReaderEventProto_1 = __decorate([
+        ProtobufElement({})
+    ], CardReaderEventProto);
+    return CardReaderEventProto;
+    var CardReaderEventProto_1;
+}(CardReaderActionProto));
+var CardReaderInsertEventProto = (function (_super) {
+    __extends(CardReaderInsertEventProto, _super);
+    function CardReaderInsertEventProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CardReaderInsertEventProto.INDEX = CardReaderEventProto.INDEX;
+    CardReaderInsertEventProto.ACTION = CardReaderEventProto.ACTION + "/insert";
+    CardReaderInsertEventProto = __decorate([
+        ProtobufElement({})
+    ], CardReaderInsertEventProto);
+    return CardReaderInsertEventProto;
+}(CardReaderEventProto));
+var CardReaderRemoveEventProto = (function (_super) {
+    __extends(CardReaderRemoveEventProto, _super);
+    function CardReaderRemoveEventProto() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CardReaderRemoveEventProto.INDEX = CardReaderEventProto.INDEX;
+    CardReaderRemoveEventProto.ACTION = CardReaderEventProto.ACTION + "/remove";
+    CardReaderRemoveEventProto = __decorate([
+        ProtobufElement({})
+    ], CardReaderRemoveEventProto);
+    return CardReaderRemoveEventProto;
+}(CardReaderEventProto));
+
+var CardReader = (function (_super) {
+    __extends(CardReader, _super);
+    function CardReader(client) {
+        var _this = _super.call(this) || this;
+        _this.client = client;
+        _this.onEvent = _this.onEvent.bind(_this);
+        _this.client
+            .on("listening", function () {
+            _this.client.on("event", _this.onEvent);
+        })
+            .on("close", function () {
+            _this.client.removeListener("event", _this.onEvent);
+        });
+        return _this;
+    }
+    CardReader.prototype.readers = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.client.send(new CardReaderGetReadersActionProto())];
+                    case 1:
+                        data = _a.sent();
+                        return [2, JSON.parse(Convert.ToString(data))];
+                }
+            });
+        });
+    };
+    CardReader.prototype.on = function (event, cb) {
+        return _super.prototype.on.call(this, event, cb);
+    };
+    CardReader.prototype.emit = function (event) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        return _super.prototype.emit.apply(this, [event].concat(args));
+    };
+    CardReader.prototype.onEvent = function (actionProto) {
+        var _this = this;
+        (function () { return __awaiter(_this, void 0, void 0, function () {
+            var _a, _b, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        _a = actionProto.action;
+                        switch (_a) {
+                            case CardReaderInsertEventProto.ACTION: return [3, 1];
+                            case CardReaderRemoveEventProto.ACTION: return [3, 3];
+                        }
+                        return [3, 5];
+                    case 1:
+                        _b = this.onInsert;
+                        return [4, CardReaderInsertEventProto.importProto(actionProto)];
+                    case 2:
+                        _b.apply(this, [_d.sent()]);
+                        return [3, 5];
+                    case 3:
+                        _c = this.onRemove;
+                        return [4, CardReaderRemoveEventProto.importProto(actionProto)];
+                    case 4:
+                        _c.apply(this, [_d.sent()]);
+                        return [3, 5];
+                    case 5: return [2];
+                }
+            });
+        }); })()
+            .catch(function (err) { return _this.emit("error", err); });
+    };
+    CardReader.prototype.onInsert = function (actionProto) {
+        this.emit("insert", actionProto);
+    };
+    CardReader.prototype.onRemove = function (actionProto) {
+        this.emit("remove", actionProto);
+    };
+    return CardReader;
+}(EventEmitter));
 
 var CryptoActionProto = (function (_super) {
     __extends(CryptoActionProto, _super);
@@ -6902,6 +7058,7 @@ var SocketProvider = (function (_super) {
     function SocketProvider() {
         var _this = _super.call(this) || this;
         _this.client = new Client();
+        _this.cardReader = new CardReader(_this.client);
         return _this;
     }
     Object.defineProperty(SocketProvider.prototype, "state", {
@@ -6913,7 +7070,6 @@ var SocketProvider = (function (_super) {
     });
     SocketProvider.prototype.connect = function (address) {
         var _this = this;
-        this.client.removeAllListeners();
         this.client.connect(address)
             .on("error", function (e) {
             _this.emit("error", e.error);
@@ -7036,3 +7192,4 @@ exports.SocketProvider = SocketProvider;
 Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
+//# sourceMappingURL=webcrypto-socket.js.map

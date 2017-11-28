@@ -16,6 +16,9 @@ const options: IServerOptions = {
     config: {
         // cards: path.join(__dirname, "..", "..", "..", ".fortify", "card.json"),
         cards: path.join(os.homedir(), ".fortify", "card.json"),
+        providers: [
+            { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0] },
+        ],
     },
 };
 const server = new LocalServer(options);
@@ -47,7 +50,8 @@ server.listen(SERVER_ADDRESS)
             }
             case "pin": {
                 // auto PIN for all token's
-                p.resolve("12345678");
+                console.log(p);
+                p.resolve("12345");
                 break;
             }
             default:

@@ -44,7 +44,7 @@ function __decorate(decorators, target, key, desc) {
 function __awaiter(thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
@@ -3467,6 +3467,9 @@ __decorate([
 __decorate([
     ProtobufProperty({ id: ProviderCryptoProto_1.INDEX++, type: "string" })
 ], ProviderCryptoProto.prototype, "atr", void 0);
+__decorate([
+    ProtobufProperty({ id: ProviderCryptoProto_1.INDEX++, type: "bool", defaultValue: false })
+], ProviderCryptoProto.prototype, "isHardware", void 0);
 ProviderCryptoProto = ProviderCryptoProto_1 = __decorate([
     ProtobufElement({})
 ], ProviderCryptoProto);
@@ -3550,6 +3553,13 @@ LoginActionProto.ACTION = "crypto/login";
 LoginActionProto = __decorate([
     ProtobufElement({})
 ], LoginActionProto);
+let LogoutActionProto = class LogoutActionProto extends CryptoActionProto {
+};
+LogoutActionProto.INDEX = CryptoActionProto.INDEX;
+LogoutActionProto.ACTION = "crypto/logout";
+LogoutActionProto = __decorate([
+    ProtobufElement({})
+], LogoutActionProto);
 let IsLoggedInActionProto = class IsLoggedInActionProto extends CryptoActionProto {
 };
 IsLoggedInActionProto.INDEX = CryptoActionProto.INDEX;
@@ -6003,6 +6013,13 @@ class SocketCrypto {
     login() {
         return __awaiter(this, void 0, void 0, function* () {
             const action = new LoginActionProto();
+            action.providerID = this.id;
+            return this.client.send(action);
+        });
+    }
+    logout() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const action = new LogoutActionProto();
             action.providerID = this.id;
             return this.client.send(action);
         });

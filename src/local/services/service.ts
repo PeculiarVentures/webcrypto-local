@@ -9,8 +9,9 @@ import { ActionProto, ResultProto } from "../../core/proto";
  */
 export abstract class Service<T extends EventEmitter> extends EventEmitter {
 
-    protected server: Server;
-    protected object: T;
+    public object: T;
+    public server: Server;
+    public services: Array<Service<any>> = [];
 
     /**
      * 
@@ -43,21 +44,36 @@ export abstract class Service<T extends EventEmitter> extends EventEmitter {
         //#endregion
 
         //#region Object
-        this.object
-            .on("info", (message: string) => {
-                this.emit("info", message);
-            })
-            .on("error", (error: Error) => {
-                this.emit("error", error);
-            });
+        if (!(this.object instanceof Service)) {
+            this.object
+                .on("info", (message: string) => {
+                    this.emit("info", message);
+                })
+                .on("error", (error: Error) => {
+                    this.emit("error", error);
+                });
+        }
         //#endregion
 
         //#endregion
 
     }
 
+    public addService(service: Service<any>) {
+        this.services.push(service);
+
+        service
+            .on("info", (message: string) => {
+                this.emit("info", message);
+            })
+            .on("error", (error: Error) => {
+                this.emit("error", error);
+            });
+    }
+
     public emit(event: "error", error: Error): boolean;
     public emit(event: "info", message: string): boolean;
+    public emit(event: string, ...args: any[]): boolean;
     public emit(event: string, ...args: any[]): boolean {
         return super.emit(event, ...args);
     }

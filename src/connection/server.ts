@@ -152,6 +152,17 @@ export class Server extends EventEmitter {
         this.options = options;
     }
 
+    public emit(event: "auth", session: Session): boolean;
+    public emit(event: "listening", e: ServerListeningEvent): boolean;
+    public emit(event: "connect", e: Session): boolean;
+    public emit(event: "disconnect", e: ServerDisconnectEvent): boolean;
+    public emit(event: "error", e: ServerErrorEvent): boolean;
+    public emit(event: "message", e: ServerMessageEvent): boolean;
+    public emit(event: "info", message: string): boolean;
+    public emit(event: string | symbol, ...args: any[]): boolean {
+        return super.emit(event, ...args);
+    }
+
     public on(event: "auth", listener: (session: Session) => void): this;
     public on(event: "listening", listener: (e: ServerListeningEvent) => void): this;
     public on(event: "connect", listener: (e: Session) => void): this;
@@ -182,7 +193,7 @@ export class Server extends EventEmitter {
                     if (requestUrl.pathname === SERVER_WELL_KNOWN) {
                         const bundle = await this.getRandomBundle();
                         const preKey = Convert.ToBase64(bundle);
-                        console.log("Server info", preKey);
+                        // console.log("Server info", preKey);
                         const info = assign({}, this.info, { preKey });
                         const json = JSON.stringify(info);
                         response.setHeader("content-length", json.length.toString());
@@ -224,12 +235,12 @@ export class Server extends EventEmitter {
         });
 
         this.socketServer.on("request", (request) => {
-            if (!/^https/.test(request.origin)) {
-                // Make sure we only accept requests from an allowed origin
-                request.reject();
-                console.log((new Date()) + " Connection from unsecure origin " + request.origin + " rejected.");
-                return;
-            }
+            // if (!/^https/.test(request.origin)) {
+            //     // Make sure we only accept requests from an allowed origin
+            //     request.reject();
+            //     console.log((new Date()) + " Connection from unsecure origin " + request.origin + " rejected.");
+            //     return;
+            // }
             const connection = request.accept(null, request.origin);
             const session: Session = {
                 headers: (request.httpRequest as any).headers,
@@ -340,16 +351,21 @@ export class Server extends EventEmitter {
     }
 
     public async send(session: Session, data: ObjectProto | ArrayBuffer) {
-        let buf: ArrayBuffer;
-        if (data instanceof ArrayBuffer) {
-            buf = data;
-        } else {
-            buf = await data.exportProto();
+        try {
+            let buf: ArrayBuffer;
+            if (data instanceof ArrayBuffer) {
+                buf = data;
+            } else {
+                buf = await data.exportProto();
+            }
+            // encrypt data
+            const encryptedData = await session.cipher.encrypt(buf);
+            buf = await encryptedData.exportProto();
+            session.connection.sendBytes(new Buffer(buf));
+
+        } catch (e) {
+            this.emit("error", e)
         }
-        // encrypt data
-        const encryptedData = await session.cipher.encrypt(buf);
-        buf = await encryptedData.exportProto();
-        session.connection.sendBytes(new Buffer(buf));
     }
 
     protected async generateIdentity() {

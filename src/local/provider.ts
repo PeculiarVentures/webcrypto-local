@@ -10,12 +10,33 @@ import { ProviderCryptoProto, ProviderInfoProto } from "../core/protos/provider"
 import { DEFAULT_HASH_ALG } from "./const";
 import { digest } from "./helper";
 import { CardWatcher, PCSCCard } from "./pcsc_watcher";
-import { IProviderConfig } from "./server";
 
-interface TokenInfo {
+export interface TokenInfo {
     removed: IProvider[];
     added: IProvider[];
     error?: string;
+}
+
+export interface IServerProvider {
+    /**
+     * Path to PKCS#11 lib
+     */
+    lib: string;
+    /**
+     * indexes of using slots. Default [0]
+     */
+    slots?: number[];
+}
+
+export interface IProviderConfig {
+    /**
+     * List of addition providers
+     */
+    providers?: IServerProvider[];
+    /**
+     * Path to card.json
+     */
+    cards: string;
 }
 
 type LocalProviderTokenHandler = (info: TokenInfo) => void;
