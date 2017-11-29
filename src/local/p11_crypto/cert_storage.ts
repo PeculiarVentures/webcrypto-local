@@ -17,11 +17,9 @@ export class Pkcs11CertificateStorage extends CertificateStorage<Pkcs11Crypto> {
         let cert: CryptoCertificate;
 
         try {
-            console.log("PKCS11:getItem");
             cert = await super.getItem(id, algorithm, usages);
         } catch (err) {
             try {
-                console.log("OSSL:getItem");
                 const object = this.getItemById(id);
                 const type = object instanceof X509Certificate ? "x509" : "request";
                 cert = await this.crypto.ossl.certStorage.importCert(type, object.value, algorithm, usages);

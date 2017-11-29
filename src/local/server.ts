@@ -41,8 +41,20 @@ export class LocalServer extends EventEmitter {
 
         this.server = new Server(options);
 
-        this.cardReader = new CardReaderService(this.server);
+        this.cardReader = new CardReaderService(this.server)
+            .on("info", (e) => {
+                this.emit("info", e);
+            })
+            .on("error", (e) => {
+                this.emit("error", e);
+            });
         this.provider = new ProviderService(this.server, options.config)
+            .on("info", (e) => {
+                this.emit("info", e);
+            })
+            .on("error", (e) => {
+                this.emit("error", e);
+            })
             .on("notify", (e) => {
                 this.emit("notify", e);
             })
