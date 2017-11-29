@@ -9,6 +9,7 @@ import { Convert } from "pvtsutils";
 import { ProviderCryptoProto, ProviderInfoProto } from "../core/protos/provider";
 import { DEFAULT_HASH_ALG } from "./const";
 import { digest } from "./helper";
+import { Pkcs11Crypto } from "./p11_crypto";
 import { CardWatcher, PCSCCard } from "./pcsc_watcher";
 
 export interface TokenInfo {
@@ -138,7 +139,7 @@ export class LocalProvider extends EventEmitter {
         {
             if (fs.existsSync(pvpkcs11Path)) {
                 try {
-                    const crypto = new pkcs11.WebCrypto({
+                    const crypto = new Pkcs11Crypto({
                         library: pvpkcs11Path,
                         slot: 0,
                         readWrite: true,
@@ -163,7 +164,7 @@ export class LocalProvider extends EventEmitter {
             for (const slot of prov.slots) {
                 if (fs.existsSync(prov.lib)) {
                     try {
-                        const crypto = new pkcs11.WebCrypto({
+                        const crypto = new Pkcs11Crypto({
                             library: prov.lib,
                             slot,
                             readWrite: true,

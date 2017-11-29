@@ -19,10 +19,6 @@ graphene.registerAttribute("x509Chain", 2147483905, "buffer");
 
 export class CertificateStorageService extends Service<CryptoService> {
 
-    public get ossl() {
-        return this.object.ossl;
-    }
-
     constructor(server: Server, crypto: CryptoService) {
         super(server, crypto, [
             //#region List of actions
@@ -108,15 +104,8 @@ export class CertificateStorageService extends Service<CryptoService> {
                 const crypto = await this.getCrypto(params.providerID);
 
                 // do operation
-                const args = [params.type, params.data, params.algorithm, params.keyUsages];
-                let item: CryptoCertificate;
-                let providerID = params.providerID;
-                try {
-                    item = await crypto.certStorage.importCert.apply(crypto.certStorage, args);
-                } catch (err) {
-                    item = await this.ossl.certStorage.importCert.apply(this.ossl.certStorage, args);
-                    providerID = this.ossl.info.id;
-                }
+                const item = await crypto.certStorage.importCert(params.type, params.data, params.algorithm, params.keyUsages);
+
                 // add key to memory storage
                 const cryptoKey = new ServiceCryptoItem(item.publicKey, params.providerID);
                 this.getMemoryStorage().add(cryptoKey);
@@ -134,10 +123,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                 //#region prepare incoming data
                 const params = await P.CertificateStorageExportActionProto.importProto(action);
 
-                let crypto = await this.getCrypto(params.providerID);
-                if (params.item.providerID === this.ossl.info.id) {
-                    crypto = this.ossl;
-                }
+                const crypto = await this.getCrypto(params.providerID);
                 const cert = this.getMemoryStorage().item(params.item.id).item as CryptoCertificate;
                 //#endregion
                 //#region do operation
@@ -183,7 +169,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                 const cert = this.getMemoryStorage().item(params.item.id);
 
                 // do operation
-                const index = await crypto.certStorage.indexOf(cert as any);
+                const index = await crypto.certStorage.indexOf(cert.item as CryptoCertificate);
                 // result
                 if (index) {
                     result.data = Convert.FromUtf8String(index);

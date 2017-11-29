@@ -7,8 +7,6 @@ export interface CryptoItem {
     type: string;
 }
 
-let osslID = 0;
-
 export class ServiceCryptoItem {
 
     public id: string;
@@ -18,12 +16,7 @@ export class ServiceCryptoItem {
 
     constructor(item: CryptoItem, providerID: string) {
         const p11Object = (item as any).p11Object;
-        let id = "";
-        if (p11Object) {
-            id = `${providerID}${p11Object.session.handle.toString()}${p11Object.handle.toString()}${item.type}${(item as any).id}`;
-        } else {
-            id = (++osslID).toString();
-        }
+        const id = `${providerID}${p11Object.session.handle.toString()}${p11Object.handle.toString()}${item.type}${(item as any).id}`;
         this.id = digest(DEFAULT_HASH_ALG, id).toString("hex");
         this.item = item;
         this.providerID = providerID;

@@ -1,6 +1,5 @@
 import { Server, Session } from "../../connection/server";
 import { MemoryStorage } from "../memory_storage";
-import { OpenSSLCrypto } from "../ossl_crypto";
 import { PCSCCard } from "../pcsc_watcher";
 import { IProviderConfig, LocalProvider, TokenInfo } from "../provider";
 import { CryptoService } from "./crypto";
@@ -20,7 +19,6 @@ export type ProviderNotifyEventHandler = (e: ProviderNotifyEvent) => void;
 export class ProviderService extends Service<LocalProvider> {
 
     public memoryStorage = new MemoryStorage();
-    public ossl = new OpenSSLCrypto();
 
     constructor(server: Server, options: IProviderConfig) {
         super(server, new LocalProvider(options), [

@@ -11,10 +11,6 @@ import * as P from "../../core/protos/subtle";
 
 export class SubtleService extends Service<CryptoService> {
 
-    public get ossl() {
-        return this.object.ossl;
-    }
-
     constructor(server: Server, crypto: CryptoService) {
         super(server, crypto, [
             //#region List of actions
@@ -92,10 +88,7 @@ export class SubtleService extends Service<CryptoService> {
             case P.SignActionProto.ACTION: {
                 const params = await P.SignActionProto.importProto(action);
 
-                let crypto = await this.getCrypto(params.providerID) as Crypto;
-                if (params.key.providerID === this.ossl.info.id) {
-                    crypto = this.ossl;
-                }
+                const crypto = await this.getCrypto(params.providerID) as Crypto;
 
                 const key = this.getMemoryStorage().item(params.key.id).item as CryptoKey;
                 result.data = await crypto.subtle.sign(params.algorithm.toAlgorithm(), key, params.data);
@@ -105,12 +98,9 @@ export class SubtleService extends Service<CryptoService> {
             case P.VerifyActionProto.ACTION: {
                 const params = await P.VerifyActionProto.importProto(action);
 
-                let crypto = await this.getCrypto(params.providerID) as Crypto;
-                if (params.key.providerID === this.ossl.info.id) {
-                    crypto = this.ossl;
-                }
-
+                const crypto = await this.getCrypto(params.providerID) as Crypto;
                 const key = this.getMemoryStorage().item(params.key.id).item as CryptoKey;
+
                 const ok = await crypto.subtle.verify(params.algorithm.toAlgorithm(), key, params.signature, params.data);
 
                 result.data = new Uint8Array([ok ? 1 : 0]).buffer;
@@ -120,11 +110,7 @@ export class SubtleService extends Service<CryptoService> {
             case P.EncryptActionProto.ACTION: {
                 const params = await P.EncryptActionProto.importProto(action);
 
-                let crypto = await this.getCrypto(params.providerID) as Crypto;
-                if (params.key.providerID === this.ossl.info.id) {
-                    crypto = this.ossl;
-                }
-
+                const crypto = await this.getCrypto(params.providerID) as Crypto;
                 const key = this.getMemoryStorage().item(params.key.id).item as CryptoKey;
 
                 result.data = await crypto.subtle.encrypt(params.algorithm.toAlgorithm(), key, params.data);
@@ -134,11 +120,7 @@ export class SubtleService extends Service<CryptoService> {
             case P.DecryptActionProto.ACTION: {
                 const params = await P.DecryptActionProto.importProto(action);
 
-                let crypto = await this.getCrypto(params.providerID) as Crypto;
-                if (params.key.providerID === this.ossl.info.id) {
-                    crypto = this.ossl;
-                }
-
+                const crypto = await this.getCrypto(params.providerID) as Crypto;
                 const key = this.getMemoryStorage().item(params.key.id).item as CryptoKey;
 
                 result.data = await crypto.subtle.decrypt(params.algorithm.toAlgorithm(), key, params.data);
@@ -220,11 +202,7 @@ export class SubtleService extends Service<CryptoService> {
             case P.ExportKeyActionProto.ACTION: {
                 const params = await P.ExportKeyActionProto.importProto(action);
 
-                let crypto = await this.getCrypto(params.providerID) as Crypto;
-                if (params.key.providerID === this.ossl.info.id) {
-                    crypto = this.ossl;
-                }
-
+                const crypto = await this.getCrypto(params.providerID) as Crypto;
                 const key = await this.getMemoryStorage().item(params.key.id).item as CryptoKey;
 
                 const exportedData = await crypto.subtle.exportKey(
@@ -255,24 +233,16 @@ export class SubtleService extends Service<CryptoService> {
                     keyData = params.keyData;
                 }
 
-                const args = [
+                const key = await crypto.subtle.importKey(
                     params.format,
                     keyData,
                     params.algorithm.toAlgorithm(),
                     params.extractable,
                     params.keyUsages,
-                ];
-                let key: CryptoKey;
-                let providerId = params.providerID;
-                try {
-                    key = await crypto.subtle.importKey.apply(crypto.subtle, args);
-                } catch (err) {
-                    key = await this.ossl.subtle.importKey.apply(crypto.subtle, args);
-                    providerId = this.ossl.info.id;
-                }
+                );
 
                 // put key to memory storage
-                const resKey = new ServiceCryptoItem(key, providerId);
+                const resKey = new ServiceCryptoItem(key, params.providerID);
                 this.getMemoryStorage().add(resKey);
 
                 result.data = await resKey.toProto().exportProto();
