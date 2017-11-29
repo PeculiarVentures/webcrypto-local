@@ -29,12 +29,6 @@ export abstract class Service<T extends EventEmitter> extends EventEmitter {
 
         //#region Server
         this.server
-            .on("info", (message) => {
-                this.emit("info", message);
-            })
-            .on("error", (error) => {
-                this.emit("error", error.error);
-            })
             .on("message", (e) => {
                 if (filter.some((item) => item.ACTION === e.message.action)) {
                     this.onMessage(e.session, e.message)
