@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "cards": [
     {
       "atr": "3b9813400aa503010101ad1311",
@@ -229,7 +229,7 @@
         "osx": "/usr/local/lib/libcardos11.dylib",
         "windows": {
           "x86": "%WINDIR/System32/cardos11.dll",
-          "x64": "%WINDIR/SysWOW64/cardos11.dll"
+          "x64": "%WINDIR/System32/cardos11_64.dll"
         }
       }
     },
