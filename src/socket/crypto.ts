@@ -22,11 +22,11 @@ export class SocketCrypto implements Crypto {
         this.certStorage = new SocketCertificateStorage(this);
     }
 
-    public getRandomValues(data: ArrayBufferView): ArrayBufferView {
+    public getRandomValues<T extends Int8Array | Uint8ClampedArray | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array>(array: T): T {
         if (!self.crypto) {
             throw new Error("Cannot get native crypto object. Function getRandomValues is not implemented.");
         }
-        return self.crypto.getRandomValues(data);
+        return self.crypto.getRandomValues(array);
     }
 
     public async login() {
