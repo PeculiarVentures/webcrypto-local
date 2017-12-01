@@ -47,16 +47,13 @@ export class Pkcs11CertificateStorage extends CertificateStorage<Pkcs11Crypto> {
         let cert: CryptoCertificate;
 
         try {
-            console.log("PKCS11:importCert");
             cert = await super.importCert(type, data, algorithm, keyUsages);
         } catch (err) {
             try {
-                console.log("OSSL:importCert");
                 cert = await this.crypto.ossl.certStorage.importCert(type, data, algorithm, keyUsages);
                 fixObject(this.crypto, cert);
                 fixObject(this.crypto, cert.publicKey);
             } catch (e) {
-                console.log(e);
                 throw err;
             }
         }
