@@ -110,7 +110,6 @@ export class SocketSubtleCrypto extends SubtleCrypto {
         action.extractable = extractable;
         action.usage = keyUsages;
 
-        console.log(action);
         const result = await this.service.client.send(action);
 
         try {

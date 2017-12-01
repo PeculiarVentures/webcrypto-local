@@ -41,7 +41,6 @@ export class SocketProvider extends EventEmitter {
                 this.emit("error", e.error);
             })
             .on("event", (proto) => {
-                console.log("Client:Event", proto.action);
                 (async () => {
                     switch (proto.action) {
                         case ProviderTokenEventProto.ACTION: {
@@ -57,11 +56,15 @@ export class SocketProvider extends EventEmitter {
                 })();
             })
             .on("listening", (e) => {
-                console.info("Client:Listening", e.address);
+                if ((window as any).PV_WEBCRYPTO_SOCKET_LOG) {
+                    console.info("Client:Listening", e.address);
+                }
                 this.emit("listening", address);
             })
             .on("close", (e) => {
-                console.info(`Client:Closed: ${e.description} (code: ${e.reasonCode})`);
+                if ((window as any).PV_WEBCRYPTO_SOCKET_LOG) {
+                    console.info(`Client:Closed: ${e.description} (code: ${e.reasonCode})`);
+                }
                 this.emit("close", e.remoteAddress);
             });
 
