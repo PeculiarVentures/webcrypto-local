@@ -4,13 +4,14 @@ import * as os from "os";
 import * as path from "path";
 const pcsc: () => PCSCLite.PCSCLite = require("pcsclite");
 
-interface PCSCWatcherEvent {
+export interface PCSCWatcherEvent {
     reader: PCSCLite.CardReader;
     atr?: Buffer;
 }
 
 export class PCSCWatcher extends EventEmitter {
 
+    public readers: string[] = [];
     protected pcsc: PCSCLite.PCSCLite | null = null;
 
     constructor() {
@@ -24,6 +25,7 @@ export class PCSCWatcher extends EventEmitter {
         });
         this.pcsc.on("reader", (reader) => {
             this.emit("info", `PCSCWatcher: New reader detected ${reader.name}`);
+            this.readers.push(reader.name);
             let atr: Buffer | null;
             reader.state = 0;
             reader.on("error", (err) => {

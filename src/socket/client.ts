@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 import { Client } from "../connection/client";
 import { ProviderAuthorizedEventProto, ProviderGetCryptoActionProto, ProviderInfoActionProto, ProviderInfoProto, ProviderTokenEventProto } from "../core/protos/provider";
+import { CardReader } from "./card_reader";
 import { SocketCrypto } from "./crypto";
 
 /**
@@ -19,8 +20,12 @@ export class SocketProvider extends EventEmitter {
         return this.client.state;
     }
 
+    public cardReader: CardReader;
+
     constructor() {
         super();
+
+        this.cardReader = new CardReader(this.client);
     }
 
     /**
@@ -31,13 +36,11 @@ export class SocketProvider extends EventEmitter {
      * 2. Create 2key-ratchet session from PreKeyBundle
      */
     public connect(address: string): this {
-        this.client.removeAllListeners();
         this.client.connect(address)
             .on("error", (e) => {
                 this.emit("error", e.error);
             })
             .on("event", (proto) => {
-                console.log("Client:Event", proto.action);
                 (async () => {
                     switch (proto.action) {
                         case ProviderTokenEventProto.ACTION: {
@@ -53,11 +56,15 @@ export class SocketProvider extends EventEmitter {
                 })();
             })
             .on("listening", (e) => {
-                console.info("Client:Listening", e.address);
+                if ((window as any).PV_WEBCRYPTO_SOCKET_LOG) {
+                    console.info("Client:Listening", e.address);
+                }
                 this.emit("listening", address);
             })
             .on("close", (e) => {
-                console.info(`Client:Closed: ${e.description} (code: ${e.reasonCode})`);
+                if ((window as any).PV_WEBCRYPTO_SOCKET_LOG) {
+                    console.info(`Client:Closed: ${e.description} (code: ${e.reasonCode})`);
+                }
                 this.emit("close", e.remoteAddress);
             });
 

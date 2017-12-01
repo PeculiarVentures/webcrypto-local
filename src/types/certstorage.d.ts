@@ -26,20 +26,20 @@ interface ICertificateStorage {
 
     /**
      * Import certificate from data
-     * 
+     *
      * @param {CertificateItemType} type Type of certificate
      * @param {(ArrayBuffer)} data Raw of certificate item
-     * @returns {Promise<CryptoCertificate>} 
-     * 
+     * @returns {Promise<CryptoCertificate>}
+     *
      * @memberOf CertificateStorage
      */
     importCert(type: "request", data: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoX509CertificateRequest>;
     importCert(type: "x509", data: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoX509Certificate>;
     importCert(type: CryptoCertificateFormat, data: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoCertificate>;
 
-    exportCert(format: "pem", item: CryptoCertificate): Promise<string>
-    exportCert(format: "raw", item: CryptoCertificate): Promise<ArrayBuffer>
-    exportCert(format: CryptoCertificateFormat, item: CryptoCertificate): Promise<ArrayBuffer | string>
+    exportCert(format: "pem", item: CryptoCertificate): Promise<string>;
+    exportCert(format: "raw", item: CryptoCertificate): Promise<ArrayBuffer>;
+    exportCert(format: CryptoCertificateFormat, item: CryptoCertificate): Promise<ArrayBuffer | string>;
 
     setItem(item: CryptoCertificate): Promise<string>;
     getItem(key: string): Promise<CryptoCertificate>;
@@ -47,4 +47,3 @@ interface ICertificateStorage {
     removeItem(key: string): Promise<void>;
     clear(): Promise<void>;
 }
-

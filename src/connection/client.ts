@@ -124,7 +124,9 @@ export class Client extends EventEmitter {
                         const storage = await BrowserStorage.create();
                         let identity = await storage.loadIdentity();
                         if (!identity) {
-                            console.info("Generates new identity");
+                            if ((window as any).PV_WEBCRYPTO_SOCKET_LOG) {
+                                console.info("Generates new identity");
+                            }
                             identity = await Identity.create(1);
                             await storage.saveIdentity(identity);
                         }
@@ -295,15 +297,15 @@ export class Client extends EventEmitter {
 
     protected async onMessage(message: ArrayBuffer) {
         const proto = await ActionProto.importProto(message);
-        console.info("Action:", proto.action);
+        if ((window as any).PV_WEBCRYPTO_SOCKET_LOG) {
+            console.info("Action:", proto.action);
+        }
         // find Promise
         const promise = this.stack[proto.actionId];
         if (promise) {
             delete this.stack[proto.actionId];
             const messageProto = await ResultProto.importProto(await proto.exportProto());
             if (messageProto.error) {
-                console.error("Error action:", messageProto.action);
-                console.error(messageProto.error);
                 promise.reject(new Error(messageProto.error));
             } else {
                 promise.resolve(messageProto.data);
