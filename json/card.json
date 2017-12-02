@@ -323,8 +323,8 @@
       "name": "Gemalto Classic",
       "file": {
         "windows": {
-          "x86": "%PROGRAMFILES(X86)%/Gemalto/Classic Client/BIN/gclib.dll",
-          "x64": "%PROGRAMFILES%/Gemalto/Classic Client/BIN/gclib.dll"
+          "x86": "%PROGRAMFILES(X86)/Gemalto/Classic Client/BIN/gclib.dll",
+          "x64": "%PROGRAMFILES/Gemalto/Classic Client/BIN/gclib.dll"
         }
       }
     }
