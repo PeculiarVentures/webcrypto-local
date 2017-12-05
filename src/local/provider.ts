@@ -257,8 +257,6 @@ export class LocalProvider extends EventEmitter {
                     if (!/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
                         this.emit("error", `${EVENT_LOG} Cannot initialize PKCS#11 lib ${library}. ${err.stack}`);
                         continue;
-                    } else {
-                        lastError = err.message;
                     }
                 }
 
@@ -278,7 +276,7 @@ export class LocalProvider extends EventEmitter {
                     slotIndexes.push(i);
                 }
                 if (!slotIndexes.length) {
-                    lastError = `Cannot find matching slot for '${card.reader}' reader`;
+                    // lastError = `Cannot find matching slot for '${card.reader}' reader`;
                     continue;
                 }
 
@@ -343,8 +341,6 @@ export class LocalProvider extends EventEmitter {
                     if (!/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
                         this.emit("error", `${EVENT_LOG} Cannot initialize PKCS#11 lib ${library}. ${err.stack}`);
                         return;
-                    } else {
-                        lastError = err.message;
                     }
                 }
 
