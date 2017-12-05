@@ -206,7 +206,8 @@ export class LocalProvider extends EventEmitter {
 
     public addProvider(crypto: Pkcs11Crypto) {
         const info = getSlotInfo(crypto);
-        this.emit("info", `Provider: Add crypto ${info.name} ${info.id}`);
+        this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
+        this.emit("info", `Provider: PKCS#11 '${crypto.module.libFile}' '${crypto.module.libName}'`);
         this.info.providers.push(new ProviderCryptoProto(info));
         this.crypto[info.id] = crypto;
     }
@@ -285,6 +286,7 @@ export class LocalProvider extends EventEmitter {
                     try {
                         const crypto = new Pkcs11Crypto({
                             library,
+                            name: card.name,
                             slot: slotIndex,
                             readWrite: !card.readOnly,
                         });
