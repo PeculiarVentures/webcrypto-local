@@ -7,7 +7,7 @@ import { assign, Convert } from "pvtsutils";
 import { ObjectProto } from "tsprotobuf";
 import * as url from "url";
 import * as WebSocket from "websocket";
-import { ActionProto, Event, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core";
+import { ActionProto, ErrorProto, Event, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core";
 import { SERVER_WELL_KNOWN } from "./const";
 import { OpenSSLStorage } from "./storages/ossl";
 
@@ -320,9 +320,9 @@ export class Server extends EventEmitter {
                                     this.emit("error", new ServerErrorEvent(this, e));
                                     if (e) {
                                         // NOTE: Some errors can have simple test format
-                                        resultProto.error = e.message || e.toString();
+                                        resultProto.error = createError(e.message || e.toString());
                                     } else {
-                                        resultProto.error = "Empty exception";
+                                        resultProto.error = createError("Empty exception");
                                     }
                                     resultProto.status = false;
 
@@ -364,7 +364,7 @@ export class Server extends EventEmitter {
             session.connection.sendBytes(new Buffer(buf));
 
         } catch (e) {
-            this.emit("error", e)
+            this.emit("error", e);
         }
     }
 
@@ -396,4 +396,14 @@ export class Server extends EventEmitter {
  */
 function getRandomInt(min: number, max: number) {
     return Math.floor(Math.random() * (max + 1 - min)) + min;
+}
+
+function createError(message: string) {
+    const p11Reg = /(CKR_\w+):(\d+)/;
+    const p11 = p11Reg.exec(message);
+    if (p11) {
+        return new ErrorProto(p11[1], parseInt(p11[2], 10), "pkcs11");
+    } else {
+        return new ErrorProto(message);
+    }
 }

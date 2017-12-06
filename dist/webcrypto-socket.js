@@ -622,6 +622,8 @@ EventHandlers.prototype = Object.create(null);
 function EventEmitter() {
   EventEmitter.init.call(this);
 }
+// nodejs oddity
+// require('events') === require('events').EventEmitter
 EventEmitter.EventEmitter = EventEmitter;
 
 EventEmitter.usingDomains = false;
@@ -3021,6 +3023,36 @@ var CryptoKeyPairProto = (function (_super) {
     return CryptoKeyPairProto;
     var CryptoKeyPairProto_1;
 }(BaseProto));
+var ErrorProto = (function (_super) {
+    __extends(ErrorProto, _super);
+    function ErrorProto(message, code, type) {
+        if (code === void 0) { code = 0; }
+        if (type === void 0) { type = "error"; }
+        var _this = _super.call(this) || this;
+        if (message) {
+            _this.message = message;
+            _this.code = code;
+            _this.type = type;
+        }
+        return _this;
+    }
+    ErrorProto_1 = ErrorProto;
+    ErrorProto.INDEX = BaseProto.INDEX;
+    __decorate([
+        ProtobufProperty({ id: ErrorProto_1.INDEX++, type: "uint32", defaultValue: 0 })
+    ], ErrorProto.prototype, "code", void 0);
+    __decorate([
+        ProtobufProperty({ id: ErrorProto_1.INDEX++, type: "string", defaultValue: "error" })
+    ], ErrorProto.prototype, "type", void 0);
+    __decorate([
+        ProtobufProperty({ id: ErrorProto_1.INDEX++, type: "string", defaultValue: "" })
+    ], ErrorProto.prototype, "message", void 0);
+    ErrorProto = ErrorProto_1 = __decorate([
+        ProtobufElement({ name: "Error" })
+    ], ErrorProto);
+    return ErrorProto;
+    var ErrorProto_1;
+}(BaseProto));
 var ResultProto = (function (_super) {
     __extends(ResultProto, _super);
     function ResultProto(proto) {
@@ -3037,7 +3069,7 @@ var ResultProto = (function (_super) {
         ProtobufProperty({ id: ResultProto_1.INDEX++, type: "bool", defaultValue: false })
     ], ResultProto.prototype, "status", void 0);
     __decorate([
-        ProtobufProperty({ id: ResultProto_1.INDEX++, type: "string", defaultValue: "" })
+        ProtobufProperty({ id: ResultProto_1.INDEX++, type: "bytes", parser: ErrorProto })
     ], ResultProto.prototype, "error", void 0);
     __decorate([
         ProtobufProperty({ id: ResultProto_1.INDEX++, type: "bytes", converter: ArrayBufferConverter })
@@ -3105,10 +3137,8 @@ function challenge(serverIdentity, clientIdentity) {
         });
     });
 }
-//# sourceMappingURL=challenge.js.map
 
 var SERVER_WELL_KNOWN = "/.well-known/webcrypto-socket";
-//# sourceMappingURL=const.js.map
 
 function isFirefox() {
     return /firefox/i.test(self.navigator.userAgent);
@@ -3172,7 +3202,6 @@ function updateEcPublicKey(ecPublicKey, publicKey) {
         });
     });
 }
-//# sourceMappingURL=helper.js.map
 
 var BrowserStorage = (function () {
     function BrowserStorage(db) {
@@ -3550,7 +3579,9 @@ var Client = (function (_super) {
                             case 2:
                                 identity = _b.sent();
                                 if (!!identity) return [3, 5];
-                                console.info("Generates new identity");
+                                if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                                    console.info("Generates new identity");
+                                }
                                 return [4, Identity.create(1)];
                             case 3:
                                 identity = _b.sent();
@@ -3712,13 +3743,15 @@ var Client = (function (_super) {
     };
     Client.prototype.onMessage = function (message) {
         return __awaiter(this, void 0, void 0, function () {
-            var proto, promise, messageProto, _a, _b;
+            var proto, promise, messageProto, _a, _b, errorProto, error;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0: return [4, ActionProto.importProto(message)];
                     case 1:
                         proto = _c.sent();
-                        console.info("Action:", proto.action);
+                        if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                            console.info("Action:", proto.action);
+                        }
                         promise = this.stack[proto.actionId];
                         if (!promise) return [3, 4];
                         delete this.stack[proto.actionId];
@@ -3727,10 +3760,12 @@ var Client = (function (_super) {
                     case 2: return [4, _b.apply(_a, [_c.sent()])];
                     case 3:
                         messageProto = _c.sent();
-                        if (messageProto.error) {
-                            console.error("Error action:", messageProto.action);
-                            console.error(messageProto.error);
-                            promise.reject(new Error(messageProto.error));
+                        if (messageProto.error && messageProto.error.message) {
+                            errorProto = messageProto.error;
+                            error = new Error(messageProto.error.message);
+                            error.code = errorProto.code;
+                            error.type = errorProto.type;
+                            promise.reject(error);
                         }
                         else {
                             promise.resolve(messageProto.data);
@@ -6772,7 +6807,6 @@ var SocketSubtleCrypto = (function (_super) {
                         action.algorithm = algProto;
                         action.extractable = extractable;
                         action.usage = keyUsages;
-                        console.log(action);
                         return [4, this.service.client.send(action)];
                     case 2:
                         result = _a.sent();
@@ -6998,11 +7032,11 @@ var SocketCrypto = (function () {
         this.keyStorage = new SocketKeyStorage(this);
         this.certStorage = new SocketCertificateStorage(this);
     }
-    SocketCrypto.prototype.getRandomValues = function (data) {
+    SocketCrypto.prototype.getRandomValues = function (array) {
         if (!self.crypto) {
             throw new Error("Cannot get native crypto object. Function getRandomValues is not implemented.");
         }
-        return self.crypto.getRandomValues(data);
+        return self.crypto.getRandomValues(array);
     };
     SocketCrypto.prototype.login = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -7075,7 +7109,6 @@ var SocketProvider = (function (_super) {
             _this.emit("error", e.error);
         })
             .on("event", function (proto) {
-            console.log("Client:Event", proto.action);
             (function () { return __awaiter(_this, void 0, void 0, function () {
                 var _a, tokenProto, _b, _c, authProto, _d, _e;
                 return __generator(this, function (_f) {
@@ -7109,11 +7142,15 @@ var SocketProvider = (function (_super) {
             }); })();
         })
             .on("listening", function (e) {
-            console.info("Client:Listening", e.address);
+            if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                console.info("Client:Listening", e.address);
+            }
             _this.emit("listening", address);
         })
             .on("close", function (e) {
-            console.info("Client:Closed: " + e.description + " (code: " + e.reasonCode + ")");
+            if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                console.info("Client:Closed: " + e.description + " (code: " + e.reasonCode + ")");
+            }
             _this.emit("close", e.remoteAddress);
         });
         return this;
@@ -7192,4 +7229,3 @@ exports.SocketProvider = SocketProvider;
 Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
-//# sourceMappingURL=webcrypto-socket.js.map

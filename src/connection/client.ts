@@ -305,8 +305,12 @@ export class Client extends EventEmitter {
         if (promise) {
             delete this.stack[proto.actionId];
             const messageProto = await ResultProto.importProto(await proto.exportProto());
-            if (messageProto.error) {
-                promise.reject(new Error(messageProto.error));
+            if (messageProto.error && messageProto.error.message) {
+                const errorProto = messageProto.error;
+                const error = new Error(messageProto.error.message) as any;
+                error.code = errorProto.code;
+                error.type = errorProto.type;
+                promise.reject(error);
             } else {
                 promise.resolve(messageProto.data);
             }
