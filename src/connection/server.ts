@@ -326,7 +326,7 @@ export class Server extends EventEmitter {
                                     const resultProto = new ResultProto(actionProto);
                                     this.emit("error", new ServerErrorEvent(this, e));
                                     if (e) {
-                                        if ("code" in e) {
+                                        if (e.hasOwnProperty("code")) {
                                             resultProto.error = new ErrorProto(e.message, e.code, e.type || "error");
                                         } else {
                                             // NOTE: Some errors can have simple text format
