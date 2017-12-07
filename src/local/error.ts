@@ -28,6 +28,13 @@ export class WebCryptoLocalError extends Error {
 
     public static CODE = WebCryptoLocalErrorEnum;
 
+    public static isError(obj: any): obj is WebCryptoLocalError {
+        if (obj instanceof Error && obj.hasOwnProperty("code") && obj.hasOwnProperty("type")) {
+            return true;
+        }
+        return false;
+    }
+
     public code = 0;
     public type = "wcl";
     public stack: string;
