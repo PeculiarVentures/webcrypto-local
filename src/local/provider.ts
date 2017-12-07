@@ -252,11 +252,19 @@ export class LocalProvider extends EventEmitter {
                     continue;
                 }
 
-                const mod = graphene.Module.load(library, card.name);
+                let mod: graphene.Module;
+                try {
+                    mod = graphene.Module.load(library, card.name);
+                } catch (err) {
+                    this.emit("error", err);
+                    lastError = new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_WRONG, library);
+                }
+
                 try {
                     mod.initialize();
                 } catch (err) {
                     if (!/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
+                        this.emit("error", err);
                         lastError = new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_WRONG, library);
                         continue;
                     }
@@ -265,7 +273,7 @@ export class LocalProvider extends EventEmitter {
                 const slots = mod.getSlots(true);
                 if (!slots.length) {
                     this.emit("error", `${EVENT_LOG} No slots found. It's possible token ${card.atr.toString("hex")} uses wrong PKCS#11 lib ${card.libraries}`);
-                    lastError = new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_WRONG_LIBRARY);
+                    lastError = new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_WRONG, library);
                     continue;
                 }
                 const slotIndexes: number[] = [];
