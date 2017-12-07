@@ -2,6 +2,7 @@ import { EventEmitter } from "events";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import { WebCryptoLocalError } from './error';
 const pcsc: () => PCSCLite.PCSCLite = require("pcsclite");
 
 export interface PCSCWatcherEvent {
@@ -167,14 +168,14 @@ export class CardConfig {
 
     public readFile(fPath: string) {
         if (!fs.existsSync(fPath)) {
-            throw new Error(`Cannot find file '${fPath}'`);
+            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, `Cannot find file '${fPath}'`);
         }
         const data = fs.readFileSync(fPath);
         let json: JsonCardConfig;
         try {
             json = JSON.parse(data.toString());
         } catch (err) {
-            throw new Error("Cannot parse JSON file");
+            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, "Cannot parse JSON file");
         }
         // TODO: match JSON scheme or verify data
         this.fromJSON(json);
@@ -206,7 +207,7 @@ export class CardConfig {
                     system = "osx";
                     break;
                 default:
-                    throw new Error("Unsupported OS");
+                    throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, "Unsupported OS");
             }
             //#endregion
 
@@ -251,7 +252,7 @@ export class CardConfig {
 
             const driver = drivers[item.driver];
             if (!driver) {
-                throw new Error(`Cannot find driver for card ${item.name} (${item.atr})`);
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, `Cannot find driver for card ${item.name} (${item.atr})`);
             }
 
             // Don't add cards without libraries

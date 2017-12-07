@@ -7,6 +7,7 @@ import { Service } from "./service";
 
 import { ActionProto, ResultProto } from "../../core/proto";
 import * as PP from "../../core/protos/provider";
+import { WebCryptoLocalError } from "../error";
 
 export interface ProviderNotifyEvent {
     type: string;
@@ -72,7 +73,7 @@ export class ProviderService extends Service<LocalProvider> {
     public open() {
         this.object.open()
             .catch((err) => {
-                this.emit("error", new Error(`Provider:Open Error. ${err.message}`));
+                this.emit("error", err);
             })
             .then(() => {
                 this.emit("info", "Provider:Opened");
@@ -130,7 +131,7 @@ export class ProviderService extends Service<LocalProvider> {
                 break;
             }
             default:
-                throw new Error(`Action '${action.action}' is not implemented`);
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_NOT_IMPLEMENTED, `Action '${action.action}' is not implemented`);
         }
         return result;
     }

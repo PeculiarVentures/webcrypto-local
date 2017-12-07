@@ -8,6 +8,7 @@ import { Service } from "./service";
 import { ActionProto, ResultProto } from "../../core/proto";
 import { ArrayStringConverter } from "../../core/protos/converter";
 import * as P from "../../core/protos/keystorage";
+import { WebCryptoLocalError } from "../error";
 
 export class KeyStorageService extends Service<CryptoService> {
 
@@ -115,7 +116,7 @@ export class KeyStorageService extends Service<CryptoService> {
                 break;
             }
             default:
-                throw new Error(`Action '${action.action}' is not implemented`);
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_NOT_IMPLEMENTED, `Action '${action.action}' is not implemented`);
         }
         return result;
     }

@@ -8,6 +8,7 @@ import { Service } from "./service";
 
 import { ActionProto, CryptoKeyPairProto, CryptoKeyProto, ResultProto } from "../../core/proto";
 import * as P from "../../core/protos/subtle";
+import { WebCryptoLocalError } from "../error";
 
 export class SubtleService extends Service<CryptoService> {
 
@@ -249,7 +250,7 @@ export class SubtleService extends Service<CryptoService> {
                 break;
             }
             default:
-                throw new Error(`Action '${action.action}' is not implemented`);
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_NOT_IMPLEMENTED, `Action '${action.action}' is not implemented`);
         }
         return result;
     }

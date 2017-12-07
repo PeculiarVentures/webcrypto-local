@@ -8,6 +8,7 @@ import { ObjectProto } from "tsprotobuf";
 import * as url from "url";
 import * as WebSocket from "websocket";
 import { ActionProto, ErrorProto, Event, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core";
+import { WebCryptoLocalError } from "../local/error";
 import { SERVER_WELL_KNOWN } from "./const";
 import { OpenSSLStorage } from "./storages/ossl";
 
@@ -252,7 +253,13 @@ export class Server extends EventEmitter {
             this.emit("connect", session);
             connection.on("message", (message) => {
                 if (message.type === "utf8") {
-                    this.emit("error", new ServerErrorEvent(this, new Error(`Received UTF8 message: ${message.utf8Data}`)));
+                    this.emit(
+                        "error",
+                        new ServerErrorEvent(
+                            this,
+                            new WebCryptoLocalError(WebCryptoLocalError.CODE.SERVER_WRONG_MESSAGE, `Received UTF8 message: ${message.utf8Data}`),
+                        ),
+                    );
                 } else if (message.type === "binary") {
                     // console.log("Received Binary Message of " + message.binaryData.length + " bytes");
                     // connection.sendBytes(message.binaryData);
@@ -283,7 +290,7 @@ export class Server extends EventEmitter {
                             }
                         }
                         if (!session.cipher) {
-                            throw new Error("Cipher object for 2key session is empty");
+                            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.SERVER_WRONG_MESSAGE ,"Cipher object for 2key session is empty");
                             // session.cipher = await this.storage.loadSession(messageProto.senderKey.id);
                         }
 
@@ -307,7 +314,7 @@ export class Server extends EventEmitter {
                                     });
                             } else {
                                 // If session is not authorized throw error
-                                throw new Error("404: Not authorized");
+                                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.SERVER_NOT_LOGGED_IN, "404: Not authorized");
                             }
                         })
                             .then((answer: ResultProto) => {
@@ -319,7 +326,10 @@ export class Server extends EventEmitter {
                                     const resultProto = new ResultProto(actionProto);
                                     this.emit("error", new ServerErrorEvent(this, e));
                                     if (e) {
-                                        // NOTE: Some errors can have simple test format
+                                        if ("code" in e) {
+                                            resultProto.error = new ErrorProto(e.message, e.code, e.type || "error");
+                                        }
+                                        // NOTE: Some errors can have simple text format
                                         resultProto.error = createError(e.message || e.toString());
                                     } else {
                                         resultProto.error = createError("Empty exception");

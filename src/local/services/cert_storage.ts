@@ -13,6 +13,7 @@ import { Service } from "./service";
 import { ActionProto, ResultProto } from "../../core/proto";
 import * as P from "../../core/protos/certstorage";
 import { ArrayStringConverter } from "../../core/protos/converter";
+import { WebCryptoLocalError } from "../error";
 
 // register new attribute for pkcs11 modules
 graphene.registerAttribute("x509Chain", 2147483905, "buffer");
@@ -184,7 +185,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                 const cert = this.getMemoryStorage().item(params.item.id).item as CryptoCertificate;
                 // Get chain works only for x509 item type
                 if (cert.type !== "x509") {
-                    throw new Error("Wrong item type, must be 'x509'");
+                    throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_COMMON, "Wrong item type, must be 'x509'");
                 }
 
                 // do operation
@@ -220,7 +221,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                                     itemProto.type = "crl";
                                     break;
                                 default:
-                                    throw new Error("Unknown type of item of chain");
+                                    throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_COMMON, "Unknown type of item of chain");
                             }
                             i++;
                             const itemSizeBuffer = buffer.slice(i, i + ulongSize);
@@ -294,7 +295,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                         }
                     }
                 } else {
-                    throw new Error("Provider doesn't support GetChain method");
+                    throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_NOT_SUPPORTED, "Provider doesn't support GetChain method");
                 }
 
                 // result
@@ -420,7 +421,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                 break;
             }
             default:
-                throw new Error(`Action '${action.action}' is not implemented`);
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_NOT_IMPLEMENTED, `Action '${action.action}' is not implemented`);
         }
         return result;
     }

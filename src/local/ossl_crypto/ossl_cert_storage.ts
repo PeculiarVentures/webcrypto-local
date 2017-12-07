@@ -3,6 +3,7 @@ import { Convert } from "pvtsutils";
 import { Certificate } from "./pki/cert";
 import { X509CertificateRequest } from "./pki/request";
 import { X509Certificate } from "./pki/x509";
+import { WebCryptoLocalError } from '../error';
 
 const crypto: Crypto = new (require("node-webcrypto-ossl"))();
 
@@ -34,10 +35,10 @@ export class OpenSSLCertificateStorage implements ICertificateStorage {
                 return item.exportRaw();
             }
             case "pem": {
-                throw new Error("PEM format is not implemented");
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.UNKNOWN, "PEM format is not implemented");
             }
             default:
-                throw new Error("Unsupported format for CryptoCertificate. Must be 'raw' or 'pem'");
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, "Unsupported format for CryptoCertificate. Must be 'raw' or 'pem'");
         }
     }
 
@@ -56,7 +57,7 @@ export class OpenSSLCertificateStorage implements ICertificateStorage {
                 break;
             }
             default:
-                throw new Error(`Unsupported CertificateStorageItem type '${type}'`);
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported CertificateStorageItem type '${type}'`);
         }
         return res;
     }
@@ -86,7 +87,7 @@ export class OpenSSLCertificateStorage implements ICertificateStorage {
             }
             return null;
         } else {
-            throw new Error(`Parameter is not OpenSSL CertificateItem`);
+            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Parameter is not OpenSSL CertificateItem`);
         }
     }
 

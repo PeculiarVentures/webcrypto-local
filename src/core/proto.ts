@@ -1,4 +1,5 @@
 import { ArrayBufferConverter, IProtobufScheme, ObjectProto, ProtobufElement, ProtobufProperty } from "tsprotobuf";
+import { WebCryptoLocalError } from "../local/error";
 import { HexStringConverter } from "./protos/converter";
 
 export interface IAlgorithmConvertible {
@@ -129,7 +130,7 @@ export class AlgorithmProto extends BaseAlgorithmProto {
                             break;
                         }
                         default:
-                            throw new Error(`Unsupported parser '${thisStatic.items[key].parser.name}'`);
+                            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported parser '${thisStatic.items[key].parser.name}'`);
                     }
                 } else {
                     (this as any)[key] = (alg as any)[key];
@@ -163,7 +164,6 @@ export class CryptoKeyProto extends CryptoItemProto implements CryptoKey {
 
     @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bytes", required: true, parser: AlgorithmProto })
     public algorithm: AlgorithmProto;
-
 
     @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bool" })
     public extractable: boolean;

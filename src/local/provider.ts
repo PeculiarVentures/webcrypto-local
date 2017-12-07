@@ -7,6 +7,7 @@ import { Convert } from "pvtsutils";
 
 import { ProviderCryptoProto, ProviderInfoProto } from "../core/protos/provider";
 import { DEFAULT_HASH_ALG } from "./const";
+import { WebCryptoLocalError } from "./error";
 import { digest } from "./helper";
 import { Pkcs11Crypto } from "./p11_crypto";
 import { Card, CardWatcher, PCSCCard } from "./pcsc_watcher";
@@ -100,6 +101,7 @@ export class LocalProvider extends EventEmitter {
     }
 
     public async open() {
+        const EVENT_LOG = "Provider:Open";
         this.info = new ProviderInfoProto();
         this.info.name = "WebcryptoLocal";
         this.info.providers = [];
@@ -147,11 +149,10 @@ export class LocalProvider extends EventEmitter {
                     crypto.isLoggedIn = true;
                     this.addProvider(crypto);
                 } catch (e) {
-                    this.emit("error", `Cannot load library by path ${pvpkcs11Path}`);
-                    this.emit("error", e);
+                    this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot load library by path ${pvpkcs11Path}. ${e.message}`));
                 }
             } else {
-                this.emit("error", new Error(`TestPKCS11: Cannot find pvpkcs11 by path ${pvpkcs11Path}`));
+                this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot find pvpkcs11 by path ${pvpkcs11Path}`));
             }
         }
         //#endregion
@@ -169,12 +170,11 @@ export class LocalProvider extends EventEmitter {
                             readWrite: true,
                         });
                         this.addProvider(crypto);
-                    } catch (e) {
-                        this.emit("error", `Cannot load library by path ${prov.lib}`);
-                        this.emit("error", e);
+                    } catch (err) {
+                        this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot load PKCS#11 library by path ${prov.lib}. ${err.message}`));
                     }
                 } else {
-                    this.emit("error", new Error(`PKCS11: Cannot find pvpkcs11 by path ${prov.lib}`));
+                    this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot find PKCS#11 library by path ${prov.lib}`));
                 }
             }
         }
@@ -224,7 +224,7 @@ export class LocalProvider extends EventEmitter {
     }
 
     public stop() {
-        throw new Error("Not implemented yet");
+        throw new WebCryptoLocalError(WebCryptoLocalError.CODE.METHOD_NOT_IMPLEMENTED);
     }
 
     public async getInfo(): Promise<ProviderInfoProto> {
@@ -235,7 +235,7 @@ export class LocalProvider extends EventEmitter {
     public async getCrypto(cryptoID: string) {
         const crypto = this.crypto[cryptoID];
         if (!crypto) {
-            throw new Error(`Cannot get crypto by given ID '${cryptoID}'`);
+            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_NOT_FOUND, `Cannot get crypto by given ID '${cryptoID}'`);
         }
         return crypto;
     }
@@ -333,36 +333,40 @@ export class LocalProvider extends EventEmitter {
             };
 
             //#region Find slots from removed token
-            let lastError = "";
             const cryptoIDs: string[] = [];
             card.libraries.forEach((library) => {
-                const mod = graphene.Module.load(library, card.name);
                 try {
-                    mod.initialize();
-                } catch (err) {
-                    if (!/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
-                        this.emit("error", `${EVENT_LOG} Cannot initialize PKCS#11 lib ${library}. ${err.stack}`);
-                        return;
-                    }
-                }
 
-                const slots = mod.getSlots(true);
-                for (const key in this.crypto) {
-                    const crypto = this.crypto[key];
-                    if (crypto.module.libFile === mod.libFile) {
-                        if (slots.indexOf(crypto.slot) === -1) {
-                            cryptoIDs.push(key);
+                    const mod = graphene.Module.load(library, card.name);
+                    try {
+                        mod.initialize();
+                    } catch (err) {
+                        if (!/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
+                            throw err;
                         }
                     }
+
+                    //#region Look for removed slots
+                    const slots = mod.getSlots(true);
+                    for (const key in this.crypto) {
+                        const crypto = this.crypto[key];
+                        if (crypto.module.libFile === mod.libFile) {
+                            if (slots.indexOf(crypto.slot) === -1) {
+                                cryptoIDs.push(key);
+                            }
+                        }
+                    }
+                    //#endregion
+
+                } catch (err) {
+                    this.emit("error", new WebCryptoLocalError(
+                        WebCryptoLocalError.CODE.TOKEN_REMOVE_TOKEN_READING,
+                        `${EVENT_LOG} PKCS#11 lib ${library}. ${err.message}`,
+                    ));
                 }
             });
-            if (!cryptoIDs.length && lastError) {
-                this.emit("error", new Error(`${EVENT_LOG} Last error: ${lastError}`));
-                this.emit("token", {
-                    added: [],
-                    removed: [],
-                    error: lastError,
-                });
+            if (!cryptoIDs.length) {
+                this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.TOKEN_REMOVE_NO_SLOTS_FOUND));
             }
             //#endregion
 

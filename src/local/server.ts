@@ -5,6 +5,7 @@ import { Server, Session } from "../connection/server";
 import { RemoteIdentityEx } from "../connection/storages/ossl";
 import { ActionProto, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core/proto";
 import { ProviderAuthorizedEventProto } from "../core/protos/provider";
+import { WebCryptoLocalError } from "./error";
 import { PCSCCard } from "./pcsc_watcher";
 import { IProviderConfig } from "./provider";
 import { CardReaderService } from "./services/card_reader";
@@ -158,13 +159,13 @@ export class LocalServer extends EventEmitter {
                         this.server.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, remoteIdentityEx);
                         session.authorized = true;
                     } else {
-                        throw new Error("PIN is not approved");
+                        throw new WebCryptoLocalError(WebCryptoLocalError.CODE.RATCHET_KEY_NOT_APPROVED);
                     }
                 }
                 break;
             }
             default:
-                throw new Error(`Action '${action.action}' is not implemented`);
+                throw new WebCryptoLocalError(`Action '${action.action}' is not implemented`);
         }
         resultProto.data = data;
         return resultProto;

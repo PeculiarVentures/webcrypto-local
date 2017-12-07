@@ -3,6 +3,7 @@ import { Server, Session } from "../../connection/server";
 import { ActionProto, ResultProto } from "../../core/proto";
 import * as P from "../../core/protos/crypto";
 
+import { WebCryptoLocalError } from "../error";
 import { CertificateStorageService } from "./cert_storage";
 import { KeyStorageService } from "./key_storage";
 import { ProviderService } from "./provider";
@@ -115,7 +116,7 @@ export class CryptoService extends Service<ProviderService> {
                 break;
             }
             default:
-                throw new Error(`Action '${action.action}' is not implemented`);
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_NOT_IMPLEMENTED, `Action '${action.action}' is not implemented`);
         }
         return result;
     }
