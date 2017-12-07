@@ -4,7 +4,7 @@ import * as https from "https";
 import { ObjectProto } from "tsprotobuf";
 import * as WebSocket from "websocket";
 
-export enum WebCryptoLocalErrorEnum {
+enum WebCryptoLocalErrorEnum {
     UNKNOWN = 0,
     METHOD_NOT_IMPLEMENTED = 1,
     CASE_ERROR = 2,
@@ -19,8 +19,9 @@ export enum WebCryptoLocalErrorEnum {
     PROVIDER_COMMON = 400,
     PROVIDER_INIT = 401,
     PROVIDER_CRYPTO_NOT_FOUND = 402,
-    PROVIDER_NOT_FOUND = 403,
-    PROVIDER_WRONG_LIBRARY = 404,
+    PROVIDER_CRYPTO_WRONG = 403,
+    PROVIDER_NOT_FOUND = 404,
+    PROVIDER_WRONG_LIBRARY = 405,
     TOKEN_COMMON = 500,
     TOKEN_REMOVE_TOKEN_READING = 501,
     TOKEN_REMOVE_NO_SLOTS_FOUND = 502,
