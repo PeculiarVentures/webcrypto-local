@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('protobufjs')) :
 	typeof define === 'function' && define.amd ? define(['exports', 'protobufjs'], factory) :
-	(factory((global.WebcryptoSocket = global.WebcryptoSocket || {}),global.protobuf));
+	(factory((global.WebcryptoSocket = {}),global.protobuf));
 }(this, (function (exports,protobufjs) { 'use strict';
 
 /*! *****************************************************************************
@@ -1178,8 +1178,7 @@ var Curve = (function () {
                             publicKey: key.publicKey.key
                         };
                         return [4, key.publicKey.thumbprint()];
-                    case 1: return [2, (_a.thumbprint = _b.sent(),
-                            _a)];
+                    case 1: return [2, (_a.thumbprint = _b.sent(), _a)];
                 }
             });
         });
@@ -1194,8 +1193,7 @@ var Curve = (function () {
                             privateKey: keys.privateKey
                         };
                         return [4, ECPublicKey.create(keys.publicKey)];
-                    case 1: return [2, (_a.publicKey = _b.sent(),
-                            _a)];
+                    case 1: return [2, (_a.publicKey = _b.sent(), _a)];
                 }
             });
         });
@@ -1257,7 +1255,7 @@ var Secret = (function () {
                     case 3:
                         PRKBytes = _c.sent();
                         infoBuffer = new ArrayBuffer(32 + info.byteLength + 1);
-                        infoArray = new Uint8Array(infoBuffer);
+                        
                         return [4, this.importHMAC(PRKBytes)];
                     case 4:
                         PRK = _c.sent();
@@ -1494,13 +1492,9 @@ var Identity = (function () {
                         };
                         return [4, Curve.ecKeyPairToJson(this.exchangeKey)];
                     case 9:
-                        _h.exchangeKey = _j.sent(),
-                            _h.id = this.id,
-                            _h.preKeys = preKeys,
-                            _h.signedPreKeys = signedPreKeys;
+                        _h.exchangeKey = _j.sent(), _h.id = this.id, _h.preKeys = preKeys, _h.signedPreKeys = signedPreKeys;
                         return [4, Curve.ecKeyPairToJson(this.signingKey)];
-                    case 10: return [2, (_h.signingKey = _j.sent(),
-                            _h)];
+                    case 10: return [2, (_h.signingKey = _j.sent(), _h)];
                 }
             });
         });
@@ -1600,15 +1594,12 @@ var RemoteIdentity = (function () {
                         };
                         return [4, this.exchangeKey.key];
                     case 1:
-                        _a.exchangeKey = _b.sent(),
-                            _a.id = this.id,
-                            _a.signature = this.signature;
+                        _a.exchangeKey = _b.sent(), _a.id = this.id, _a.signature = this.signature;
                         return [4, this.signingKey.key];
                     case 2:
                         _a.signingKey = _b.sent();
                         return [4, this.signingKey.thumbprint()];
-                    case 3: return [2, (_a.thumbprint = _b.sent(),
-                            _a)];
+                    case 3: return [2, (_a.thumbprint = _b.sent(), _a)];
                 }
             });
         });
@@ -2116,8 +2107,7 @@ var SymmetricRatchet = (function () {
                         };
                         return [4, Secret.importHMAC(nextRootKeyBytes)];
                     case 3:
-                        res = (_a.rootKey = _b.sent(),
-                            _a);
+                        res = (_a.rootKey = _b.sent(), _a);
                         return [2, res];
                 }
             });
@@ -2588,11 +2578,9 @@ var AsymmetricRatchet = (function (_super) {
                         _a.ratchetKey = _b.sent();
                         return [4, this.remoteIdentity.signingKey.thumbprint()];
                     case 2:
-                        _a.remoteIdentity = _b.sent(),
-                            _a.rootKey = this.rootKey;
+                        _a.remoteIdentity = _b.sent(), _a.rootKey = this.rootKey;
                         return [4, this.steps.toJSON()];
-                    case 3: return [2, (_a.steps = _b.sent(),
-                            _a)];
+                    case 3: return [2, (_a.steps = _b.sent(), _a)];
                 }
             });
         });
@@ -2776,6 +2764,54 @@ var Event = (function () {
     return Event;
 }());
 
+var WebCryptoLocalErrorEnum;
+(function (WebCryptoLocalErrorEnum) {
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["UNKNOWN"] = 0] = "UNKNOWN";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["METHOD_NOT_IMPLEMENTED"] = 1] = "METHOD_NOT_IMPLEMENTED";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["CASE_ERROR"] = 2] = "CASE_ERROR";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["RATCHET_COMMON"] = 100] = "RATCHET_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["RATCHET_KEY_NOT_APPROVED"] = 101] = "RATCHET_KEY_NOT_APPROVED";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["ACTION_COMMON"] = 200] = "ACTION_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["ACTION_NOT_IMPLEMENTED"] = 201] = "ACTION_NOT_IMPLEMENTED";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["ACTION_NOT_SUPPORTED"] = 202] = "ACTION_NOT_SUPPORTED";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["CARD_CONFIG_COMMON"] = 300] = "CARD_CONFIG_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["MEMORY_STORAGE_COMMON"] = 350] = "MEMORY_STORAGE_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["MEMORY_STORAGE_OUT_OF_INDEX"] = 351] = "MEMORY_STORAGE_OUT_OF_INDEX";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_COMMON"] = 400] = "PROVIDER_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_INIT"] = 401] = "PROVIDER_INIT";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_CRYPTO_NOT_FOUND"] = 402] = "PROVIDER_CRYPTO_NOT_FOUND";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["TOKEN_COMMON"] = 500] = "TOKEN_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["TOKEN_REMOVE_TOKEN_READING"] = 501] = "TOKEN_REMOVE_TOKEN_READING";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["TOKEN_REMOVE_NO_SLOTS_FOUND"] = 502] = "TOKEN_REMOVE_NO_SLOTS_FOUND";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_COMMON"] = 600] = "SERVER_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_WRONG_MESSAGE"] = 601] = "SERVER_WRONG_MESSAGE";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_NOT_LOGGED_IN"] = 602] = "SERVER_NOT_LOGGED_IN";
+})(WebCryptoLocalErrorEnum || (WebCryptoLocalErrorEnum = {}));
+var WebCryptoLocalError = (function (_super) {
+    __extends(WebCryptoLocalError, _super);
+    function WebCryptoLocalError(param, message) {
+        if (message === void 0) { message = ""; }
+        var _this = _super.call(this) || this;
+        _this.code = 0;
+        _this.type = "wcl";
+        var CODE = WebCryptoLocalError.CODE;
+        if (typeof param === "number") {
+            _this.message = message || CODE[param] || CODE[0];
+            _this.code = param;
+        }
+        else {
+            _this.code = 0;
+            _this.message = message;
+        }
+        var error = new Error(_this.message);
+        error.name = _this.constructor.name;
+        _this.stack = error.stack;
+        return _this;
+    }
+    WebCryptoLocalError.CODE = WebCryptoLocalErrorEnum;
+    return WebCryptoLocalError;
+}(Error));
+
 var DateConverter$1 = (function () {
     function DateConverter() {
     }
@@ -2917,7 +2953,7 @@ var AlgorithmProto = (function (_super) {
                             break;
                         }
                         default:
-                            throw new Error("Unsupported parser '" + thisStatic.items[key].parser.name + "'");
+                            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, "Unsupported parser '" + thisStatic.items[key].parser.name + "'");
                     }
                 }
                 else {
@@ -3261,9 +3297,7 @@ var BrowserStorage = (function () {
                         _a = {};
                         return [4, getEngine().crypto.subtle.exportKey("raw", key.key)];
                     case 1:
-                        key = (_a.key = (_b.sent()),
-                            _a.iv = key.iv,
-                            _a);
+                        key = (_a.key = (_b.sent()), _a.iv = key.iv, _a);
                         _b.label = 2;
                     case 2:
                         tx = this.db.transaction(BrowserStorage.IDENTITY_STORAGE, "readwrite");
@@ -3335,9 +3369,7 @@ var BrowserStorage = (function () {
                         _a = {};
                         return [4, getEngine().crypto.subtle.generateKey({ name: AES_CBC.name, length: 256 }, isEdge(), ["wrapKey", "unwrapKey", "encrypt", "decrypt"])];
                     case 1:
-                        wkey = (_a.key = _f.sent(),
-                            _a.iv = getEngine().crypto.getRandomValues(new Uint8Array(AES_CBC.iv)).buffer,
-                            _a);
+                        wkey = (_a.key = _f.sent(), _a.iv = getEngine().crypto.getRandomValues(new Uint8Array(AES_CBC.iv)).buffer, _a);
                         return [4, this.saveWrapKey(wkey)];
                     case 2:
                         _f.sent();
@@ -7229,3 +7261,4 @@ exports.SocketProvider = SocketProvider;
 Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
+//# sourceMappingURL=webcrypto-socket.js.map
