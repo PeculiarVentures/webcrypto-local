@@ -33,6 +33,7 @@ declare enum WebCryptoLocalErrorEnum {
 export class WebCryptoLocalError extends Error {
 
     public static CODE: typeof WebCryptoLocalErrorEnum;
+    public static isError(obj: any): obj is WebCryptoLocalError;
 
     public code: number;
     public type: string;
@@ -42,7 +43,6 @@ export class WebCryptoLocalError extends Error {
     constructor(message: string);
 
 }
-
 
 export class BaseProto extends ObjectProto {
     public static INDEX: number;
