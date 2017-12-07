@@ -43,7 +43,6 @@ export class ProviderService extends Service<LocalProvider> {
 
     public emit(event: "notify", e: ProviderNotifyEvent): boolean;
     public emit(event: "token_new", e: PCSCCard): boolean;
-    public emit(event: "token_error", error: string): boolean;
     public emit(event: "error", error: Error): boolean;
     public emit(event: "info", message: string): boolean;
     public emit(event: string, ...args: any[]): boolean {
@@ -52,7 +51,6 @@ export class ProviderService extends Service<LocalProvider> {
 
     public on(event: "notify", cb: ProviderNotifyEventHandler): this;
     public on(event: "token_new", cb: (e: PCSCCard) => void): this;
-    public on(event: "token_error", cb: (error: string) => void): this;
     public on(event: "error", cb: (error: Error) => void): this;
     public on(event: "info", cb: (message: string) => void): this;
     public on(event: string, cb: (...args: any[]) => void): this {
@@ -61,7 +59,6 @@ export class ProviderService extends Service<LocalProvider> {
 
     public once(event: "notify", cb: ProviderNotifyEventHandler): this;
     public once(event: "token_new", cb: (e: PCSCCard) => void): this;
-    public once(event: "token_error", cb: (error: string) => void): this;
     public once(event: "error", cb: (error: Error) => void): this;
     public once(event: "info", cb: (message: string) => void): this;
     public once(event: string, cb: (...args: any[]) => void): this {
@@ -90,7 +87,7 @@ export class ProviderService extends Service<LocalProvider> {
 
     protected onToken(info: TokenInfo) {
         if (info.error) {
-            this.emit("token_error", info.error);
+            this.emit("error", info.error);
         } else {
             this.emit("info", `Provider:Token Amount of tokens was changed (+${info.added.length}/-${info.removed.length})`);
             this.server.sessions.forEach((session) => {

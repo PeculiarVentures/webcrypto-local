@@ -15,7 +15,7 @@ import { Card, CardWatcher, PCSCCard } from "./pcsc_watcher";
 export interface TokenInfo {
     removed: IProvider[];
     added: IProvider[];
-    error?: string;
+    error?: Error;
 }
 
 export interface IServerProvider {
@@ -187,7 +187,7 @@ export class LocalProvider extends EventEmitter {
                 return this.emit("token", {
                     added: [],
                     removed: [],
-                    error: err.message,
+                    error: err,
                 });
             })
             .on("info", (message) => {
@@ -243,11 +243,12 @@ export class LocalProvider extends EventEmitter {
     protected onTokenInsert(card: Card) {
         const EVENT_LOG = "Provider:Token:Insert";
         this.emit("info", `${EVENT_LOG} reader:'${card.reader}' name:'${card.name}' atr:${card.atr.toString("hex")}`);
-        let lastError = "";
+        let lastError: Error | null = null;
         for (const library of card.libraries) {
             try {
+                lastError = null; // remove last error
                 if (!fs.existsSync(library)) {
-                    lastError = `The inserted smart card is supported by Fortify but we were unable to find middleware for the card. Make sure '${library}' exists, if not install the smart cards middleware and try again.`;
+                    lastError = new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_NOT_FOUND, library);
                     continue;
                 }
 
@@ -256,7 +257,7 @@ export class LocalProvider extends EventEmitter {
                     mod.initialize();
                 } catch (err) {
                     if (!/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
-                        this.emit("error", `${EVENT_LOG} Cannot initialize PKCS#11 lib ${library}. ${err.stack}`);
+                        lastError = new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_WRONG, library);
                         continue;
                     }
                 }
@@ -264,7 +265,7 @@ export class LocalProvider extends EventEmitter {
                 const slots = mod.getSlots(true);
                 if (!slots.length) {
                     this.emit("error", `${EVENT_LOG} No slots found. It's possible token ${card.atr.toString("hex")} uses wrong PKCS#11 lib ${card.libraries}`);
-                    lastError = `Token not initialized or unknown card state. No slots found.`;
+                    lastError = new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_WRONG_LIBRARY);
                     continue;
                 }
                 const slotIndexes: number[] = [];
@@ -307,10 +308,9 @@ export class LocalProvider extends EventEmitter {
                     added: addInfos,
                     removed: [],
                 });
-                lastError = "";
                 break;
             } catch (err) {
-                lastError = `Unexpected error on token insertion. ${err.message}`;
+                lastError = err;
                 continue;
             }
         }
@@ -388,11 +388,11 @@ export class LocalProvider extends EventEmitter {
             if (info.removed.length) {
                 this.emit("token", info);
             }
-        } catch (err) {
+        } catch (error) {
             this.emit("token", {
                 added: [],
                 removed: [],
-                error: `Unexpected error on token removing. ${err.message}`,
+                error,
             });
         }
     }
