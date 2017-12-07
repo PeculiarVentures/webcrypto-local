@@ -33,9 +33,6 @@ server.listen(SERVER_ADDRESS)
     .on("token_new", (card) => {
         console.log("New token:", card);
     })
-    .on("token_error", (err) => {
-        console.log("Token error:", err);
-    })
     .on("error", (e: Error) => {
         console.error(e);
     })
@@ -50,8 +47,8 @@ server.listen(SERVER_ADDRESS)
             }
             case "pin": {
                 // auto PIN for all token's
-                console.log(p);
-                p.resolve("12345");
+                // p.resolve("12345");
+                p.resolve("12345678");
                 break;
             }
             default:
