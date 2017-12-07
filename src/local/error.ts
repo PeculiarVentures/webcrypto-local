@@ -1,24 +1,29 @@
 enum WebCryptoLocalErrorEnum {
-    UNKNOWN,
-    METHOD_NOT_IMPLEMENTED,
-    CASE_ERROR,
-    RATCHET_KEY_NOT_APPROVED,
-    ACTION_COMMON,
-    ACTION_NOT_IMPLEMENTED,
-    ACTION_NOT_SUPPORTED,
-    CARD_CONFIG_COMMON,
-    MEMORY_STORAGE_OUT_OF_INDEX,
-    PROVIDER_INIT,
-    PROVIDER_CRYPTO_NOT_FOUND,
-    TOKEN_REMOVE_TOKEN_READING,
-    TOKEN_REMOVE_NO_SLOTS_FOUND,
-    SERVER_WRONG_MESSAGE,
-    SERVER_NOT_LOGGED_IN,
+    UNKNOWN = 0,
+    METHOD_NOT_IMPLEMENTED = 1,
+    CASE_ERROR = 2,
+    RATCHET_COMMON = 100,
+    RATCHET_KEY_NOT_APPROVED = 101,
+    ACTION_COMMON = 200,
+    ACTION_NOT_IMPLEMENTED = 201,
+    ACTION_NOT_SUPPORTED = 202,
+    CARD_CONFIG_COMMON = 300,
+    MEMORY_STORAGE_COMMON = 350,
+    MEMORY_STORAGE_OUT_OF_INDEX = 351,
+    PROVIDER_COMMON = 400,
+    PROVIDER_INIT = 401,
+    PROVIDER_CRYPTO_NOT_FOUND = 402 ,
+    TOKEN_COMMON = 500,
+    TOKEN_REMOVE_TOKEN_READING = 501,
+    TOKEN_REMOVE_NO_SLOTS_FOUND = 502,
+    SERVER_COMMON = 600,
+    SERVER_WRONG_MESSAGE = 601,
+    SERVER_NOT_LOGGED_IN = 602,
 }
 
 export class WebCryptoLocalError extends Error {
 
-    static CODE = WebCryptoLocalErrorEnum;
+    public static CODE = WebCryptoLocalErrorEnum;
 
     public code = 0;
     public type = "wcl";
@@ -28,7 +33,7 @@ export class WebCryptoLocalError extends Error {
     constructor(message: string);
     constructor(param: number | string, message = "") {
         super();
-        const { CODE } = this.constructor as typeof WebCryptoLocalError;
+        const CODE = WebCryptoLocalError.CODE;
         if (typeof param === "number") {
             this.message = message || CODE[param] || CODE[0];
             this.code = param;

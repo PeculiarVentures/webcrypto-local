@@ -328,9 +328,10 @@ export class Server extends EventEmitter {
                                     if (e) {
                                         if ("code" in e) {
                                             resultProto.error = new ErrorProto(e.message, e.code, e.type || "error");
+                                        } else {
+                                            // NOTE: Some errors can have simple text format
+                                            resultProto.error = createError(e.message || e.toString());
                                         }
-                                        // NOTE: Some errors can have simple text format
-                                        resultProto.error = createError(e.message || e.toString());
                                     } else {
                                         resultProto.error = createError("Empty exception");
                                     }
