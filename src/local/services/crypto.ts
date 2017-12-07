@@ -1,3 +1,5 @@
+import * as graphene from "graphene-pk11";
+
 import { Server, Session } from "../../connection/server";
 
 import { ActionProto, ResultProto } from "../../core/proto";
@@ -81,17 +83,24 @@ export class CryptoService extends Service<ProviderService> {
                 const crypto = await this.getCrypto(params.providerID);
 
                 if (crypto.login) {
-                    // show prompt
-                    const promise = new Promise<string>((resolve, reject) => {
-                        this.emit("notify", {
-                            type: "pin",
-                            origin: session.headers.origin,
-                            resolve,
-                            reject,
-                        });
-                    });
-                    const pin = await promise;
-                    crypto.login(pin);
+                    const token = crypto.slot.getToken();
+                    if (token.flags & graphene.TokenFlag.LOGIN_REQUIRED) {
+                        if (token.flags & graphene.TokenFlag.PROTECTED_AUTHENTICATION_PATH) {
+                            crypto.login("");
+                        } else {
+                            // show prompt
+                            const promise = new Promise<string>((resolve, reject) => {
+                                this.emit("notify", {
+                                    type: "pin",
+                                    origin: session.headers.origin,
+                                    resolve,
+                                    reject,
+                                });
+                            });
+                            const pin = await promise;
+                            crypto.login(pin);
+                        }
+                    }
                 }
                 break;
             }
