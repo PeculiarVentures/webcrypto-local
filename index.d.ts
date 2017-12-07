@@ -231,6 +231,7 @@ export class Server extends EventEmitter {
     public once(event: "info", listener: (message: string) => void): this;
 
     public listen(address: string): this;
+    public close(callback?: () => void): void;
     public send(session: Session, data: ObjectProto | ArrayBuffer): Promise<void>;
 
 }
@@ -295,6 +296,7 @@ export class LocalServer extends EventEmitter {
     constructor(options: IServerOptions);
 
     public listen(address: string): this;
+    public close(callback?: () => void): void;
 
     public on(event: "info", cb: (message: string) => void): this;
     public on(event: "listening", cb: Function): this;

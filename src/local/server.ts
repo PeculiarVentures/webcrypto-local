@@ -6,6 +6,7 @@ import { RemoteIdentityEx } from "../connection/storages/ossl";
 import { ActionProto, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core/proto";
 import { ProviderAuthorizedEventProto } from "../core/protos/provider";
 import { WebCryptoLocalError } from "./error";
+import { Pkcs11Crypto } from "./p11_crypto";
 import { PCSCCard } from "./pcsc_watcher";
 import { IProviderConfig } from "./provider";
 import { CardReaderService } from "./services/card_reader";
@@ -31,7 +32,7 @@ export class LocalServer extends EventEmitter {
      * @memberof LocalServer
      */
     public server: Server;
-    public cryptos: { [id: string]: Crypto } = {};
+    public cryptos: { [id: string]: Pkcs11Crypto } = {};
     public sessions: Session[] = [];
 
     public provider: ProviderService;
@@ -62,6 +63,24 @@ export class LocalServer extends EventEmitter {
             .on("token_new", (e) => {
                 this.emit("token_new", e);
             });
+    }
+
+    public close(callback?: () => void) {
+        this.server.close(() => {
+            for (const key in this.cryptos) {
+                try {
+                    const crypto = this.cryptos[key];
+
+                    crypto.slot.closeAll();
+                    crypto.module.finalize();
+                } catch (err) {
+                    this.emit("error", err);
+                }
+            }
+            if (callback) {
+                callback();
+            }
+        });
     }
 
     public listen(address: string) {

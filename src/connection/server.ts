@@ -186,6 +186,10 @@ export class Server extends EventEmitter {
         return super.once(event, listener);
     }
 
+    public close(callback?: () => void) {
+        this.httpServer.close(callback);
+    }
+
     public listen(address: string) {
         this.httpServer = https.createServer(this.options, (request: http.IncomingMessage, response: http.ServerResponse) => {
             (async () => {
