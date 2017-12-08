@@ -369,15 +369,21 @@ export class CardWatcher extends EventEmitter {
 function replaceTemplates(text: string, args: { [key: string]: string }, prefix: string) {
     // search <prefix><name> and replace by ARGS
     // if ENV not exists don't change name
-    const envReg = new RegExp(`\\${prefix}([\\w\\d\\(\\)\\-\\_]+)`, "g");
+    const envReg = new RegExp(`\\${prefix}([\\w\\d\\(\\)\\-\\_]+)`, "gi");
     let res: RegExpExecArray;
     let resText = text;
     // tslint:disable-next-line:no-conditional-assignment
     while (res = envReg.exec(text)) {
         const argsName = res[1];
-        const argsValue = args[argsName];
+        let argsValue: string | null = null;
+        for (const key in args) {
+            if (key.toLowerCase() === argsName.toLowerCase()) {
+                argsValue = args[key];
+                break;
+            }
+        }
         if (argsValue) {
-            resText = resText.replace(new RegExp(`\\${prefix}${argsName}`), argsValue);
+            resText = resText.replace(new RegExp(`\\${prefix}${argsName.replace(/([\(\)])/g, "\\$1")}`, "i"), argsValue);
         }
     }
     return resText;
