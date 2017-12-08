@@ -6,7 +6,6 @@ import { RemoteIdentityEx } from "../connection/storages/ossl";
 import { ActionProto, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core/proto";
 import { ProviderAuthorizedEventProto } from "../core/protos/provider";
 import { WebCryptoLocalError } from "./error";
-import { Pkcs11Crypto } from "./p11_crypto";
 import { PCSCCard } from "./pcsc_watcher";
 import { IProviderConfig } from "./provider";
 import { CardReaderService } from "./services/card_reader";
@@ -32,7 +31,6 @@ export class LocalServer extends EventEmitter {
      * @memberof LocalServer
      */
     public server: Server;
-    public cryptos: { [id: string]: Pkcs11Crypto } = {};
     public sessions: Session[] = [];
 
     public provider: ProviderService;
@@ -67,16 +65,7 @@ export class LocalServer extends EventEmitter {
 
     public close(callback?: () => void) {
         this.server.close(() => {
-            for (const key in this.cryptos) {
-                try {
-                    const crypto = this.cryptos[key];
-
-                    crypto.slot.closeAll();
-                    crypto.module.finalize();
-                } catch (err) {
-                    this.emit("error", err);
-                }
-            }
+            this.provider.close();
             if (callback) {
                 callback();
             }
@@ -132,11 +121,11 @@ export class LocalServer extends EventEmitter {
 
     public on(event: "info", cb: (message: string) => void): this;
     public on(event: "token_new", cb: (info: PCSCCard) => void): this;
-    public on(event: "listening", cb: Function): this;
-    public on(event: "error", cb: Function): this;
-    public on(event: "close", cb: Function): this;
-    public on(event: "notify", cb: Function): this;
-    public on(event: string, cb: Function) {
+    public on(event: "listening", cb: (address: string) => void): this;
+    public on(event: "error", cb: (err: Error) => void): this;
+    public on(event: "close", cb: (e: any) => void): this;
+    public on(event: "notify", cb: (e: any) => void): this;
+    public on(event: string, cb: (...args: any[]) => void) {
         return super.on(event, cb);
     }
 

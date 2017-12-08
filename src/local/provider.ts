@@ -5,8 +5,10 @@ import * as os from "os";
 import * as path from "path";
 import { Convert } from "pvtsutils";
 
+import { MapChangeEvent } from "../core/map";
 import { ProviderCryptoProto, ProviderInfoProto } from "../core/protos/provider";
 import { DEFAULT_HASH_ALG } from "./const";
+import { CryptoMap } from "./crypto_map";
 import { WebCryptoLocalError } from "./error";
 import { digest } from "./helper";
 import { Pkcs11Crypto } from "./p11_crypto";
@@ -46,14 +48,10 @@ type LocalProviderListeningHandler = (info: IModule[]) => void;
 type LocalProviderErrorHandler = (e: Error) => void;
 type LocalProviderStopHandler = () => void;
 
-interface CryptoMap {
-    [id: string]: Pkcs11Crypto;
-}
-
 export class LocalProvider extends EventEmitter {
 
     public info: ProviderInfoProto;
-    public crypto: CryptoMap = {};
+    public crypto: CryptoMap;
 
     protected cards: CardWatcher;
     protected config: IProviderConfig;
@@ -65,8 +63,11 @@ export class LocalProvider extends EventEmitter {
     constructor(config: IProviderConfig) {
         super();
 
-        this.cards = new CardWatcher();
         this.config = config;
+        this.cards = new CardWatcher();
+        this.crypto = new CryptoMap()
+            .on("add", this.onCryptoAdd.bind(this))
+            .on("remove", this.onCryptoRemove.bind(this));
     }
 
     public on(event: "close", listener: LocalProviderStopHandler): this;
@@ -207,20 +208,18 @@ export class LocalProvider extends EventEmitter {
     public addProvider(crypto: Pkcs11Crypto) {
         const info = getSlotInfo(crypto);
         this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
-        this.emit("info", `Provider: PKCS#11 '${crypto.module.libFile}' '${crypto.module.libName}'`);
         this.info.providers.push(new ProviderCryptoProto(info));
-        this.crypto[info.id] = crypto;
+        this.crypto.add(info.id, crypto);
     }
 
     public hasProvider(slot: graphene.Slot) {
-        for (const key in this.crypto) {
-            const crypto = this.crypto[key];
+        return this.crypto.some((crypto) => {
             if (crypto.module.libFile === slot.module.libFile &&
                 crypto.slot.handle.equals(slot.handle)) {
                 return true;
             }
-        }
-        return false;
+            return false;
+        });
     }
 
     public stop() {
@@ -233,7 +232,7 @@ export class LocalProvider extends EventEmitter {
     }
 
     public async getCrypto(cryptoID: string) {
-        const crypto = this.crypto[cryptoID];
+        const crypto = this.crypto.item(cryptoID);
         if (!crypto) {
             throw new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_NOT_FOUND, `Cannot get crypto by given ID '${cryptoID}'`);
         }
@@ -356,14 +355,13 @@ export class LocalProvider extends EventEmitter {
 
                     //#region Look for removed slots
                     const slots = mod.getSlots(true);
-                    for (const key in this.crypto) {
-                        const crypto = this.crypto[key];
+                    this.crypto.forEach((crypto, key) => {
                         if (crypto.module.libFile === mod.libFile) {
                             if (slots.indexOf(crypto.slot) === -1) {
                                 cryptoIDs.push(key);
                             }
                         }
-                    }
+                    });
                     //#endregion
 
                 } catch (err) {
@@ -379,10 +377,9 @@ export class LocalProvider extends EventEmitter {
             //#endregion
 
             cryptoIDs.forEach((provId) => {
-                delete this.crypto[provId];
+                this.crypto.remove(provId);
 
                 this.info.providers = this.info.providers.filter((provider) => {
-                    this.emit("info", `${EVENT_LOG} Filtering providers ${provider.id} ${provId}`);
                     if (provider.id === provId) {
                         this.emit("info", `${EVENT_LOG} Crypto removed '${provider.name}' ${provider.id}`);
                         // remove crypto
@@ -402,6 +399,24 @@ export class LocalProvider extends EventEmitter {
                 removed: [],
                 error,
             });
+        }
+    }
+
+    protected onCryptoAdd(e: MapChangeEvent<Pkcs11Crypto>) {
+        this.emit("info", `Provider:AddCrypto PKCS#11 '${e.item.module.libFile}' '${e.item.module.libName}'`);
+    }
+
+    protected onCryptoRemove(e: MapChangeEvent<Pkcs11Crypto>) {
+        const LOG = "Provider:RemoveCrypto";
+        this.emit("info", `${LOG} PKCS#11 '${e.item.module.libFile}' '${e.item.module.libName}'`);
+
+        if (!this.crypto.some((crypto) => crypto.module.libFile === e.item.module.libFile)) {
+            this.emit("info", `${LOG} PKCS#11 finalize '${e.item.module.libFile}'`);
+            try {
+                e.item.module.finalize();
+            } catch (err) {
+                this.emit("error", err);
+            }
         }
     }
 

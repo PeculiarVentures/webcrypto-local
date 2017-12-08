@@ -289,8 +289,6 @@ export class LocalServer extends EventEmitter {
      * @memberof LocalServer
      */
     public server: Server;
-    // public provider: LocalProvider;
-    public cryptos: { [id: string]: Crypto };
     public sessions: Session[];
 
     constructor(options: IServerOptions);
@@ -299,9 +297,9 @@ export class LocalServer extends EventEmitter {
     public close(callback?: () => void): void;
 
     public on(event: "info", cb: (message: string) => void): this;
-    public on(event: "listening", cb: Function): this;
-    public on(event: "token_new", cb: (card: PCSCCard) => void): this;
-    public on(event: "error", cb: Function): this;
-    public on(event: "close", cb: Function): this;
-    public on(event: "notify", cb: Function): this;
+    public on(event: "token_new", cb: (info: PCSCCard) => void): this;
+    public on(event: "listening", cb: (address: string) => void): this;
+    public on(event: "error", cb: (err: Error) => void): this;
+    public on(event: "close", cb: (e: any) => void): this;
+    public on(event: "notify", cb: (e: any) => void): this;
 }

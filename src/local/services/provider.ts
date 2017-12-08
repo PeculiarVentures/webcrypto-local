@@ -77,6 +77,10 @@ export class ProviderService extends Service<LocalProvider> {
             });
     }
 
+    public close() {
+        this.object.crypto.clear();
+    }
+
     public getProvider() {
         return this.object;
     }
