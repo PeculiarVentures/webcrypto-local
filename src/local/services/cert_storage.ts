@@ -2,7 +2,7 @@ import * as asn1js from "asn1js";
 import * as graphene from "graphene-pk11";
 import { Convert } from "pvtsutils";
 import { isEqualBuffer } from "pvutils";
-import * as request from "request";
+import request from "request";
 const pkijs = require("pkijs");
 
 import { Server, Session } from "../../connection/server";
