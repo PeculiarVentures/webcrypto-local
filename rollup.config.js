@@ -7,7 +7,7 @@ let pkg = require("./package.json");
 let banner = []
 
 export default {
-    entry: "src/socket/index.ts",
+    input: "src/socket/index.ts",
     // entry: "src/test/connection/client.ts",
     plugins: [
         typescript({ typescript: require("typescript"), target: "es5", removeComments: true }),
@@ -19,11 +19,11 @@ export default {
         "protobufjs": "protobuf",
     },
     banner: banner.join("\n"),
-    targets: [
+    output: [
         {
-            dest: "dist/webcrypto-socket.js",
+            file: "dist/webcrypto-socket.js",
             format: "umd",
-            moduleName: "WebcryptoSocket"
+            name: "WebcryptoSocket"
         }
     ]
 };
