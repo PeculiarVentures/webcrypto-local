@@ -2,17 +2,18 @@
   "name": "webcrypto-local",
   "version": "1.0.0",
   "description": "* Clone latest version this repository  * `npm install`  * `npm run development`",
-  "main": "out/local/index.js",
+  "main": "dist/webcrypto-local.js",
   "types": "index.d.ts",
   "scripts": {
     "prepare": "npm run build",
     "test": "",
     "clear": "rimraf out",
-    "build": "npm run build:web && npm run build:lib && npm run build:server",
+    "build": "npm run build:web && npm run build:lib && npm run build:node",
     "build:lib": "rollup -c rollup.config.lib.js",
     "build:web": "rollup -c",
+    "build:node": "rollup -c rollup.config.node.js",
     "build:server": "tsc",
-    "server:ws": "npm run build:ws && node out/test/local"
+    "server:ws": "npm run build:server && node out/test/local"
   },
   "repository": {
     "type": "git",
