@@ -5,7 +5,6 @@
   "main": "dist/webcrypto-local.js",
   "types": "index.d.ts",
   "scripts": {
-    "prepare": "npm run build",
     "test": "",
     "clear": "rimraf out",
     "build": "npm run build:web && npm run build:lib && npm run build:node",
