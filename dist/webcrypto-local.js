@@ -3378,15 +3378,15 @@ var LocalProvider = (function (_super) {
                             switch (os.platform()) {
                                 case "win32":
                                     libName = "pvpkcs11.dll";
-                                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", "..", "..", "..", libName);
+                                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", "..", "..", libName);
                                     break;
                                 case "darwin":
                                     libName = "libpvpkcs11.dylib";
-                                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", "..", libName);
+                                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", libName);
                                     break;
                                 default:
                                     libName = "pvpkcs11.so";
-                                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", "..", libName);
+                                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", libName);
                             }
                         }
                         else {
