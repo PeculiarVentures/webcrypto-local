@@ -2780,6 +2780,9 @@ var WebCryptoLocalErrorEnum;
     WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_COMMON"] = 400] = "PROVIDER_COMMON";
     WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_INIT"] = 401] = "PROVIDER_INIT";
     WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_CRYPTO_NOT_FOUND"] = 402] = "PROVIDER_CRYPTO_NOT_FOUND";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_CRYPTO_WRONG"] = 403] = "PROVIDER_CRYPTO_WRONG";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_NOT_FOUND"] = 404] = "PROVIDER_NOT_FOUND";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_WRONG_LIBRARY"] = 405] = "PROVIDER_WRONG_LIBRARY";
     WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["TOKEN_COMMON"] = 500] = "TOKEN_COMMON";
     WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["TOKEN_REMOVE_TOKEN_READING"] = 501] = "TOKEN_REMOVE_TOKEN_READING";
     WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["TOKEN_REMOVE_NO_SLOTS_FOUND"] = 502] = "TOKEN_REMOVE_NO_SLOTS_FOUND";
@@ -2808,6 +2811,12 @@ var WebCryptoLocalError = (function (_super) {
         _this.stack = error.stack;
         return _this;
     }
+    WebCryptoLocalError.isError = function (obj) {
+        if (obj instanceof Error && obj.hasOwnProperty("code") && obj.hasOwnProperty("type")) {
+            return true;
+        }
+        return false;
+    };
     WebCryptoLocalError.CODE = WebCryptoLocalErrorEnum;
     return WebCryptoLocalError;
 }(Error));
@@ -3931,7 +3940,7 @@ var ProviderTokenEventProto = (function (_super) {
         ProtobufProperty({ id: ProviderTokenEventProto_1.INDEX++, repeated: true, parser: ProviderCryptoProto })
     ], ProviderTokenEventProto.prototype, "removed", void 0);
     __decorate([
-        ProtobufProperty({ id: ProviderTokenEventProto_1.INDEX++, type: "string" })
+        ProtobufProperty({ id: ProviderTokenEventProto_1.INDEX++, type: "bytes", parser: ErrorProto })
     ], ProviderTokenEventProto.prototype, "error", void 0);
     ProviderTokenEventProto = ProviderTokenEventProto_1 = __decorate([
         ProtobufElement({ name: "ProviderTokenEvent" })
@@ -7261,4 +7270,3 @@ exports.SocketProvider = SocketProvider;
 Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
-//# sourceMappingURL=webcrypto-socket.js.map

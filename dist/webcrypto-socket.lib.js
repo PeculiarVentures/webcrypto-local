@@ -1,4 +1,8 @@
-import { Field, Type } from 'protobufjs';
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var protobufjs = require('protobufjs');
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -283,7 +287,7 @@ function ProtobufElement(params) {
         t.items = t.items || {};
         t.target = target;
         t.items = assign({}, t.items);
-        var scheme = new Type(t.localName);
+        var scheme = new protobufjs.Type(t.localName);
         for (var key in t.items) {
             var item = t.items[key];
             var rule = void 0;
@@ -293,7 +297,7 @@ function ProtobufElement(params) {
             else if (item.required) {
                 rule = "required";
             }
-            scheme.add(new Field(item.name, item.id, item.type, rule));
+            scheme.add(new protobufjs.Field(item.name, item.id, item.type, rule));
         }
         t.protobuf = scheme;
     };
@@ -1174,8 +1178,7 @@ var Curve = (function () {
                             publicKey: key.publicKey.key
                         };
                         return [4, key.publicKey.thumbprint()];
-                    case 1: return [2, (_a.thumbprint = _b.sent(),
-                            _a)];
+                    case 1: return [2, (_a.thumbprint = _b.sent(), _a)];
                 }
             });
         });
@@ -1190,8 +1193,7 @@ var Curve = (function () {
                             privateKey: keys.privateKey
                         };
                         return [4, ECPublicKey.create(keys.publicKey)];
-                    case 1: return [2, (_a.publicKey = _b.sent(),
-                            _a)];
+                    case 1: return [2, (_a.publicKey = _b.sent(), _a)];
                 }
             });
         });
@@ -1253,7 +1255,7 @@ var Secret = (function () {
                     case 3:
                         PRKBytes = _c.sent();
                         infoBuffer = new ArrayBuffer(32 + info.byteLength + 1);
-                        infoArray = new Uint8Array(infoBuffer);
+                        
                         return [4, this.importHMAC(PRKBytes)];
                     case 4:
                         PRK = _c.sent();
@@ -1490,13 +1492,9 @@ var Identity = (function () {
                         };
                         return [4, Curve.ecKeyPairToJson(this.exchangeKey)];
                     case 9:
-                        _h.exchangeKey = _j.sent(),
-                            _h.id = this.id,
-                            _h.preKeys = preKeys,
-                            _h.signedPreKeys = signedPreKeys;
+                        _h.exchangeKey = _j.sent(), _h.id = this.id, _h.preKeys = preKeys, _h.signedPreKeys = signedPreKeys;
                         return [4, Curve.ecKeyPairToJson(this.signingKey)];
-                    case 10: return [2, (_h.signingKey = _j.sent(),
-                            _h)];
+                    case 10: return [2, (_h.signingKey = _j.sent(), _h)];
                 }
             });
         });
@@ -1596,15 +1594,12 @@ var RemoteIdentity = (function () {
                         };
                         return [4, this.exchangeKey.key];
                     case 1:
-                        _a.exchangeKey = _b.sent(),
-                            _a.id = this.id,
-                            _a.signature = this.signature;
+                        _a.exchangeKey = _b.sent(), _a.id = this.id, _a.signature = this.signature;
                         return [4, this.signingKey.key];
                     case 2:
                         _a.signingKey = _b.sent();
                         return [4, this.signingKey.thumbprint()];
-                    case 3: return [2, (_a.thumbprint = _b.sent(),
-                            _a)];
+                    case 3: return [2, (_a.thumbprint = _b.sent(), _a)];
                 }
             });
         });
@@ -2112,8 +2107,7 @@ var SymmetricRatchet = (function () {
                         };
                         return [4, Secret.importHMAC(nextRootKeyBytes)];
                     case 3:
-                        res = (_a.rootKey = _b.sent(),
-                            _a);
+                        res = (_a.rootKey = _b.sent(), _a);
                         return [2, res];
                 }
             });
@@ -2584,11 +2578,9 @@ var AsymmetricRatchet = (function (_super) {
                         _a.ratchetKey = _b.sent();
                         return [4, this.remoteIdentity.signingKey.thumbprint()];
                     case 2:
-                        _a.remoteIdentity = _b.sent(),
-                            _a.rootKey = this.rootKey;
+                        _a.remoteIdentity = _b.sent(), _a.rootKey = this.rootKey;
                         return [4, this.steps.toJSON()];
-                    case 3: return [2, (_a.steps = _b.sent(),
-                            _a)];
+                    case 3: return [2, (_a.steps = _b.sent(), _a)];
                 }
             });
         });
@@ -2771,6 +2763,59 @@ class Event {
     }
 }
 
+var WebCryptoLocalErrorEnum;
+(function (WebCryptoLocalErrorEnum) {
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["UNKNOWN"] = 0] = "UNKNOWN";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["METHOD_NOT_IMPLEMENTED"] = 1] = "METHOD_NOT_IMPLEMENTED";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["CASE_ERROR"] = 2] = "CASE_ERROR";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["RATCHET_COMMON"] = 100] = "RATCHET_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["RATCHET_KEY_NOT_APPROVED"] = 101] = "RATCHET_KEY_NOT_APPROVED";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["ACTION_COMMON"] = 200] = "ACTION_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["ACTION_NOT_IMPLEMENTED"] = 201] = "ACTION_NOT_IMPLEMENTED";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["ACTION_NOT_SUPPORTED"] = 202] = "ACTION_NOT_SUPPORTED";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["CARD_CONFIG_COMMON"] = 300] = "CARD_CONFIG_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["MEMORY_STORAGE_COMMON"] = 350] = "MEMORY_STORAGE_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["MEMORY_STORAGE_OUT_OF_INDEX"] = 351] = "MEMORY_STORAGE_OUT_OF_INDEX";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_COMMON"] = 400] = "PROVIDER_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_INIT"] = 401] = "PROVIDER_INIT";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_CRYPTO_NOT_FOUND"] = 402] = "PROVIDER_CRYPTO_NOT_FOUND";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_CRYPTO_WRONG"] = 403] = "PROVIDER_CRYPTO_WRONG";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_NOT_FOUND"] = 404] = "PROVIDER_NOT_FOUND";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_WRONG_LIBRARY"] = 405] = "PROVIDER_WRONG_LIBRARY";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["TOKEN_COMMON"] = 500] = "TOKEN_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["TOKEN_REMOVE_TOKEN_READING"] = 501] = "TOKEN_REMOVE_TOKEN_READING";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["TOKEN_REMOVE_NO_SLOTS_FOUND"] = 502] = "TOKEN_REMOVE_NO_SLOTS_FOUND";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_COMMON"] = 600] = "SERVER_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_WRONG_MESSAGE"] = 601] = "SERVER_WRONG_MESSAGE";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_NOT_LOGGED_IN"] = 602] = "SERVER_NOT_LOGGED_IN";
+})(WebCryptoLocalErrorEnum || (WebCryptoLocalErrorEnum = {}));
+class WebCryptoLocalError extends Error {
+    constructor(param, message = "") {
+        super();
+        this.code = 0;
+        this.type = "wcl";
+        const CODE = WebCryptoLocalError.CODE;
+        if (typeof param === "number") {
+            this.message = message || CODE[param] || CODE[0];
+            this.code = param;
+        }
+        else {
+            this.code = 0;
+            this.message = message;
+        }
+        const error = new Error(this.message);
+        error.name = this.constructor.name;
+        this.stack = error.stack;
+    }
+    static isError(obj) {
+        if (obj instanceof Error && obj.hasOwnProperty("code") && obj.hasOwnProperty("type")) {
+            return true;
+        }
+        return false;
+    }
+}
+WebCryptoLocalError.CODE = WebCryptoLocalErrorEnum;
+
 class DateConverter$1 {
     static set(value) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -2874,7 +2919,7 @@ let AlgorithmProto = AlgorithmProto_1 = class AlgorithmProto extends BaseAlgorit
                             break;
                         }
                         default:
-                            throw new Error(`Unsupported parser '${thisStatic.items[key].parser.name}'`);
+                            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported parser '${thisStatic.items[key].parser.name}'`);
                     }
                 }
                 else {
@@ -2957,6 +3002,29 @@ __decorate([
 CryptoKeyPairProto = CryptoKeyPairProto_1 = __decorate([
     ProtobufElement({ name: "CryptoKeyPair" })
 ], CryptoKeyPairProto);
+let ErrorProto = ErrorProto_1 = class ErrorProto extends BaseProto {
+    constructor(message, code = 0, type = "error") {
+        super();
+        if (message) {
+            this.message = message;
+            this.code = code;
+            this.type = type;
+        }
+    }
+};
+ErrorProto.INDEX = BaseProto.INDEX;
+__decorate([
+    ProtobufProperty({ id: ErrorProto_1.INDEX++, type: "uint32", defaultValue: 0 })
+], ErrorProto.prototype, "code", void 0);
+__decorate([
+    ProtobufProperty({ id: ErrorProto_1.INDEX++, type: "string", defaultValue: "error" })
+], ErrorProto.prototype, "type", void 0);
+__decorate([
+    ProtobufProperty({ id: ErrorProto_1.INDEX++, type: "string", defaultValue: "" })
+], ErrorProto.prototype, "message", void 0);
+ErrorProto = ErrorProto_1 = __decorate([
+    ProtobufElement({ name: "Error" })
+], ErrorProto);
 let ResultProto = ResultProto_1 = class ResultProto extends ActionProto {
     constructor(proto) {
         super();
@@ -2971,7 +3039,7 @@ __decorate([
     ProtobufProperty({ id: ResultProto_1.INDEX++, type: "bool", defaultValue: false })
 ], ResultProto.prototype, "status", void 0);
 __decorate([
-    ProtobufProperty({ id: ResultProto_1.INDEX++, type: "string", defaultValue: "" })
+    ProtobufProperty({ id: ResultProto_1.INDEX++, type: "bytes", parser: ErrorProto })
 ], ResultProto.prototype, "error", void 0);
 __decorate([
     ProtobufProperty({ id: ResultProto_1.INDEX++, type: "bytes", converter: ArrayBufferConverter })
@@ -3007,6 +3075,7 @@ var AlgorithmProto_1;
 var CryptoItemProto_1;
 var CryptoKeyProto_1;
 var CryptoKeyPairProto_1;
+var ErrorProto_1;
 var ResultProto_1;
 
 function challenge(serverIdentity, clientIdentity) {
@@ -3291,7 +3360,9 @@ class Client extends EventEmitter {
                     const storage = yield BrowserStorage.create();
                     let identity = yield storage.loadIdentity();
                     if (!identity) {
-                        console.info("Generates new identity");
+                        if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                            console.info("Generates new identity");
+                        }
                         identity = yield Identity.create(1);
                         yield storage.saveIdentity(identity);
                     }
@@ -3419,15 +3490,19 @@ class Client extends EventEmitter {
     onMessage(message) {
         return __awaiter(this, void 0, void 0, function* () {
             const proto = yield ActionProto.importProto(message);
-            console.info("Action:", proto.action);
+            if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                console.info("Action:", proto.action);
+            }
             const promise = this.stack[proto.actionId];
             if (promise) {
                 delete this.stack[proto.actionId];
                 const messageProto = yield ResultProto.importProto(yield proto.exportProto());
-                if (messageProto.error) {
-                    console.error("Error action:", messageProto.action);
-                    console.error(messageProto.error);
-                    promise.reject(new Error(messageProto.error));
+                if (messageProto.error && messageProto.error.message) {
+                    const errorProto = messageProto.error;
+                    const error = new Error(messageProto.error.message);
+                    error.code = errorProto.code;
+                    error.type = errorProto.type;
+                    promise.reject(error);
                 }
                 else {
                     promise.resolve(messageProto.data);
@@ -3526,7 +3601,7 @@ __decorate([
     ProtobufProperty({ id: ProviderTokenEventProto_1.INDEX++, repeated: true, parser: ProviderCryptoProto })
 ], ProviderTokenEventProto.prototype, "removed", void 0);
 __decorate([
-    ProtobufProperty({ id: ProviderTokenEventProto_1.INDEX++, type: "string" })
+    ProtobufProperty({ id: ProviderTokenEventProto_1.INDEX++, type: "bytes", parser: ErrorProto })
 ], ProviderTokenEventProto.prototype, "error", void 0);
 ProviderTokenEventProto = ProviderTokenEventProto_1 = __decorate([
     ProtobufElement({ name: "ProviderTokenEvent" })
@@ -3535,6 +3610,103 @@ var ProviderCryptoProto_1;
 var ProviderInfoProto_1;
 var ProviderGetCryptoActionProto_1;
 var ProviderTokenEventProto_1;
+
+let CardReaderActionProto = class CardReaderActionProto extends ActionProto {
+};
+CardReaderActionProto.INDEX = ActionProto.INDEX;
+CardReaderActionProto.ACTION = "cardReader";
+CardReaderActionProto = __decorate([
+    ProtobufElement({})
+], CardReaderActionProto);
+let CardReaderGetReadersActionProto = class CardReaderGetReadersActionProto extends ActionProto {
+};
+CardReaderGetReadersActionProto.INDEX = ActionProto.INDEX;
+CardReaderGetReadersActionProto.ACTION = "cardReader/readers";
+CardReaderGetReadersActionProto = __decorate([
+    ProtobufElement({})
+], CardReaderGetReadersActionProto);
+let CardReaderEventProto = CardReaderEventProto_1 = class CardReaderEventProto extends CardReaderActionProto {
+    static fromObject(e) {
+        const res = new this();
+        res.fromObject(e);
+        return res;
+    }
+    fromObject(e) {
+        this.reader = e.reader.name;
+        this.atr = e.atr.toString("hex");
+    }
+};
+CardReaderEventProto.INDEX = CardReaderActionProto.INDEX;
+__decorate([
+    ProtobufProperty({ id: CardReaderEventProto_1.INDEX++, required: true, type: "string", defaultValue: "" })
+], CardReaderEventProto.prototype, "reader", void 0);
+__decorate([
+    ProtobufProperty({ id: CardReaderEventProto_1.INDEX++, required: true, converter: HexStringConverter })
+], CardReaderEventProto.prototype, "atr", void 0);
+CardReaderEventProto = CardReaderEventProto_1 = __decorate([
+    ProtobufElement({})
+], CardReaderEventProto);
+let CardReaderInsertEventProto = class CardReaderInsertEventProto extends CardReaderEventProto {
+};
+CardReaderInsertEventProto.INDEX = CardReaderEventProto.INDEX;
+CardReaderInsertEventProto.ACTION = CardReaderEventProto.ACTION + "/insert";
+CardReaderInsertEventProto = __decorate([
+    ProtobufElement({})
+], CardReaderInsertEventProto);
+let CardReaderRemoveEventProto = class CardReaderRemoveEventProto extends CardReaderEventProto {
+};
+CardReaderRemoveEventProto.INDEX = CardReaderEventProto.INDEX;
+CardReaderRemoveEventProto.ACTION = CardReaderEventProto.ACTION + "/remove";
+CardReaderRemoveEventProto = __decorate([
+    ProtobufElement({})
+], CardReaderRemoveEventProto);
+var CardReaderEventProto_1;
+
+class CardReader extends EventEmitter {
+    constructor(client) {
+        super();
+        this.client = client;
+        this.onEvent = this.onEvent.bind(this);
+        this.client
+            .on("listening", () => {
+            this.client.on("event", this.onEvent);
+        })
+            .on("close", () => {
+            this.client.removeListener("event", this.onEvent);
+        });
+    }
+    readers() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const data = yield this.client.send(new CardReaderGetReadersActionProto());
+            return JSON.parse(Convert.ToString(data));
+        });
+    }
+    on(event, cb) {
+        return super.on(event, cb);
+    }
+    emit(event, ...args) {
+        return super.emit(event, ...args);
+    }
+    onEvent(actionProto) {
+        (() => __awaiter(this, void 0, void 0, function* () {
+            switch (actionProto.action) {
+                case CardReaderInsertEventProto.ACTION:
+                    this.onInsert(yield CardReaderInsertEventProto.importProto(actionProto));
+                    break;
+                case CardReaderRemoveEventProto.ACTION:
+                    this.onRemove(yield CardReaderRemoveEventProto.importProto(actionProto));
+                    break;
+            }
+        }))()
+            .catch((err) => this.emit("error", err));
+    }
+    onInsert(actionProto) {
+        this.emit("insert", actionProto);
+    }
+    onRemove(actionProto) {
+        this.emit("remove", actionProto);
+    }
+}
 
 let CryptoActionProto = CryptoActionProto_1 = class CryptoActionProto extends ActionProto {
 };
@@ -5845,7 +6017,6 @@ class SocketSubtleCrypto extends SubtleCrypto {
             action.algorithm = algProto;
             action.extractable = extractable;
             action.usage = keyUsages;
-            console.log(action);
             const result = yield this.service.client.send(action);
             try {
                 return yield CryptoKeyPairProto.importProto(result);
@@ -6004,11 +6175,11 @@ class SocketCrypto {
         this.keyStorage = new SocketKeyStorage(this);
         this.certStorage = new SocketCertificateStorage(this);
     }
-    getRandomValues(data) {
+    getRandomValues(array) {
         if (!self.crypto) {
             throw new Error("Cannot get native crypto object. Function getRandomValues is not implemented.");
         }
-        return self.crypto.getRandomValues(data);
+        return self.crypto.getRandomValues(array);
     }
     login() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -6045,18 +6216,17 @@ class SocketProvider extends EventEmitter {
     constructor() {
         super();
         this.client = new Client();
+        this.cardReader = new CardReader(this.client);
     }
     get state() {
         return this.client.state;
     }
     connect(address) {
-        this.client.removeAllListeners();
         this.client.connect(address)
             .on("error", (e) => {
             this.emit("error", e.error);
         })
             .on("event", (proto) => {
-            console.log("Client:Event", proto.action);
             (() => __awaiter(this, void 0, void 0, function* () {
                 switch (proto.action) {
                     case ProviderTokenEventProto.ACTION: {
@@ -6072,11 +6242,15 @@ class SocketProvider extends EventEmitter {
             }))();
         })
             .on("listening", (e) => {
-            console.info("Client:Listening", e.address);
+            if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                console.info("Client:Listening", e.address);
+            }
             this.emit("listening", address);
         })
             .on("close", (e) => {
-            console.info(`Client:Closed: ${e.description} (code: ${e.reasonCode})`);
+            if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                console.info(`Client:Closed: ${e.description} (code: ${e.reasonCode})`);
+            }
             this.emit("close", e.remoteAddress);
         });
         return this;
@@ -6123,4 +6297,6 @@ class SocketProvider extends EventEmitter {
     }
 }
 
-export { setEngine, getEngine, SocketProvider };
+exports.setEngine = setEngine;
+exports.getEngine = getEngine;
+exports.SocketProvider = SocketProvider;
