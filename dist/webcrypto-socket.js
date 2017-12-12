@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('protobufjs')) :
 	typeof define === 'function' && define.amd ? define(['exports', 'protobufjs'], factory) :
-	(factory((global.WebcryptoSocket = global.WebcryptoSocket || {}),global.protobuf));
+	(factory((global.WebcryptoSocket = {}),global.protobuf));
 }(this, (function (exports,protobufjs) { 'use strict';
 
 /*! *****************************************************************************
@@ -622,6 +622,8 @@ EventHandlers.prototype = Object.create(null);
 function EventEmitter() {
   EventEmitter.init.call(this);
 }
+// nodejs oddity
+// require('events') === require('events').EventEmitter
 EventEmitter.EventEmitter = EventEmitter;
 
 EventEmitter.usingDomains = false;
@@ -1176,8 +1178,7 @@ var Curve = (function () {
                             publicKey: key.publicKey.key
                         };
                         return [4, key.publicKey.thumbprint()];
-                    case 1: return [2, (_a.thumbprint = _b.sent(),
-                            _a)];
+                    case 1: return [2, (_a.thumbprint = _b.sent(), _a)];
                 }
             });
         });
@@ -1192,8 +1193,7 @@ var Curve = (function () {
                             privateKey: keys.privateKey
                         };
                         return [4, ECPublicKey.create(keys.publicKey)];
-                    case 1: return [2, (_a.publicKey = _b.sent(),
-                            _a)];
+                    case 1: return [2, (_a.publicKey = _b.sent(), _a)];
                 }
             });
         });
@@ -1255,7 +1255,7 @@ var Secret = (function () {
                     case 3:
                         PRKBytes = _c.sent();
                         infoBuffer = new ArrayBuffer(32 + info.byteLength + 1);
-                        infoArray = new Uint8Array(infoBuffer);
+                        
                         return [4, this.importHMAC(PRKBytes)];
                     case 4:
                         PRK = _c.sent();
@@ -1492,13 +1492,9 @@ var Identity = (function () {
                         };
                         return [4, Curve.ecKeyPairToJson(this.exchangeKey)];
                     case 9:
-                        _h.exchangeKey = _j.sent(),
-                            _h.id = this.id,
-                            _h.preKeys = preKeys,
-                            _h.signedPreKeys = signedPreKeys;
+                        _h.exchangeKey = _j.sent(), _h.id = this.id, _h.preKeys = preKeys, _h.signedPreKeys = signedPreKeys;
                         return [4, Curve.ecKeyPairToJson(this.signingKey)];
-                    case 10: return [2, (_h.signingKey = _j.sent(),
-                            _h)];
+                    case 10: return [2, (_h.signingKey = _j.sent(), _h)];
                 }
             });
         });
@@ -1598,15 +1594,12 @@ var RemoteIdentity = (function () {
                         };
                         return [4, this.exchangeKey.key];
                     case 1:
-                        _a.exchangeKey = _b.sent(),
-                            _a.id = this.id,
-                            _a.signature = this.signature;
+                        _a.exchangeKey = _b.sent(), _a.id = this.id, _a.signature = this.signature;
                         return [4, this.signingKey.key];
                     case 2:
                         _a.signingKey = _b.sent();
                         return [4, this.signingKey.thumbprint()];
-                    case 3: return [2, (_a.thumbprint = _b.sent(),
-                            _a)];
+                    case 3: return [2, (_a.thumbprint = _b.sent(), _a)];
                 }
             });
         });
@@ -2114,8 +2107,7 @@ var SymmetricRatchet = (function () {
                         };
                         return [4, Secret.importHMAC(nextRootKeyBytes)];
                     case 3:
-                        res = (_a.rootKey = _b.sent(),
-                            _a);
+                        res = (_a.rootKey = _b.sent(), _a);
                         return [2, res];
                 }
             });
@@ -2586,11 +2578,9 @@ var AsymmetricRatchet = (function (_super) {
                         _a.ratchetKey = _b.sent();
                         return [4, this.remoteIdentity.signingKey.thumbprint()];
                     case 2:
-                        _a.remoteIdentity = _b.sent(),
-                            _a.rootKey = this.rootKey;
+                        _a.remoteIdentity = _b.sent(), _a.rootKey = this.rootKey;
                         return [4, this.steps.toJSON()];
-                    case 3: return [2, (_a.steps = _b.sent(),
-                            _a)];
+                    case 3: return [2, (_a.steps = _b.sent(), _a)];
                 }
             });
         });
@@ -2774,6 +2764,63 @@ var Event = (function () {
     return Event;
 }());
 
+var WebCryptoLocalErrorEnum;
+(function (WebCryptoLocalErrorEnum) {
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["UNKNOWN"] = 0] = "UNKNOWN";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["METHOD_NOT_IMPLEMENTED"] = 1] = "METHOD_NOT_IMPLEMENTED";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["CASE_ERROR"] = 2] = "CASE_ERROR";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["RATCHET_COMMON"] = 100] = "RATCHET_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["RATCHET_KEY_NOT_APPROVED"] = 101] = "RATCHET_KEY_NOT_APPROVED";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["ACTION_COMMON"] = 200] = "ACTION_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["ACTION_NOT_IMPLEMENTED"] = 201] = "ACTION_NOT_IMPLEMENTED";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["ACTION_NOT_SUPPORTED"] = 202] = "ACTION_NOT_SUPPORTED";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["CARD_CONFIG_COMMON"] = 300] = "CARD_CONFIG_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["MEMORY_STORAGE_COMMON"] = 350] = "MEMORY_STORAGE_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["MEMORY_STORAGE_OUT_OF_INDEX"] = 351] = "MEMORY_STORAGE_OUT_OF_INDEX";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_COMMON"] = 400] = "PROVIDER_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_INIT"] = 401] = "PROVIDER_INIT";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_CRYPTO_NOT_FOUND"] = 402] = "PROVIDER_CRYPTO_NOT_FOUND";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_CRYPTO_WRONG"] = 403] = "PROVIDER_CRYPTO_WRONG";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_NOT_FOUND"] = 404] = "PROVIDER_NOT_FOUND";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PROVIDER_WRONG_LIBRARY"] = 405] = "PROVIDER_WRONG_LIBRARY";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["TOKEN_COMMON"] = 500] = "TOKEN_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["TOKEN_REMOVE_TOKEN_READING"] = 501] = "TOKEN_REMOVE_TOKEN_READING";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["TOKEN_REMOVE_NO_SLOTS_FOUND"] = 502] = "TOKEN_REMOVE_NO_SLOTS_FOUND";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_COMMON"] = 600] = "SERVER_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_WRONG_MESSAGE"] = 601] = "SERVER_WRONG_MESSAGE";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_NOT_LOGGED_IN"] = 602] = "SERVER_NOT_LOGGED_IN";
+})(WebCryptoLocalErrorEnum || (WebCryptoLocalErrorEnum = {}));
+var WebCryptoLocalError = (function (_super) {
+    __extends(WebCryptoLocalError, _super);
+    function WebCryptoLocalError(param, message) {
+        if (message === void 0) { message = ""; }
+        var _this = _super.call(this) || this;
+        _this.code = 0;
+        _this.type = "wcl";
+        var CODE = WebCryptoLocalError.CODE;
+        if (typeof param === "number") {
+            _this.message = message || CODE[param] || CODE[0];
+            _this.code = param;
+        }
+        else {
+            _this.code = 0;
+            _this.message = message;
+        }
+        var error = new Error(_this.message);
+        error.name = _this.constructor.name;
+        _this.stack = error.stack;
+        return _this;
+    }
+    WebCryptoLocalError.isError = function (obj) {
+        if (obj instanceof Error && obj.hasOwnProperty("code") && obj.hasOwnProperty("type")) {
+            return true;
+        }
+        return false;
+    };
+    WebCryptoLocalError.CODE = WebCryptoLocalErrorEnum;
+    return WebCryptoLocalError;
+}(Error));
+
 var DateConverter$1 = (function () {
     function DateConverter() {
     }
@@ -2915,7 +2962,7 @@ var AlgorithmProto = (function (_super) {
                             break;
                         }
                         default:
-                            throw new Error("Unsupported parser '" + thisStatic.items[key].parser.name + "'");
+                            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, "Unsupported parser '" + thisStatic.items[key].parser.name + "'");
                     }
                 }
                 else {
@@ -3021,6 +3068,36 @@ var CryptoKeyPairProto = (function (_super) {
     return CryptoKeyPairProto;
     var CryptoKeyPairProto_1;
 }(BaseProto));
+var ErrorProto = (function (_super) {
+    __extends(ErrorProto, _super);
+    function ErrorProto(message, code, type) {
+        if (code === void 0) { code = 0; }
+        if (type === void 0) { type = "error"; }
+        var _this = _super.call(this) || this;
+        if (message) {
+            _this.message = message;
+            _this.code = code;
+            _this.type = type;
+        }
+        return _this;
+    }
+    ErrorProto_1 = ErrorProto;
+    ErrorProto.INDEX = BaseProto.INDEX;
+    __decorate([
+        ProtobufProperty({ id: ErrorProto_1.INDEX++, type: "uint32", defaultValue: 0 })
+    ], ErrorProto.prototype, "code", void 0);
+    __decorate([
+        ProtobufProperty({ id: ErrorProto_1.INDEX++, type: "string", defaultValue: "error" })
+    ], ErrorProto.prototype, "type", void 0);
+    __decorate([
+        ProtobufProperty({ id: ErrorProto_1.INDEX++, type: "string", defaultValue: "" })
+    ], ErrorProto.prototype, "message", void 0);
+    ErrorProto = ErrorProto_1 = __decorate([
+        ProtobufElement({ name: "Error" })
+    ], ErrorProto);
+    return ErrorProto;
+    var ErrorProto_1;
+}(BaseProto));
 var ResultProto = (function (_super) {
     __extends(ResultProto, _super);
     function ResultProto(proto) {
@@ -3037,7 +3114,7 @@ var ResultProto = (function (_super) {
         ProtobufProperty({ id: ResultProto_1.INDEX++, type: "bool", defaultValue: false })
     ], ResultProto.prototype, "status", void 0);
     __decorate([
-        ProtobufProperty({ id: ResultProto_1.INDEX++, type: "string", defaultValue: "" })
+        ProtobufProperty({ id: ResultProto_1.INDEX++, type: "bytes", parser: ErrorProto })
     ], ResultProto.prototype, "error", void 0);
     __decorate([
         ProtobufProperty({ id: ResultProto_1.INDEX++, type: "bytes", converter: ArrayBufferConverter })
@@ -3105,10 +3182,8 @@ function challenge(serverIdentity, clientIdentity) {
         });
     });
 }
-//# sourceMappingURL=challenge.js.map
 
 var SERVER_WELL_KNOWN = "/.well-known/webcrypto-socket";
-//# sourceMappingURL=const.js.map
 
 function isFirefox() {
     return /firefox/i.test(self.navigator.userAgent);
@@ -3172,7 +3247,6 @@ function updateEcPublicKey(ecPublicKey, publicKey) {
         });
     });
 }
-//# sourceMappingURL=helper.js.map
 
 var BrowserStorage = (function () {
     function BrowserStorage(db) {
@@ -3232,9 +3306,7 @@ var BrowserStorage = (function () {
                         _a = {};
                         return [4, getEngine().crypto.subtle.exportKey("raw", key.key)];
                     case 1:
-                        key = (_a.key = (_b.sent()),
-                            _a.iv = key.iv,
-                            _a);
+                        key = (_a.key = (_b.sent()), _a.iv = key.iv, _a);
                         _b.label = 2;
                     case 2:
                         tx = this.db.transaction(BrowserStorage.IDENTITY_STORAGE, "readwrite");
@@ -3306,9 +3378,7 @@ var BrowserStorage = (function () {
                         _a = {};
                         return [4, getEngine().crypto.subtle.generateKey({ name: AES_CBC.name, length: 256 }, isEdge(), ["wrapKey", "unwrapKey", "encrypt", "decrypt"])];
                     case 1:
-                        wkey = (_a.key = _f.sent(),
-                            _a.iv = getEngine().crypto.getRandomValues(new Uint8Array(AES_CBC.iv)).buffer,
-                            _a);
+                        wkey = (_a.key = _f.sent(), _a.iv = getEngine().crypto.getRandomValues(new Uint8Array(AES_CBC.iv)).buffer, _a);
                         return [4, this.saveWrapKey(wkey)];
                     case 2:
                         _f.sent();
@@ -3550,7 +3620,9 @@ var Client = (function (_super) {
                             case 2:
                                 identity = _b.sent();
                                 if (!!identity) return [3, 5];
-                                console.info("Generates new identity");
+                                if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                                    console.info("Generates new identity");
+                                }
                                 return [4, Identity.create(1)];
                             case 3:
                                 identity = _b.sent();
@@ -3712,13 +3784,15 @@ var Client = (function (_super) {
     };
     Client.prototype.onMessage = function (message) {
         return __awaiter(this, void 0, void 0, function () {
-            var proto, promise, messageProto, _a, _b;
+            var proto, promise, messageProto, _a, _b, errorProto, error;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0: return [4, ActionProto.importProto(message)];
                     case 1:
                         proto = _c.sent();
-                        console.info("Action:", proto.action);
+                        if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                            console.info("Action:", proto.action);
+                        }
                         promise = this.stack[proto.actionId];
                         if (!promise) return [3, 4];
                         delete this.stack[proto.actionId];
@@ -3727,10 +3801,12 @@ var Client = (function (_super) {
                     case 2: return [4, _b.apply(_a, [_c.sent()])];
                     case 3:
                         messageProto = _c.sent();
-                        if (messageProto.error) {
-                            console.error("Error action:", messageProto.action);
-                            console.error(messageProto.error);
-                            promise.reject(new Error(messageProto.error));
+                        if (messageProto.error && messageProto.error.message) {
+                            errorProto = messageProto.error;
+                            error = new Error(messageProto.error.message);
+                            error.code = errorProto.code;
+                            error.type = errorProto.type;
+                            promise.reject(error);
                         }
                         else {
                             promise.resolve(messageProto.data);
@@ -3864,7 +3940,7 @@ var ProviderTokenEventProto = (function (_super) {
         ProtobufProperty({ id: ProviderTokenEventProto_1.INDEX++, repeated: true, parser: ProviderCryptoProto })
     ], ProviderTokenEventProto.prototype, "removed", void 0);
     __decorate([
-        ProtobufProperty({ id: ProviderTokenEventProto_1.INDEX++, type: "string" })
+        ProtobufProperty({ id: ProviderTokenEventProto_1.INDEX++, type: "bytes", parser: ErrorProto })
     ], ProviderTokenEventProto.prototype, "error", void 0);
     ProviderTokenEventProto = ProviderTokenEventProto_1 = __decorate([
         ProtobufElement({ name: "ProviderTokenEvent" })
@@ -6772,7 +6848,6 @@ var SocketSubtleCrypto = (function (_super) {
                         action.algorithm = algProto;
                         action.extractable = extractable;
                         action.usage = keyUsages;
-                        console.log(action);
                         return [4, this.service.client.send(action)];
                     case 2:
                         result = _a.sent();
@@ -6998,11 +7073,11 @@ var SocketCrypto = (function () {
         this.keyStorage = new SocketKeyStorage(this);
         this.certStorage = new SocketCertificateStorage(this);
     }
-    SocketCrypto.prototype.getRandomValues = function (data) {
+    SocketCrypto.prototype.getRandomValues = function (array) {
         if (!self.crypto) {
             throw new Error("Cannot get native crypto object. Function getRandomValues is not implemented.");
         }
-        return self.crypto.getRandomValues(data);
+        return self.crypto.getRandomValues(array);
     };
     SocketCrypto.prototype.login = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -7075,7 +7150,6 @@ var SocketProvider = (function (_super) {
             _this.emit("error", e.error);
         })
             .on("event", function (proto) {
-            console.log("Client:Event", proto.action);
             (function () { return __awaiter(_this, void 0, void 0, function () {
                 var _a, tokenProto, _b, _c, authProto, _d, _e;
                 return __generator(this, function (_f) {
@@ -7109,11 +7183,15 @@ var SocketProvider = (function (_super) {
             }); })();
         })
             .on("listening", function (e) {
-            console.info("Client:Listening", e.address);
+            if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                console.info("Client:Listening", e.address);
+            }
             _this.emit("listening", address);
         })
             .on("close", function (e) {
-            console.info("Client:Closed: " + e.description + " (code: " + e.reasonCode + ")");
+            if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                console.info("Client:Closed: " + e.description + " (code: " + e.reasonCode + ")");
+            }
             _this.emit("close", e.remoteAddress);
         });
         return this;
@@ -7192,4 +7270,3 @@ exports.SocketProvider = SocketProvider;
 Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
-//# sourceMappingURL=webcrypto-socket.js.map

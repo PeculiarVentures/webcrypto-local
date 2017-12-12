@@ -5,6 +5,7 @@ import { Server, Session } from "../connection/server";
 import { RemoteIdentityEx } from "../connection/storages/ossl";
 import { ActionProto, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core/proto";
 import { ProviderAuthorizedEventProto } from "../core/protos/provider";
+import { WebCryptoLocalError } from "./error";
 import { PCSCCard } from "./pcsc_watcher";
 import { IProviderConfig } from "./provider";
 import { CardReaderService } from "./services/card_reader";
@@ -30,7 +31,6 @@ export class LocalServer extends EventEmitter {
      * @memberof LocalServer
      */
     public server: Server;
-    public cryptos: { [id: string]: Crypto } = {};
     public sessions: Session[] = [];
 
     public provider: ProviderService;
@@ -60,10 +60,16 @@ export class LocalServer extends EventEmitter {
             })
             .on("token_new", (e) => {
                 this.emit("token_new", e);
-            })
-            .on("token_error", (e) => {
-                this.emit("token_error", e);
             });
+    }
+
+    public close(callback?: () => void) {
+        this.server.close(() => {
+            this.provider.close();
+            if (callback) {
+                callback();
+            }
+        });
     }
 
     public listen(address: string) {
@@ -115,12 +121,11 @@ export class LocalServer extends EventEmitter {
 
     public on(event: "info", cb: (message: string) => void): this;
     public on(event: "token_new", cb: (info: PCSCCard) => void): this;
-    public on(event: "token_error", cb: (message: string) => void): this;
-    public on(event: "listening", cb: Function): this;
-    public on(event: "error", cb: Function): this;
-    public on(event: "close", cb: Function): this;
-    public on(event: "notify", cb: Function): this;
-    public on(event: string, cb: Function) {
+    public on(event: "listening", cb: (address: string) => void): this;
+    public on(event: "error", cb: (err: Error) => void): this;
+    public on(event: "close", cb: (e: any) => void): this;
+    public on(event: "notify", cb: (e: any) => void): this;
+    public on(event: string, cb: (...args: any[]) => void) {
         return super.on(event, cb);
     }
 
@@ -158,13 +163,13 @@ export class LocalServer extends EventEmitter {
                         this.server.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, remoteIdentityEx);
                         session.authorized = true;
                     } else {
-                        throw new Error("PIN is not approved");
+                        throw new WebCryptoLocalError(WebCryptoLocalError.CODE.RATCHET_KEY_NOT_APPROVED);
                     }
                 }
                 break;
             }
             default:
-                throw new Error(`Action '${action.action}' is not implemented`);
+                throw new WebCryptoLocalError(`Action '${action.action}' is not implemented`);
         }
         resultProto.data = data;
         return resultProto;

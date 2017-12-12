@@ -7,7 +7,8 @@ import { assign, Convert } from "pvtsutils";
 import { ObjectProto } from "tsprotobuf";
 import * as url from "url";
 import * as WebSocket from "websocket";
-import { ActionProto, Event, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core";
+import { ActionProto, ErrorProto, Event, ResultProto, ServerIsLoggedInActionProto, ServerLoginActionProto } from "../core";
+import { WebCryptoLocalError } from "../local/error";
 import { SERVER_WELL_KNOWN } from "./const";
 import { OpenSSLStorage } from "./storages/ossl";
 
@@ -185,6 +186,10 @@ export class Server extends EventEmitter {
         return super.once(event, listener);
     }
 
+    public close(callback?: () => void) {
+        this.httpServer.close(callback);
+    }
+
     public listen(address: string) {
         this.httpServer = https.createServer(this.options, (request: http.IncomingMessage, response: http.ServerResponse) => {
             (async () => {
@@ -252,7 +257,13 @@ export class Server extends EventEmitter {
             this.emit("connect", session);
             connection.on("message", (message) => {
                 if (message.type === "utf8") {
-                    this.emit("error", new ServerErrorEvent(this, new Error(`Received UTF8 message: ${message.utf8Data}`)));
+                    this.emit(
+                        "error",
+                        new ServerErrorEvent(
+                            this,
+                            new WebCryptoLocalError(WebCryptoLocalError.CODE.SERVER_WRONG_MESSAGE, `Received UTF8 message: ${message.utf8Data}`),
+                        ),
+                    );
                 } else if (message.type === "binary") {
                     // console.log("Received Binary Message of " + message.binaryData.length + " bytes");
                     // connection.sendBytes(message.binaryData);
@@ -283,7 +294,7 @@ export class Server extends EventEmitter {
                             }
                         }
                         if (!session.cipher) {
-                            throw new Error("Cipher object for 2key session is empty");
+                            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.SERVER_WRONG_MESSAGE ,"Cipher object for 2key session is empty");
                             // session.cipher = await this.storage.loadSession(messageProto.senderKey.id);
                         }
 
@@ -307,7 +318,7 @@ export class Server extends EventEmitter {
                                     });
                             } else {
                                 // If session is not authorized throw error
-                                throw new Error("404: Not authorized");
+                                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.SERVER_NOT_LOGGED_IN, "404: Not authorized");
                             }
                         })
                             .then((answer: ResultProto) => {
@@ -319,10 +330,14 @@ export class Server extends EventEmitter {
                                     const resultProto = new ResultProto(actionProto);
                                     this.emit("error", new ServerErrorEvent(this, e));
                                     if (e) {
-                                        // NOTE: Some errors can have simple test format
-                                        resultProto.error = e.message || e.toString();
+                                        if (e.hasOwnProperty("code")) {
+                                            resultProto.error = new ErrorProto(e.message, e.code, e.type || "error");
+                                        } else {
+                                            // NOTE: Some errors can have simple text format
+                                            resultProto.error = createError(e.message || e.toString());
+                                        }
                                     } else {
-                                        resultProto.error = "Empty exception";
+                                        resultProto.error = createError("Empty exception");
                                     }
                                     resultProto.status = false;
 
@@ -364,7 +379,7 @@ export class Server extends EventEmitter {
             session.connection.sendBytes(new Buffer(buf));
 
         } catch (e) {
-            this.emit("error", e)
+            this.emit("error", e);
         }
     }
 
@@ -396,4 +411,14 @@ export class Server extends EventEmitter {
  */
 function getRandomInt(min: number, max: number) {
     return Math.floor(Math.random() * (max + 1 - min)) + min;
+}
+
+function createError(message: string) {
+    const p11Reg = /(CKR_\w+):(\d+)/;
+    const p11 = p11Reg.exec(message);
+    if (p11) {
+        return new ErrorProto(p11[1], parseInt(p11[2], 10), "pkcs11");
+    } else {
+        return new ErrorProto(message);
+    }
 }

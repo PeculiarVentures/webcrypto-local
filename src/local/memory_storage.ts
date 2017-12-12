@@ -1,4 +1,5 @@
 import { ServiceCryptoItem } from "./crypto_item";
+import { WebCryptoLocalError } from "./error";
 
 export class MemoryStorage {
     public items: { [key: string]: ServiceCryptoItem } = {};
@@ -10,7 +11,7 @@ export class MemoryStorage {
     public item(id: string) {
         const result = this.items[id];
         if (!result) {
-            throw new Error(`Cannot get crypto item by ID '${id}'`);
+            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.MEMORY_STORAGE_OUT_OF_INDEX, `Cannot get crypto item by ID '${id}'`);
         }
         return result;
     }

@@ -1,6 +1,7 @@
 import { CryptoKeyProto } from "../core";
 import { CryptoX509CertificateProto, CryptoX509CertificateRequestProto } from "../core/protos/certstorage";
 import { DEFAULT_HASH_ALG } from "./const";
+import { WebCryptoLocalError } from "./error";
 import { digest } from "./helper";
 
 export interface CryptoItem {
@@ -69,7 +70,7 @@ export class ServiceCryptoItem {
                 return this.toX509RequestProto(this.item as any);
             }
             default:
-                throw new Error(`Unsupported CertificateItem type '${this.item.type}'`);
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, `Unsupported CertificateItem type '${this.item.type}'`);
         }
     }
 }

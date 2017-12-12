@@ -11,6 +11,7 @@
         "sourceMap": false,
         "importHelpers": true,
         "noUnusedLocals": true,
+        "allowSyntheticDefaultImports": true,
         "outDir": "out"
     }
 }

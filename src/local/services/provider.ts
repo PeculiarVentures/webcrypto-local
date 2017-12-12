@@ -7,6 +7,7 @@ import { Service } from "./service";
 
 import { ActionProto, ResultProto } from "../../core/proto";
 import * as PP from "../../core/protos/provider";
+import { WebCryptoLocalError } from "../error";
 
 export interface ProviderNotifyEvent {
     type: string;
@@ -42,7 +43,6 @@ export class ProviderService extends Service<LocalProvider> {
 
     public emit(event: "notify", e: ProviderNotifyEvent): boolean;
     public emit(event: "token_new", e: PCSCCard): boolean;
-    public emit(event: "token_error", error: string): boolean;
     public emit(event: "error", error: Error): boolean;
     public emit(event: "info", message: string): boolean;
     public emit(event: string, ...args: any[]): boolean {
@@ -51,7 +51,6 @@ export class ProviderService extends Service<LocalProvider> {
 
     public on(event: "notify", cb: ProviderNotifyEventHandler): this;
     public on(event: "token_new", cb: (e: PCSCCard) => void): this;
-    public on(event: "token_error", cb: (error: string) => void): this;
     public on(event: "error", cb: (error: Error) => void): this;
     public on(event: "info", cb: (message: string) => void): this;
     public on(event: string, cb: (...args: any[]) => void): this {
@@ -60,7 +59,6 @@ export class ProviderService extends Service<LocalProvider> {
 
     public once(event: "notify", cb: ProviderNotifyEventHandler): this;
     public once(event: "token_new", cb: (e: PCSCCard) => void): this;
-    public once(event: "token_error", cb: (error: string) => void): this;
     public once(event: "error", cb: (error: Error) => void): this;
     public once(event: "info", cb: (message: string) => void): this;
     public once(event: string, cb: (...args: any[]) => void): this {
@@ -72,11 +70,15 @@ export class ProviderService extends Service<LocalProvider> {
     public open() {
         this.object.open()
             .catch((err) => {
-                this.emit("error", new Error(`Provider:Open Error. ${err.message}`));
+                this.emit("error", err);
             })
             .then(() => {
                 this.emit("info", "Provider:Opened");
             });
+    }
+
+    public close() {
+        this.object.crypto.clear();
     }
 
     public getProvider() {
@@ -89,7 +91,7 @@ export class ProviderService extends Service<LocalProvider> {
 
     protected onToken(info: TokenInfo) {
         if (info.error) {
-            this.emit("token_error", info.error);
+            this.emit("error", info.error);
         } else {
             this.emit("info", `Provider:Token Amount of tokens was changed (+${info.added.length}/-${info.removed.length})`);
             this.server.sessions.forEach((session) => {
@@ -130,7 +132,7 @@ export class ProviderService extends Service<LocalProvider> {
                 break;
             }
             default:
-                throw new Error(`Action '${action.action}' is not implemented`);
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_NOT_IMPLEMENTED, `Action '${action.action}' is not implemented`);
         }
         return result;
     }

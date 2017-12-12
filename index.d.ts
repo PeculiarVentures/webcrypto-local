@@ -4,6 +4,46 @@ import * as https from "https";
 import { ObjectProto } from "tsprotobuf";
 import * as WebSocket from "websocket";
 
+declare enum WebCryptoLocalErrorEnum {
+    UNKNOWN = 0,
+    METHOD_NOT_IMPLEMENTED = 1,
+    CASE_ERROR = 2,
+    RATCHET_COMMON = 100,
+    RATCHET_KEY_NOT_APPROVED = 101,
+    ACTION_COMMON = 200,
+    ACTION_NOT_IMPLEMENTED = 201,
+    ACTION_NOT_SUPPORTED = 202,
+    CARD_CONFIG_COMMON = 300,
+    MEMORY_STORAGE_COMMON = 350,
+    MEMORY_STORAGE_OUT_OF_INDEX = 351,
+    PROVIDER_COMMON = 400,
+    PROVIDER_INIT = 401,
+    PROVIDER_CRYPTO_NOT_FOUND = 402,
+    PROVIDER_CRYPTO_WRONG = 403,
+    PROVIDER_NOT_FOUND = 404,
+    PROVIDER_WRONG_LIBRARY = 405,
+    TOKEN_COMMON = 500,
+    TOKEN_REMOVE_TOKEN_READING = 501,
+    TOKEN_REMOVE_NO_SLOTS_FOUND = 502,
+    SERVER_COMMON = 600,
+    SERVER_WRONG_MESSAGE = 601,
+    SERVER_NOT_LOGGED_IN = 602,
+}
+
+export class WebCryptoLocalError extends Error {
+
+    public static CODE: typeof WebCryptoLocalErrorEnum;
+    public static isError(obj: any): obj is WebCryptoLocalError;
+
+    public code: number;
+    public type: string;
+    public stack: string;
+
+    constructor(code: number, message?: string);
+    constructor(message: string);
+
+}
+
 export class BaseProto extends ObjectProto {
     public static INDEX: number;
     public version: number;
@@ -191,6 +231,7 @@ export class Server extends EventEmitter {
     public once(event: "info", listener: (message: string) => void): this;
 
     public listen(address: string): this;
+    public close(callback?: () => void): void;
     public send(session: Session, data: ObjectProto | ArrayBuffer): Promise<void>;
 
 }
@@ -248,19 +289,17 @@ export class LocalServer extends EventEmitter {
      * @memberof LocalServer
      */
     public server: Server;
-    // public provider: LocalProvider;
-    public cryptos: { [id: string]: Crypto };
     public sessions: Session[];
 
     constructor(options: IServerOptions);
 
     public listen(address: string): this;
+    public close(callback?: () => void): void;
 
     public on(event: "info", cb: (message: string) => void): this;
-    public on(event: "listening", cb: Function): this;
-    public on(event: "token_new", cb: (card: PCSCCard) => void): this;
-    public on(event: "token_error", cb: (message: string) => void): this;
-    public on(event: "error", cb: Function): this;
-    public on(event: "close", cb: Function): this;
-    public on(event: "notify", cb: Function): this;
+    public on(event: "token_new", cb: (info: PCSCCard) => void): this;
+    public on(event: "listening", cb: (address: string) => void): this;
+    public on(event: "error", cb: (err: Error) => void): this;
+    public on(event: "close", cb: (e: any) => void): this;
+    public on(event: "notify", cb: (e: any) => void): this;
 }

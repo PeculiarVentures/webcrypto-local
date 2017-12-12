@@ -1,4 +1,5 @@
 import { ArrayBufferConverter, IProtobufScheme, ObjectProto, ProtobufElement, ProtobufProperty } from "tsprotobuf";
+import { WebCryptoLocalError } from "../local/error";
 import { HexStringConverter } from "./protos/converter";
 
 export interface IAlgorithmConvertible {
@@ -129,7 +130,7 @@ export class AlgorithmProto extends BaseAlgorithmProto {
                             break;
                         }
                         default:
-                            throw new Error(`Unsupported parser '${thisStatic.items[key].parser.name}'`);
+                            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported parser '${thisStatic.items[key].parser.name}'`);
                     }
                 } else {
                     (this as any)[key] = (alg as any)[key];
@@ -164,7 +165,6 @@ export class CryptoKeyProto extends CryptoItemProto implements CryptoKey {
     @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bytes", required: true, parser: AlgorithmProto })
     public algorithm: AlgorithmProto;
 
-
     @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bool" })
     public extractable: boolean;
 
@@ -186,6 +186,32 @@ export class CryptoKeyPairProto extends BaseProto implements CryptoKeyPair {
 
 }
 
+@ProtobufElement({ name: "Error" })
+export class ErrorProto extends BaseProto {
+
+    public static INDEX = BaseProto.INDEX;
+
+    @ProtobufProperty({ id: ErrorProto.INDEX++, type: "uint32", defaultValue: 0 })
+    public code: number;
+
+    @ProtobufProperty({ id: ErrorProto.INDEX++, type: "string", defaultValue: "error" })
+    public type: string;
+
+    @ProtobufProperty({ id: ErrorProto.INDEX++, type: "string", defaultValue: "" })
+    public message: string;
+
+    constructor(message: string, code?: number, type?: string);
+    constructor();
+    constructor(message?: string, code = 0, type = "error") {
+        super();
+        if (message) {
+            this.message = message;
+            this.code = code;
+            this.type = type;
+        }
+    }
+}
+
 // Result
 
 @ProtobufElement({ name: "Result" })
@@ -196,8 +222,8 @@ export class ResultProto extends ActionProto {
     @ProtobufProperty({ id: ResultProto.INDEX++, type: "bool", defaultValue: false })
     public status: boolean;
 
-    @ProtobufProperty({ id: ResultProto.INDEX++, type: "string", defaultValue: "" })
-    public error: string;
+    @ProtobufProperty({ id: ResultProto.INDEX++, type: "bytes", parser: ErrorProto })
+    public error: ErrorProto;
 
     @ProtobufProperty({ id: ResultProto.INDEX++, type: "bytes", converter: ArrayBufferConverter })
     public data?: ArrayBuffer;

@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import { Convert } from "pvtsutils";
+import { WebCryptoLocalError } from "../error";
 
 const crypto: Crypto = new (require("node-webcrypto-ossl"))();
 
@@ -111,7 +112,7 @@ export class OpenSSLKeyStorage implements IKeyStorage {
                 });
                 break;
             default:
-                throw new Error(`Unsupported type of CryptoKey '${key.type}'`);
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported type of CryptoKey '${key.type}'`);
         }
         const hash = await crypto.subtle.digest("SHA-1", id);
         const rnd = crypto.getRandomValues(new Uint8Array(4));
@@ -134,7 +135,7 @@ export class OpenSSLKeyStorage implements IKeyStorage {
                         fn = nativeKey.exportPkcs8;
                         break;
                     default:
-                        throw new Error(`Unsupported type of CryptoKey '${key.type}'`);
+                        throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported type of CryptoKey '${key.type}'`);
                 }
                 return new Promise((resolve, reject) => {
                     fn.call(nativeKey, (err: Error, data: Buffer) => {
@@ -173,7 +174,7 @@ export class OpenSSLKeyStorage implements IKeyStorage {
                 format = "pkcs8";
                 break;
             default:
-                throw new Error(`Unsupported type of CryptoKey '${obj.type}'`);
+            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported type of CryptoKey '${obj.type}'`);
         }
         obj.lastUsed = new Date().toISOString();
         return crypto.subtle.importKey(format, new Buffer(obj.raw, "base64"), obj.algorithm as any, obj.extractable, obj.usages);

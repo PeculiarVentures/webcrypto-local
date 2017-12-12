@@ -1,6 +1,6 @@
 import { assign } from "pvtsutils";
 import { ProtobufElement, ProtobufProperty } from "tsprotobuf";
-import { ActionProto, BaseProto } from "../proto";
+import { ActionProto, BaseProto, ErrorProto } from "../proto";
 
 // Objects
 
@@ -98,8 +98,8 @@ export class ProviderTokenEventProto extends ActionProto {
     @ProtobufProperty({ id: ProviderTokenEventProto.INDEX++, repeated: true, parser: ProviderCryptoProto })
     public removed: ProviderCryptoProto[];
 
-    @ProtobufProperty({ id: ProviderTokenEventProto.INDEX++, type: "string" })
-    public error: string;
+    @ProtobufProperty({ id: ProviderTokenEventProto.INDEX++, type: "bytes", parser: ErrorProto })
+    public error: ErrorProto;
 
     constructor(data?: { added: IProvider[], removed: IProvider[] }) {
         super();

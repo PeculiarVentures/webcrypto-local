@@ -39,11 +39,6 @@
     },
     {
       "atr": "3BD518008131FE7D8073C82110F4",
-      "name": "Aladdin eToken PRO USB 72K Java",
-      "driver": "39b3d7a3662c4b48bb120d008dd18648"
-    },
-    {
-      "atr": "3BD518008131FE7D8073C82110F4",
       "name": "SafeNet eToken 5100",
       "driver": "39b3d7a3662c4b48bb120d008dd18648"
     },
@@ -60,11 +55,13 @@
     {
       "atr": "3BFC1300008131FE15597562696B65794E454F7233E1",
       "name": "Yubico Yubikey NEO OTP+U2F+CCID",
+      "readOnly": true,
       "driver": "993988460d8f49a2ac519a2935f00533"
     },
     {
       "atr": "3BF81300008131FE15597562696B657934D4",
       "name": "Yubico Yubikey 4 OTP+U2F+CCID",
+      "readOnly": true,
       "driver": "993988460d8f49a2ac519a2935f00533"
     },
     {

@@ -3,6 +3,7 @@ import { Convert } from "pvtsutils";
 import { Server, Session } from "../../connection/server";
 import { ActionProto, ResultProto } from "../../core/proto";
 import { CardReaderGetReadersActionProto, CardReaderInsertEventProto, CardReaderRemoveEventProto } from "../../core/protos/card_reader";
+import { WebCryptoLocalError } from "../error";
 import { PCSCWatcher, PCSCWatcherEvent } from "../pcsc_watcher";
 import { Service } from "./service";
 
@@ -61,7 +62,7 @@ export class CardReaderService extends Service<PCSCWatcher> {
                 break;
             }
             default:
-                throw new Error(`Action '${action.action}' is not implemented`);
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_NOT_IMPLEMENTED, `Action '${action.action}' is not implemented`);
         }
         return result;
     }

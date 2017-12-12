@@ -2,6 +2,7 @@ import { EventEmitter } from "events";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import { WebCryptoLocalError } from './error';
 const pcsc: () => PCSCLite.PCSCLite = require("pcsclite");
 
 export interface PCSCWatcherEvent {
@@ -140,12 +141,18 @@ export interface PCSCCard {
     atr: Buffer;
 }
 
-interface Card {
+export interface Card {
     reader?: string;
     name: string;
     atr: Buffer;
     mask?: Buffer;
     readOnly: boolean;
+    libraries: string[];
+}
+
+interface Driver {
+    id?: HexString;
+    name?: string;
     libraries: string[];
 }
 
@@ -161,14 +168,14 @@ export class CardConfig {
 
     public readFile(fPath: string) {
         if (!fs.existsSync(fPath)) {
-            throw new Error(`Cannot find file '${fPath}'`);
+            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, `Cannot find file '${fPath}'`);
         }
         const data = fs.readFileSync(fPath);
         let json: JsonCardConfig;
         try {
             json = JSON.parse(data.toString());
         } catch (err) {
-            throw new Error("Cannot parse JSON file");
+            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, "Cannot parse JSON file");
         }
         // TODO: match JSON scheme or verify data
         this.fromJSON(json);
@@ -181,21 +188,14 @@ export class CardConfig {
     protected fromJSON(json: JsonCardConfig) {
         const cards: { [atr: string]: Card } = {};
         // create map of drives
-        const drivers: { [guid: string]: JsonDriver } = {};
-        json.drivers.forEach((driver) => {
-            drivers[driver.id] = driver;
-        });
+        const drivers: { [guid: string]: Driver } = {};
+        json.drivers.forEach((jsonDriver) => {
+            const { file, ...driverProps } = jsonDriver;
+            const driver = driverProps as Driver
+            drivers[jsonDriver.id] = driver;
 
-        // link card with driver and fill object's cards
-        json.cards.forEach((item) => {
-            const card: Card = {} as any;
-            card.atr = new Buffer(item.atr, "hex");
-            if (item.mask) {
-                card.mask = new Buffer(item.mask);
-            }
-            card.name = item.name;
-            card.readOnly = !!item.readOnly;
             let system: string;
+            //#region GEt system
             switch (os.type()) {
                 case "Linux":
                     system = "linux";
@@ -207,14 +207,12 @@ export class CardConfig {
                     system = "osx";
                     break;
                 default:
-                    throw new Error("Unsupported OS");
+                    throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, "Unsupported OS");
             }
-            const driver = drivers[item.driver];
-            if (!driver) {
-                throw new Error(`Cannot find driver for card ${item.name} (${item.atr})`);
-            }
+            //#endregion
+
             let library: string[] = [];
-            const driverLib = driver.file[system];
+            const driverLib = jsonDriver.file[system];
             if (driverLib) {
                 if (typeof driverLib === "string") {
                     library = [driverLib];
@@ -233,15 +231,33 @@ export class CardConfig {
                     }
                 }
             }
-            // Don't add card without library
-            if (library.length) {
-                card.libraries = library.map((lib) => {
-                    let res = replaceTemplates(lib, process.env, "%");
-                    if (json.vars) {
-                        res = replaceTemplates(lib, json.vars, "<");
-                    }
-                    return path.normalize(res);
-                });
+            driver.libraries = library.map((lib) => {
+                let res = replaceTemplates(lib, process.env, "%");
+                if (json.vars) {
+                    res = replaceTemplates(lib, json.vars, "<");
+                }
+                return path.normalize(res);
+            });
+        });
+
+        // link card with driver and fill object's cards
+        json.cards.forEach((item) => {
+            const card: Card = {} as any;
+            card.atr = new Buffer(item.atr, "hex");
+            if (item.mask) {
+                card.mask = new Buffer(item.mask);
+            }
+            card.name = item.name;
+            card.readOnly = !!item.readOnly;
+
+            const driver = drivers[item.driver];
+            if (!driver) {
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, `Cannot find driver for card ${item.name} (${item.atr})`);
+            }
+
+            // Don't add cards without libraries
+            if (driver.libraries.length) {
+                card.libraries = driver.libraries;
                 cards[card.atr.toString("hex")] = card;
             }
         });
@@ -353,15 +369,21 @@ export class CardWatcher extends EventEmitter {
 function replaceTemplates(text: string, args: { [key: string]: string }, prefix: string) {
     // search <prefix><name> and replace by ARGS
     // if ENV not exists don't change name
-    const envReg = new RegExp(`\\${prefix}([\\w\\d]+)`, "g");
+    const envReg = new RegExp(`\\${prefix}([\\w\\d\\(\\)\\-\\_]+)`, "gi");
     let res: RegExpExecArray;
     let resText = text;
     // tslint:disable-next-line:no-conditional-assignment
     while (res = envReg.exec(text)) {
         const argsName = res[1];
-        const argsValue = args[argsName];
+        let argsValue: string | null = null;
+        for (const key in args) {
+            if (key.toLowerCase() === argsName.toLowerCase()) {
+                argsValue = args[key];
+                break;
+            }
+        }
         if (argsValue) {
-            resText = resText.replace(new RegExp(`\\${prefix}${argsName}`), argsValue);
+            resText = resText.replace(new RegExp(`\\${prefix}${argsName.replace(/([\(\)])/g, "\\$1")}`, "i"), argsValue);
         }
     }
     return resText;
