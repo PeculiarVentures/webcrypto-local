@@ -1,7 +1,7 @@
 .vscode
 node_modules
 out
-dist/webcrypto-socket*.js
+dist/*.map.js
 
 .DS_Store
 *.log
