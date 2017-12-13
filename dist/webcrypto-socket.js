@@ -3622,7 +3622,7 @@ var Client = (function (_super) {
                             case 2:
                                 identity = _b.sent();
                                 if (!!identity) return [3, 5];
-                                if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                                if (self.PV_WEBCRYPTO_SOCKET_LOG) {
                                     console.info("Generates new identity");
                                 }
                                 return [4, Identity.create(1)];
@@ -3792,7 +3792,7 @@ var Client = (function (_super) {
                     case 0: return [4, ActionProto.importProto(message)];
                     case 1:
                         proto = _c.sent();
-                        if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                        if (self.PV_WEBCRYPTO_SOCKET_LOG) {
                             console.info("Action:", proto.action);
                         }
                         promise = this.stack[proto.actionId];
@@ -7185,13 +7185,13 @@ var SocketProvider = (function (_super) {
             }); })();
         })
             .on("listening", function (e) {
-            if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+            if (self.PV_WEBCRYPTO_SOCKET_LOG) {
                 console.info("Client:Listening", e.address);
             }
             _this.emit("listening", address);
         })
             .on("close", function (e) {
-            if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+            if (self.PV_WEBCRYPTO_SOCKET_LOG) {
                 console.info("Client:Closed: " + e.description + " (code: " + e.reasonCode + ")");
             }
             _this.emit("close", e.remoteAddress);
