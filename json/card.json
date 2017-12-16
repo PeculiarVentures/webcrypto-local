@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "cards": [
     {
       "atr": "3b9813400aa503010101ad1311",
@@ -216,9 +216,30 @@
       "atr": "3B7D94000080318065B0831100C883009000",
       "name": "Personal identity card (ID card) of Republic of Lithuania",
       "driver": "71789068c5ff4891aeeaf7fb9608a22f"
+    },
+    {
+      "atr": "3BDF18008131FE580031B964050E010073B401D300000022",
+      "name": "Slovak eID",
+      "readOnly": true,
+      "driver": "39798896FC5DD6E2A96989718F694334275E0EAC"
     }
   ],
   "drivers": [
+    {
+      "id": "39798896FC5DD6E2A96989718F694334275E0EAC",
+      "name": "Slovak eID",
+      "file": {
+        "windows": {
+          "x86": "%PROGRAMFILES(X86)/eID klient/pkcs11_x64.dll",
+          "x64": "%PROGRAMFILES(X86)/eID klient/pkcs11_x86.dll"
+        },
+        "linux": {
+          "x86": "/usr/lib/eidklient/libpkcs11_sig_x64.so",
+          "x64": "/usr/lib/eidklient/libpkcs11_sig_x86.so"
+        },
+        "osx": "/Applications/eIDklient.app/Contents/Pkcs11/libPkcs11.dylib"
+      }
+    },
     {
       "id": "25fb0440047947539fd871831ac8477c",
       "name": "Siemens Card CardOS M4.4",
