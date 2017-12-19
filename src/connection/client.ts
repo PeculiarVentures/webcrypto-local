@@ -124,7 +124,7 @@ export class Client extends EventEmitter {
                         const storage = await BrowserStorage.create();
                         let identity = await storage.loadIdentity();
                         if (!identity) {
-                            if ((window as any).PV_WEBCRYPTO_SOCKET_LOG) {
+                            if ((self as any).PV_WEBCRYPTO_SOCKET_LOG) {
                                 console.info("Generates new identity");
                             }
                             identity = await Identity.create(1);
@@ -297,7 +297,7 @@ export class Client extends EventEmitter {
 
     protected async onMessage(message: ArrayBuffer) {
         const proto = await ActionProto.importProto(message);
-        if ((window as any).PV_WEBCRYPTO_SOCKET_LOG) {
+        if ((self as any).PV_WEBCRYPTO_SOCKET_LOG) {
             console.info("Action:", proto.action);
         }
         // find Promise

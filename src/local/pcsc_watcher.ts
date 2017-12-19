@@ -81,8 +81,7 @@ export class PCSCWatcher extends EventEmitter {
                 });
             });
         } catch (err) {
-            // pcsc throws exception
-            this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PCSC_CANNOT_START, err.toString()));
+            this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PCSC_CANNOT_START));
         }
         return this;
     }

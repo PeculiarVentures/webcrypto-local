@@ -56,13 +56,13 @@ export class SocketProvider extends EventEmitter {
                 })();
             })
             .on("listening", (e) => {
-                if ((window as any).PV_WEBCRYPTO_SOCKET_LOG) {
+                if ((self as any).PV_WEBCRYPTO_SOCKET_LOG) {
                     console.info("Client:Listening", e.address);
                 }
                 this.emit("listening", address);
             })
             .on("close", (e) => {
-                if ((window as any).PV_WEBCRYPTO_SOCKET_LOG) {
+                if ((self as any).PV_WEBCRYPTO_SOCKET_LOG) {
                     console.info(`Client:Closed: ${e.description} (code: ${e.reasonCode})`);
                 }
                 this.emit("close", e.remoteAddress);

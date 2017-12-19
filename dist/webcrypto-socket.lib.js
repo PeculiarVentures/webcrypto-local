@@ -2788,6 +2788,8 @@ var WebCryptoLocalErrorEnum;
     WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_COMMON"] = 600] = "SERVER_COMMON";
     WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_WRONG_MESSAGE"] = 601] = "SERVER_WRONG_MESSAGE";
     WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_NOT_LOGGED_IN"] = 602] = "SERVER_NOT_LOGGED_IN";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PCSC_COMMON"] = 700] = "PCSC_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PCSC_CANNOT_START"] = 701] = "PCSC_CANNOT_START";
 })(WebCryptoLocalErrorEnum || (WebCryptoLocalErrorEnum = {}));
 class WebCryptoLocalError extends Error {
     constructor(param, message = "") {
@@ -3360,7 +3362,7 @@ class Client extends EventEmitter {
                     const storage = yield BrowserStorage.create();
                     let identity = yield storage.loadIdentity();
                     if (!identity) {
-                        if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+                        if (self.PV_WEBCRYPTO_SOCKET_LOG) {
                             console.info("Generates new identity");
                         }
                         identity = yield Identity.create(1);
@@ -3490,7 +3492,7 @@ class Client extends EventEmitter {
     onMessage(message) {
         return __awaiter(this, void 0, void 0, function* () {
             const proto = yield ActionProto.importProto(message);
-            if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+            if (self.PV_WEBCRYPTO_SOCKET_LOG) {
                 console.info("Action:", proto.action);
             }
             const promise = this.stack[proto.actionId];
@@ -6242,13 +6244,13 @@ class SocketProvider extends EventEmitter {
             }))();
         })
             .on("listening", (e) => {
-            if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+            if (self.PV_WEBCRYPTO_SOCKET_LOG) {
                 console.info("Client:Listening", e.address);
             }
             this.emit("listening", address);
         })
             .on("close", (e) => {
-            if (window.PV_WEBCRYPTO_SOCKET_LOG) {
+            if (self.PV_WEBCRYPTO_SOCKET_LOG) {
                 console.info(`Client:Closed: ${e.description} (code: ${e.reasonCode})`);
             }
             this.emit("close", e.remoteAddress);

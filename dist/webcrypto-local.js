@@ -79,6 +79,8 @@ var WebCryptoLocalErrorEnum;
     WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_COMMON"] = 600] = "SERVER_COMMON";
     WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_WRONG_MESSAGE"] = 601] = "SERVER_WRONG_MESSAGE";
     WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["SERVER_NOT_LOGGED_IN"] = 602] = "SERVER_NOT_LOGGED_IN";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PCSC_COMMON"] = 700] = "PCSC_COMMON";
+    WebCryptoLocalErrorEnum[WebCryptoLocalErrorEnum["PCSC_CANNOT_START"] = 701] = "PCSC_CANNOT_START";
 })(WebCryptoLocalErrorEnum || (WebCryptoLocalErrorEnum = {}));
 var WebCryptoLocalError = (function (_super) {
     tslib_1.__extends(WebCryptoLocalError, _super);
@@ -1488,57 +1490,62 @@ var PCSCWatcher = (function (_super) {
     }
     PCSCWatcher.prototype.start = function () {
         var _this = this;
-        this.pcsc = pcsc();
-        this.pcsc.on("error", function (err) {
-            _this.emit("error", err);
-        });
-        this.pcsc.on("reader", function (reader) {
-            _this.emit("info", "PCSCWatcher: New reader detected " + reader.name);
-            _this.readers.push(reader.name);
-            var atr;
-            reader.state = 0;
-            reader.on("error", function (err) {
+        try {
+            this.pcsc = pcsc();
+            this.pcsc.on("error", function (err) {
                 _this.emit("error", err);
             });
-            reader.on("status", function (status) {
-                var changes = reader.state ^ status.state;
-                if (changes) {
-                    if ((changes & reader.SCARD_STATE_EMPTY) && (status.state & reader.SCARD_STATE_EMPTY)) {
-                        if (atr) {
-                            var event = {
+            this.pcsc.on("reader", function (reader) {
+                _this.emit("info", "PCSCWatcher: New reader detected " + reader.name);
+                _this.readers.push(reader.name);
+                var atr;
+                reader.state = 0;
+                reader.on("error", function (err) {
+                    _this.emit("error", err);
+                });
+                reader.on("status", function (status) {
+                    var changes = reader.state ^ status.state;
+                    if (changes) {
+                        if ((changes & reader.SCARD_STATE_EMPTY) && (status.state & reader.SCARD_STATE_EMPTY)) {
+                            if (atr) {
+                                var event = {
+                                    reader: reader,
+                                    atr: atr,
+                                };
+                                _this.emit("remove", event);
+                                atr = null;
+                            }
+                        }
+                        else if ((changes & reader.SCARD_STATE_PRESENT) && (status.state & reader.SCARD_STATE_PRESENT)) {
+                            var event_1 = {
                                 reader: reader,
-                                atr: atr,
                             };
-                            _this.emit("remove", event);
-                            atr = null;
+                            if (status.atr && status.atr.byteLength) {
+                                atr = status.atr;
+                                event_1.atr = atr;
+                            }
+                            _this.emit("info", "PCSCWatcher:Insert reader:'" + reader.name + "' ATR:" + (atr && atr.toString("hex")));
+                            setTimeout(function () {
+                                _this.emit("insert", event_1);
+                            }, 1e3);
                         }
                     }
-                    else if ((changes & reader.SCARD_STATE_PRESENT) && (status.state & reader.SCARD_STATE_PRESENT)) {
-                        var event_1 = {
+                });
+                reader.on("end", function () {
+                    if (atr) {
+                        var event = {
                             reader: reader,
+                            atr: atr,
                         };
-                        if (status.atr && status.atr.byteLength) {
-                            atr = status.atr;
-                            event_1.atr = atr;
-                        }
-                        _this.emit("info", "PCSCWatcher:Insert reader:'" + reader.name + "' ATR:" + (atr && atr.toString("hex")));
-                        setTimeout(function () {
-                            _this.emit("insert", event_1);
-                        }, 1e3);
+                        _this.emit("remove", event);
+                        atr = null;
                     }
-                }
+                });
             });
-            reader.on("end", function () {
-                if (atr) {
-                    var event = {
-                        reader: reader,
-                        atr: atr,
-                    };
-                    _this.emit("remove", event);
-                    atr = null;
-                }
-            });
-        });
+        }
+        catch (err) {
+            this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PCSC_CANNOT_START));
+        }
         return this;
     };
     PCSCWatcher.prototype.stop = function () {
@@ -1804,9 +1811,14 @@ var CardReaderService = (function (_super) {
         ]) || this;
         _this.object.on("insert", _this.onInsert.bind(_this));
         _this.object.on("remove", _this.onRemove.bind(_this));
-        _this.object.start();
         return _this;
     }
+    CardReaderService.prototype.start = function () {
+        this.object.start();
+    };
+    CardReaderService.prototype.stop = function () {
+        this.object.stop();
+    };
     CardReaderService.prototype.on = function (event, cb) {
         return _super.prototype.on.call(this, event, cb);
     };
@@ -5154,6 +5166,7 @@ var LocalServer = (function (_super) {
     }
     LocalServer.prototype.close = function (callback) {
         var _this = this;
+        this.cardReader.stop();
         this.server.close(function () {
             _this.provider.close();
             if (callback) {
@@ -5163,7 +5176,6 @@ var LocalServer = (function (_super) {
     };
     LocalServer.prototype.listen = function (address) {
         var _this = this;
-        this.server.listen(address);
         this.server
             .on("listening", function (e) {
             _this.emit("listening", e.address);
@@ -5207,6 +5219,8 @@ var LocalServer = (function (_super) {
                 _this.emit("error", e);
             });
         });
+        this.server.listen(address);
+        this.cardReader.start();
         return this;
     };
     LocalServer.prototype.on = function (event, cb) {

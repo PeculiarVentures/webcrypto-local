@@ -18,8 +18,14 @@ export class CardReaderService extends Service<PCSCWatcher> {
         this.object.on("insert", this.onInsert.bind(this));
         this.object.on("remove", this.onRemove.bind(this));
         //#endregion
+    }
 
+    public start() {
         this.object.start();
+    }
+
+    public stop() {
+        this.object.stop();
     }
 
     public on(event: "error", cb: (error: Error) => void): this;

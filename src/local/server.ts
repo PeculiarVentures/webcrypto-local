@@ -64,6 +64,8 @@ export class LocalServer extends EventEmitter {
     }
 
     public close(callback?: () => void) {
+        this.cardReader.stop();
+
         this.server.close(() => {
             this.provider.close();
             if (callback) {
@@ -73,7 +75,6 @@ export class LocalServer extends EventEmitter {
     }
 
     public listen(address: string) {
-        this.server.listen(address);
         this.server
             .on("listening", (e) => {
                 this.emit("listening", e.address);
@@ -116,6 +117,10 @@ export class LocalServer extends EventEmitter {
                         this.emit("error", e);
                     });
             });
+
+        this.server.listen(address);
+        this.cardReader.start();
+
         return this;
     }
 
