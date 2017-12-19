@@ -22,6 +22,8 @@ enum WebCryptoLocalErrorEnum {
     SERVER_COMMON = 600,
     SERVER_WRONG_MESSAGE = 601,
     SERVER_NOT_LOGGED_IN = 602,
+    PCSC_COMMON = 600,
+    PCSC_CANNOT_START = 601,
 }
 
 export class WebCryptoLocalError extends Error {

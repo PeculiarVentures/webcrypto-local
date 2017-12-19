@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { WebCryptoLocalError } from './error';
+import { WebCryptoLocalError } from "./error";
 const pcsc: () => PCSCLite.PCSCLite = require("pcsclite");
 
 export interface PCSCWatcherEvent {
@@ -20,65 +20,70 @@ export class PCSCWatcher extends EventEmitter {
     }
 
     public start(): this {
-        this.pcsc = pcsc();
-        this.pcsc.on("error", (err) => {
-            this.emit("error", err);
-        });
-        this.pcsc.on("reader", (reader) => {
-            this.emit("info", `PCSCWatcher: New reader detected ${reader.name}`);
-            this.readers.push(reader.name);
-            let atr: Buffer | null;
-            reader.state = 0;
-            reader.on("error", (err) => {
+        try {
+            this.pcsc = pcsc();
+            this.pcsc.on("error", (err) => {
                 this.emit("error", err);
             });
-            reader.on("status", (status) => {
-                // console.log("----name:'%s' atr:%s reader_state:%s state:%s", reader.name, status.atr.toString("hex"), reader.state, status.state);
-                // check what has changed
-                const changes = reader.state ^ status.state;
-                if (changes) {
-                    if ((changes & reader.SCARD_STATE_EMPTY) && (status.state & reader.SCARD_STATE_EMPTY)) {
-                        // card removed
-                        if (atr) {
-                            // don't fire event if 'atr' wasn't set
+            this.pcsc.on("reader", (reader) => {
+                this.emit("info", `PCSCWatcher: New reader detected ${reader.name}`);
+                this.readers.push(reader.name);
+                let atr: Buffer | null;
+                reader.state = 0;
+                reader.on("error", (err) => {
+                    this.emit("error", err);
+                });
+                reader.on("status", (status) => {
+                    // console.log("----name:'%s' atr:%s reader_state:%s state:%s", reader.name, status.atr.toString("hex"), reader.state, status.state);
+                    // check what has changed
+                    const changes = reader.state ^ status.state;
+                    if (changes) {
+                        if ((changes & reader.SCARD_STATE_EMPTY) && (status.state & reader.SCARD_STATE_EMPTY)) {
+                            // card removed
+                            if (atr) {
+                                // don't fire event if 'atr' wasn't set
+                                const event: PCSCWatcherEvent = {
+                                    reader,
+                                    atr,
+                                };
+                                this.emit("remove", event);
+                                atr = null;
+                            }
+                        } else if ((changes & reader.SCARD_STATE_PRESENT) && (status.state & reader.SCARD_STATE_PRESENT)) {
+                            // card insert
                             const event: PCSCWatcherEvent = {
                                 reader,
-                                atr,
                             };
-                            this.emit("remove", event);
-                            atr = null;
+                            if (status.atr && status.atr.byteLength) {
+                                atr = status.atr;
+                                event.atr = atr;
+                            }
+                            this.emit("info", `PCSCWatcher:Insert reader:'${reader.name}' ATR:${atr && atr.toString("hex")}`);
+                            // Delay for lib loading
+                            setTimeout(() => {
+                                this.emit("insert", event);
+                            }, 1e3);
                         }
-                    } else if ((changes & reader.SCARD_STATE_PRESENT) && (status.state & reader.SCARD_STATE_PRESENT)) {
-                        // card insert
+                    }
+                });
+
+                reader.on("end", () => {
+                    // console.log("Reader", this.name, "removed");
+                    if (atr) {
+                        // don't fire event if 'atr' wasn't set
                         const event: PCSCWatcherEvent = {
                             reader,
+                            atr,
                         };
-                        if (status.atr && status.atr.byteLength) {
-                            atr = status.atr;
-                            event.atr = atr;
-                        }
-                        this.emit("info", `PCSCWatcher:Insert reader:'${reader.name}' ATR:${atr && atr.toString("hex")}`);
-                        // Delay for lib loading
-                        setTimeout(() => {
-                            this.emit("insert", event);
-                        }, 1e3);
+                        this.emit("remove", event);
+                        atr = null;
                     }
-                }
+                });
             });
-
-            reader.on("end", () => {
-                // console.log("Reader", this.name, "removed");
-                if (atr) {
-                    // don't fire event if 'atr' wasn't set
-                    const event: PCSCWatcherEvent = {
-                        reader,
-                        atr,
-                    };
-                    this.emit("remove", event);
-                    atr = null;
-                }
-            });
-        });
+        } catch (err) {
+            // pcsc throws exception
+            this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PCSC_CANNOT_START, err.toString()));
+        }
         return this;
     }
     public stop() {
@@ -191,7 +196,7 @@ export class CardConfig {
         const drivers: { [guid: string]: Driver } = {};
         json.drivers.forEach((jsonDriver) => {
             const { file, ...driverProps } = jsonDriver;
-            const driver = driverProps as Driver
+            const driver = driverProps as Driver;
             drivers[jsonDriver.id] = driver;
 
             let system: string;
