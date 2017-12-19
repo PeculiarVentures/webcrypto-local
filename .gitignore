@@ -7,3 +7,8 @@ dist/*.map.js
 *.log
 
 .idea
+
+# Development
+.npmrc
+modules_list.js
+modules.json
