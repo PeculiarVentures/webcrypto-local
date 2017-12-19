@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "cards": [
     {
       "atr": "3b9813400aa503010101ad1311",
@@ -222,9 +222,23 @@
       "name": "Slovak eID",
       "readOnly": true,
       "driver": "39798896FC5DD6E2A96989718F694334275E0EAC"
+    },
+    {
+      "atr": "3BF21800FFC10A31FE55C8068A",
+      "name": "Aladdin Knowledge Systems eToken Pro 64k (4.2)",
+      "driver": "11A4BEA85E4C5D7EC6CDE452A70448A73EBE191B"
     }
   ],
   "drivers": [
+    {
+      "id": "11A4BEA85E4C5D7EC6CDE452A70448A73EBE191B",
+      "name": "Siemens CardOS M 4.2 (SLE66CX642P)",
+      "file": {
+        "windows": "%WINDIR/System32/eTPKCS11.dll",
+        "linux": "/usr/lib/libeTPkcs11.so",
+        "osx": "/usr/local/lib/libeTPkcs11.dylib"
+      }
+    },
     {
       "id": "39798896FC5DD6E2A96989718F694334275E0EAC",
       "name": "Slovak eID",
