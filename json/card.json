@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "cards": [
     {
       "atr": "3b9813400aa503010101ad1311",
@@ -320,7 +320,8 @@
       "name": "OpenSC driver",
       "file": {
         "osx": "/Library/OpenSC/lib/pkcs11/opensc-pkcs11.so",
-        "linux": "/usr/lib/opensc-pkcs11.so"
+        "linux": "/usr/lib/opensc-pkcs11.so",
+        "windows": "%WINDIR/System32/opensc-pkcs11.dll"
       }
     },
     {
