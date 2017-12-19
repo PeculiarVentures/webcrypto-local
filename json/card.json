@@ -237,9 +237,26 @@
       "name": "DNI (National Identity Document), Spanish ID Card",
       "readOnly": true,
       "driver": "993988460d8f49a2ac519a2935f11533"
-     }
+     },
+     {
+      "atr": "3BDC18FF8191FE1FC38073C8211366010B0352000538",
+      "name": "Athena IDProtect Smart Card Logon Card",
+      "driver": "29a2bd60c4b841c686be68d2874c0c02"
+    }
   ],
   "drivers": [
+    {
+      "id": "29a2bd60c4b841c686be68d2874c0c02",
+      "name": "Athena IDProtect",
+      "file": {
+        "linux": {
+          "x86": "/usr/lib/x86-athena/libASEP11.so",
+          "x64": "/usr/lib/x64-athena/libASEP11.so"
+        },
+        "osx": "/Library/Application Support/Athena/libASEP11.dylib",
+        "windows": "%WINDIR/System32/asepkcs.dll"
+      }
+    },
     {
       "id": "11A4BEA85E4C5D7EC6CDE452A70448A73EBE191B",
       "name": "Siemens CardOS M 4.2 (SLE66CX642P)",
