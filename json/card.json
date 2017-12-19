@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "cards": [
     {
       "atr": "3b9813400aa503010101ad1311",
@@ -179,16 +179,19 @@
     {
       "atr": "3BDF960081B1FE451F838073CC91CBF9A0000003080000100079",
       "name": "USG:Executive Office of the President",
+      "readOnly": true,
       "driver": "993988460d8f49a2ac519a2935f11533"
     },
     {
       "atr": "3BDB9600801F030031C064B0F310000F900088",
       "name": "USG:Department of Veterans Affairs",
+      "readOnly": true,
       "driver": "993988460d8f49a2ac519a2935f11533"
     },
     {
       "atr": "3BDF960081B1FE451F838073CC91CBF9A0000003080000100079",
       "name": "USG:State Department",
+      "readOnly": true,
       "driver": "993988460d8f49a2ac519a2935f11533"
     },
     {
@@ -215,6 +218,7 @@
     {
       "atr": "3B7D94000080318065B0831100C883009000",
       "name": "Personal identity card (ID card) of Republic of Lithuania",
+      "readOnly": true,
       "driver": "71789068c5ff4891aeeaf7fb9608a22f"
     },
     {
@@ -227,7 +231,13 @@
       "atr": "3BF21800FFC10A31FE55C8068A",
       "name": "Aladdin Knowledge Systems eToken Pro 64k (4.2)",
       "driver": "11A4BEA85E4C5D7EC6CDE452A70448A73EBE191B"
-    }
+    },
+    {
+      "atr": "3B7F960000006A444E4965200101550410039000",
+      "name": "DNI (National Identity Document), Spanish ID Card",
+      "readOnly": true,
+      "driver": "993988460d8f49a2ac519a2935f11533"
+     }
   ],
   "drivers": [
     {
