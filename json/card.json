@@ -4,7 +4,7 @@
   "cards": [
     {
       "atr": "3b9813400aa503010101ad1311",
-      "name": "Belgian eID",
+      "name": "National Identity Document: Belgian eID",
       "driver": "89648ea52ed24a799aff9f9ff363eef4"
     },
     {
@@ -66,79 +66,79 @@
     },
     {
       "atr": "3BFE9400FF80B1FA451F0345737445494420",
-      "name": "Broken EstEID 1.1 warm",
+      "name": "National Identity Document: Broken EstEID 1.1 warm",
       "readOnly": true,
       "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
     },
     {
       "atr": "3BFE9400FF80B1FA451F034573744549442076657220312E3043",
-      "name": "EstEID 1.0 cold",
+      "name": "National Identity Document: EstEID 1.0 cold",
       "readOnly": true,
       "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
     },
     {
       "atr": "3B6E00FF4573744549442076657220312E30",
-      "name": "EstEID 1.0 cold",
+      "name": "National Identity Document: EstEID 1.0 cold",
       "readOnly": true,
       "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
     },
     {
       "atr": "3BDE18FFC080B1FE451F034573744549442076657220312E302B",
-      "name": "EstEID 1.0 cold 2006",
+      "name": "National Identity Document: EstEID 1.0 cold 2006",
       "readOnly": true,
       "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
     },
     {
       "atr": "3B5E11FF4573744549442076657220312E30",
-      "name": "EstEID 1.0 warm 2006",
+      "name": "National Identity Document: EstEID 1.0 warm 2006",
       "readOnly": true,
       "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
     },
     {
       "atr": "3b6e00004573744549442076657220312e30",
-      "name": "EstEID 1.1 cold",
+      "name": "National Identity Document: EstEID 1.1 cold",
       "readOnly": true,
       "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
     },
     {
       "atr": "3BFE1800008031FE454573744549442076657220312E30A8",
-      "name": "EstEID 3.0 (dev1) cold",
+      "name": "National Identity Document: EstEID 3.0 (dev1) cold",
       "readOnly": true,
       "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
     },
     {
       "atr": "3BFE1800008031FE45803180664090A4561B168301900086",
-      "name": "EstEID 3.0 (dev1) warm",
+      "name": "National Identity Document: EstEID 3.0 (dev1) warm",
       "readOnly": true,
       "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
     },
     {
       "atr": "3BFE1800008031FE45803180664090A4162A0083019000E1",
-      "name": "EstEID 3.0 (dev2) warm",
+      "name": "National Identity Document: EstEID 3.0 (dev2) warm",
       "readOnly": true,
       "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
     },
     {
       "atr": "3BFE1800008031FE45803180664090A4162A00830F9000EF",
-      "name": "EstEID 3.0 (18.01.2011) warm",
+      "name": "National Identity Document: EstEID 3.0 (18.01.2011) warm",
       "readOnly": true,
       "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
     },
     {
       "atr": "3BF9180000C00A31FE4553462D3443432D303181",
-      "name": "Estonian ID card",
+      "name": "National Identity Document: Estonian eID",
       "readOnly": true,
       "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
     },
     {
       "atr": "3BF81300008131FE454A434F5076323431B7",
-      "name": "Estonian ID card",
+      "name": "National Identity Document: Estonian eID",
       "readOnly": true,
       "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
     },
     {
       "atr": "3BFA1800008031FE45FE654944202F20504B4903",
-      "name": "EstEID 3.5 cold",
+      "name": "National Identity Document: EstEID 3.5 cold",
       "readOnly": true,
       "driver": "c4e60449442848c48af7b3fcf6a6f4a1"
     },
@@ -217,13 +217,13 @@
     },
     {
       "atr": "3B7D94000080318065B0831100C883009000",
-      "name": "Personal identity card (ID card) of Republic of Lithuania",
+      "name": "National Identity Document: Republic of Lithuania eID",
       "readOnly": true,
       "driver": "71789068c5ff4891aeeaf7fb9608a22f"
     },
     {
       "atr": "3BDF18008131FE580031B964050E010073B401D300000022",
-      "name": "Slovak eID",
+      "name": "National Identity Document: Slovak eID",
       "readOnly": true,
       "driver": "39798896FC5DD6E2A96989718F694334275E0EAC"
     },
@@ -234,7 +234,7 @@
     },
     {
       "atr": "3B7F960000006A444E4965200101550410039000",
-      "name": "DNI (National Identity Document), Spanish ID Card",
+      "name": "National Identity Document: Spanish eID ",
       "readOnly": true,
       "driver": "993988460d8f49a2ac519a2935f11533"
      },
@@ -268,7 +268,7 @@
     },
     {
       "id": "39798896FC5DD6E2A96989718F694334275E0EAC",
-      "name": "Slovak eID",
+      "name": "National Identity Document: Slovenian eID",
       "file": {
         "windows": {
           "x86": "%PROGRAMFILES(X86)/eID klient/pkcs11_x64.dll",
@@ -318,7 +318,7 @@
     },
     {
       "id": "c4e60449442848c48af7b3fcf6a6f4a1",
-      "name": "Estonian ID",
+      "name": "Estonian eID Middleware",
       "file": {
         "windows": "%WINDIR/System32/onepin-opensc-pkcs11.dll",
         "osx": "/Library/EstonianIDCard/lib/esteid-pkcs11-onepin.so"
@@ -353,7 +353,7 @@
     },
     {
       "id": "89648ea52ed24a799aff9f9ff363eef4",
-      "name": "Belgian eID",
+      "name": "Belgian eID Middleware",
       "file": {
         "osx": "/usr/local/lib/beid-pkcs11.bundle/Contents/MacOS/libbeidpkcs11.dylib",
         "linux": "/usr/lib/libbeidpkcs11.so",
