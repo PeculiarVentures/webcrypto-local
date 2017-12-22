@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "cards": [
     {
       "atr": "3b9813400aa503010101ad1311",
@@ -236,7 +236,7 @@
       "atr": "3B7F960000006A444E4965200101550410039000",
       "name": "National Identity Document: Spanish eID ",
       "readOnly": true,
-      "driver": "993988460d8f49a2ac519a2935f11533"
+      "driver": "8CB0815E0084862EB3ABD77848B67710A0F9E4D9"
      },
      {
       "atr": "3BDC18FF8191FE1FC38073C8211366010B0352000538",
@@ -245,6 +245,13 @@
     }
   ],
   "drivers": [
+    {
+      "id": "8CB0815E0084862EB3ABD77848B67710A0F9E4D9",
+      "name": "Spanish eID",
+      "file": {
+        "windows": "%WINDIR/System32/DNIe_P11_x64.dll"
+      }
+    },
     {
       "id": "29a2bd60c4b841c686be68d2874c0c02",
       "name": "Athena IDProtect",
