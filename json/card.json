@@ -34,74 +34,74 @@
 		},
 		{
 			"atr": "3BF81300008131FE454A434F5076323431B7",
-			"name": "National Identity Document: Estonian eID",
+			"name": "National Identity Document: Nigerian eID",
 			"readOnly": true,
 			"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
 		},
 
 		{
 			"atr": "3BFE9400FF80B1FA451F0345737445494420",
-			"name": "National Identity Document: Broken EstEID 1.1 warm",
+			"name": "National Identity Document: Broken Estonian eID 1.1 warm",
 			"readOnly": true,
 			"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
 		},
 		{
 			"atr": "3BFE9400FF80B1FA451F034573744549442076657220312E3043",
-			"name": "National Identity Document: EstEID 1.0 cold",
+			"name": "National Identity Document: Estonian eID 1.0 cold",
 			"readOnly": true,
 			"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
 		},
 		{
 			"atr": "3B6E00FF4573744549442076657220312E30",
-			"name": "National Identity Document: EstEID 1.0 cold",
+			"name": "National Identity Document: Estonian eID 1.0 cold",
 			"readOnly": true,
 			"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
 		},
 		{
 			"atr": "3BDE18FFC080B1FE451F034573744549442076657220312E302B",
-			"name": "National Identity Document: EstEID 1.0 cold 2006",
+			"name": "National Identity Document: Estonian eID 1.0 cold 2006",
 			"readOnly": true,
 			"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
 		},
 		{
 			"atr": "3B5E11FF4573744549442076657220312E30",
-			"name": "National Identity Document: EstEID 1.0 warm 2006",
+			"name": "National Identity Document: Estonian eID 1.0 warm 2006",
 			"readOnly": true,
 			"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
 		},
 		{
 			"atr": "3b6e00004573744549442076657220312e30",
-			"name": "National Identity Document: EstEID 1.1 cold",
+			"name": "National Identity Document: Estonian eID 1.1 cold",
 			"readOnly": true,
 			"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
 		},
 		{
 			"atr": "3BFE1800008031FE454573744549442076657220312E30A8",
-			"name": "National Identity Document: EstEID 3.0 (dev1) cold",
+			"name": "National Identity Document: Estonian eID 3.0 (dev1) cold",
 			"readOnly": true,
 			"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
 		},
 		{
 			"atr": "3BFE1800008031FE45803180664090A4561B168301900086",
-			"name": "National Identity Document: EstEID 3.0 (dev1) warm",
+			"name": "National Identity Document: Estonian eID 3.0 (dev1) warm",
 			"readOnly": true,
 			"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
 		},
 		{
 			"atr": "3BFE1800008031FE45803180664090A4162A0083019000E1",
-			"name": "National Identity Document: EstEID 3.0 (dev2) warm",
+			"name": "National Identity Document: Estonian eID 3.0 (dev2) warm",
 			"readOnly": true,
 			"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
 		},
 		{
 			"atr": "3BFE1800008031FE45803180664090A4162A00830F9000EF",
-			"name": "National Identity Document: EstEID 3.0 (18.01.2011) warm",
+			"name": "National Identity Document: Estonian eID 3.0 (18.01.2011) warm",
 			"readOnly": true,
 			"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
 		},
 		{
 			"atr": "3BFA1800008031FE45FE654944202F20504B4903",
-			"name": "National Identity Document: EstEID 3.5 cold",
+			"name": "National Identity Document: Estonian eID 3.5 cold",
 			"readOnly": true,
 			"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
 		},
