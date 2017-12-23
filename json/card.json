@@ -25,7 +25,12 @@
 			"readOnly": true,
 			"driver": "39798896FC5DD6E2A96989718F694334275E0EAC"
 		},
-
+		{
+			"atr": "3BF81300008131FE454A434F5076323431B7",
+			"name": "National Identity Document: Nigerian eID",
+			"readOnly": true,
+			"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
+		},
 		{
 			"atr": "3BF9180000C00A31FE4553462D3443432D303181",
 			"name": "National Identity Document: Estonian eID",
@@ -38,7 +43,6 @@
 			"readOnly": true,
 			"driver": "c4e60449442848c48af7b3fcf6a6f4a1"
 		},
-
 		{
 			"atr": "3BFE9400FF80B1FA451F0345737445494420",
 			"name": "National Identity Document: Broken Estonian eID 1.1 warm",
