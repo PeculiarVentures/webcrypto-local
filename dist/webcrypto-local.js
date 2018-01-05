@@ -3470,7 +3470,32 @@ var LocalProvider = (function (_super) {
                             _this.emit("info", message);
                         })
                             .on("new", function (card) {
-                            return _this.emit("token_new", card);
+                            if (os.platform() === "win32") {
+                                var providers = GetPvPkcs11Slots(card.reader);
+                                var added_1 = [];
+                                if (providers.length) {
+                                    providers.forEach(function (crypto$$1) {
+                                        var info = getSlotInfo(crypto$$1);
+                                        info.atr = pvtsutils.Convert.ToHex(card.atr);
+                                        info.library = pvpkcs11Path;
+                                        info.id = digest(DEFAULT_HASH_ALG, card.reader + card.atr + crypto$$1.slot.handle.toString()).toString("hex");
+                                        added_1.push(info);
+                                        _this.addProvider(crypto$$1);
+                                    });
+                                }
+                                if (added_1.length) {
+                                    _this.emit("token", {
+                                        added: added_1,
+                                        removed: [],
+                                    });
+                                }
+                                else {
+                                    return _this.emit("token_new", card);
+                                }
+                            }
+                            else {
+                                return _this.emit("token_new", card);
+                            }
                         })
                             .on("insert", this.onTokenInsert.bind(this))
                             .on("remove", this.onTokenRemove.bind(this))
@@ -3611,7 +3636,7 @@ var LocalProvider = (function (_super) {
                 break;
         }
         if (lastError) {
-            var added_1 = [];
+            var added_2 = [];
             if (os.platform() === "win32") {
                 var providers = GetPvPkcs11Slots(card.reader);
                 if (providers.length) {
@@ -3620,14 +3645,21 @@ var LocalProvider = (function (_super) {
                         info.atr = pvtsutils.Convert.ToHex(card.atr);
                         info.library = pvpkcs11Path;
                         info.id = digest(DEFAULT_HASH_ALG, card.reader + card.atr + crypto$$1.slot.handle.toString()).toString("hex");
-                        added_1.push(info);
+                        added_2.push(info);
                         _this.addProvider(crypto$$1);
                     });
+                    this.emit("token", {
+                        added: added_2,
+                        removed: [],
+                    });
                 }
-                this.emit("token", {
-                    added: added_1,
-                    removed: [],
-                });
+                else {
+                    this.emit("token", {
+                        added: [],
+                        removed: [],
+                        error: lastError,
+                    });
+                }
             }
             else {
                 this.emit("token", {
