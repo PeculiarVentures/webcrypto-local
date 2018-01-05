@@ -3350,6 +3350,7 @@ var Pkcs11Crypto = (function (_super) {
     return Pkcs11Crypto;
 }(nodeWebcryptoP11.WebCrypto));
 
+var pvpkcs11Path;
 var LocalProvider = (function (_super) {
     tslib_1.__extends(LocalProvider, _super);
     function LocalProvider(config) {
@@ -3377,7 +3378,7 @@ var LocalProvider = (function (_super) {
     LocalProvider.prototype.open = function () {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var EVENT_LOG, pvpkcs11Path, libName, crypto$$1, _i, _a, prov, _b, _c, slot, crypto$$1, _d, _e;
+            var EVENT_LOG, libName, crypto$$1, _i, _a, prov, _b, _c, slot, crypto$$1, _d, _e;
             return tslib_1.__generator(this, function (_f) {
                 switch (_f.label) {
                     case 0:
@@ -3610,11 +3611,31 @@ var LocalProvider = (function (_super) {
                 break;
         }
         if (lastError) {
-            this.emit("token", {
-                added: [],
-                removed: [],
-                error: lastError,
-            });
+            var added_1 = [];
+            if (os.platform() === "win32") {
+                var providers = GetPvPkcs11Slots(card.reader);
+                if (providers.length) {
+                    providers.forEach(function (crypto$$1) {
+                        var info = getSlotInfo(crypto$$1);
+                        info.atr = pvtsutils.Convert.ToHex(card.atr);
+                        info.library = pvpkcs11Path;
+                        info.id = digest(DEFAULT_HASH_ALG, card.reader + card.atr + crypto$$1.slot.handle.toString()).toString("hex");
+                        added_1.push(info);
+                        _this.addProvider(crypto$$1);
+                    });
+                }
+                this.emit("token", {
+                    added: added_1,
+                    removed: [],
+                });
+            }
+            else {
+                this.emit("token", {
+                    added: [],
+                    removed: [],
+                    error: lastError,
+                });
+            }
         }
     };
     LocalProvider.prototype.onTokenRemove = function (card) {
@@ -3701,6 +3722,39 @@ function getSlotInfo(p11Crypto) {
     info.readOnly = !(session.flags & graphene.SessionFlag.RW_SESSION);
     return info;
 }
+function GetPvPkcs11Slots(reader) {
+    var res = [];
+    try {
+        var mod = graphene.Module.load(pvpkcs11Path, reader);
+        console.log("GetPvPkcs11Slots");
+        try {
+            mod.initialize();
+        }
+        catch (err) {
+            if (!/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
+                throw err;
+            }
+        }
+        var slots = mod.getSlots(true);
+        for (var i = 0; i < slots.length; i++) {
+            var slot = slots.items(i);
+            console.log(slot.slotDescription, reader);
+            if (slot.slotDescription === reader) {
+                var provider = new Pkcs11Crypto({
+                    library: pvpkcs11Path,
+                    slot: i,
+                    readWrite: false,
+                    name: reader,
+                });
+                res.push(provider);
+            }
+        }
+    }
+    catch (err) {
+        console.log(err);
+    }
+    return res;
+}
 
 var pkijs$1 = require("pkijs");
 graphene.registerAttribute("x509Chain", 2147483905, "buffer");
@@ -3736,7 +3790,7 @@ var CertificateStorageService = (function (_super) {
     };
     CertificateStorageService.prototype.onMessage = function (session, action) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var result, _a, params, crypto$$1, item, cryptoKey, cryptoCert, certProto, _b, params, crypto$$1, cert, index, params, crypto$$1, params, crypto$$1, item, cryptoKey, cryptoCert, certProto, _c, params, crypto$$1, cert, exportedData, params, crypto$$1, keys, _d, params, crypto$$1, params, crypto$$1, cert, index, params, crypto$$1, cert, resultProto, pkiEntryCert, itemProto, buffer, isX509ChainSupported, ulongSize, i, itemType, itemProto, itemSizeBuffer, itemSize, itemValue, indexes, trustedCerts, certs, _i, indexes_1, index, parts, cryptoCert, pkiCert, chainBuilder, chain, resultChain, _e, resultChain_1, item, itemProto, _f, params_1, crlArray, params_2, ocspArray;
+            var result, _a, params, crypto$$1, item, cryptoKey, cryptoCert, certProto, _b, params, crypto$$1, cert, index, params, crypto$$1, params, crypto$$1, item, cryptoKey, cryptoCert, certProto, _c, params, crypto$$1, cert, exportedData, params, crypto$$1, keys, _d, params, crypto$$1, params, crypto$$1, cert, index, params, crypto$$1, cert, resultProto, pkiEntryCert, itemProto, buffer, isX509ChainSupported, ulongSize, i, itemType, itemProto, itemSizeBuffer, itemSize, itemValue, indexes, trustedCerts, certs, _i, indexes_1, index, parts, cryptoCert, pkiCert, chainBuilder, chain, resultChain, _e, resultChain_1, item, itemProto, items, _f, params_1, crlArray, params_2, ocspArray;
             return tslib_1.__generator(this, function (_g) {
                 switch (_g.label) {
                     case 0:
@@ -3910,6 +3964,7 @@ var CertificateStorageService = (function (_super) {
                             isX509ChainSupported = false;
                         }
                         if (!isX509ChainSupported) return [3, 44];
+                        this.emit("info", "Service:CertificateStorage:GetChain: CKA_X509_CHAIN is supported");
                         ulongSize = cert.p11Object.handle.length;
                         i = 0;
                         while (i < buffer.length) {
@@ -3934,7 +3989,9 @@ var CertificateStorageService = (function (_super) {
                             i += ulongSize + itemSize;
                         }
                         return [3, 52];
-                    case 44: return [4, crypto$$1.certStorage.keys()];
+                    case 44:
+                        this.emit("info", "Service:CertificateStorage:GetChain: CKA_X509_CHAIN is not supported");
+                        return [4, crypto$$1.certStorage.keys()];
                     case 45:
                         indexes = _g.sent();
                         trustedCerts = [];
@@ -3998,6 +4055,11 @@ var CertificateStorageService = (function (_super) {
                     case 52: return [3, 54];
                     case 53: throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_NOT_SUPPORTED, "Provider doesn't support GetChain method");
                     case 54:
+                        if (resultProto.items) {
+                            items = resultProto.items
+                                .map(function (item) { return item.type; });
+                            this.emit("info", "Service:CertificateStorage:GetChain: " + items.join(",") + " items:" + items.length);
+                        }
                         _f = result;
                         return [4, resultProto.exportProto()];
                     case 55:
