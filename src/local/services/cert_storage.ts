@@ -208,6 +208,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                     }
 
                     if (isX509ChainSupported) {
+                        this.emit("info", "Service:CertificateStorage:GetChain: CKA_X509_CHAIN is supported");
                         const ulongSize = (cert as any).p11Object.handle.length;
                         let i = 0;
                         while (i < buffer.length) {
@@ -232,6 +233,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                             i += ulongSize + itemSize;
                         }
                     } else {
+                        this.emit("info", "Service:CertificateStorage:GetChain: CKA_X509_CHAIN is not supported");
                         // Get all certificates from token
                         const indexes = await crypto.certStorage.keys();
                         const trustedCerts = [];
@@ -296,6 +298,13 @@ export class CertificateStorageService extends Service<CryptoService> {
                     }
                 } else {
                     throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_NOT_SUPPORTED, "Provider doesn't support GetChain method");
+                }
+
+                // log
+                if (resultProto.items) {
+                    const items = resultProto.items
+                        .map((item) => item.type);
+                    this.emit("info", `Service:CertificateStorage:GetChain: ${items.join(",")} items:${items.length}`);
                 }
 
                 // result
