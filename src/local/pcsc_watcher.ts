@@ -2,6 +2,8 @@ import { EventEmitter } from "events";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import { CardReader } from "../types/pcsclite";
+import { PV_PKCS11_LIB } from "./const";
 import { WebCryptoLocalError } from "./error";
 const pcsc: () => PCSCLite.PCSCLite = require("pcsclite");
 
@@ -12,7 +14,7 @@ export interface PCSCWatcherEvent {
 
 export class PCSCWatcher extends EventEmitter {
 
-    public readers: string[] = [];
+    public readers: CardReader[] = [];
     protected pcsc: PCSCLite.PCSCLite | null = null;
 
     constructor() {
@@ -27,7 +29,7 @@ export class PCSCWatcher extends EventEmitter {
             });
             this.pcsc.on("reader", (reader) => {
                 this.emit("info", `PCSCWatcher: New reader detected ${reader.name}`);
-                this.readers.push(reader.name);
+                this.readers.push(reader);
                 let atr: Buffer | null;
                 reader.state = 0;
                 reader.on("error", (err) => {
@@ -235,6 +237,9 @@ export class CardConfig {
                     }
                 }
             }
+            if (os.platform() === "win32") {
+                library.push(PV_PKCS11_LIB);
+            }
             driver.libraries = library.map((lib) => {
                 let res = replaceTemplates(lib, process.env, "%");
                 if (json.vars) {
@@ -294,7 +299,16 @@ export class CardWatcher extends EventEmitter {
             })
             .on("insert", (e) => {
                 try {
-                    const card = this.config.getItem(e.atr);
+                    let card = this.config.getItem(e.atr);
+                    if (!card && os.platform() === "win32") {
+                        card = {
+                            atr: e.atr,
+                            reader: e.reader.name,
+                            libraries: [PV_PKCS11_LIB],
+                            name: "SCard Windows API",
+                            readOnly: false,
+                        };
+                    }
                     if (card) {
                         card.reader = e.reader.name;
                         this.add(card);
@@ -311,7 +325,16 @@ export class CardWatcher extends EventEmitter {
             })
             .on("remove", (e) => {
                 try {
-                    const card = this.config.getItem(e.atr);
+                    let card = this.config.getItem(e.atr);
+                    if (!card && os.platform() === "win32") {
+                        card = {
+                            atr: e.atr,
+                            reader: e.reader.name,
+                            libraries: [PV_PKCS11_LIB],
+                            name: "SCard Windows API",
+                            readOnly: false,
+                        };
+                    }
                     if (card) {
                         card.reader = e.reader.name;
                         this.remove(card);
@@ -359,7 +382,7 @@ export class CardWatcher extends EventEmitter {
     }
 
     protected remove(card: Card) {
-        this.cards.filter((item) => item !== card);
+        this.cards = this.cards.filter((item) => item !== card);
     }
 
 }

@@ -2,12 +2,11 @@ import { EventEmitter } from "events";
 import * as fs from "fs";
 import * as graphene from "graphene-pk11";
 import * as os from "os";
-import * as path from "path";
 import { Convert } from "pvtsutils";
 
 import { MapChangeEvent } from "../core/map";
 import { ProviderCryptoProto, ProviderInfoProto } from "../core/protos/provider";
-import { DEFAULT_HASH_ALG } from "./const";
+import { DEFAULT_HASH_ALG, PV_PKCS11_LIB } from "./const";
 import { CryptoMap } from "./crypto_map";
 import { WebCryptoLocalError } from "./error";
 import { digest } from "./helper";
@@ -47,8 +46,6 @@ type LocalProviderTokenNewHandler = (info: PCSCCard) => void;
 type LocalProviderListeningHandler = (info: IModule[]) => void;
 type LocalProviderErrorHandler = (e: Error) => void;
 type LocalProviderStopHandler = () => void;
-
-let pvpkcs11Path: string;
 
 export class LocalProvider extends EventEmitter {
 
@@ -110,40 +107,11 @@ export class LocalProvider extends EventEmitter {
         this.info.providers = [];
 
         //#region System via pvpkcs11
-        if ((process.versions as any).electron) {
-            let libName = "";
-            switch (os.platform()) {
-                case "win32":
-                    libName = "pvpkcs11.dll";
-                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", "..", "..", libName);
-                    break;
-                case "darwin":
-                    libName = "libpvpkcs11.dylib";
-                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", libName);
-                    break;
-                default:
-                    libName = "pvpkcs11.so";
-                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", libName);
-            }
-        } else {
-            // Dev paths for different os
-            switch (os.platform()) {
-                case "win32":
-                    pvpkcs11Path = "/github/pv/pvpkcs11/build/Debug/pvpkcs11.dll";
-                    break;
-                case "darwin":
-                    pvpkcs11Path = "/Users/microshine/Library/Developer/Xcode/DerivedData/config-hkruqzwffnciyjeujlpxkaxbdiun/Build/Products/Debug/libpvpkcs11.dylib";
-                    break;
-                default:
-                    // Use SoftHSM by default
-                    pvpkcs11Path = "/usr/local/lib/softhsm/libsofthsm2.so";
-            }
-        }
         {
-            if (fs.existsSync(pvpkcs11Path)) {
+            if (fs.existsSync(PV_PKCS11_LIB)) {
                 try {
                     const crypto = new Pkcs11Crypto({
-                        library: pvpkcs11Path,
+                        library: PV_PKCS11_LIB,
                         slot: 0,
                         readWrite: true,
                     });
@@ -151,10 +119,10 @@ export class LocalProvider extends EventEmitter {
                     crypto.isLoggedIn = true;
                     this.addProvider(crypto);
                 } catch (e) {
-                    this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot load library by path ${pvpkcs11Path}. ${e.message}`));
+                    this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot load library by path ${PV_PKCS11_LIB}. ${e.message}`));
                 }
             } else {
-                this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot find pvpkcs11 by path ${pvpkcs11Path}`));
+                this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot find pvpkcs11 by path ${PV_PKCS11_LIB}`));
             }
         }
         //#endregion
@@ -196,31 +164,7 @@ export class LocalProvider extends EventEmitter {
                 this.emit("info", message);
             })
             .on("new", (card) => {
-                if (os.platform() === "win32") {
-                    const providers = GetPvPkcs11Slots(card.reader);
-                    const added: IProvider[] = [];
-                    if (providers.length) {
-                        providers.forEach((crypto) => {
-                            const info = getSlotInfo(crypto);
-                            info.atr = Convert.ToHex(card.atr);
-                            info.library = pvpkcs11Path;
-                            info.id = digest(DEFAULT_HASH_ALG, card.reader + card.atr + crypto.slot.handle.toString()).toString("hex");
-
-                            added.push(info);
-                            this.addProvider(crypto);
-                        });
-                    }
-                    if (added.length) {
-                        this.emit("token", {
-                            added,
-                            removed: [],
-                        });
-                    } else {
-                        return this.emit("token_new", card);
-                    }
-                } else {
-                    return this.emit("token_new", card);
-                }
+                return this.emit("token_new", card);
             })
             .on("insert", this.onTokenInsert.bind(this))
             .on("remove", this.onTokenRemove.bind(this))
@@ -307,6 +251,13 @@ export class LocalProvider extends EventEmitter {
                     if (!slot || this.hasProvider(slot)) {
                         continue;
                     }
+                    if (os.platform() === "win32" &&
+                        /pvpkcs11\.dll$/.test(slot.lib.libPath) &&
+                        slot.slotDescription !== card.reader) {
+                        // NOTE:  pvpkcs11 implementation has only one slot for MiniDriver
+                        // Use only slot where slotDescription equals to reader name
+                        continue;
+                    }
                     slotIndexes.push(i);
                 }
                 if (!slotIndexes.length) {
@@ -347,38 +298,11 @@ export class LocalProvider extends EventEmitter {
             }
         }
         if (lastError) {
-            const added: IProvider[] = [];
-            if (os.platform() === "win32") {
-                const providers = GetPvPkcs11Slots(card.reader);
-                if (providers.length) {
-                    providers.forEach((crypto) => {
-                        const info = getSlotInfo(crypto);
-                        info.atr = Convert.ToHex(card.atr);
-                        info.library = pvpkcs11Path;
-                        info.id = digest(DEFAULT_HASH_ALG, card.reader + card.atr + crypto.slot.handle.toString()).toString("hex");
-
-                        added.push(info);
-                        this.addProvider(crypto);
-                    });
-
-                    this.emit("token", {
-                        added,
-                        removed: [],
-                    });
-                } else {
-                    this.emit("token", {
-                        added: [],
-                        removed: [],
-                        error: lastError,
-                    });
-                }
-            } else {
-                this.emit("token", {
-                    added: [],
-                    removed: [],
-                    error: lastError,
-                });
-            }
+            this.emit("token", {
+                added: [],
+                removed: [],
+                error: lastError,
+            });
         }
     }
 
@@ -423,6 +347,7 @@ export class LocalProvider extends EventEmitter {
                     ));
                 }
             });
+
             if (!cryptoIDs.length) {
                 this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.TOKEN_REMOVE_NO_SLOTS_FOUND));
             }
@@ -479,38 +404,4 @@ function getSlotInfo(p11Crypto: Pkcs11Crypto) {
     const info: IProvider = p11Crypto.info as any;
     info.readOnly = !(session.flags & graphene.SessionFlag.RW_SESSION);
     return info;
-}
-
-function GetPvPkcs11Slots(reader: string) {
-    const res: Pkcs11Crypto[] = [];
-    try {
-        const mod = graphene.Module.load(pvpkcs11Path, reader);
-        console.log("GetPvPkcs11Slots");
-        try {
-            mod.initialize();
-        } catch (err) {
-            if (!/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
-                throw err;
-            }
-        }
-
-        const slots = mod.getSlots(true);
-        for (let i = 0; i < slots.length; i++) {
-            const slot = slots.items(i);
-            console.log(slot.slotDescription, reader);
-            if (slot.slotDescription === reader) {
-                const provider = new Pkcs11Crypto({
-                    library: pvpkcs11Path,
-                    slot: i,
-                    readWrite: false,
-                    name: reader,
-                });
-                res.push(provider);
-            }
-        }
-    } catch (err) {
-        console.log(err);
-        // none
-    }
-    return res;
 }
