@@ -15,6 +15,7 @@ import { SubtleService } from "./subtle";
 export interface CryptoNotifyEvent {
     type: "pin";
     origin: string;
+    label: string;
     resolve: () => void;
     reject: (error: Error) => void;
 }
@@ -93,6 +94,7 @@ export class CryptoService extends Service<ProviderService> {
                                 this.emit("notify", {
                                     type: "pin",
                                     origin: session.headers.origin,
+                                    label: crypto.slot.getToken().label,
                                     resolve,
                                     reject,
                                 });

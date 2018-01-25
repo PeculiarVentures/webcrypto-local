@@ -1183,7 +1183,7 @@ var Server = (function (_super) {
                 }
             });
             connection.on("close", function (reasonCode, description) {
-                _this.sessions = _this.sessions.filter(function (session) { return session.connection !== connection; });
+                _this.sessions = _this.sessions.filter(function (session2) { return session2.connection !== connection; });
                 _this.emit("disconnect", new ServerDisconnectEvent(_this, connection.remoteAddress, reasonCode, description));
             });
         });
@@ -4985,7 +4985,7 @@ var CryptoService = (function (_super) {
     CryptoService.prototype.onMessage = function (session, action) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var result, _a, params, crypto$$1, params, crypto$$1, token, promise, pin, params, crypto$$1, params, crypto$$1;
+            var result, _a, params, crypto$$1, params, crypto_1, token, promise, pin, params, crypto$$1, params, crypto$$1;
             return tslib_1.__generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -5011,18 +5011,19 @@ var CryptoService = (function (_super) {
                         params = _b.sent();
                         return [4, this.getCrypto(params.providerID)];
                     case 6:
-                        crypto$$1 = _b.sent();
-                        if (!crypto$$1.login) return [3, 9];
-                        token = crypto$$1.slot.getToken();
+                        crypto_1 = _b.sent();
+                        if (!crypto_1.login) return [3, 9];
+                        token = crypto_1.slot.getToken();
                         if (!(token.flags & graphene.TokenFlag.LOGIN_REQUIRED)) return [3, 9];
                         if (!(token.flags & graphene.TokenFlag.PROTECTED_AUTHENTICATION_PATH)) return [3, 7];
-                        crypto$$1.login("");
+                        crypto_1.login("");
                         return [3, 9];
                     case 7:
                         promise = new Promise(function (resolve, reject) {
                             _this.emit("notify", {
                                 type: "pin",
                                 origin: session.headers.origin,
+                                label: crypto_1.slot.getToken().label,
                                 resolve: resolve,
                                 reject: reject,
                             });
@@ -5030,7 +5031,7 @@ var CryptoService = (function (_super) {
                         return [4, promise];
                     case 8:
                         pin = _b.sent();
-                        crypto$$1.login(pin);
+                        crypto_1.login(pin);
                         _b.label = 9;
                     case 9: return [3, 19];
                     case 10: return [4, LogoutActionProto.importProto(action)];
