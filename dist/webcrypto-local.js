@@ -1183,7 +1183,7 @@ var Server = (function (_super) {
                 }
             });
             connection.on("close", function (reasonCode, description) {
-                _this.sessions = _this.sessions.filter(function (session) { return session.connection !== connection; });
+                _this.sessions = _this.sessions.filter(function (session2) { return session2.connection !== connection; });
                 _this.emit("disconnect", new ServerDisconnectEvent(_this, connection.remoteAddress, reasonCode, description));
             });
         });
@@ -1479,6 +1479,37 @@ var CardReaderRemoveEventProto = (function (_super) {
     return CardReaderRemoveEventProto;
 }(CardReaderEventProto));
 
+var DEFAULT_HASH_ALG = "sha256";
+var PV_PKCS11_LIB = "";
+if (process.versions.electron) {
+    var libName = "";
+    switch (os.platform()) {
+        case "win32":
+            libName = "pvpkcs11.dll";
+            PV_PKCS11_LIB = path.join(__dirname, "..", "..", "..", "..", "..", libName);
+            break;
+        case "darwin":
+            libName = "libpvpkcs11.dylib";
+            PV_PKCS11_LIB = path.join(__dirname, "..", "..", "..", libName);
+            break;
+        default:
+            libName = "pvpkcs11.so";
+            PV_PKCS11_LIB = path.join(__dirname, "..", "..", "..", libName);
+    }
+}
+else {
+    switch (os.platform()) {
+        case "win32":
+            PV_PKCS11_LIB = "/github/pv/pvpkcs11/build/Debug/pvpkcs11.dll";
+            break;
+        case "darwin":
+            PV_PKCS11_LIB = "/Users/microshine/Library/Developer/Xcode/DerivedData/config-hkruqzwffnciyjeujlpxkaxbdiun/Build/Products/Debug/libpvpkcs11.dylib";
+            break;
+        default:
+            PV_PKCS11_LIB = "/usr/local/lib/softhsm/libsofthsm2.so";
+    }
+}
+
 var pcsc = require("pcsclite");
 var PCSCWatcher = (function (_super) {
     tslib_1.__extends(PCSCWatcher, _super);
@@ -1497,7 +1528,7 @@ var PCSCWatcher = (function (_super) {
             });
             this.pcsc.on("reader", function (reader) {
                 _this.emit("info", "PCSCWatcher: New reader detected " + reader.name);
-                _this.readers.push(reader.name);
+                _this.readers.push(reader);
                 var atr;
                 reader.state = 0;
                 reader.on("error", function (err) {
@@ -1628,6 +1659,9 @@ var CardConfig = (function () {
                     }
                 }
             }
+            if (os.platform() === "win32") {
+                library.push(PV_PKCS11_LIB);
+            }
             driver.libraries = library.map(function (lib) {
                 var res = replaceTemplates(lib, process.env, "%");
                 if (json.vars) {
@@ -1674,6 +1708,15 @@ var CardWatcher = (function (_super) {
             .on("insert", function (e) {
             try {
                 var card = _this.config.getItem(e.atr);
+                if (!card && os.platform() === "win32") {
+                    card = {
+                        atr: e.atr,
+                        reader: e.reader.name,
+                        libraries: [PV_PKCS11_LIB],
+                        name: "SCard Windows API",
+                        readOnly: false,
+                    };
+                }
                 if (card) {
                     card.reader = e.reader.name;
                     _this.add(card);
@@ -1693,6 +1736,15 @@ var CardWatcher = (function (_super) {
             .on("remove", function (e) {
             try {
                 var card = _this.config.getItem(e.atr);
+                if (!card && os.platform() === "win32") {
+                    card = {
+                        atr: e.atr,
+                        reader: e.reader.name,
+                        libraries: [PV_PKCS11_LIB],
+                        name: "SCard Windows API",
+                        readOnly: false,
+                    };
+                }
                 if (card) {
                     card.reader = e.reader.name;
                     _this.remove(card);
@@ -1726,7 +1778,7 @@ var CardWatcher = (function (_super) {
         }
     };
     CardWatcher.prototype.remove = function (card) {
-        this.cards.filter(function (item) { return item !== card; });
+        this.cards = this.cards.filter(function (item) { return item !== card; });
     };
     return CardWatcher;
 }(events.EventEmitter));
@@ -2260,8 +2312,6 @@ var CertificateStorageGetOCSPActionProto = (function (_super) {
     return CertificateStorageGetOCSPActionProto;
     var CertificateStorageGetOCSPActionProto_1;
 }(CryptoActionProto));
-
-var DEFAULT_HASH_ALG = "sha256";
 
 function digest(alg, data) {
     var hash = crypto.createHash(alg);
@@ -3377,7 +3427,7 @@ var LocalProvider = (function (_super) {
     LocalProvider.prototype.open = function () {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var EVENT_LOG, pvpkcs11Path, libName, crypto$$1, _i, _a, prov, _b, _c, slot, crypto$$1, _d, _e;
+            var EVENT_LOG, crypto$$1, _i, _a, prov, _b, _c, slot, crypto$$1, _d, _e;
             return tslib_1.__generator(this, function (_f) {
                 switch (_f.label) {
                     case 0:
@@ -3385,39 +3435,11 @@ var LocalProvider = (function (_super) {
                         this.info = new ProviderInfoProto();
                         this.info.name = "WebcryptoLocal";
                         this.info.providers = [];
-                        if (process.versions.electron) {
-                            libName = "";
-                            switch (os.platform()) {
-                                case "win32":
-                                    libName = "pvpkcs11.dll";
-                                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", "..", "..", libName);
-                                    break;
-                                case "darwin":
-                                    libName = "libpvpkcs11.dylib";
-                                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", libName);
-                                    break;
-                                default:
-                                    libName = "pvpkcs11.so";
-                                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", libName);
-                            }
-                        }
-                        else {
-                            switch (os.platform()) {
-                                case "win32":
-                                    pvpkcs11Path = "/github/pv/pvpkcs11/build/Debug/pvpkcs11.dll";
-                                    break;
-                                case "darwin":
-                                    pvpkcs11Path = "/Users/microshine/Library/Developer/Xcode/DerivedData/config-hkruqzwffnciyjeujlpxkaxbdiun/Build/Products/Debug/libpvpkcs11.dylib";
-                                    break;
-                                default:
-                                    pvpkcs11Path = "/usr/local/lib/softhsm/libsofthsm2.so";
-                            }
-                        }
                         {
-                            if (fs.existsSync(pvpkcs11Path)) {
+                            if (fs.existsSync(PV_PKCS11_LIB)) {
                                 try {
                                     crypto$$1 = new Pkcs11Crypto({
-                                        library: pvpkcs11Path,
+                                        library: PV_PKCS11_LIB,
                                         slot: 0,
                                         readWrite: true,
                                     });
@@ -3425,11 +3447,11 @@ var LocalProvider = (function (_super) {
                                     this.addProvider(crypto$$1);
                                 }
                                 catch (e) {
-                                    this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, EVENT_LOG + " Cannot load library by path " + pvpkcs11Path + ". " + e.message));
+                                    this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, EVENT_LOG + " Cannot load library by path " + PV_PKCS11_LIB + ". " + e.message));
                                 }
                             }
                             else {
-                                this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, EVENT_LOG + " Cannot find pvpkcs11 by path " + pvpkcs11Path));
+                                this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, EVENT_LOG + " Cannot find pvpkcs11 by path " + PV_PKCS11_LIB));
                             }
                         }
                         this.config.providers = this.config.providers || [];
@@ -3564,6 +3586,11 @@ var LocalProvider = (function (_super) {
                 for (var i = 0; i < slots.length; i++) {
                     var slot = slots.items(i);
                     if (!slot || this_1.hasProvider(slot)) {
+                        continue;
+                    }
+                    if (os.platform() === "win32" &&
+                        /pvpkcs11\.dll$/.test(slot.lib.libPath) &&
+                        slot.slotDescription !== card.reader) {
                         continue;
                     }
                     slotIndexes.push(i);
@@ -3736,7 +3763,7 @@ var CertificateStorageService = (function (_super) {
     };
     CertificateStorageService.prototype.onMessage = function (session, action) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var result, _a, params, crypto$$1, item, cryptoKey, cryptoCert, certProto, _b, params, crypto$$1, cert, index, params, crypto$$1, params, crypto$$1, item, cryptoKey, cryptoCert, certProto, _c, params, crypto$$1, cert, exportedData, params, crypto$$1, keys, _d, params, crypto$$1, params, crypto$$1, cert, index, params, crypto$$1, cert, resultProto, pkiEntryCert, itemProto, buffer, isX509ChainSupported, ulongSize, i, itemType, itemProto, itemSizeBuffer, itemSize, itemValue, indexes, trustedCerts, certs, _i, indexes_1, index, parts, cryptoCert, pkiCert, chainBuilder, chain, resultChain, _e, resultChain_1, item, itemProto, _f, params_1, crlArray, params_2, ocspArray;
+            var result, _a, params, crypto$$1, item, cryptoKey, cryptoCert, certProto, _b, params, crypto$$1, cert, index, params, crypto$$1, params, crypto$$1, item, cryptoKey, cryptoCert, certProto, _c, params, crypto$$1, cert, exportedData, params, crypto$$1, keys, _d, params, crypto$$1, params, crypto$$1, cert, index, params, crypto$$1, cert, resultProto, pkiEntryCert, itemProto, buffer, isX509ChainSupported, ulongSize, i, itemType, itemProto, itemSizeBuffer, itemSize, itemValue, indexes, trustedCerts, certs, _i, indexes_1, index, parts, cryptoCert, pkiCert, chainBuilder, chain, resultChain, _e, resultChain_1, item, itemProto, items, _f, params_1, crlArray, params_2, ocspArray;
             return tslib_1.__generator(this, function (_g) {
                 switch (_g.label) {
                     case 0:
@@ -3910,6 +3937,7 @@ var CertificateStorageService = (function (_super) {
                             isX509ChainSupported = false;
                         }
                         if (!isX509ChainSupported) return [3, 44];
+                        this.emit("info", "Service:CertificateStorage:GetChain: CKA_X509_CHAIN is supported");
                         ulongSize = cert.p11Object.handle.length;
                         i = 0;
                         while (i < buffer.length) {
@@ -3934,7 +3962,9 @@ var CertificateStorageService = (function (_super) {
                             i += ulongSize + itemSize;
                         }
                         return [3, 52];
-                    case 44: return [4, crypto$$1.certStorage.keys()];
+                    case 44:
+                        this.emit("info", "Service:CertificateStorage:GetChain: CKA_X509_CHAIN is not supported");
+                        return [4, crypto$$1.certStorage.keys()];
                     case 45:
                         indexes = _g.sent();
                         trustedCerts = [];
@@ -3998,6 +4028,11 @@ var CertificateStorageService = (function (_super) {
                     case 52: return [3, 54];
                     case 53: throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_NOT_SUPPORTED, "Provider doesn't support GetChain method");
                     case 54:
+                        if (resultProto.items) {
+                            items = resultProto.items
+                                .map(function (item) { return item.type; });
+                            this.emit("info", "Service:CertificateStorage:GetChain: " + items.join(",") + " items:" + items.length);
+                        }
                         _f = result;
                         return [4, resultProto.exportProto()];
                     case 55:
@@ -4950,7 +4985,7 @@ var CryptoService = (function (_super) {
     CryptoService.prototype.onMessage = function (session, action) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var result, _a, params, crypto$$1, params, crypto$$1, token, promise, pin, params, crypto$$1, params, crypto$$1;
+            var result, _a, params, crypto$$1, params, crypto_1, token, promise, pin, params, crypto$$1, params, crypto$$1;
             return tslib_1.__generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -4976,18 +5011,19 @@ var CryptoService = (function (_super) {
                         params = _b.sent();
                         return [4, this.getCrypto(params.providerID)];
                     case 6:
-                        crypto$$1 = _b.sent();
-                        if (!crypto$$1.login) return [3, 9];
-                        token = crypto$$1.slot.getToken();
+                        crypto_1 = _b.sent();
+                        if (!crypto_1.login) return [3, 9];
+                        token = crypto_1.slot.getToken();
                         if (!(token.flags & graphene.TokenFlag.LOGIN_REQUIRED)) return [3, 9];
                         if (!(token.flags & graphene.TokenFlag.PROTECTED_AUTHENTICATION_PATH)) return [3, 7];
-                        crypto$$1.login("");
+                        crypto_1.login("");
                         return [3, 9];
                     case 7:
                         promise = new Promise(function (resolve, reject) {
                             _this.emit("notify", {
                                 type: "pin",
                                 origin: session.headers.origin,
+                                label: crypto_1.slot.getToken().label,
                                 resolve: resolve,
                                 reject: reject,
                             });
@@ -4995,7 +5031,7 @@ var CryptoService = (function (_super) {
                         return [4, promise];
                     case 8:
                         pin = _b.sent();
-                        crypto$$1.login(pin);
+                        crypto_1.login(pin);
                         _b.label = 9;
                     case 9: return [3, 19];
                     case 10: return [4, LogoutActionProto.importProto(action)];

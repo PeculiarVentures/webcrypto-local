@@ -2,12 +2,11 @@ import { EventEmitter } from "events";
 import * as fs from "fs";
 import * as graphene from "graphene-pk11";
 import * as os from "os";
-import * as path from "path";
 import { Convert } from "pvtsutils";
 
 import { MapChangeEvent } from "../core/map";
 import { ProviderCryptoProto, ProviderInfoProto } from "../core/protos/provider";
-import { DEFAULT_HASH_ALG } from "./const";
+import { DEFAULT_HASH_ALG, PV_PKCS11_LIB } from "./const";
 import { CryptoMap } from "./crypto_map";
 import { WebCryptoLocalError } from "./error";
 import { digest } from "./helper";
@@ -108,41 +107,11 @@ export class LocalProvider extends EventEmitter {
         this.info.providers = [];
 
         //#region System via pvpkcs11
-        let pvpkcs11Path: string;
-        if ((process.versions as any).electron) {
-            let libName = "";
-            switch (os.platform()) {
-                case "win32":
-                    libName = "pvpkcs11.dll";
-                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", "..", "..", libName);
-                    break;
-                case "darwin":
-                    libName = "libpvpkcs11.dylib";
-                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", libName);
-                    break;
-                default:
-                    libName = "pvpkcs11.so";
-                    pvpkcs11Path = path.join(__dirname, "..", "..", "..", libName);
-            }
-        } else {
-            // Dev paths for different os
-            switch (os.platform()) {
-                case "win32":
-                    pvpkcs11Path = "/github/pv/pvpkcs11/build/Debug/pvpkcs11.dll";
-                    break;
-                case "darwin":
-                    pvpkcs11Path = "/Users/microshine/Library/Developer/Xcode/DerivedData/config-hkruqzwffnciyjeujlpxkaxbdiun/Build/Products/Debug/libpvpkcs11.dylib";
-                    break;
-                default:
-                    // Use SoftHSM by default
-                    pvpkcs11Path = "/usr/local/lib/softhsm/libsofthsm2.so";
-            }
-        }
         {
-            if (fs.existsSync(pvpkcs11Path)) {
+            if (fs.existsSync(PV_PKCS11_LIB)) {
                 try {
                     const crypto = new Pkcs11Crypto({
-                        library: pvpkcs11Path,
+                        library: PV_PKCS11_LIB,
                         slot: 0,
                         readWrite: true,
                     });
@@ -150,10 +119,10 @@ export class LocalProvider extends EventEmitter {
                     crypto.isLoggedIn = true;
                     this.addProvider(crypto);
                 } catch (e) {
-                    this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot load library by path ${pvpkcs11Path}. ${e.message}`));
+                    this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot load library by path ${PV_PKCS11_LIB}. ${e.message}`));
                 }
             } else {
-                this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot find pvpkcs11 by path ${pvpkcs11Path}`));
+                this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot find pvpkcs11 by path ${PV_PKCS11_LIB}`));
             }
         }
         //#endregion
@@ -282,6 +251,13 @@ export class LocalProvider extends EventEmitter {
                     if (!slot || this.hasProvider(slot)) {
                         continue;
                     }
+                    if (os.platform() === "win32" &&
+                        /pvpkcs11\.dll$/.test(slot.lib.libPath) &&
+                        slot.slotDescription !== card.reader) {
+                        // NOTE:  pvpkcs11 implementation has only one slot for MiniDriver
+                        // Use only slot where slotDescription equals to reader name
+                        continue;
+                    }
                     slotIndexes.push(i);
                 }
                 if (!slotIndexes.length) {
@@ -371,6 +347,7 @@ export class LocalProvider extends EventEmitter {
                     ));
                 }
             });
+
             if (!cryptoIDs.length) {
                 this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.TOKEN_REMOVE_NO_SLOTS_FOUND));
             }

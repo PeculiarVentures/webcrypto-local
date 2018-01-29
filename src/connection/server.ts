@@ -171,7 +171,7 @@ export class Server extends EventEmitter {
     public on(event: "error", listener: (e: ServerErrorEvent) => void): this;
     public on(event: "message", listener: (e: ServerMessageEvent) => void): this;
     public on(event: "info", listener: (message: string) => void): this;
-    public on(event: string | symbol, listener: Function): this {
+    public on(event: string | symbol, listener: (...args: any[]) => void): this {
         return super.on(event, listener);
     }
 
@@ -182,7 +182,7 @@ export class Server extends EventEmitter {
     public once(event: "error", listener: (e: ServerErrorEvent) => void): this;
     public once(event: "message", listener: (e: ServerMessageEvent) => void): this;
     public once(event: "info", listener: (message: string) => void): this;
-    public once(event: string | symbol, listener: Function): this {
+    public once(event: string | symbol, listener: (...args: any[]) => void): this {
         return super.once(event, listener);
     }
 
@@ -294,7 +294,7 @@ export class Server extends EventEmitter {
                             }
                         }
                         if (!session.cipher) {
-                            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.SERVER_WRONG_MESSAGE ,"Cipher object for 2key session is empty");
+                            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.SERVER_WRONG_MESSAGE , "Cipher object for 2key session is empty");
                             // session.cipher = await this.storage.loadSession(messageProto.senderKey.id);
                         }
 
@@ -351,7 +351,7 @@ export class Server extends EventEmitter {
             });
             connection.on("close", (reasonCode, description) => {
                 // remove session from list with the same connection
-                this.sessions = this.sessions.filter((session) => session.connection !== connection);
+                this.sessions = this.sessions.filter((session2) => session2.connection !== connection);
 
                 this.emit("disconnect", new ServerDisconnectEvent(
                     this,
