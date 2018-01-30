@@ -8,7 +8,7 @@ export interface OsslCryptoKey extends CryptoKey {
 }
 
 export function isOsslObject(obj: any): obj is OsslCryptoKey {
-    return obj.__ossl;
+    return !!(obj && obj.__ossl);
 }
 
 interface FixOptions {
