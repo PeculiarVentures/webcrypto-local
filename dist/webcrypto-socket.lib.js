@@ -3780,7 +3780,7 @@ var WebCryptoError = (function (_super) {
         _this.code = 0;
         _this.message = printf.apply(void 0, [template].concat(args));
         var error = new Error(_this.message);
-        error.name = _this.constructor.name;
+        error.name = _this["constructor"].name;
         _this.stack = error.stack;
         return _this;
     }
@@ -3843,8 +3843,7 @@ function PrepareData(data, paramName) {
         return new Uint8Array(data);
     }
     if (ArrayBuffer.isView(data)) {
-        var copy = data.map(function (i) { return i; });
-        return new Uint8Array(copy.buffer);
+        return new Uint8Array(data.buffer);
     }
     if (data instanceof ArrayBuffer) {
         return new Uint8Array(data);
@@ -3858,7 +3857,7 @@ var BaseCrypto = (function () {
         if (typeof alg !== "object") {
             throw new TypeError("Wrong algorithm data type. Must be Object");
         }
-        if (!alg.name) {
+        if (!("name" in alg)) {
             throw new AlgorithmError(AlgorithmError.PARAM_REQUIRED, "name");
         }
     };
@@ -4233,22 +4232,20 @@ var Sha = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Sha.checkAlgorithm = function (alg) {
-        var alg2;
-        if (typeof alg === "string") {
-            alg2 = { name: alg };
-        }
-        else {
-            alg2 = alg;
-        }
-        _super.checkAlgorithm.call(this, alg2);
-        switch (alg2.name.toUpperCase()) {
+        var _alg;
+        if (typeof alg === "string")
+            _alg = { name: alg };
+        else
+            _alg = alg;
+        _super.checkAlgorithm.call(this, _alg);
+        switch (_alg.name.toUpperCase()) {
             case AlgorithmNames.Sha1:
             case AlgorithmNames.Sha256:
             case AlgorithmNames.Sha384:
             case AlgorithmNames.Sha512:
                 break;
             default:
-                throw new AlgorithmError(AlgorithmError.WRONG_ALG_NAME, alg2.name, ShaAlgorithms);
+                throw new AlgorithmError(AlgorithmError.WRONG_ALG_NAME, _alg.name, ShaAlgorithms);
         }
     };
     Sha.digest = function (algorithm, data) {

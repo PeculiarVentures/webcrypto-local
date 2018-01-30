@@ -3213,7 +3213,7 @@ var OpenSSLCrypto = (function (_super) {
 }(OSSLCrypto));
 
 function isOsslObject(obj) {
-    return obj.__ossl;
+    return !!(obj && obj.__ossl);
 }
 function fixObject(crypto$$1, key, options) {
     var osslKey = key;
