@@ -48,7 +48,7 @@ export class SubtleService extends Service<CryptoService> {
 
                 const crypto = await this.getCrypto(params.providerID);
 
-                result.data = await crypto.subtle.digest(params.algorithm, params.data);
+                result.data = await crypto.subtle.digest(params.algorithm.toAlgorithm(), params.data);
                 break;
             }
             // generate key
@@ -56,7 +56,7 @@ export class SubtleService extends Service<CryptoService> {
                 const params = await P.GenerateKeyActionProto.importProto(action);
 
                 const crypto = await this.getCrypto(params.providerID);
-                const keys = await crypto.subtle.generateKey(params.algorithm, params.extractable, params.usage);
+                const keys = await crypto.subtle.generateKey(params.algorithm.toAlgorithm(), params.extractable, params.usage);
 
                 // add key to memory storage
                 let keyProto: ObjectProto;

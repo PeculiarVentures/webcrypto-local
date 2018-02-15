@@ -3789,7 +3789,7 @@ var CertificateStorageService = (function (_super) {
                         return [4, this.getCrypto(params.providerID)];
                     case 3:
                         crypto$$1 = _g.sent();
-                        return [4, crypto$$1.certStorage.getItem(params.key, params.algorithm.isEmpty() ? null : params.algorithm, !params.keyUsages ? null : params.keyUsages)];
+                        return [4, crypto$$1.certStorage.getItem(params.key, params.algorithm.isEmpty() ? null : params.algorithm.toAlgorithm(), !params.keyUsages ? null : params.keyUsages)];
                     case 4:
                         item = _g.sent();
                         if (!item) return [3, 7];
@@ -3835,7 +3835,7 @@ var CertificateStorageService = (function (_super) {
                         return [4, this.getCrypto(params.providerID)];
                     case 18:
                         crypto$$1 = _g.sent();
-                        return [4, crypto$$1.certStorage.importCert(params.type, params.data, params.algorithm, params.keyUsages)];
+                        return [4, crypto$$1.certStorage.importCert(params.type, params.data, params.algorithm.toAlgorithm(), params.keyUsages)];
                     case 19:
                         item = _g.sent();
                         cryptoKey = new ServiceCryptoItem(item.publicKey, params.providerID);
@@ -4320,7 +4320,7 @@ var KeyStorageService = (function (_super) {
                         return [4, this.getCrypto(params.providerID)];
                     case 3:
                         crypto$$1 = _d.sent();
-                        return [4, crypto$$1.keyStorage.getItem(params.key, params.algorithm.isEmpty() ? null : params.algorithm, !params.keyUsages ? null : params.keyUsages)];
+                        return [4, crypto$$1.keyStorage.getItem(params.key, params.algorithm.isEmpty() ? null : params.algorithm.toAlgorithm(), !params.keyUsages ? null : params.keyUsages)];
                     case 4:
                         key = _d.sent();
                         if (!key) return [3, 6];
@@ -4735,7 +4735,7 @@ var SubtleService = (function (_super) {
                     case 3:
                         crypto$$1 = _m.sent();
                         _b = result;
-                        return [4, crypto$$1.subtle.digest(params.algorithm, params.data)];
+                        return [4, crypto$$1.subtle.digest(params.algorithm.toAlgorithm(), params.data)];
                     case 4:
                         _b.data = _m.sent();
                         return [3, 59];
@@ -4745,7 +4745,7 @@ var SubtleService = (function (_super) {
                         return [4, this.getCrypto(params.providerID)];
                     case 7:
                         crypto$$1 = _m.sent();
-                        return [4, crypto$$1.subtle.generateKey(params.algorithm, params.extractable, params.usage)];
+                        return [4, crypto$$1.subtle.generateKey(params.algorithm.toAlgorithm(), params.extractable, params.usage)];
                     case 8:
                         keys = _m.sent();
                         keyProto = void 0;

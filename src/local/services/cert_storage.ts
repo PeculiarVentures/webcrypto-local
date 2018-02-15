@@ -57,7 +57,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                 // do operation
                 const item = await crypto.certStorage.getItem(
                     params.key,
-                    params.algorithm.isEmpty() ? null : params.algorithm,
+                    params.algorithm.isEmpty() ? null : params.algorithm.toAlgorithm(),
                     !params.keyUsages ? null : params.keyUsages,
                 );
 
@@ -105,7 +105,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                 const crypto = await this.getCrypto(params.providerID);
 
                 // do operation
-                const item = await crypto.certStorage.importCert(params.type, params.data, params.algorithm, params.keyUsages);
+                const item = await crypto.certStorage.importCert(params.type, params.data, params.algorithm.toAlgorithm(), params.keyUsages);
 
                 // add key to memory storage
                 const cryptoKey = new ServiceCryptoItem(item.publicKey, params.providerID);
