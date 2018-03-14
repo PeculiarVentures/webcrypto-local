@@ -30,20 +30,12 @@ function __extends(d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 }
 
-
-
-
-
 function __decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 }
-
-
-
-
 
 function __awaiter(thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -280,6 +272,7 @@ var ArrayBufferConverter = (function () {
     };
     return ArrayBufferConverter;
 }());
+
 function ProtobufElement(params) {
     return function (target) {
         var t = target;
@@ -394,7 +387,7 @@ var ObjectProto = (function () {
     };
     ObjectProto.prototype.importProto = function (data) {
         return __awaiter(this, void 0, void 0, function () {
-            var thisStatic, that, scheme, raw, _a, _b, _i, key, item, schemeValues, _c, schemeValues_1, schemeValue, _d, _e, _f, _g, _h;
+            var thisStatic, that, scheme, raw, _a, _b, _i, key, item, schemeValues, _c, schemeValues_1, schemeValue, _d, _e, _g, _h;
             return __generator(this, function (_j) {
                 switch (_j.label) {
                     case 0:
@@ -622,6 +615,7 @@ EventHandlers.prototype = Object.create(null);
 function EventEmitter() {
   EventEmitter.init.call(this);
 }
+
 // nodejs oddity
 // require('events') === require('events').EventEmitter
 EventEmitter.EventEmitter = EventEmitter;
@@ -1090,6 +1084,7 @@ function unwrapListeners(arr) {
  * https://whispersystems.org/docs/specifications/x3dh/ by Open Whisper Systems
  *
  */
+
 var SIGN_ALGORITHM_NAME = "ECDSA";
 var DH_ALGORITHM_NAME = "ECDH";
 var SECRET_KEY_NAME = "AES-CBC";
@@ -1242,7 +1237,7 @@ var Secret = (function () {
         if (keysCount === void 0) { keysCount = 1; }
         if (info === void 0) { info = new ArrayBuffer(0); }
         return __awaiter(this, void 0, void 0, function () {
-            var PRKBytes, infoBuffer, infoArray, PRK, T, i, _a, _b;
+            var PRKBytes, infoBuffer, PRK, T, i, _a, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1255,7 +1250,6 @@ var Secret = (function () {
                     case 3:
                         PRKBytes = _c.sent();
                         infoBuffer = new ArrayBuffer(32 + info.byteLength + 1);
-                        
                         return [4, this.importHMAC(PRKBytes)];
                     case 4:
                         PRK = _c.sent();
@@ -2852,7 +2846,6 @@ var HexStringConverter = (function () {
             });
         });
     };
-    
     HexStringConverter.get = function (value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
@@ -3274,26 +3267,27 @@ var BrowserStorage = (function () {
     };
     BrowserStorage.prototype.loadWrapKey = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var wkey, _a;
+            var wKey, _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4, this.db.transaction(BrowserStorage.IDENTITY_STORAGE)
                             .objectStore(BrowserStorage.IDENTITY_STORAGE).get("wkey")];
                     case 1:
-                        wkey = _b.sent();
-                        if (!wkey) return [3, 4];
+                        wKey = _b.sent();
+                        if (!wKey) return [3, 4];
                         if (!isEdge()) return [3, 3];
-                        if (!(wkey.key instanceof ArrayBuffer))
+                        if (!(wKey.key instanceof ArrayBuffer)) {
                             return [2, null];
-                        _a = wkey;
-                        return [4, getEngine().crypto.subtle.importKey("raw", wkey.key, { name: AES_CBC.name, length: 256 }, false, ["encrypt", "decrypt", "wrapKey", "unwrapKey"])];
+                        }
+                        _a = wKey;
+                        return [4, getEngine().crypto.subtle.importKey("raw", wKey.key, { name: AES_CBC.name, length: 256 }, false, ["encrypt", "decrypt", "wrapKey", "unwrapKey"])];
                     case 2:
                         _a.key = (_b.sent());
                         _b.label = 3;
                     case 3:
-                        AES_CBC.iv = wkey.iv;
+                        AES_CBC.iv = wKey.iv;
                         _b.label = 4;
-                    case 4: return [2, wkey || null];
+                    case 4: return [2, wKey || null];
                 }
             });
         });
@@ -4202,7 +4196,7 @@ var WebCryptoError = (function (_super) {
         _this.code = 0;
         _this.message = printf.apply(void 0, [template].concat(args));
         var error = new Error(_this.message);
-        error.name = _this["constructor"].name;
+        error.name = _this.constructor.name;
         _this.stack = error.stack;
         return _this;
     }
@@ -4265,7 +4259,8 @@ function PrepareData(data, paramName) {
         return new Uint8Array(data);
     }
     if (ArrayBuffer.isView(data)) {
-        return new Uint8Array(data.buffer);
+        var copy = data.map(function (i) { return i; });
+        return new Uint8Array(copy.buffer);
     }
     if (data instanceof ArrayBuffer) {
         return new Uint8Array(data);
@@ -4279,7 +4274,7 @@ var BaseCrypto = (function () {
         if (typeof alg !== "object") {
             throw new TypeError("Wrong algorithm data type. Must be Object");
         }
-        if (!("name" in alg)) {
+        if (!alg.name) {
             throw new AlgorithmError(AlgorithmError.PARAM_REQUIRED, "name");
         }
     };
@@ -4427,6 +4422,7 @@ if (typeof self === "undefined") {
     g.btoa = function (data) { return new Buffer(data, "binary").toString("base64"); };
     g.atob = function (data) { return new Buffer(data, "base64").toString("binary"); };
 }
+
 var AesKeyGenParamsError = (function (_super) {
     __extends(AesKeyGenParamsError, _super);
     function AesKeyGenParamsError() {
@@ -4654,20 +4650,22 @@ var Sha = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Sha.checkAlgorithm = function (alg) {
-        var _alg;
-        if (typeof alg === "string")
-            _alg = { name: alg };
-        else
-            _alg = alg;
-        _super.checkAlgorithm.call(this, _alg);
-        switch (_alg.name.toUpperCase()) {
+        var alg2;
+        if (typeof alg === "string") {
+            alg2 = { name: alg };
+        }
+        else {
+            alg2 = alg;
+        }
+        _super.checkAlgorithm.call(this, alg2);
+        switch (alg2.name.toUpperCase()) {
             case AlgorithmNames.Sha1:
             case AlgorithmNames.Sha256:
             case AlgorithmNames.Sha384:
             case AlgorithmNames.Sha512:
                 break;
             default:
-                throw new AlgorithmError(AlgorithmError.WRONG_ALG_NAME, _alg.name, ShaAlgorithms);
+                throw new AlgorithmError(AlgorithmError.WRONG_ALG_NAME, alg2.name, ShaAlgorithms);
         }
     };
     Sha.digest = function (algorithm, data) {
@@ -4709,11 +4707,12 @@ var Ec = (function (_super) {
         }
         switch (alg.namedCurve.toUpperCase()) {
             case "P-256":
+            case "K-256":
             case "P-384":
             case "P-521":
                 break;
             default:
-                throw new EcKeyGenParamsError(EcKeyGenParamsError.PARAM_WRONG_VALUE, paramNamedCurve, "P-256, P-384 or P-521");
+                throw new EcKeyGenParamsError(EcKeyGenParamsError.PARAM_WRONG_VALUE, paramNamedCurve, "K-256, P-256, P-384 or P-521");
         }
     };
     Ec.checkKeyGenUsages = function (keyUsages) {

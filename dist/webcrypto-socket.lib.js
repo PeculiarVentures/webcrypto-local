@@ -30,20 +30,12 @@ function __extends(d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 }
 
-
-
-
-
 function __decorate(decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 }
-
-
-
-
 
 function __awaiter(thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -280,6 +272,7 @@ var ArrayBufferConverter = (function () {
     };
     return ArrayBufferConverter;
 }());
+
 function ProtobufElement(params) {
     return function (target) {
         var t = target;
@@ -394,7 +387,7 @@ var ObjectProto = (function () {
     };
     ObjectProto.prototype.importProto = function (data) {
         return __awaiter(this, void 0, void 0, function () {
-            var thisStatic, that, scheme, raw, _a, _b, _i, key, item, schemeValues, _c, schemeValues_1, schemeValue, _d, _e, _f, _g, _h;
+            var thisStatic, that, scheme, raw, _a, _b, _i, key, item, schemeValues, _c, schemeValues_1, schemeValue, _d, _e, _g, _h;
             return __generator(this, function (_j) {
                 switch (_j.label) {
                     case 0:
@@ -622,6 +615,7 @@ EventHandlers.prototype = Object.create(null);
 function EventEmitter() {
   EventEmitter.init.call(this);
 }
+
 // nodejs oddity
 // require('events') === require('events').EventEmitter
 EventEmitter.EventEmitter = EventEmitter;
@@ -1090,6 +1084,7 @@ function unwrapListeners(arr) {
  * https://whispersystems.org/docs/specifications/x3dh/ by Open Whisper Systems
  *
  */
+
 var SIGN_ALGORITHM_NAME = "ECDSA";
 var DH_ALGORITHM_NAME = "ECDH";
 var SECRET_KEY_NAME = "AES-CBC";
@@ -1242,7 +1237,7 @@ var Secret = (function () {
         if (keysCount === void 0) { keysCount = 1; }
         if (info === void 0) { info = new ArrayBuffer(0); }
         return __awaiter(this, void 0, void 0, function () {
-            var PRKBytes, infoBuffer, infoArray, PRK, T, i, _a, _b;
+            var PRKBytes, infoBuffer, PRK, T, i, _a, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -1255,7 +1250,6 @@ var Secret = (function () {
                     case 3:
                         PRKBytes = _c.sent();
                         infoBuffer = new ArrayBuffer(32 + info.byteLength + 1);
-                        
                         return [4, this.importHMAC(PRKBytes)];
                     case 4:
                         PRK = _c.sent();
@@ -2818,7 +2812,7 @@ class WebCryptoLocalError extends Error {
 }
 WebCryptoLocalError.CODE = WebCryptoLocalErrorEnum;
 
-class DateConverter$1 {
+let DateConverter$1 = class DateConverter {
     static set(value) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Uint8Array(Convert.FromUtf8String(value.toISOString()));
@@ -2829,14 +2823,13 @@ class DateConverter$1 {
             return new Date(Convert.ToUtf8String(value));
         });
     }
-}
+};
 class HexStringConverter {
     static set(value) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Uint8Array(Convert.FromHex(value));
         });
     }
-    ;
     static get(value) {
         return __awaiter(this, void 0, void 0, function* () {
             return Convert.ToHex(value);
@@ -3070,15 +3063,7 @@ ServerIsLoggedInActionProto.ACTION = "server/isLoggedIn";
 ServerIsLoggedInActionProto = __decorate([
     ProtobufElement({})
 ], ServerIsLoggedInActionProto);
-var BaseProto_1;
-var ActionProto_1;
-var BaseAlgorithmProto_1;
-var AlgorithmProto_1;
-var CryptoItemProto_1;
-var CryptoKeyProto_1;
-var CryptoKeyPairProto_1;
-var ErrorProto_1;
-var ResultProto_1;
+var BaseProto_1, ActionProto_1, BaseAlgorithmProto_1, AlgorithmProto_1, CryptoItemProto_1, CryptoKeyProto_1, CryptoKeyPairProto_1, ErrorProto_1, ResultProto_1;
 
 function challenge(serverIdentity, clientIdentity) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -3152,17 +3137,18 @@ class BrowserStorage {
     }
     loadWrapKey() {
         return __awaiter(this, void 0, void 0, function* () {
-            const wkey = yield this.db.transaction(BrowserStorage.IDENTITY_STORAGE)
+            const wKey = yield this.db.transaction(BrowserStorage.IDENTITY_STORAGE)
                 .objectStore(BrowserStorage.IDENTITY_STORAGE).get("wkey");
-            if (wkey) {
+            if (wKey) {
                 if (isEdge()) {
-                    if (!(wkey.key instanceof ArrayBuffer))
+                    if (!(wKey.key instanceof ArrayBuffer)) {
                         return null;
-                    wkey.key = (yield getEngine().crypto.subtle.importKey("raw", wkey.key, { name: AES_CBC.name, length: 256 }, false, ["encrypt", "decrypt", "wrapKey", "unwrapKey"]));
+                    }
+                    wKey.key = (yield getEngine().crypto.subtle.importKey("raw", wKey.key, { name: AES_CBC.name, length: 256 }, false, ["encrypt", "decrypt", "wrapKey", "unwrapKey"]));
                 }
-                AES_CBC.iv = wkey.iv;
+                AES_CBC.iv = wKey.iv;
             }
-            return wkey || null;
+            return wKey || null;
         });
     }
     saveWrapKey(key) {
@@ -3608,10 +3594,7 @@ __decorate([
 ProviderTokenEventProto = ProviderTokenEventProto_1 = __decorate([
     ProtobufElement({ name: "ProviderTokenEvent" })
 ], ProviderTokenEventProto);
-var ProviderCryptoProto_1;
-var ProviderInfoProto_1;
-var ProviderGetCryptoActionProto_1;
-var ProviderTokenEventProto_1;
+var ProviderCryptoProto_1, ProviderInfoProto_1, ProviderGetCryptoActionProto_1, ProviderTokenEventProto_1;
 
 let CardReaderActionProto = class CardReaderActionProto extends ActionProto {
 };
@@ -3780,7 +3763,7 @@ var WebCryptoError = (function (_super) {
         _this.code = 0;
         _this.message = printf.apply(void 0, [template].concat(args));
         var error = new Error(_this.message);
-        error.name = _this["constructor"].name;
+        error.name = _this.constructor.name;
         _this.stack = error.stack;
         return _this;
     }
@@ -3843,7 +3826,8 @@ function PrepareData(data, paramName) {
         return new Uint8Array(data);
     }
     if (ArrayBuffer.isView(data)) {
-        return new Uint8Array(data.buffer);
+        var copy = data.map(function (i) { return i; });
+        return new Uint8Array(copy.buffer);
     }
     if (data instanceof ArrayBuffer) {
         return new Uint8Array(data);
@@ -3857,7 +3841,7 @@ var BaseCrypto = (function () {
         if (typeof alg !== "object") {
             throw new TypeError("Wrong algorithm data type. Must be Object");
         }
-        if (!("name" in alg)) {
+        if (!alg.name) {
             throw new AlgorithmError(AlgorithmError.PARAM_REQUIRED, "name");
         }
     };
@@ -4005,6 +3989,7 @@ if (typeof self === "undefined") {
     g.btoa = function (data) { return new Buffer(data, "binary").toString("base64"); };
     g.atob = function (data) { return new Buffer(data, "base64").toString("binary"); };
 }
+
 var AesKeyGenParamsError = (function (_super) {
     __extends(AesKeyGenParamsError, _super);
     function AesKeyGenParamsError() {
@@ -4232,20 +4217,22 @@ var Sha = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Sha.checkAlgorithm = function (alg) {
-        var _alg;
-        if (typeof alg === "string")
-            _alg = { name: alg };
-        else
-            _alg = alg;
-        _super.checkAlgorithm.call(this, _alg);
-        switch (_alg.name.toUpperCase()) {
+        var alg2;
+        if (typeof alg === "string") {
+            alg2 = { name: alg };
+        }
+        else {
+            alg2 = alg;
+        }
+        _super.checkAlgorithm.call(this, alg2);
+        switch (alg2.name.toUpperCase()) {
             case AlgorithmNames.Sha1:
             case AlgorithmNames.Sha256:
             case AlgorithmNames.Sha384:
             case AlgorithmNames.Sha512:
                 break;
             default:
-                throw new AlgorithmError(AlgorithmError.WRONG_ALG_NAME, _alg.name, ShaAlgorithms);
+                throw new AlgorithmError(AlgorithmError.WRONG_ALG_NAME, alg2.name, ShaAlgorithms);
         }
     };
     Sha.digest = function (algorithm, data) {
@@ -4287,11 +4274,12 @@ var Ec = (function (_super) {
         }
         switch (alg.namedCurve.toUpperCase()) {
             case "P-256":
+            case "K-256":
             case "P-384":
             case "P-521":
                 break;
             default:
-                throw new EcKeyGenParamsError(EcKeyGenParamsError.PARAM_WRONG_VALUE, paramNamedCurve, "P-256, P-384 or P-521");
+                throw new EcKeyGenParamsError(EcKeyGenParamsError.PARAM_WRONG_VALUE, paramNamedCurve, "K-256, P-256, P-384 or P-521");
         }
     };
     Ec.checkKeyGenUsages = function (keyUsages) {
@@ -5398,20 +5386,7 @@ __decorate([
 CertificateStorageGetOCSPActionProto = CertificateStorageGetOCSPActionProto_1 = __decorate([
     ProtobufElement({})
 ], CertificateStorageGetOCSPActionProto);
-var CryptoCertificateProto_1;
-var CryptoX509CertificateProto_1;
-var CryptoX509CertificateRequestProto_1;
-var ChainItemProto_1;
-var CertificateStorageGetChainResultProto_1;
-var CertificateStorageSetItemActionProto_1;
-var CertificateStorageGetItemActionProto_1;
-var CertificateStorageRemoveItemActionProto_1;
-var CertificateStorageImportActionProto_1;
-var CertificateStorageExportActionProto_1;
-var CertificateStorageIndexOfActionProto_1;
-var CertificateStorageGetCRLActionProto_1;
-var OCSPRequestOptionsProto_1;
-var CertificateStorageGetOCSPActionProto_1;
+var CryptoCertificateProto_1, CryptoX509CertificateProto_1, CryptoX509CertificateRequestProto_1, ChainItemProto_1, CertificateStorageGetChainResultProto_1, CertificateStorageSetItemActionProto_1, CertificateStorageGetItemActionProto_1, CertificateStorageRemoveItemActionProto_1, CertificateStorageImportActionProto_1, CertificateStorageExportActionProto_1, CertificateStorageIndexOfActionProto_1, CertificateStorageGetCRLActionProto_1, OCSPRequestOptionsProto_1, CertificateStorageGetOCSPActionProto_1;
 
 class SocketCertificateStorage {
     constructor(provider) {
@@ -5654,10 +5629,7 @@ __decorate([
 KeyStorageIndexOfActionProto = KeyStorageIndexOfActionProto_1 = __decorate([
     ProtobufElement({})
 ], KeyStorageIndexOfActionProto);
-var KeyStorageSetItemActionProto_1;
-var KeyStorageGetItemActionProto_1;
-var KeyStorageRemoveItemActionProto_1;
-var KeyStorageIndexOfActionProto_1;
+var KeyStorageSetItemActionProto_1, KeyStorageGetItemActionProto_1, KeyStorageRemoveItemActionProto_1, KeyStorageIndexOfActionProto_1;
 
 class SocketKeyStorage {
     constructor(service) {
@@ -5918,16 +5890,7 @@ __decorate([
 ImportKeyActionProto = ImportKeyActionProto_1 = __decorate([
     ProtobufElement({})
 ], ImportKeyActionProto);
-var DigestActionProto_1;
-var GenerateKeyActionProto_1;
-var SignActionProto_1;
-var VerifyActionProto_1;
-var DeriveBitsActionProto_1;
-var DeriveKeyActionProto_1;
-var UnwrapKeyActionProto_1;
-var WrapKeyActionProto_1;
-var ExportKeyActionProto_1;
-var ImportKeyActionProto_1;
+var DigestActionProto_1, GenerateKeyActionProto_1, SignActionProto_1, VerifyActionProto_1, DeriveBitsActionProto_1, DeriveKeyActionProto_1, UnwrapKeyActionProto_1, WrapKeyActionProto_1, ExportKeyActionProto_1, ImportKeyActionProto_1;
 
 class SocketSubtleCrypto extends SubtleCrypto {
     constructor(crypto) {

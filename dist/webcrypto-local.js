@@ -5,23 +5,23 @@ Object.defineProperty(exports, '__esModule', { value: true });
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var tslib_1 = require('tslib');
-var events = require('events');
 var _2keyRatchet = require('2key-ratchet');
 var pvtsutils = require('pvtsutils');
-var https = require('https');
-var url = require('url');
-var WebSocket = require('websocket');
 var tsprotobuf = require('tsprotobuf');
 var fs = require('fs');
 var os = require('os');
 var path = require('path');
+var events = require('events');
+var https = require('https');
+var url = require('url');
+var WebSocket = require('websocket');
 var crypto = require('crypto');
-var graphene = require('graphene-pk11');
-var nodeWebcryptoP11 = require('node-webcrypto-p11');
-var webcryptoCore = require('webcrypto-core');
 var asn1js = require('asn1js');
+var webcryptoCore = require('webcrypto-core');
+var graphene = require('graphene-pk11');
 var cert_storage = require('node-webcrypto-p11/built/cert_storage');
 var subtle = require('node-webcrypto-p11/built/subtle');
+var nodeWebcryptoP11 = require('node-webcrypto-p11');
 var pvutils = require('pvutils');
 var request = _interopDefault(require('request'));
 
@@ -142,7 +142,6 @@ var ArrayStringConverter = (function () {
             });
         });
     };
-    
     ArrayStringConverter.get = function (value) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             return tslib_1.__generator(this, function (_a) {
@@ -162,7 +161,6 @@ var HexStringConverter = (function () {
             });
         });
     };
-    
     HexStringConverter.get = function (value) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             return tslib_1.__generator(this, function (_a) {
@@ -382,14 +380,14 @@ var CryptoKeyPairProto = (function (_super) {
 }(BaseProto));
 var ErrorProto = (function (_super) {
     tslib_1.__extends(ErrorProto, _super);
-    function ErrorProto(message, code, type$$1) {
+    function ErrorProto(message, code, type) {
         if (code === void 0) { code = 0; }
-        if (type$$1 === void 0) { type$$1 = "error"; }
+        if (type === void 0) { type = "error"; }
         var _this = _super.call(this) || this;
         if (message) {
             _this.message = message;
             _this.code = code;
-            _this.type = type$$1;
+            _this.type = type;
         }
         return _this;
     }
@@ -476,11 +474,11 @@ var ServerIsLoggedInActionProto = (function (_super) {
 
 var SERVER_WELL_KNOWN = "/.well-known/webcrypto-socket";
 
-function declareDir(path$$1) {
-    if (!fs.existsSync(path$$1)) {
-        fs.mkdirSync(path$$1);
+function declareDir(dirPath) {
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath);
     }
-    return path$$1;
+    return dirPath;
 }
 var USER_DIR = os.homedir();
 var APP_DATA_DIR = declareDir(path.join(USER_DIR, ".fortify"));
@@ -488,8 +486,8 @@ var DOUBLE_KEY_RATCHET_STORAGE_DIR = declareDir(path.join(APP_DATA_DIR, "2key-ra
 var OPENSSL_CERT_STORAGE_DIR = declareDir(path.join(APP_DATA_DIR, "certstorage"));
 var OPENSSL_KEY_STORAGE_DIR = declareDir(path.join(APP_DATA_DIR, "keystorage"));
 
-var WebCrypto$1 = require("node-webcrypto-ossl");
-var crypto$1 = new WebCrypto$1();
+var WebCrypto = require("node-webcrypto-ossl");
+var crypto$1 = new WebCrypto();
 var OpenSSLStorage = (function () {
     function OpenSSLStorage() {
         this.remoteIdentities = {};
@@ -777,8 +775,8 @@ var OpenSSLStorage = (function () {
             }
         });
     };
-    OpenSSLStorage.prototype.ecKeyToCryptoKey = function (base64, type$$1, alg) {
-        if (type$$1 === "public") {
+    OpenSSLStorage.prototype.ecKeyToCryptoKey = function (base64, type, alg) {
+        if (type === "public") {
             return crypto$1.subtle.importKey("spki", new Buffer(base64, "base64"), {
                 name: alg,
                 namedCurve: "P-256",
@@ -1804,11 +1802,11 @@ function replaceTemplates(text, args, prefix) {
 
 var Service = (function (_super) {
     tslib_1.__extends(Service, _super);
-    function Service(server$$1, object, filter) {
+    function Service(server, object, filter) {
         if (filter === void 0) { filter = []; }
         var _this = _super.call(this) || this;
         _this.services = [];
-        _this.server = server$$1;
+        _this.server = server;
         _this.object = object;
         _this.server
             .on("message", function (e) {
@@ -1857,8 +1855,8 @@ var Service = (function (_super) {
 
 var CardReaderService = (function (_super) {
     tslib_1.__extends(CardReaderService, _super);
-    function CardReaderService(server$$1) {
-        var _this = _super.call(this, server$$1, new PCSCWatcher(), [
+    function CardReaderService(server) {
+        var _this = _super.call(this, server, new PCSCWatcher(), [
             CardReaderGetReadersActionProto,
         ]) || this;
         _this.object.on("insert", _this.onInsert.bind(_this));
@@ -2529,7 +2527,7 @@ var CryptoMap = (function (_super) {
     return CryptoMap;
 }(Map));
 
-var crypto$3 = new (require("node-webcrypto-ossl"))();
+var crypto$2 = new (require("node-webcrypto-ossl"))();
 var Certificate = (function () {
     function Certificate() {
     }
@@ -2585,7 +2583,7 @@ var Certificate = (function () {
                         return [4, provider.subtle.digest("SHA-1", spki)];
                     case 3:
                         sha1Hash = _a.sent();
-                        rnd = crypto$3.getRandomValues(new Uint8Array(4));
+                        rnd = crypto$2.getRandomValues(new Uint8Array(4));
                         return [2, this.type + "-" + pvtsutils.Convert.ToHex(rnd) + "-" + pvtsutils.Convert.ToHex(sha1Hash)];
                 }
             });
@@ -2661,18 +2659,15 @@ function nameToString(name, splitter) {
     if (splitter === void 0) { splitter = ","; }
     var res = [];
     name.typesAndValues.forEach(function (typeValue) {
-        var type$$1 = typeValue.type;
-        var oidValue = OID[type$$1.toString()];
-        var oidName = oidValue && oidValue.short ? oidValue.short : type$$1.toString();
+        var type = typeValue.type;
+        var oidValue = OID[type.toString()];
+        var oidName = oidValue && oidValue.short ? oidValue.short : type.toString();
         res.push(oidName + "=" + typeValue.value.valueBlock.value);
     });
     return res.join(splitter + " ");
 }
 
-var _a = require("pkijs");
-var CertificationRequest = _a.CertificationRequest;
-var setEngine = _a.setEngine;
-var CryptoEngine = _a.CryptoEngine;
+var _a = require("pkijs"), CertificationRequest = _a.CertificationRequest, setEngine = _a.setEngine, CryptoEngine = _a.CryptoEngine;
 var X509CertificateRequest = (function (_super) {
     tslib_1.__extends(X509CertificateRequest, _super);
     function X509CertificateRequest() {
@@ -2713,52 +2708,51 @@ var X509CertificateRequest = (function (_super) {
 }(Certificate));
 
 var pkijs = require("pkijs");
-var setEngine$1 = pkijs.setEngine;
-var CryptoEngine$1 = pkijs.CryptoEngine;
+var setEngine$1 = pkijs.setEngine, CryptoEngine$1 = pkijs.CryptoEngine;
 var PKICertificate = pkijs.Certificate;
-var X509Certificate$1 = (function (_super) {
-    tslib_1.__extends(X509Certificate$$1, _super);
-    function X509Certificate$$1() {
+var X509Certificate = (function (_super) {
+    tslib_1.__extends(X509Certificate, _super);
+    function X509Certificate() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.type = "x509";
         return _this;
     }
-    Object.defineProperty(X509Certificate$$1.prototype, "serialNumber", {
+    Object.defineProperty(X509Certificate.prototype, "serialNumber", {
         get: function () {
             return pvtsutils.Convert.ToHex(new Uint8Array(this.asn1.serialNumber.valueBlock.valueHex));
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(X509Certificate$$1.prototype, "issuerName", {
+    Object.defineProperty(X509Certificate.prototype, "issuerName", {
         get: function () {
             return nameToString(this.asn1.issuer);
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(X509Certificate$$1.prototype, "subjectName", {
+    Object.defineProperty(X509Certificate.prototype, "subjectName", {
         get: function () {
             return nameToString(this.asn1.subject);
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(X509Certificate$$1.prototype, "notBefore", {
+    Object.defineProperty(X509Certificate.prototype, "notBefore", {
         get: function () {
             return this.asn1.notBefore.value;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(X509Certificate$$1.prototype, "notAfter", {
+    Object.defineProperty(X509Certificate.prototype, "notAfter", {
         get: function () {
             return this.asn1.notAfter.value;
         },
         enumerable: true,
         configurable: true
     });
-    X509Certificate$$1.prototype.importRaw = function (rawData) {
+    X509Certificate.prototype.importRaw = function (rawData) {
         if (rawData instanceof ArrayBuffer || (typeof Buffer !== "undefined" && Buffer.isBuffer(rawData))) {
             this.raw = new Uint8Array(rawData);
         }
@@ -2769,7 +2763,7 @@ var X509Certificate$1 = (function (_super) {
         var asn1 = asn1js.fromBER(this.raw.buffer);
         this.asn1 = new PKICertificate({ schema: asn1.result });
     };
-    X509Certificate$$1.prototype.exportKey = function (provider, algorithm, usages) {
+    X509Certificate.prototype.exportKey = function (provider, algorithm, usages) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             return tslib_1.__generator(this, function (_a) {
                 setEngine$1("unknown", provider, new CryptoEngine$1({ name: "unknown", crypto: provider, subtle: provider.subtle }));
@@ -2780,10 +2774,10 @@ var X509Certificate$1 = (function (_super) {
             });
         });
     };
-    return X509Certificate$$1;
+    return X509Certificate;
 }(Certificate));
 
-var crypto$2 = new (require("node-webcrypto-ossl"))();
+var crypto$3 = new (require("node-webcrypto-ossl"))();
 var OpenSSLCertificateStorage = (function () {
     function OpenSSLCertificateStorage(file) {
         this.file = file;
@@ -2805,27 +2799,27 @@ var OpenSSLCertificateStorage = (function () {
             });
         });
     };
-    OpenSSLCertificateStorage.prototype.importCert = function (type$$1, data, algorithm, keyUsages) {
+    OpenSSLCertificateStorage.prototype.importCert = function (type, data, algorithm, keyUsages) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var res, _a;
             return tslib_1.__generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _a = type$$1;
+                        _a = type;
                         switch (_a) {
                             case "x509": return [3, 1];
                             case "request": return [3, 3];
                         }
                         return [3, 5];
-                    case 1: return [4, X509Certificate$1.importCert(crypto$2, data, algorithm, keyUsages)];
+                    case 1: return [4, X509Certificate.importCert(crypto$3, data, algorithm, keyUsages)];
                     case 2:
                         res = _b.sent();
                         return [3, 6];
-                    case 3: return [4, X509CertificateRequest.importCert(crypto$2, data, algorithm, keyUsages)];
+                    case 3: return [4, X509CertificateRequest.importCert(crypto$3, data, algorithm, keyUsages)];
                     case 4:
                         res = _b.sent();
                         return [3, 6];
-                    case 5: throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, "Unsupported CertificateStorageItem type '" + type$$1 + "'");
+                    case 5: throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, "Unsupported CertificateStorageItem type '" + type + "'");
                     case 6: return [2, res];
                 }
             });
@@ -2873,7 +2867,7 @@ var OpenSSLCertificateStorage = (function () {
                     case 1:
                         if (!(_i < _a.length)) return [3, 4];
                         index = _a[_i];
-                        return [4, item.getID(crypto$2, "SHA-256")];
+                        return [4, item.getID(crypto$3, "SHA-256")];
                     case 2:
                         identity = _c.sent();
                         if (index === identity) {
@@ -3235,14 +3229,14 @@ function fixObject(crypto$$1, key, options) {
     }
 }
 
-var Pkcs11CertificateStorage$1 = (function (_super) {
-    tslib_1.__extends(Pkcs11CertificateStorage$$1, _super);
-    function Pkcs11CertificateStorage$$1() {
+var Pkcs11CertificateStorage = (function (_super) {
+    tslib_1.__extends(Pkcs11CertificateStorage, _super);
+    function Pkcs11CertificateStorage() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Pkcs11CertificateStorage$$1.prototype.getItem = function (id, algorithm, usages) {
+    Pkcs11CertificateStorage.prototype.getItem = function (id, algorithm, usages) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var cert, err_1, object, type$$1, _a;
+            var cert, err_1, object, type, _a;
             return tslib_1.__generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -3257,8 +3251,8 @@ var Pkcs11CertificateStorage$1 = (function (_super) {
                     case 3:
                         _b.trys.push([3, 5, , 6]);
                         object = this.getItemById(id);
-                        type$$1 = object instanceof graphene.X509Certificate ? "x509" : "request";
-                        return [4, this.crypto.ossl.certStorage.importCert(type$$1, object.value, algorithm, usages)];
+                        type = object instanceof graphene.X509Certificate ? "x509" : "request";
+                        return [4, this.crypto.ossl.certStorage.importCert(type, object.value, algorithm, usages)];
                     case 4:
                         cert = _b.sent();
                         fixObject(this.crypto, cert, {
@@ -3280,14 +3274,14 @@ var Pkcs11CertificateStorage$1 = (function (_super) {
             });
         });
     };
-    Pkcs11CertificateStorage$$1.prototype.importCert = function (type$$1, data, algorithm, keyUsages) {
+    Pkcs11CertificateStorage.prototype.importCert = function (type, data, algorithm, keyUsages) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             var cert, err_2, e_1;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 7]);
-                        return [4, _super.prototype.importCert.call(this, type$$1, data, algorithm, keyUsages)];
+                        return [4, _super.prototype.importCert.call(this, type, data, algorithm, keyUsages)];
                     case 1:
                         cert = _a.sent();
                         return [3, 7];
@@ -3296,7 +3290,7 @@ var Pkcs11CertificateStorage$1 = (function (_super) {
                         _a.label = 3;
                     case 3:
                         _a.trys.push([3, 5, , 6]);
-                        return [4, this.crypto.ossl.certStorage.importCert(type$$1, data, algorithm, keyUsages)];
+                        return [4, this.crypto.ossl.certStorage.importCert(type, data, algorithm, keyUsages)];
                     case 4:
                         cert = _a.sent();
                         fixObject(this.crypto, cert);
@@ -3311,7 +3305,7 @@ var Pkcs11CertificateStorage$1 = (function (_super) {
             });
         });
     };
-    Pkcs11CertificateStorage$$1.prototype.exportCert = function (format, item) {
+    Pkcs11CertificateStorage.prototype.exportCert = function (format, item) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             return tslib_1.__generator(this, function (_a) {
                 if (!isOsslObject(item)) {
@@ -3324,7 +3318,7 @@ var Pkcs11CertificateStorage$1 = (function (_super) {
             });
         });
     };
-    Pkcs11CertificateStorage$$1.prototype.indexOf = function (item) {
+    Pkcs11CertificateStorage.prototype.indexOf = function (item) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
             return tslib_1.__generator(this, function (_a) {
                 if (isOsslObject(item)) {
@@ -3337,7 +3331,7 @@ var Pkcs11CertificateStorage$1 = (function (_super) {
             });
         });
     };
-    return Pkcs11CertificateStorage$$1;
+    return Pkcs11CertificateStorage;
 }(cert_storage.Pkcs11CertificateStorage));
 
 var Pkcs11SubtleCrypto = (function (_super) {
@@ -3391,7 +3385,7 @@ var Pkcs11Crypto = (function (_super) {
         _this.osslID = 0;
         _this.ossl = new OpenSSLCrypto();
         _this.subtle = new Pkcs11SubtleCrypto(_this);
-        _this.certStorage = new Pkcs11CertificateStorage$1(_this);
+        _this.certStorage = new Pkcs11CertificateStorage(_this);
         return _this;
     }
     Pkcs11Crypto.prototype.getID = function () {
@@ -3733,8 +3727,8 @@ var pkijs$1 = require("pkijs");
 graphene.registerAttribute("x509Chain", 2147483905, "buffer");
 var CertificateStorageService = (function (_super) {
     tslib_1.__extends(CertificateStorageService, _super);
-    function CertificateStorageService(server$$1, crypto$$1) {
-        return _super.call(this, server$$1, crypto$$1, [
+    function CertificateStorageService(server, crypto$$1) {
+        return _super.call(this, server, crypto$$1, [
             CertificateStorageKeysActionProto,
             CertificateStorageIndexOfActionProto,
             CertificateStorageGetItemActionProto,
@@ -4274,8 +4268,8 @@ var KeyStorageIndexOfActionProto = (function (_super) {
 
 var KeyStorageService = (function (_super) {
     tslib_1.__extends(KeyStorageService, _super);
-    function KeyStorageService(server$$1, crypto$$1) {
-        return _super.call(this, server$$1, crypto$$1, [
+    function KeyStorageService(server, crypto$$1) {
+        return _super.call(this, server, crypto$$1, [
             KeyStorageKeysActionProto,
             KeyStorageIndexOfActionProto,
             KeyStorageGetItemActionProto,
@@ -4676,8 +4670,8 @@ var ImportKeyActionProto = (function (_super) {
 
 var SubtleService = (function (_super) {
     tslib_1.__extends(SubtleService, _super);
-    function SubtleService(server$$1, crypto$$1) {
-        return _super.call(this, server$$1, crypto$$1, [
+    function SubtleService(server, crypto$$1) {
+        return _super.call(this, server, crypto$$1, [
             GenerateKeyActionProto,
             ImportKeyActionProto,
             ExportKeyActionProto,
@@ -4947,16 +4941,16 @@ var SubtleService = (function (_super) {
 
 var CryptoService = (function (_super) {
     tslib_1.__extends(CryptoService, _super);
-    function CryptoService(server$$1, provider) {
-        var _this = _super.call(this, server$$1, provider, [
+    function CryptoService(server, provider) {
+        var _this = _super.call(this, server, provider, [
             IsLoggedInActionProto,
             LoginActionProto,
             LogoutActionProto,
             ResetActionProto,
         ]) || this;
-        _this.addService(new SubtleService(server$$1, _this));
-        _this.addService(new CertificateStorageService(server$$1, _this));
-        _this.addService(new KeyStorageService(server$$1, _this));
+        _this.addService(new SubtleService(server, _this));
+        _this.addService(new CertificateStorageService(server, _this));
+        _this.addService(new KeyStorageService(server, _this));
         return _this;
     }
     CryptoService.prototype.emit = function (event) {
@@ -5067,13 +5061,13 @@ var CryptoService = (function (_super) {
 
 var ProviderService = (function (_super) {
     tslib_1.__extends(ProviderService, _super);
-    function ProviderService(server$$1, options) {
-        var _this = _super.call(this, server$$1, new LocalProvider(options), [
+    function ProviderService(server, options) {
+        var _this = _super.call(this, server, new LocalProvider(options), [
             ProviderInfoActionProto,
             ProviderGetCryptoActionProto,
         ]) || this;
         _this.memoryStorage = new MemoryStorage();
-        var crypto$$1 = new CryptoService(server$$1, _this);
+        var crypto$$1 = new CryptoService(server, _this);
         _this.addService(crypto$$1);
         _this.object.on("token_new", _this.onTokenNew.bind(_this));
         _this.object.on("token", _this.onToken.bind(_this));
