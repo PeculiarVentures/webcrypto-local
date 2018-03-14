@@ -221,7 +221,7 @@ export class OpenSSLStorage {
     protected async saveRemote() {
         const json: any = {};
         for (const key in this.remoteIdentities) {
-            const remoteIdentity = this.remoteIdentities[key]
+            const remoteIdentity = this.remoteIdentities[key];
             const identity = await remoteIdentity.toJSON();
             json[key] = {
                 signingKey: await this.ecKeyToBase64(identity.signingKey),

@@ -11,8 +11,8 @@ export class ClientEvent extends Event<Client> {
 }
 
 export interface PromiseStackItem {
-    resolve: Function;
-    reject: Function;
+    resolve: (...args: any[]) => void;
+    reject: (...args: any[]) => void;
 }
 
 export class ClientListeningEvent extends ClientEvent {
@@ -179,15 +179,15 @@ export class Client extends EventEmitter {
     public on(event: "listening", listener: (e: ClientListeningEvent) => void): this;
     public on(event: "close", listener: (e: ClientCloseEvent) => void): this;
     public on(event: "error", listener: (e: ClientErrorEvent) => void): this;
-    public on(event: string | symbol, listener: Function) {
+    public on(event: string | symbol, listener: (...args: any[]) => void) {
         return super.on(event, listener);
     }
 
     public once(event: "listening", listener: (e: ClientListeningEvent) => void): this;
     public once(event: "close", listener: (e: ClientCloseEvent) => void): this;
     public once(event: "error", listener: (e: ClientErrorEvent) => void): this;
-    public once(event: string | symbol, listener: Function): this;
-    public once(event: string | symbol, listener: Function) {
+    public once(event: string | symbol, listener: (...args: any[]) => void): this;
+    public once(event: string | symbol, listener: (...args: any[]) => void) {
         return super.once(event, listener);
     }
 

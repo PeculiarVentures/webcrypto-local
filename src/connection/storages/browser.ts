@@ -35,16 +35,18 @@ export class BrowserStorage {
     }
 
     public async loadWrapKey(): Promise<IWrapKey | null> {
-        const wkey = await this.db.transaction(BrowserStorage.IDENTITY_STORAGE)
+        const wKey = await this.db.transaction(BrowserStorage.IDENTITY_STORAGE)
             .objectStore(BrowserStorage.IDENTITY_STORAGE).get("wkey") as IWrapKey;
-        if (wkey) {
+        if (wKey) {
             if (isEdge()) {
-                if (!(wkey.key instanceof ArrayBuffer)) return null;
-                wkey.key = await getEngine().crypto.subtle.importKey("raw", wkey.key as any, { name: AES_CBC.name, length: 256 }, false, ["encrypt", "decrypt", "wrapKey", "unwrapKey"]) as any;
+                if (!(wKey.key instanceof ArrayBuffer)) {
+                    return null;
+                }
+                wKey.key = await getEngine().crypto.subtle.importKey("raw", wKey.key as any, { name: AES_CBC.name, length: 256 }, false, ["encrypt", "decrypt", "wrapKey", "unwrapKey"]) as any;
             }
-            AES_CBC.iv = wkey.iv;
+            AES_CBC.iv = wKey.iv;
         }
-        return wkey || null;
+        return wKey || null;
     }
     public async saveWrapKey(key: IWrapKey) {
         if (isEdge()) {

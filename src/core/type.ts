@@ -32,8 +32,8 @@ export interface CryptoServiceEcdhAlgorithm extends CryptoServiceEcAlgorithm {
 }
 
 export interface CryptoService {
-    name: string,
-    policy: CryptoServicePolicy,
+    name: string;
+    policy: CryptoServicePolicy;
     supportedAlgorithms: CryptoServiceAlgorithm[];
 }
 

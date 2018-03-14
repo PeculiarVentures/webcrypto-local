@@ -1,7 +1,10 @@
 import { Convert } from "pvtsutils";
 import { PrepareAlgorithm } from "webcrypto-core";
 import { CryptoKeyProto } from "../core/proto";
-import { KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageKeysActionProto, KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto, KeyStorageIndexOfActionProto } from "../core/protos/keystorage";
+import {
+    KeyStorageClearActionProto, KeyStorageGetItemActionProto, KeyStorageIndexOfActionProto, KeyStorageKeysActionProto,
+    KeyStorageRemoveItemActionProto, KeyStorageSetItemActionProto,
+} from "../core/protos/keystorage";
 import { SocketCrypto } from "./crypto";
 
 export class SocketKeyStorage implements IKeyStorage {

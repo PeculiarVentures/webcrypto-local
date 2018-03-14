@@ -2,11 +2,11 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 
-function declareDir(path: string) {
-    if (!fs.existsSync(path)) {
-        fs.mkdirSync(path);
+function declareDir(dirPath: string) {
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath);
     }
-    return path;
+    return dirPath;
 }
 
 export const USER_DIR = os.homedir();

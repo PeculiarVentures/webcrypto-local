@@ -4,7 +4,9 @@ import { WebCryptoLocalError } from "../error";
 
 const crypto: Crypto = new (require("node-webcrypto-ossl"))();
 
-type IJsonOpenSSLKeyStorage = { [key: string]: IJsonOpenSSLKey };
+interface IJsonOpenSSLKeyStorage {
+    [key: string]: IJsonOpenSSLKey;
+}
 
 interface IJsonOpenSSLKey extends CryptoKey {
     raw: string;
@@ -174,7 +176,7 @@ export class OpenSSLKeyStorage implements IKeyStorage {
                 format = "pkcs8";
                 break;
             default:
-            throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported type of CryptoKey '${obj.type}'`);
+                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported type of CryptoKey '${obj.type}'`);
         }
         obj.lastUsed = new Date().toISOString();
         return crypto.subtle.importKey(format, new Buffer(obj.raw, "base64"), obj.algorithm as any, obj.extractable, obj.usages);

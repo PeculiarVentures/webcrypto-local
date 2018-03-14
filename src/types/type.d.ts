@@ -1,3 +1,3 @@
-type Assoc<T> = {
+interface Assoc<T> {
     [key: string]: T;
-};
+}

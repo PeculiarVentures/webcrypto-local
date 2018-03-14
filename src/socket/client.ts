@@ -78,11 +78,11 @@ export class SocketProvider extends EventEmitter {
         this.client.close();
     }
 
-    public on(event: string | symbol, listener: Function) {
+    public on(event: string | symbol, listener: (...args: any[]) => void) {
         return super.on(event, listener);
     }
 
-    public once(event: string | symbol, listener: Function) {
+    public once(event: string | symbol, listener: (...args: any[]) => void) {
         return super.once(event, listener);
     }
 

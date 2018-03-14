@@ -1,13 +1,15 @@
 import * as fs from "fs";
 import { Convert } from "pvtsutils";
+import { WebCryptoLocalError } from "../error";
 import { Certificate } from "./pki/cert";
 import { X509CertificateRequest } from "./pki/request";
 import { X509Certificate } from "./pki/x509";
-import { WebCryptoLocalError } from '../error';
 
 const crypto: Crypto = new (require("node-webcrypto-ossl"))();
 
-type IJsonOpenSSLCertificateStorage = { [key: string]: IJsonOpenSSLCertificate };
+interface IJsonOpenSSLCertificateStorage {
+    [key: string]: IJsonOpenSSLCertificate;
+}
 
 interface IJsonOpenSSLCertificate {
     algorithm: Algorithm;
@@ -26,9 +28,9 @@ export class OpenSSLCertificateStorage implements ICertificateStorage {
         this.file = file;
     }
 
-    public exportCert(format: "pem", item: CryptoCertificate): Promise<string>
-    public exportCert(format: "raw", item: CryptoCertificate): Promise<ArrayBuffer>
-    public exportCert(format: CryptoCertificateFormat, item: CryptoCertificate): Promise<ArrayBuffer | string>
+    public exportCert(format: "pem", item: CryptoCertificate): Promise<string>;
+    public exportCert(format: "raw", item: CryptoCertificate): Promise<ArrayBuffer>;
+    public exportCert(format: CryptoCertificateFormat, item: CryptoCertificate): Promise<ArrayBuffer | string>;
     public async exportCert(format: CryptoCertificateFormat, item: Certificate): Promise<ArrayBuffer | string> {
         switch (format) {
             case "raw": {

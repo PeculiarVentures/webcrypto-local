@@ -14,7 +14,7 @@ export abstract class Service<T extends EventEmitter> extends EventEmitter {
     public services: Array<Service<any>> = [];
 
     /**
-     * 
+     * Service constructor
      * @param server WebSocket server
      * @param object Wrapped object
      * @param filter List of actions which must be implemented

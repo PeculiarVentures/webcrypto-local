@@ -10,7 +10,7 @@ export interface CertificateConstructor<T> {
 export abstract class Certificate implements CryptoCertificate {
 
     public static importCert<T extends Certificate>(this: CertificateConstructor<T>, provider: Crypto, rawData: BufferSource): Promise<T>;
-    public static importCert<T extends Certificate>(this: CertificateConstructor<T>, provider: Crypto, rawData: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<T>
+    public static importCert<T extends Certificate>(this: CertificateConstructor<T>, provider: Crypto, rawData: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<T>;
     public static async importCert<T extends Certificate>(this: CertificateConstructor<T>, provider: Crypto, rawData: BufferSource, algorithm?: Algorithm, keyUsages?: string[]): Promise<T> {
         const res = new this();
         await res.importCert(provider, rawData, algorithm, keyUsages);

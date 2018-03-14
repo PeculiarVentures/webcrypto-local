@@ -14,9 +14,9 @@ declare class PCSCLite extends EventEmitter {
     public on(event: "status", cb: (status: Status) => void): this;
 }
 
-type CardReaderConnectOptions = {
+interface CardReaderConnectOptions {
     share_mode?: number;
-    protocol?: number
+    protocol?: number;
 }
 
 declare class CardReader extends EventEmitter {
@@ -60,7 +60,7 @@ declare class CardReader extends EventEmitter {
     public connect(options: CardReaderConnectOptions, cb: (err: Error, protocol: number) => void): void;
     public disconnect(cb: (err: Error) => void): void;
     public disconnect(disposition: number, cb: (err: Error) => void): void;
-    public transmit(data: Buffer, resLength: number, protocol: number, cb: (err: Error, data: Buffer) => void): void
+    public transmit(data: Buffer, resLength: number, protocol: number, cb: (err: Error, data: Buffer) => void): void;
     public close(): void;
 
     public on(event: "error", cb: (err: Error) => void): this;
