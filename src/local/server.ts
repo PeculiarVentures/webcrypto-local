@@ -149,7 +149,7 @@ export class LocalServer extends EventEmitter {
                 if (!session.authorized) {
                     // Session is not authorized
                     // generate OTP
-                    const pin = await challenge(this.server.identity.signingKey.publicKey, session.cipher.remoteIdentity.signingKey);
+                    const pin = await challenge(session.identity.signingKey.publicKey, session.cipher.remoteIdentity.signingKey);
                     // Show notice
                     const promise = new Promise<boolean>((resolve, reject) => {
                         this.emit("notify", {

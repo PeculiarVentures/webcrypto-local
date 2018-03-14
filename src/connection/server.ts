@@ -12,8 +12,6 @@ import { WebCryptoLocalError } from "../local/error";
 import { SERVER_WELL_KNOWN } from "./const";
 import { OpenSSLStorage } from "./storages/ossl";
 
-const D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
-
 type AlgorithmUsageType = "generateKey" | "importKey" | "exportKey" | "sign" | "verify" | "deriveKey" | "deriveBits" | "encrypt" | "decrypt" | "wrapKey" | "unwrapKey" | "digest";
 
 interface WebCryptoProviderAlgorithm {
@@ -39,6 +37,7 @@ export interface ServerInfo {
 export interface Session {
     headers: any;
     connection: WebSocket.connection;
+    identity: Identity;
     cipher: AsymmetricRatchet;
     authorized: boolean;
 }
@@ -133,7 +132,6 @@ export class Server extends EventEmitter {
         ],
     };
 
-    public identity: Identity;
     /**
      * Storage for 2key-ratchet identifiers
      *
@@ -196,7 +194,7 @@ export class Server extends EventEmitter {
                 if (request.method === "GET") {
                     const requestUrl = url.parse(request.url);
                     if (requestUrl.pathname === SERVER_WELL_KNOWN) {
-                        const bundle = await this.getRandomBundle();
+                        const bundle = await this.getRandomBundle((request.headers as any)["origin"]);
                         const preKey = Convert.ToBase64(bundle);
                         // console.log("Server info", preKey);
                         const info = assign({}, this.info, { preKey });
@@ -215,11 +213,6 @@ export class Server extends EventEmitter {
             .listen(parseInt(splitAddress[1], 10), splitAddress[0], () => {
                 (async () => {
                     this.storage = await OpenSSLStorage.create();
-                    this.identity = await this.storage.loadIdentity();
-                    if (!this.identity) {
-                        this.identity = await this.generateIdentity();
-                        await this.storage.saveIdentity(this.identity);
-                    }
                     this.emit("listening", new ServerListeningEvent(this, address));
                 })();
             })
@@ -252,6 +245,7 @@ export class Server extends EventEmitter {
                 connection,
                 cipher: null,
                 authorized: false,
+                identity: null,
             };
             this.sessions.push(session);
             this.emit("connect", session);
@@ -279,7 +273,8 @@ export class Server extends EventEmitter {
                                 this.emit("info", `Cannot parse MessageSignedProtocol`);
                                 const preKeyProto = await PreKeyMessageProtocol.importProto(buffer);
                                 messageProto = preKeyProto.signedMessage;
-                                session.cipher = await AsymmetricRatchet.create(this.identity, preKeyProto);
+                                session.identity = await this.storage.getIdentity(request.origin);
+                                session.cipher = await AsymmetricRatchet.create(session.identity, preKeyProto);
                                 // check remote identity
                                 const ok = await this.storage.isTrusted(session.cipher.remoteIdentity);
                                 if (!ok) {
@@ -383,22 +378,18 @@ export class Server extends EventEmitter {
         }
     }
 
-    protected async generateIdentity() {
-        const identity = await Identity.create(0, D_KEY_IDENTITY_PRE_KEY_AMOUNT); // INFO: using 0 for all local servers
-        return identity;
-    }
-
     /**
      * create PreKeyBundle with random SignedPreKey and returns it as ArrayBuffer
      */
-    protected async getRandomBundle() {
+    protected async getRandomBundle(origin: string) {
         const preKeyBundle = new PreKeyBundleProtocol();
-        await preKeyBundle.identity.fill(this.identity);
-        const preKeyId = getRandomInt(1, this.identity.signedPreKeys.length) - 1;
-        const preKey = this.identity.signedPreKeys[preKeyId];
+        const identity = await this.storage.getIdentity(origin);
+        await preKeyBundle.identity.fill(identity);
+        const preKeyId = getRandomInt(1, identity.signedPreKeys.length) - 1;
+        const preKey = identity.signedPreKeys[preKeyId];
         preKeyBundle.preKeySigned.id = preKeyId;
         preKeyBundle.preKeySigned.key = preKey.publicKey;
-        await preKeyBundle.preKeySigned.sign(this.identity.signingKey.privateKey);
+        await preKeyBundle.preKeySigned.sign(identity.signingKey.privateKey);
         preKeyBundle.registrationId = 0;
         const raw = await preKeyBundle.exportProto();
         return raw;

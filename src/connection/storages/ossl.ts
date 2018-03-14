@@ -7,9 +7,39 @@ import * as fs from "fs";
 import { Convert } from "pvtsutils";
 import { DOUBLE_KEY_RATCHET_STORAGE_DIR } from "../../core/const";
 
+const D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
+
 export interface RemoteIdentityEx extends RemoteIdentity {
     userAgent?: string;
     origin?: string;
+}
+
+export interface JsonRatchetEcKey {
+    privateKey: string;
+    publicKey: string;
+    thumbprint: string;
+}
+
+export interface JsonIdentity {
+    createdAt: string;
+    exchangeKey: JsonRatchetEcKey;
+    signingKey: JsonRatchetEcKey;
+    id: number;
+    preKeys: JsonRatchetEcKey[];
+    signedPreKeys: JsonRatchetEcKey[];
+}
+
+export interface JsonIdentityList {
+    [origin: string]: JsonIdentity;
+}
+
+export interface JsonIdentityBundle {
+    version: number;
+    identities: JsonIdentityList;
+}
+
+export interface IdentityList {
+    [origin: string]: Identity;
 }
 
 /**
@@ -33,17 +63,12 @@ export class OpenSSLStorage {
      * @memberof OpenSSLStorage
      */
     public static async create() {
-        return new this();
+        const res = new this();
+        await res.loadIdentities();
+        return res;
     }
 
-    /**
-     * 2key-ratchet identity
-     *
-     * @type {Identity}
-     * @memberof OpenSSLStorage
-     */
-    public identity: Identity;
-
+    public identities: IdentityList = {};
     /**
      * Associative array of remote identities
      *
@@ -57,56 +82,97 @@ export class OpenSSLStorage {
         // some
     }
 
-    public async loadIdentity(): Promise<Identity> {
+    public async loadIdentities(): Promise<void> {
         const identityPath = OpenSSLStorage.STORAGE_NAME + "/identity.json";
+        this.identities = {}; // Reset identities
         if (fs.existsSync(identityPath)) {
             const data = fs.readFileSync(identityPath).toString();
-            const json = JSON.parse(data);
+            let json: JsonIdentityBundle | undefined;
+            try {
+                json = JSON.parse(data);
+            } catch {
+                return;
+            }
+            // Check old JSON version
+            if ((json.version || 0) < 2) {
+                // Old version uses 1 identity key. Need to reset JSON file.
+                return;
+            }
+
             // signing key
-            json.signingKey.privateKey = await this.ecKeyToCryptoKey(json.signingKey.privateKey, "private", "ECDSA");
-            json.signingKey.publicKey = await this.ecKeyToCryptoKey(json.signingKey.publicKey, "public", "ECDSA");
-            // exchange key
-            json.exchangeKey.privateKey = await this.ecKeyToCryptoKey(json.exchangeKey.privateKey, "private", "ECDH");
-            json.exchangeKey.publicKey = await this.ecKeyToCryptoKey(json.exchangeKey.publicKey, "public", "ECDH");
-            // onetime pre key
-            for (const preKey of json.preKeys) {
-                preKey.privateKey = await this.ecKeyToCryptoKey(preKey.privateKey, "private", "ECDH");
-                preKey.publicKey = await this.ecKeyToCryptoKey(preKey.publicKey, "public", "ECDH");
+            for (const origin in json.identities) {
+                const jsonIdentity: any = json.identities[origin];
+
+                jsonIdentity.signingKey.privateKey = await this.ecKeyToCryptoKey(jsonIdentity.signingKey.privateKey, "private", "ECDSA");
+                jsonIdentity.signingKey.publicKey = await this.ecKeyToCryptoKey(jsonIdentity.signingKey.publicKey, "public", "ECDSA");
+                // exchange key
+                jsonIdentity.exchangeKey.privateKey = await this.ecKeyToCryptoKey(jsonIdentity.exchangeKey.privateKey, "private", "ECDH");
+                jsonIdentity.exchangeKey.publicKey = await this.ecKeyToCryptoKey(jsonIdentity.exchangeKey.publicKey, "public", "ECDH");
+                // onetime pre key
+                for (const preKey of jsonIdentity.preKeys) {
+                    preKey.privateKey = await this.ecKeyToCryptoKey(preKey.privateKey, "private", "ECDH");
+                    preKey.publicKey = await this.ecKeyToCryptoKey(preKey.publicKey, "public", "ECDH");
+                }
+                // pre key
+                for (const preKey of jsonIdentity.signedPreKeys) {
+                    preKey.privateKey = await this.ecKeyToCryptoKey(preKey.privateKey, "private", "ECDH");
+                    preKey.publicKey = await this.ecKeyToCryptoKey(preKey.publicKey, "public", "ECDH");
+                }
+
+                this.identities[origin] = await Identity.fromJSON(jsonIdentity);
             }
-            // pre key
-            for (const preKey of json.signedPreKeys) {
-                preKey.privateKey = await this.ecKeyToCryptoKey(preKey.privateKey, "private", "ECDH");
-                preKey.publicKey = await this.ecKeyToCryptoKey(preKey.publicKey, "public", "ECDH");
-            }
-            this.identity = await Identity.fromJSON(json);
         }
-        return this.identity || null;
     }
 
-    public async saveIdentity(value: Identity) {
-        const json = await value.toJSON();
-        const res: any = json;
-        // signing key
-        res.signingKey.privateKey = await this.ecKeyToBase64(json.signingKey.privateKey);
-        res.signingKey.publicKey = await this.ecKeyToBase64(json.signingKey.publicKey);
-        // exchange key
-        res.exchangeKey.privateKey = await this.ecKeyToBase64(json.exchangeKey.privateKey);
-        res.exchangeKey.publicKey = await this.ecKeyToBase64(json.exchangeKey.publicKey);
-        // onetime pre keys
-        for (const preKey of json.preKeys) {
-            (preKey as any).privateKey = await this.ecKeyToBase64(preKey.privateKey);
-            (preKey as any).publicKey = await this.ecKeyToBase64(preKey.publicKey);
-        }
-        // pre keys
-        for (const preKey of json.signedPreKeys) {
-            (preKey as any).privateKey = await this.ecKeyToBase64(preKey.privateKey);
-            (preKey as any).publicKey = await this.ecKeyToBase64(preKey.publicKey);
+    public async saveIdentities() {
+        const jsonIdentities: JsonIdentityList = {};
+        for (const origin in this.identities) {
+            const identity = this.identities[origin];
+            const json = await identity.toJSON();
+            const jsonIdentity: any = json;
+            // signing key
+            jsonIdentity.signingKey.privateKey = await this.ecKeyToBase64(json.signingKey.privateKey);
+            jsonIdentity.signingKey.publicKey = await this.ecKeyToBase64(json.signingKey.publicKey);
+            // exchange key
+            jsonIdentity.exchangeKey.privateKey = await this.ecKeyToBase64(json.exchangeKey.privateKey);
+            jsonIdentity.exchangeKey.publicKey = await this.ecKeyToBase64(json.exchangeKey.publicKey);
+            // onetime pre keys
+            for (const preKey of json.preKeys) {
+                (preKey as any).privateKey = await this.ecKeyToBase64(preKey.privateKey);
+                (preKey as any).publicKey = await this.ecKeyToBase64(preKey.publicKey);
+            }
+            // pre keys
+            for (const preKey of json.signedPreKeys) {
+                (preKey as any).privateKey = await this.ecKeyToBase64(preKey.privateKey);
+                (preKey as any).publicKey = await this.ecKeyToBase64(preKey.publicKey);
+            }
+
+            jsonIdentities[origin] = jsonIdentity;
         }
 
-        fs.writeFileSync(OpenSSLStorage.STORAGE_NAME + "/identity.json", JSON.stringify(res, null, "  "), {
+        const jsonIdentityBundle: JsonIdentityBundle = {
+            version: 2,
+            identities: jsonIdentities,
+        };
+
+        fs.writeFileSync(OpenSSLStorage.STORAGE_NAME + "/identity.json", JSON.stringify(jsonIdentityBundle, null, "  "), {
             encoding: "utf8",
             flag: "w+",
         });
+    }
+
+    /**
+     * Returns identity by domain origin
+     * @param origin Domain origin
+     */
+    public async getIdentity(origin: string) {
+        let identity = this.identities[origin];
+        if (!identity) {
+            identity = await Identity.create(0, D_KEY_IDENTITY_PRE_KEY_AMOUNT);
+            this.identities[origin] = identity;
+            await this.saveIdentities();
+        }
+        return identity;
     }
 
     /**
