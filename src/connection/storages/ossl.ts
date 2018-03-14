@@ -96,6 +96,9 @@ export class OpenSSLStorage {
             // Check old JSON version
             if ((json.version || 0) < 2) {
                 // Old version uses 1 identity key. Need to reset JSON file.
+                this.remoteIdentities = {};
+                this.saveIdentities();
+                this.saveRemote();
                 return;
             }
 
