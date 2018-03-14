@@ -42,6 +42,7 @@
   "dependencies": {
     "2key-ratchet": "^1.0.10",
     "asn1js": "^2.0.18",
+    "babel-polyfill": "^6.26.0",
     "event-emitter": "^0.3.5",
     "graphene-pk11": "^2.0.32",
     "idb": "^2.1.0",
