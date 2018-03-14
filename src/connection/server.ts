@@ -194,7 +194,7 @@ export class Server extends EventEmitter {
                 if (request.method === "GET") {
                     const requestUrl = url.parse(request.url);
                     if (requestUrl.pathname === SERVER_WELL_KNOWN) {
-                        const bundle = await this.getRandomBundle((request.headers as any)["origin"]);
+                        const bundle = await this.getRandomBundle((request.headers as any).origin);
                         const preKey = Convert.ToBase64(bundle);
                         // console.log("Server info", preKey);
                         const info = assign({}, this.info, { preKey });
