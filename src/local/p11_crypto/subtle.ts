@@ -2,13 +2,19 @@
  * NOTE: We are using PKCS#11 Subtle directly from built folder,
  * because it's not exported from node-webcrypto-p11 module
  */
-import { SubtleCrypto } from "node-webcrypto-p11/built/subtle";
+import { SubtleCrypto } from "node-webcrypto-p11";
 import { Pkcs11Crypto } from "./crypto";
 import { fixObject, isOsslObject, OsslCryptoKey } from "./helper";
 
-export class Pkcs11SubtleCrypto extends SubtleCrypto<Pkcs11Crypto> {
+export class Pkcs11SubtleCrypto extends SubtleCrypto {
 
-    public async importKey(format: string, keyData: JsonWebKey | BufferSource, algorithm: string | RsaHashedImportParams | EcKeyImportParams | HmacImportParams | DhImportKeyParams, extractable: boolean, keyUsages: string[]) {
+    protected crypto: Pkcs11Crypto;
+
+    constructor(crypto: Pkcs11Crypto) {
+        super(crypto)
+    }
+
+    public async importKey(format: any, keyData: any, algorithm: any, extractable: any, keyUsages: any) {
         let key: CryptoKey;
         try {
             key = await super.importKey(format, keyData, algorithm, extractable, keyUsages);
@@ -19,7 +25,7 @@ export class Pkcs11SubtleCrypto extends SubtleCrypto<Pkcs11Crypto> {
         return key;
     }
 
-    public async verify(algorithm: string | RsaPssParams | EcdsaParams | AesCmacParams, key: CryptoKey, signature: BufferSource, data: BufferSource) {
+    public async verify(algorithm: string | AesCmacParams | RsaPssParams | EcdsaParams, key: NativeCryptoKey, signature: ArrayBuffer | Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView, data: ArrayBuffer | Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView) {
         if (!isOsslObject(key)) {
             return super.verify(algorithm, key, signature, data);
         } else {

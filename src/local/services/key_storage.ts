@@ -9,6 +9,7 @@ import { ActionProto, ResultProto } from "../../core/proto";
 import { ArrayStringConverter } from "../../core/protos/converter";
 import * as P from "../../core/protos/keystorage";
 import { WebCryptoLocalError } from "../error";
+import { PvCrypto } from '../pv_crypto/crypto';
 
 export class KeyStorageService extends Service<CryptoService> {
 
@@ -67,7 +68,15 @@ export class KeyStorageService extends Service<CryptoService> {
                 if ((key.algorithm as any).toAlgorithm) {
                     (key as any).algorithm = (key.algorithm as any).toAlgorithm();
                 }
-                const index = await crypto.keyStorage.setItem(key as any);
+                let index: string;
+                if (crypto instanceof PvCrypto) {
+                    index = await crypto.keyStorage.setItem(key, {
+                        pinFriendlyName: session.headers.origin,
+                        pinDescription: key.usages.join(", "),
+                    });
+                } else {
+                    index = await crypto.keyStorage.setItem(key);
+                }
                 result.data = Convert.FromUtf8String(index);
                 // result
                 break;

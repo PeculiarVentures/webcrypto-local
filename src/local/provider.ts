@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 import * as fs from "fs";
 import * as graphene from "graphene-pk11";
+import { WebCrypto } from "node-webcrypto-p11";
 import * as os from "os";
 import { Convert } from "pvtsutils";
 
@@ -12,6 +13,7 @@ import { WebCryptoLocalError } from "./error";
 import { digest } from "./helper";
 import { Pkcs11Crypto } from "./p11_crypto";
 import { Card, CardWatcher, PCSCCard } from "./pcsc_watcher";
+import { PvCrypto } from './pv_crypto/crypto';
 
 export interface TokenInfo {
     removed: IProvider[];
@@ -110,7 +112,7 @@ export class LocalProvider extends EventEmitter {
         {
             if (fs.existsSync(PV_PKCS11_LIB)) {
                 try {
-                    const crypto = new Pkcs11Crypto({
+                    const crypto = new PvCrypto({
                         library: PV_PKCS11_LIB,
                         slot: 0,
                         readWrite: true,
@@ -174,7 +176,7 @@ export class LocalProvider extends EventEmitter {
         this.emit("listening", await this.getInfo());
     }
 
-    public addProvider(crypto: Pkcs11Crypto) {
+    public addProvider(crypto: WebCrypto) {
         const info = getSlotInfo(crypto);
         this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
         this.info.providers.push(new ProviderCryptoProto(info));
@@ -399,7 +401,7 @@ export class LocalProvider extends EventEmitter {
 
 }
 
-function getSlotInfo(p11Crypto: Pkcs11Crypto) {
+function getSlotInfo(p11Crypto: WebCrypto) {
     const session: graphene.Session = p11Crypto.session;
     const info: IProvider = p11Crypto.info as any;
     info.readOnly = !(session.flags & graphene.SessionFlag.RW_SESSION);

@@ -4,23 +4,29 @@
  */
 
 import { X509Certificate } from "graphene-pk11";
-import { Pkcs11CertificateStorage as CertificateStorage } from "node-webcrypto-p11/built/cert_storage";
+import { CertificateStorage, ICryptoCertificate } from "node-webcrypto-p11";
 
 import { Pkcs11Crypto } from "./crypto";
 import { fixObject, isOsslObject } from "./helper";
 
-export class Pkcs11CertificateStorage extends CertificateStorage<Pkcs11Crypto> {
+export class Pkcs11CertificateStorage extends CertificateStorage {
 
-    public getItem(key: string): Promise<CryptoCertificate>;
-    public getItem(key: string, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoCertificate>;
+    protected crypto: Pkcs11Crypto;
+
+    constructor(crypto: Pkcs11Crypto) {
+        super(crypto);
+    }
+
+    public getItem(key: string): Promise<ICryptoCertificate>;
+    public getItem(key: string, algorithm: Algorithm, keyUsages: string[]): Promise<ICryptoCertificate>;
     public async getItem(id: string, algorithm?: Algorithm, usages?: string[]) {
-        let cert: CryptoCertificate;
+        let cert: ICryptoCertificate;
 
         try {
             cert = await super.getItem(id, algorithm, usages);
         } catch (err) {
             try {
-                const object = this.getItemById(id);
+                const object = this.getItemById(id).toType<GraphenePkcs11.X509Certificate>();
                 const type = object instanceof X509Certificate ? "x509" : "request";
                 cert = await this.crypto.ossl.certStorage.importCert(type, object.value, algorithm, usages);
                 fixObject(this.crypto, cert, {
@@ -28,7 +34,7 @@ export class Pkcs11CertificateStorage extends CertificateStorage<Pkcs11Crypto> {
                     handle: object.handle,
                 });
                 fixObject(this.crypto, cert.publicKey);
-            } catch {
+            } catch (err2) {
                 throw err;
             }
         }
@@ -71,7 +77,7 @@ export class Pkcs11CertificateStorage extends CertificateStorage<Pkcs11Crypto> {
         }
     }
 
-    public async indexOf(item: CryptoCertificate): Promise<string | null> {
+    public async indexOf(item: ICryptoCertificate): Promise<string | null> {
         if (isOsslObject(item)) {
             return item.__index;
         } else {
