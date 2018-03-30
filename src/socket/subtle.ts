@@ -71,7 +71,7 @@ export class SocketSubtleCrypto extends SubtleCrypto {
         const alg = PrepareAlgorithm(algorithm);
         if (self.crypto) {
             try {
-                res = await self.crypto.subtle.digest(alg, data);
+                res = await self.crypto.subtle.digest(alg, data as ArrayBuffer);
             } catch (err) {
                 console.warn(`Cannot do native digest for algorithm '${alg.name}'`);
             }

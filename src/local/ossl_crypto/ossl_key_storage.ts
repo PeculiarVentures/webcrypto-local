@@ -94,10 +94,10 @@ export class OpenSSLKeyStorage implements IKeyStorage {
      */
     protected async getID(key: CryptoKey) {
         const nativeKey = (key as any).native;
-        let id: BufferSource;
+        let id: Uint8Array;
         switch (key.type) {
             case "secret": {
-                id = await crypto.getRandomValues(new Uint8Array(20));
+                id = await crypto.getRandomValues(new Uint8Array(20)) as Uint8Array;
                 break;
             }
             case "private":

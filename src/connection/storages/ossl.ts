@@ -90,7 +90,7 @@ export class OpenSSLStorage {
             let json: JsonIdentityBundle | undefined;
             try {
                 json = JSON.parse(data);
-            } catch {
+            } catch (err) {
                 return;
             }
             // Check old JSON version

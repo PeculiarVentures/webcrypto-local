@@ -42,7 +42,7 @@ export class BrowserStorage {
                 if (!(wKey.key instanceof ArrayBuffer)) {
                     return null;
                 }
-                wKey.key = await getEngine().crypto.subtle.importKey("raw", wKey.key as any, { name: AES_CBC.name, length: 256 }, false, ["encrypt", "decrypt", "wrapKey", "unwrapKey"]) as any;
+                wKey.key = await getEngine().crypto.subtle.importKey("raw", wKey.key, { name: AES_CBC.name, length: 256 } as any, false, ["encrypt", "decrypt", "wrapKey", "unwrapKey"]) as any;
             }
             AES_CBC.iv = wKey.iv;
         }
