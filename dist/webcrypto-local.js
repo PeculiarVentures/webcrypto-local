@@ -19,8 +19,6 @@ var crypto = require('crypto');
 var asn1js = require('asn1js');
 var webcryptoCore = require('webcrypto-core');
 var graphene = require('graphene-pk11');
-var cert_storage = require('node-webcrypto-p11/built/cert_storage');
-var subtle = require('node-webcrypto-p11/built/subtle');
 var nodeWebcryptoP11 = require('node-webcrypto-p11');
 var pvutils = require('pvutils');
 var request = _interopDefault(require('request'));
@@ -488,156 +486,234 @@ var OPENSSL_KEY_STORAGE_DIR = declareDir(path.join(APP_DATA_DIR, "keystorage"));
 
 var WebCrypto = require("node-webcrypto-ossl");
 var crypto$1 = new WebCrypto();
+var D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
 var OpenSSLStorage = (function () {
     function OpenSSLStorage() {
+        this.identities = {};
         this.remoteIdentities = {};
         this.sessions = {};
     }
     OpenSSLStorage.create = function () {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var res;
             return tslib_1.__generator(this, function (_a) {
-                return [2, new this()];
-            });
-        });
-    };
-    OpenSSLStorage.prototype.loadIdentity = function () {
-        return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var identityPath, data, json, _a, _b, _c, _d, _i, _e, preKey, _f, _g, _h, _j, preKey, _k, _l, _m;
-            return tslib_1.__generator(this, function (_o) {
-                switch (_o.label) {
+                switch (_a.label) {
                     case 0:
-                        identityPath = OpenSSLStorage.STORAGE_NAME + "/identity.json";
-                        if (!fs.existsSync(identityPath)) return [3, 16];
-                        data = fs.readFileSync(identityPath).toString();
-                        json = JSON.parse(data);
-                        _a = json.signingKey;
-                        return [4, this.ecKeyToCryptoKey(json.signingKey.privateKey, "private", "ECDSA")];
+                        res = new this();
+                        return [4, res.loadIdentities()];
                     case 1:
-                        _a.privateKey = _o.sent();
-                        _b = json.signingKey;
-                        return [4, this.ecKeyToCryptoKey(json.signingKey.publicKey, "public", "ECDSA")];
-                    case 2:
-                        _b.publicKey = _o.sent();
-                        _c = json.exchangeKey;
-                        return [4, this.ecKeyToCryptoKey(json.exchangeKey.privateKey, "private", "ECDH")];
-                    case 3:
-                        _c.privateKey = _o.sent();
-                        _d = json.exchangeKey;
-                        return [4, this.ecKeyToCryptoKey(json.exchangeKey.publicKey, "public", "ECDH")];
-                    case 4:
-                        _d.publicKey = _o.sent();
-                        _i = 0, _e = json.preKeys;
-                        _o.label = 5;
-                    case 5:
-                        if (!(_i < _e.length)) return [3, 9];
-                        preKey = _e[_i];
-                        _f = preKey;
-                        return [4, this.ecKeyToCryptoKey(preKey.privateKey, "private", "ECDH")];
-                    case 6:
-                        _f.privateKey = _o.sent();
-                        _g = preKey;
-                        return [4, this.ecKeyToCryptoKey(preKey.publicKey, "public", "ECDH")];
-                    case 7:
-                        _g.publicKey = _o.sent();
-                        _o.label = 8;
-                    case 8:
-                        _i++;
-                        return [3, 5];
-                    case 9:
-                        _h = 0, _j = json.signedPreKeys;
-                        _o.label = 10;
-                    case 10:
-                        if (!(_h < _j.length)) return [3, 14];
-                        preKey = _j[_h];
-                        _k = preKey;
-                        return [4, this.ecKeyToCryptoKey(preKey.privateKey, "private", "ECDH")];
-                    case 11:
-                        _k.privateKey = _o.sent();
-                        _l = preKey;
-                        return [4, this.ecKeyToCryptoKey(preKey.publicKey, "public", "ECDH")];
-                    case 12:
-                        _l.publicKey = _o.sent();
-                        _o.label = 13;
-                    case 13:
-                        _h++;
-                        return [3, 10];
-                    case 14:
-                        _m = this;
-                        return [4, _2keyRatchet.Identity.fromJSON(json)];
-                    case 15:
-                        _m.identity = _o.sent();
-                        _o.label = 16;
-                    case 16: return [2, this.identity || null];
+                        _a.sent();
+                        return [2, res];
                 }
             });
         });
     };
-    OpenSSLStorage.prototype.saveIdentity = function (value) {
+    OpenSSLStorage.prototype.loadIdentities = function () {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var json, res, _a, _b, _c, _d, _i, _e, preKey, _f, _g, _h, _j, preKey, _k, _l;
-            return tslib_1.__generator(this, function (_m) {
-                switch (_m.label) {
-                    case 0: return [4, value.toJSON()];
+            var identityPath, data, json, _a, _b, _i, origin, jsonIdentity, _c, _d, _e, _f, _g, _h, preKey, _j, _k, _l, _m, preKey, _o, _p, _q, _r;
+            return tslib_1.__generator(this, function (_s) {
+                switch (_s.label) {
+                    case 0:
+                        identityPath = OpenSSLStorage.STORAGE_NAME + "/identity.json";
+                        this.identities = {};
+                        if (!fs.existsSync(identityPath)) return [3, 18];
+                        data = fs.readFileSync(identityPath).toString();
+                        json = void 0;
+                        try {
+                            json = JSON.parse(data);
+                        }
+                        catch (err) {
+                            return [2];
+                        }
+                        if ((json.version || 0) < 2) {
+                            this.remoteIdentities = {};
+                            this.saveIdentities();
+                            this.saveRemote();
+                            return [2];
+                        }
+                        _a = [];
+                        for (_b in json.identities)
+                            _a.push(_b);
+                        _i = 0;
+                        _s.label = 1;
                     case 1:
-                        json = _m.sent();
-                        res = json;
-                        _a = res.signingKey;
-                        return [4, this.ecKeyToBase64(json.signingKey.privateKey)];
+                        if (!(_i < _a.length)) return [3, 18];
+                        origin = _a[_i];
+                        jsonIdentity = json.identities[origin];
+                        _c = jsonIdentity.signingKey;
+                        return [4, this.ecKeyToCryptoKey(jsonIdentity.signingKey.privateKey, "private", "ECDSA")];
                     case 2:
-                        _a.privateKey = _m.sent();
-                        _b = res.signingKey;
-                        return [4, this.ecKeyToBase64(json.signingKey.publicKey)];
+                        _c.privateKey = _s.sent();
+                        _d = jsonIdentity.signingKey;
+                        return [4, this.ecKeyToCryptoKey(jsonIdentity.signingKey.publicKey, "public", "ECDSA")];
                     case 3:
-                        _b.publicKey = _m.sent();
-                        _c = res.exchangeKey;
-                        return [4, this.ecKeyToBase64(json.exchangeKey.privateKey)];
+                        _d.publicKey = _s.sent();
+                        _e = jsonIdentity.exchangeKey;
+                        return [4, this.ecKeyToCryptoKey(jsonIdentity.exchangeKey.privateKey, "private", "ECDH")];
                     case 4:
-                        _c.privateKey = _m.sent();
-                        _d = res.exchangeKey;
-                        return [4, this.ecKeyToBase64(json.exchangeKey.publicKey)];
+                        _e.privateKey = _s.sent();
+                        _f = jsonIdentity.exchangeKey;
+                        return [4, this.ecKeyToCryptoKey(jsonIdentity.exchangeKey.publicKey, "public", "ECDH")];
                     case 5:
-                        _d.publicKey = _m.sent();
-                        _i = 0, _e = json.preKeys;
-                        _m.label = 6;
+                        _f.publicKey = _s.sent();
+                        _g = 0, _h = jsonIdentity.preKeys;
+                        _s.label = 6;
                     case 6:
-                        if (!(_i < _e.length)) return [3, 10];
-                        preKey = _e[_i];
-                        _f = preKey;
-                        return [4, this.ecKeyToBase64(preKey.privateKey)];
+                        if (!(_g < _h.length)) return [3, 10];
+                        preKey = _h[_g];
+                        _j = preKey;
+                        return [4, this.ecKeyToCryptoKey(preKey.privateKey, "private", "ECDH")];
                     case 7:
-                        _f.privateKey = _m.sent();
-                        _g = preKey;
-                        return [4, this.ecKeyToBase64(preKey.publicKey)];
+                        _j.privateKey = _s.sent();
+                        _k = preKey;
+                        return [4, this.ecKeyToCryptoKey(preKey.publicKey, "public", "ECDH")];
                     case 8:
-                        _g.publicKey = _m.sent();
-                        _m.label = 9;
+                        _k.publicKey = _s.sent();
+                        _s.label = 9;
                     case 9:
-                        _i++;
+                        _g++;
                         return [3, 6];
                     case 10:
-                        _h = 0, _j = json.signedPreKeys;
-                        _m.label = 11;
+                        _l = 0, _m = jsonIdentity.signedPreKeys;
+                        _s.label = 11;
                     case 11:
-                        if (!(_h < _j.length)) return [3, 15];
-                        preKey = _j[_h];
-                        _k = preKey;
-                        return [4, this.ecKeyToBase64(preKey.privateKey)];
+                        if (!(_l < _m.length)) return [3, 15];
+                        preKey = _m[_l];
+                        _o = preKey;
+                        return [4, this.ecKeyToCryptoKey(preKey.privateKey, "private", "ECDH")];
                     case 12:
-                        _k.privateKey = _m.sent();
-                        _l = preKey;
-                        return [4, this.ecKeyToBase64(preKey.publicKey)];
+                        _o.privateKey = _s.sent();
+                        _p = preKey;
+                        return [4, this.ecKeyToCryptoKey(preKey.publicKey, "public", "ECDH")];
                     case 13:
-                        _l.publicKey = _m.sent();
-                        _m.label = 14;
+                        _p.publicKey = _s.sent();
+                        _s.label = 14;
                     case 14:
-                        _h++;
+                        _l++;
                         return [3, 11];
                     case 15:
-                        fs.writeFileSync(OpenSSLStorage.STORAGE_NAME + "/identity.json", JSON.stringify(res, null, "  "), {
+                        _q = this.identities;
+                        _r = origin;
+                        return [4, _2keyRatchet.Identity.fromJSON(jsonIdentity)];
+                    case 16:
+                        _q[_r] = _s.sent();
+                        _s.label = 17;
+                    case 17:
+                        _i++;
+                        return [3, 1];
+                    case 18: return [2];
+                }
+            });
+        });
+    };
+    OpenSSLStorage.prototype.saveIdentities = function () {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var jsonIdentities, _a, _b, _i, origin, identity, json, jsonIdentity, _c, _d, _e, _f, _g, _h, preKey, _j, _k, _l, _m, preKey, _o, _p, jsonIdentityBundle;
+            return tslib_1.__generator(this, function (_q) {
+                switch (_q.label) {
+                    case 0:
+                        jsonIdentities = {};
+                        _a = [];
+                        for (_b in this.identities)
+                            _a.push(_b);
+                        _i = 0;
+                        _q.label = 1;
+                    case 1:
+                        if (!(_i < _a.length)) return [3, 18];
+                        origin = _a[_i];
+                        identity = this.identities[origin];
+                        return [4, identity.toJSON()];
+                    case 2:
+                        json = _q.sent();
+                        jsonIdentity = json;
+                        _c = jsonIdentity.signingKey;
+                        return [4, this.ecKeyToBase64(json.signingKey.privateKey)];
+                    case 3:
+                        _c.privateKey = _q.sent();
+                        _d = jsonIdentity.signingKey;
+                        return [4, this.ecKeyToBase64(json.signingKey.publicKey)];
+                    case 4:
+                        _d.publicKey = _q.sent();
+                        _e = jsonIdentity.exchangeKey;
+                        return [4, this.ecKeyToBase64(json.exchangeKey.privateKey)];
+                    case 5:
+                        _e.privateKey = _q.sent();
+                        _f = jsonIdentity.exchangeKey;
+                        return [4, this.ecKeyToBase64(json.exchangeKey.publicKey)];
+                    case 6:
+                        _f.publicKey = _q.sent();
+                        _g = 0, _h = json.preKeys;
+                        _q.label = 7;
+                    case 7:
+                        if (!(_g < _h.length)) return [3, 11];
+                        preKey = _h[_g];
+                        _j = preKey;
+                        return [4, this.ecKeyToBase64(preKey.privateKey)];
+                    case 8:
+                        _j.privateKey = _q.sent();
+                        _k = preKey;
+                        return [4, this.ecKeyToBase64(preKey.publicKey)];
+                    case 9:
+                        _k.publicKey = _q.sent();
+                        _q.label = 10;
+                    case 10:
+                        _g++;
+                        return [3, 7];
+                    case 11:
+                        _l = 0, _m = json.signedPreKeys;
+                        _q.label = 12;
+                    case 12:
+                        if (!(_l < _m.length)) return [3, 16];
+                        preKey = _m[_l];
+                        _o = preKey;
+                        return [4, this.ecKeyToBase64(preKey.privateKey)];
+                    case 13:
+                        _o.privateKey = _q.sent();
+                        _p = preKey;
+                        return [4, this.ecKeyToBase64(preKey.publicKey)];
+                    case 14:
+                        _p.publicKey = _q.sent();
+                        _q.label = 15;
+                    case 15:
+                        _l++;
+                        return [3, 12];
+                    case 16:
+                        jsonIdentities[origin] = jsonIdentity;
+                        _q.label = 17;
+                    case 17:
+                        _i++;
+                        return [3, 1];
+                    case 18:
+                        jsonIdentityBundle = {
+                            version: 2,
+                            identities: jsonIdentities,
+                        };
+                        fs.writeFileSync(OpenSSLStorage.STORAGE_NAME + "/identity.json", JSON.stringify(jsonIdentityBundle, null, "  "), {
                             encoding: "utf8",
                             flag: "w+",
                         });
                         return [2];
+                }
+            });
+        });
+    };
+    OpenSSLStorage.prototype.getIdentity = function (origin) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var identity;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        identity = this.identities[origin];
+                        if (!!identity) return [3, 3];
+                        return [4, _2keyRatchet.Identity.create(0, D_KEY_IDENTITY_PRE_KEY_AMOUNT)];
+                    case 1:
+                        identity = _a.sent();
+                        this.identities[origin] = identity;
+                        return [4, this.saveIdentities()];
+                    case 2:
+                        _a.sent();
+                        _a.label = 3;
+                    case 3: return [2, identity];
                 }
             });
         });
@@ -884,7 +960,6 @@ var OpenSSLStorage = (function () {
     return OpenSSLStorage;
 }());
 
-var D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
 var ServerEvent = (function (_super) {
     tslib_1.__extends(ServerEvent, _super);
     function ServerEvent() {
@@ -993,7 +1068,7 @@ var Server = (function (_super) {
                             if (!(request$$1.method === "GET")) return [3, 2];
                             requestUrl = url.parse(request$$1.url);
                             if (!(requestUrl.pathname === SERVER_WELL_KNOWN)) return [3, 2];
-                            return [4, this.getRandomBundle()];
+                            return [4, this.getRandomBundle(request$$1.headers.origin)];
                         case 1:
                             bundle = _a.sent();
                             preKey = pvtsutils.Convert.ToBase64(bundle);
@@ -1014,28 +1089,14 @@ var Server = (function (_super) {
         this.httpServer
             .listen(parseInt(splitAddress[1], 10), splitAddress[0], function () {
             (function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
-                var _a, _b, _c;
-                return tslib_1.__generator(this, function (_d) {
-                    switch (_d.label) {
+                var _a;
+                return tslib_1.__generator(this, function (_b) {
+                    switch (_b.label) {
                         case 0:
                             _a = this;
                             return [4, OpenSSLStorage.create()];
                         case 1:
-                            _a.storage = _d.sent();
-                            _b = this;
-                            return [4, this.storage.loadIdentity()];
-                        case 2:
-                            _b.identity = _d.sent();
-                            if (!!this.identity) return [3, 5];
-                            _c = this;
-                            return [4, this.generateIdentity()];
-                        case 3:
-                            _c.identity = _d.sent();
-                            return [4, this.storage.saveIdentity(this.identity)];
-                        case 4:
-                            _d.sent();
-                            _d.label = 5;
-                        case 5:
+                            _a.storage = _b.sent();
                             this.emit("listening", new ServerListeningEvent(this, address));
                             return [2];
                     }
@@ -1058,6 +1119,7 @@ var Server = (function (_super) {
                 connection: connection,
                 cipher: null,
                 authorized: false,
+                identity: null,
             };
             _this.sessions.push(session);
             _this.emit("connect", session);
@@ -1068,59 +1130,63 @@ var Server = (function (_super) {
                 else if (message.type === "binary") {
                     (function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
                         var _this = this;
-                        var buffer, messageProto, err_1, preKeyProto, _a, ok, err_2, decryptedMessage, actionProto;
-                        return tslib_1.__generator(this, function (_b) {
-                            switch (_b.label) {
+                        var buffer, messageProto, err_1, preKeyProto, _a, _b, ok, err_2, decryptedMessage, actionProto;
+                        return tslib_1.__generator(this, function (_c) {
+                            switch (_c.label) {
                                 case 0:
                                     buffer = new Uint8Array(message.binaryData).buffer;
-                                    _b.label = 1;
+                                    _c.label = 1;
                                 case 1:
-                                    _b.trys.push([1, 3, , 13]);
+                                    _c.trys.push([1, 3, , 14]);
                                     return [4, _2keyRatchet.MessageSignedProtocol.importProto(buffer)];
                                 case 2:
-                                    messageProto = _b.sent();
-                                    return [3, 13];
+                                    messageProto = _c.sent();
+                                    return [3, 14];
                                 case 3:
-                                    err_1 = _b.sent();
-                                    _b.label = 4;
+                                    err_1 = _c.sent();
+                                    _c.label = 4;
                                 case 4:
-                                    _b.trys.push([4, 11, , 12]);
+                                    _c.trys.push([4, 12, , 13]);
                                     this.emit("info", "Cannot parse MessageSignedProtocol");
                                     return [4, _2keyRatchet.PreKeyMessageProtocol.importProto(buffer)];
                                 case 5:
-                                    preKeyProto = _b.sent();
+                                    preKeyProto = _c.sent();
                                     messageProto = preKeyProto.signedMessage;
                                     _a = session;
-                                    return [4, _2keyRatchet.AsymmetricRatchet.create(this.identity, preKeyProto)];
+                                    return [4, this.storage.getIdentity(request$$1.origin)];
                                 case 6:
-                                    _a.cipher = _b.sent();
-                                    return [4, this.storage.isTrusted(session.cipher.remoteIdentity)];
+                                    _a.identity = _c.sent();
+                                    _b = session;
+                                    return [4, _2keyRatchet.AsymmetricRatchet.create(session.identity, preKeyProto)];
                                 case 7:
-                                    ok = _b.sent();
-                                    if (!!ok) return [3, 8];
-                                    session.authorized = false;
-                                    return [3, 10];
+                                    _b.cipher = _c.sent();
+                                    return [4, this.storage.isTrusted(session.cipher.remoteIdentity)];
                                 case 8:
+                                    ok = _c.sent();
+                                    if (!!ok) return [3, 9];
+                                    session.authorized = false;
+                                    return [3, 11];
+                                case 9:
                                     session.authorized = true;
                                     return [4, this.storage.saveSession(session.cipher.remoteIdentity.signingKey.id, session.cipher)];
-                                case 9:
-                                    _b.sent();
-                                    _b.label = 10;
-                                case 10: return [3, 12];
-                                case 11:
-                                    err_2 = _b.sent();
+                                case 10:
+                                    _c.sent();
+                                    _c.label = 11;
+                                case 11: return [3, 13];
+                                case 12:
+                                    err_2 = _c.sent();
                                     throw err_2;
-                                case 12: return [3, 13];
-                                case 13:
+                                case 13: return [3, 14];
+                                case 14:
                                     if (!session.cipher) {
                                         throw new WebCryptoLocalError(WebCryptoLocalError.CODE.SERVER_WRONG_MESSAGE, "Cipher object for 2key session is empty");
                                     }
                                     return [4, session.cipher.decrypt(messageProto)];
-                                case 14:
-                                    decryptedMessage = _b.sent();
-                                    return [4, ActionProto.importProto(decryptedMessage)];
                                 case 15:
-                                    actionProto = _b.sent();
+                                    decryptedMessage = _c.sent();
+                                    return [4, ActionProto.importProto(decryptedMessage)];
+                                case 16:
+                                    actionProto = _c.sent();
                                     return [2, new Promise(function (resolve, reject) {
                                             if (session.authorized ||
                                                 actionProto.action === ServerIsLoggedInActionProto.ACTION ||
@@ -1219,39 +1285,29 @@ var Server = (function (_super) {
             });
         });
     };
-    Server.prototype.generateIdentity = function () {
+    Server.prototype.getRandomBundle = function (origin) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var identity;
-            return tslib_1.__generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4, _2keyRatchet.Identity.create(0, D_KEY_IDENTITY_PRE_KEY_AMOUNT)];
-                    case 1:
-                        identity = _a.sent();
-                        return [2, identity];
-                }
-            });
-        });
-    };
-    Server.prototype.getRandomBundle = function () {
-        return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var preKeyBundle, preKeyId, preKey, raw;
+            var preKeyBundle, identity, preKeyId, preKey, raw;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         preKeyBundle = new _2keyRatchet.PreKeyBundleProtocol();
-                        return [4, preKeyBundle.identity.fill(this.identity)];
+                        return [4, this.storage.getIdentity(origin)];
                     case 1:
+                        identity = _a.sent();
+                        return [4, preKeyBundle.identity.fill(identity)];
+                    case 2:
                         _a.sent();
-                        preKeyId = getRandomInt(1, this.identity.signedPreKeys.length) - 1;
-                        preKey = this.identity.signedPreKeys[preKeyId];
+                        preKeyId = getRandomInt(1, identity.signedPreKeys.length) - 1;
+                        preKey = identity.signedPreKeys[preKeyId];
                         preKeyBundle.preKeySigned.id = preKeyId;
                         preKeyBundle.preKeySigned.key = preKey.publicKey;
-                        return [4, preKeyBundle.preKeySigned.sign(this.identity.signingKey.privateKey)];
-                    case 2:
+                        return [4, preKeyBundle.preKeySigned.sign(identity.signingKey.privateKey)];
+                    case 3:
                         _a.sent();
                         preKeyBundle.registrationId = 0;
                         return [4, preKeyBundle.exportProto()];
-                    case 3:
+                    case 4:
                         raw = _a.sent();
                         return [2, raw];
                 }
@@ -1498,7 +1554,7 @@ if (process.versions.electron) {
 else {
     switch (os.platform()) {
         case "win32":
-            PV_PKCS11_LIB = "/github/pv/pvpkcs11/build/Debug/pvpkcs11.dll";
+            PV_PKCS11_LIB = "/github/PeculiarVentures/pvpkcs11/build/Debug/pvpkcs11.dll";
             break;
         case "darwin":
             PV_PKCS11_LIB = "/Users/microshine/Library/Developer/Xcode/DerivedData/config-hkruqzwffnciyjeujlpxkaxbdiun/Build/Products/Debug/libpvpkcs11.dylib";
@@ -3074,7 +3130,7 @@ var OpenSSLKeyStorage = (function () {
                         return [3, 5];
                     case 1: return [4, crypto$4.getRandomValues(new Uint8Array(20))];
                     case 2:
-                        id = _b.sent();
+                        id = (_b.sent());
                         return [3, 6];
                     case 3:
                         fn_1 = nativeKey.exportSpki;
@@ -3231,30 +3287,30 @@ function fixObject(crypto$$1, key, options) {
 
 var Pkcs11CertificateStorage = (function (_super) {
     tslib_1.__extends(Pkcs11CertificateStorage, _super);
-    function Pkcs11CertificateStorage() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function Pkcs11CertificateStorage(crypto$$1) {
+        return _super.call(this, crypto$$1) || this;
     }
     Pkcs11CertificateStorage.prototype.getItem = function (id, algorithm, usages) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
-            var cert, err_1, object, type, _a;
-            return tslib_1.__generator(this, function (_b) {
-                switch (_b.label) {
+            var cert, err_1, object, type, err2_1;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 7]);
+                        _a.trys.push([0, 2, , 7]);
                         return [4, _super.prototype.getItem.call(this, id, algorithm, usages)];
                     case 1:
-                        cert = _b.sent();
+                        cert = _a.sent();
                         return [3, 7];
                     case 2:
-                        err_1 = _b.sent();
-                        _b.label = 3;
+                        err_1 = _a.sent();
+                        _a.label = 3;
                     case 3:
-                        _b.trys.push([3, 5, , 6]);
-                        object = this.getItemById(id);
+                        _a.trys.push([3, 5, , 6]);
+                        object = this.getItemById(id).toType();
                         type = object instanceof graphene.X509Certificate ? "x509" : "request";
                         return [4, this.crypto.ossl.certStorage.importCert(type, object.value, algorithm, usages)];
                     case 4:
-                        cert = _b.sent();
+                        cert = _a.sent();
                         fixObject(this.crypto, cert, {
                             index: id,
                             handle: object.handle,
@@ -3262,7 +3318,7 @@ var Pkcs11CertificateStorage = (function (_super) {
                         fixObject(this.crypto, cert.publicKey);
                         return [3, 6];
                     case 5:
-                        _a = _b.sent();
+                        err2_1 = _a.sent();
                         throw err_1;
                     case 6: return [3, 7];
                     case 7:
@@ -3332,12 +3388,12 @@ var Pkcs11CertificateStorage = (function (_super) {
         });
     };
     return Pkcs11CertificateStorage;
-}(cert_storage.Pkcs11CertificateStorage));
+}(nodeWebcryptoP11.CertificateStorage));
 
 var Pkcs11SubtleCrypto = (function (_super) {
     tslib_1.__extends(Pkcs11SubtleCrypto, _super);
-    function Pkcs11SubtleCrypto() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function Pkcs11SubtleCrypto(crypto$$1) {
+        return _super.call(this, crypto$$1) || this;
     }
     Pkcs11SubtleCrypto.prototype.importKey = function (format, keyData, algorithm, extractable, keyUsages) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
@@ -3376,7 +3432,7 @@ var Pkcs11SubtleCrypto = (function (_super) {
         });
     };
     return Pkcs11SubtleCrypto;
-}(subtle.SubtleCrypto));
+}(nodeWebcryptoP11.SubtleCrypto));
 
 var Pkcs11Crypto = (function (_super) {
     tslib_1.__extends(Pkcs11Crypto, _super);
@@ -3392,6 +3448,55 @@ var Pkcs11Crypto = (function (_super) {
         return ++this.osslID;
     };
     return Pkcs11Crypto;
+}(nodeWebcryptoP11.WebCrypto));
+
+graphene.registerAttribute("pinFriendlyName", 0x80000000 | 0x00000102, "string");
+graphene.registerAttribute("pinDescription", 0x80000000 | 0x00000103, "string");
+var PvKeyStorage = (function (_super) {
+    tslib_1.__extends(PvKeyStorage, _super);
+    function PvKeyStorage(crypto$$1) {
+        return _super.call(this, crypto$$1) || this;
+    }
+    PvKeyStorage.prototype.setItem = function (key, options) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var template, obj;
+            return tslib_1.__generator(this, function (_a) {
+                if (!(key instanceof nodeWebcryptoP11.CryptoKey)) {
+                    throw new webcryptoCore.WebCryptoError("Parameter 1 is not PKCS#11 CryptoKey");
+                }
+                if (!(this.hasItem(key) && key.key.token)) {
+                    template = {
+                        token: true,
+                    };
+                    if (key.type === "private" && options && os.platform() === "win32") {
+                        if (options.pinFriendlyName) {
+                            template.pinFriendlyName = options.pinFriendlyName;
+                        }
+                        if (options.pinDescription) {
+                            template.pinDescription = options.pinDescription;
+                        }
+                    }
+                    obj = this.crypto.session.copy(key.key, template);
+                    return [2, nodeWebcryptoP11.CryptoKey.getID(obj.toType())];
+                }
+                else {
+                    return [2, key.id];
+                }
+                return [2];
+            });
+        });
+    };
+    return PvKeyStorage;
+}(nodeWebcryptoP11.KeyStorage));
+
+var PvCrypto = (function (_super) {
+    tslib_1.__extends(PvCrypto, _super);
+    function PvCrypto(props) {
+        var _this = _super.call(this, props) || this;
+        _this.keyStorage = new PvKeyStorage(_this);
+        return _this;
+    }
+    return PvCrypto;
 }(nodeWebcryptoP11.WebCrypto));
 
 var LocalProvider = (function (_super) {
@@ -3432,7 +3537,7 @@ var LocalProvider = (function (_super) {
                         {
                             if (fs.existsSync(PV_PKCS11_LIB)) {
                                 try {
-                                    crypto$$1 = new Pkcs11Crypto({
+                                    crypto$$1 = new PvCrypto({
                                         library: PV_PKCS11_LIB,
                                         slot: 0,
                                         readWrite: true,
@@ -4302,12 +4407,12 @@ var KeyStorageService = (function (_super) {
                         switch (_a) {
                             case KeyStorageGetItemActionProto.ACTION: return [3, 1];
                             case KeyStorageSetItemActionProto.ACTION: return [3, 7];
-                            case KeyStorageRemoveItemActionProto.ACTION: return [3, 11];
-                            case KeyStorageKeysActionProto.ACTION: return [3, 15];
-                            case KeyStorageIndexOfActionProto.ACTION: return [3, 20];
-                            case KeyStorageClearActionProto.ACTION: return [3, 24];
+                            case KeyStorageRemoveItemActionProto.ACTION: return [3, 14];
+                            case KeyStorageKeysActionProto.ACTION: return [3, 18];
+                            case KeyStorageIndexOfActionProto.ACTION: return [3, 23];
+                            case KeyStorageClearActionProto.ACTION: return [3, 27];
                         }
-                        return [3, 28];
+                        return [3, 31];
                     case 1: return [4, KeyStorageGetItemActionProto.importProto(action)];
                     case 2:
                         params = _d.sent();
@@ -4325,7 +4430,7 @@ var KeyStorageService = (function (_super) {
                     case 5:
                         _b.data = _d.sent();
                         _d.label = 6;
-                    case 6: return [3, 29];
+                    case 6: return [3, 32];
                     case 7: return [4, KeyStorageSetItemActionProto.importProto(action)];
                     case 8:
                         params = _d.sent();
@@ -4336,61 +4441,72 @@ var KeyStorageService = (function (_super) {
                         if (key.algorithm.toAlgorithm) {
                             key.algorithm = key.algorithm.toAlgorithm();
                         }
-                        return [4, crypto$$1.keyStorage.setItem(key)];
+                        index = void 0;
+                        if (!(crypto$$1 instanceof PvCrypto)) return [3, 11];
+                        return [4, crypto$$1.keyStorage.setItem(key, {
+                                pinFriendlyName: session.headers.origin,
+                                pinDescription: key.usages.join(", "),
+                            })];
                     case 10:
                         index = _d.sent();
-                        result.data = pvtsutils.Convert.FromUtf8String(index);
-                        return [3, 29];
-                    case 11: return [4, KeyStorageRemoveItemActionProto.importProto(action)];
+                        return [3, 13];
+                    case 11: return [4, crypto$$1.keyStorage.setItem(key)];
                     case 12:
+                        index = _d.sent();
+                        _d.label = 13;
+                    case 13:
+                        result.data = pvtsutils.Convert.FromUtf8String(index);
+                        return [3, 32];
+                    case 14: return [4, KeyStorageRemoveItemActionProto.importProto(action)];
+                    case 15:
                         params = _d.sent();
                         return [4, this.getCrypto(params.providerID)];
-                    case 13:
+                    case 16:
                         crypto$$1 = _d.sent();
                         return [4, crypto$$1.keyStorage.removeItem(params.key)];
-                    case 14:
+                    case 17:
                         _d.sent();
-                        return [3, 29];
-                    case 15: return [4, KeyStorageKeysActionProto.importProto(action)];
-                    case 16:
+                        return [3, 32];
+                    case 18: return [4, KeyStorageKeysActionProto.importProto(action)];
+                    case 19:
                         params = _d.sent();
                         return [4, this.getCrypto(params.providerID)];
-                    case 17:
+                    case 20:
                         crypto$$1 = _d.sent();
                         return [4, crypto$$1.keyStorage.keys()];
-                    case 18:
+                    case 21:
                         keys = _d.sent();
                         _c = result;
                         return [4, ArrayStringConverter.set(keys)];
-                    case 19:
+                    case 22:
                         _c.data = (_d.sent()).buffer;
-                        return [3, 29];
-                    case 20: return [4, KeyStorageIndexOfActionProto.importProto(action)];
-                    case 21:
+                        return [3, 32];
+                    case 23: return [4, KeyStorageIndexOfActionProto.importProto(action)];
+                    case 24:
                         params = _d.sent();
                         return [4, this.getCrypto(params.providerID)];
-                    case 22:
+                    case 25:
                         crypto$$1 = _d.sent();
                         key = this.getMemoryStorage().item(params.item.id).item;
                         return [4, crypto$$1.keyStorage.indexOf(key)];
-                    case 23:
+                    case 26:
                         index = _d.sent();
                         if (index) {
                             result.data = pvtsutils.Convert.FromUtf8String(index);
                         }
-                        return [3, 29];
-                    case 24: return [4, KeyStorageClearActionProto.importProto(action)];
-                    case 25:
+                        return [3, 32];
+                    case 27: return [4, KeyStorageClearActionProto.importProto(action)];
+                    case 28:
                         params = _d.sent();
                         return [4, this.getCrypto(params.providerID)];
-                    case 26:
+                    case 29:
                         crypto$$1 = _d.sent();
                         return [4, crypto$$1.keyStorage.clear()];
-                    case 27:
+                    case 30:
                         _d.sent();
-                        return [3, 29];
-                    case 28: throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_NOT_IMPLEMENTED, "Action '" + action.action + "' is not implemented");
-                    case 29: return [2, result];
+                        return [3, 32];
+                    case 31: throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_NOT_IMPLEMENTED, "Action '" + action.action + "' is not implemented");
+                    case 32: return [2, result];
                 }
             });
         });
@@ -5278,7 +5394,7 @@ var LocalServer = (function (_super) {
                         _b.label = 2;
                     case 2:
                         if (!!session.authorized) return [3, 5];
-                        return [4, challenge(this.server.identity.signingKey.publicKey, session.cipher.remoteIdentity.signingKey)];
+                        return [4, challenge(session.identity.signingKey.publicKey, session.cipher.remoteIdentity.signingKey)];
                     case 3:
                         pin_1 = _b.sent();
                         promise = new Promise(function (resolve, reject) {
@@ -5315,8 +5431,6 @@ var LocalServer = (function (_super) {
     };
     return LocalServer;
 }(events.EventEmitter));
-
-require("babel-polyfill");
 
 exports.LocalServer = LocalServer;
 exports.WebCryptoLocalError = WebCryptoLocalError;
