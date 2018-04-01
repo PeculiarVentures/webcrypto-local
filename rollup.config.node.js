@@ -8,7 +8,7 @@ let banner = []
 export default {
     input: "src/local/index.ts",
     plugins: [
-        typescript({ typescript: require("typescript"), target: "es5", removeComments: true }),
+        typescript({ typescript: require("typescript"), target: "esnext", removeComments: true }),
         nodeResolve({ jsnext: true, main: true }),
     ],
     external: [

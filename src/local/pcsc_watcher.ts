@@ -196,8 +196,11 @@ export class CardConfig {
         // create map of drives
         const drivers: { [guid: string]: Driver } = {};
         json.drivers.forEach((jsonDriver) => {
-            const { file, ...driverProps } = jsonDriver;
-            const driver = driverProps as Driver;
+            const driver: Driver = {
+                id: jsonDriver.id,
+                name: jsonDriver.name,
+                libraries: [],
+            };
             drivers[jsonDriver.id] = driver;
 
             let system: string;
