@@ -989,7 +989,7 @@ if (process.versions.electron) {
 else {
     switch (os.platform()) {
         case "win32":
-            PV_PKCS11_LIB = "/github/PeculiarVentures/pvpkcs11/build/Debug/pvpkcs11.dll";
+            PV_PKCS11_LIB = "/github/pv/pvpkcs11/build/Debug/pvpkcs11.dll";
             break;
         case "darwin":
             PV_PKCS11_LIB = "/Users/microshine/Library/Developer/Xcode/DerivedData/config-hkruqzwffnciyjeujlpxkaxbdiun/Build/Products/Debug/libpvpkcs11.dylib";

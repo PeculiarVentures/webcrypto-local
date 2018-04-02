@@ -2812,7 +2812,7 @@ class WebCryptoLocalError extends Error {
 }
 WebCryptoLocalError.CODE = WebCryptoLocalErrorEnum;
 
-let DateConverter$1 = class DateConverter {
+class DateConverter$1 {
     static set(value) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Uint8Array(Convert.FromUtf8String(value.toISOString()));
@@ -2823,7 +2823,7 @@ let DateConverter$1 = class DateConverter {
             return new Date(Convert.ToUtf8String(value));
         });
     }
-};
+}
 class HexStringConverter {
     static set(value) {
         return __awaiter(this, void 0, void 0, function* () {

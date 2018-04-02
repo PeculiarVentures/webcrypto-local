@@ -258,6 +258,7 @@ export interface IServerProvider {
      * indexes of using slots. Default [0]
      */
     slots?: number[];
+    libraryParameters?: string;
 }
 
 export interface IProviderConfig {

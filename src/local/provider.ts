@@ -30,6 +30,7 @@ export interface IServerProvider {
      * indexes of using slots. Default [0]
      */
     slots?: number[];
+    libraryParameters?: string;
 }
 
 export interface IProviderConfig {
@@ -138,6 +139,7 @@ export class LocalProvider extends EventEmitter {
                     try {
                         const crypto = new Pkcs11Crypto({
                             library: prov.lib,
+                            libraryParameters: prov.libraryParameters,
                             slot,
                             readWrite: true,
                         });
