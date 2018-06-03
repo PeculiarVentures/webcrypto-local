@@ -30,7 +30,9 @@ export class PvKeyStorage extends KeyStorage {
             const template: ITemplate = {
                 token: true,
             };
-            if (key.type === "private" && options && os.platform() === "win32") {
+            const platform = os.platform();
+            if (key.type === "private" && options &&
+                (platform === "win32" || platform === "darwin")) {
                 if (options.pinFriendlyName) {
                     template.pinFriendlyName = options.pinFriendlyName;
                 }
