@@ -30,13 +30,20 @@ export default {
         "request",
         "tslib",
         "tsprotobuf",
-        "websocket"
+        "websocket",
+        "events",
+        "https",
+        "url",
+        "fs",
+        "os",
+        "path",
+        "crypto",
     ],
-    banner: banner.join("\n"),
     output: [
         {
             file: "dist/webcrypto-local.js",
             format: "cjs",
+            banner: banner.join("\n"),
         }
     ]
 };

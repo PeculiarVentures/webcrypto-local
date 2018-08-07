@@ -15,15 +15,14 @@ export default {
         nodeResolve({ jsnext: true, main: true }),
     ],
     external: ["protobufjs"],
-    globals: {
-        "protobufjs": "protobuf",
-    },
-    banner: banner.join("\n"),
     output: [
         {
             file: "dist/webcrypto-socket.js",
-            format: "umd",
-            name: "WebcryptoSocket"
+            format: "cjs",
+            globals: {
+                "protobufjs": "protobuf",
+            },
+            banner: banner.join("\n"),
         }
     ]
 };
