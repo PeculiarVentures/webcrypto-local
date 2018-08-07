@@ -4,76 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var protobufjs = require('protobufjs');
 
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
-
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
-
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
-***************************************************************************** */
-/* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
-function __extends(d, b) {
-    extendStatics(d, b);
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-function __decorate(decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-}
-
-function __awaiter(thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-}
-
-function __generator(thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-}
-
 function PrepareBuffer(buffer) {
     if (typeof Buffer !== "undefined") {
         return new Uint8Array(buffer);
@@ -251,6 +181,79 @@ function isEqual(bytes1, bytes2) {
         }
     }
     return true;
+}
+
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
+
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+MERCHANTABLITY OR NON-INFRINGEMENT.
+
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
+***************************************************************************** */
+/* global Reflect, Promise */
+
+var extendStatics = function(d, b) {
+    extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return extendStatics(d, b);
+};
+
+function __extends(d, b) {
+    extendStatics(d, b);
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+function __decorate(decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+function __awaiter(thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+}
+
+function __generator(thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
 }
 
 var ArrayBufferConverter = (function () {
@@ -634,9 +637,7 @@ EventEmitter.init = function() {
   this.domain = null;
   if (EventEmitter.usingDomains) {
     // if there is an active domain, then attach to it.
-    if (domain.active && !(this instanceof domain.Domain)) {
-      this.domain = domain.active;
-    }
+    if (domain.active && !(this instanceof domain.Domain)) ;
   }
 
   if (!this._events || this._events === Object.getPrototypeOf(this)._events) {
@@ -725,7 +726,6 @@ function emitMany(handler, isFn, self, args) {
 
 EventEmitter.prototype.emit = function emit(type) {
   var er, handler, len, args, i, events, domain;
-  var needDomainExit = false;
   var doError = (type === 'error');
 
   events = this._events;
@@ -785,9 +785,6 @@ EventEmitter.prototype.emit = function emit(type) {
         args[i - 1] = arguments[i];
       emitMany(handler, isFn, this, args);
   }
-
-  if (needDomainExit)
-    domain.exit();
 
   return true;
 };
@@ -1173,7 +1170,8 @@ var Curve = (function () {
                             publicKey: key.publicKey.key
                         };
                         return [4, key.publicKey.thumbprint()];
-                    case 1: return [2, (_a.thumbprint = _b.sent(), _a)];
+                    case 1: return [2, (_a.thumbprint = _b.sent(),
+                            _a)];
                 }
             });
         });
@@ -1188,7 +1186,8 @@ var Curve = (function () {
                             privateKey: keys.privateKey
                         };
                         return [4, ECPublicKey.create(keys.publicKey)];
-                    case 1: return [2, (_a.publicKey = _b.sent(), _a)];
+                    case 1: return [2, (_a.publicKey = _b.sent(),
+                            _a)];
                 }
             });
         });
@@ -1486,9 +1485,13 @@ var Identity = (function () {
                         };
                         return [4, Curve.ecKeyPairToJson(this.exchangeKey)];
                     case 9:
-                        _h.exchangeKey = _j.sent(), _h.id = this.id, _h.preKeys = preKeys, _h.signedPreKeys = signedPreKeys;
+                        _h.exchangeKey = _j.sent(),
+                            _h.id = this.id,
+                            _h.preKeys = preKeys,
+                            _h.signedPreKeys = signedPreKeys;
                         return [4, Curve.ecKeyPairToJson(this.signingKey)];
-                    case 10: return [2, (_h.signingKey = _j.sent(), _h)];
+                    case 10: return [2, (_h.signingKey = _j.sent(),
+                            _h)];
                 }
             });
         });
@@ -1588,12 +1591,15 @@ var RemoteIdentity = (function () {
                         };
                         return [4, this.exchangeKey.key];
                     case 1:
-                        _a.exchangeKey = _b.sent(), _a.id = this.id, _a.signature = this.signature;
+                        _a.exchangeKey = _b.sent(),
+                            _a.id = this.id,
+                            _a.signature = this.signature;
                         return [4, this.signingKey.key];
                     case 2:
                         _a.signingKey = _b.sent();
                         return [4, this.signingKey.thumbprint()];
-                    case 3: return [2, (_a.thumbprint = _b.sent(), _a)];
+                    case 3: return [2, (_a.thumbprint = _b.sent(),
+                            _a)];
                 }
             });
         });
@@ -1763,6 +1769,7 @@ var IdentityProtocol = (function (_super) {
             });
         });
     };
+    var IdentityProtocol_1;
     __decorate([
         ProtobufProperty({ id: 1, converter: ECDSAPublicKeyConverter })
     ], IdentityProtocol.prototype, "signingKey", void 0);
@@ -1779,7 +1786,6 @@ var IdentityProtocol = (function (_super) {
         ProtobufElement({ name: "Identity" })
     ], IdentityProtocol);
     return IdentityProtocol;
-    var IdentityProtocol_1;
 }(BaseProtocol));
 
 var MessageProtocol = (function (_super) {
@@ -2101,7 +2107,8 @@ var SymmetricRatchet = (function () {
                         };
                         return [4, Secret.importHMAC(nextRootKeyBytes)];
                     case 3:
-                        res = (_a.rootKey = _b.sent(), _a);
+                        res = (_a.rootKey = _b.sent(),
+                            _a);
                         return [2, res];
                 }
             });
@@ -2572,9 +2579,11 @@ var AsymmetricRatchet = (function (_super) {
                         _a.ratchetKey = _b.sent();
                         return [4, this.remoteIdentity.signingKey.thumbprint()];
                     case 2:
-                        _a.remoteIdentity = _b.sent(), _a.rootKey = this.rootKey;
+                        _a.remoteIdentity = _b.sent(),
+                            _a.rootKey = this.rootKey;
                         return [4, this.steps.toJSON()];
-                    case 3: return [2, (_a.steps = _b.sent(), _a)];
+                    case 3: return [2, (_a.steps = _b.sent(),
+                            _a)];
                 }
             });
         });
@@ -2812,7 +2821,7 @@ class WebCryptoLocalError extends Error {
 }
 WebCryptoLocalError.CODE = WebCryptoLocalErrorEnum;
 
-let DateConverter$1 = class DateConverter {
+class DateConverter$1 {
     static set(value) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Uint8Array(Convert.FromUtf8String(value.toISOString()));
@@ -2823,7 +2832,7 @@ let DateConverter$1 = class DateConverter {
             return new Date(Convert.ToUtf8String(value));
         });
     }
-};
+}
 class HexStringConverter {
     static set(value) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -2837,6 +2846,7 @@ class HexStringConverter {
     }
 }
 
+var BaseProto_1, ActionProto_1, BaseAlgorithmProto_1, AlgorithmProto_1, CryptoItemProto_1, CryptoKeyProto_1, CryptoKeyPairProto_1, ErrorProto_1, ResultProto_1;
 let BaseProto = BaseProto_1 = class BaseProto extends ObjectProto {
 };
 BaseProto.INDEX = 1;
@@ -3063,7 +3073,6 @@ ServerIsLoggedInActionProto.ACTION = "server/isLoggedIn";
 ServerIsLoggedInActionProto = __decorate([
     ProtobufElement({})
 ], ServerIsLoggedInActionProto);
-var BaseProto_1, ActionProto_1, BaseAlgorithmProto_1, AlgorithmProto_1, CryptoItemProto_1, CryptoKeyProto_1, CryptoKeyPairProto_1, ErrorProto_1, ResultProto_1;
 
 function challenge(serverIdentity, clientIdentity) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -3503,6 +3512,7 @@ class Client extends EventEmitter {
     }
 }
 
+var ProviderCryptoProto_1, ProviderInfoProto_1, ProviderGetCryptoActionProto_1, ProviderTokenEventProto_1;
 let ProviderCryptoProto = ProviderCryptoProto_1 = class ProviderCryptoProto extends BaseProto {
     constructor(data) {
         super();
@@ -3594,8 +3604,8 @@ __decorate([
 ProviderTokenEventProto = ProviderTokenEventProto_1 = __decorate([
     ProtobufElement({ name: "ProviderTokenEvent" })
 ], ProviderTokenEventProto);
-var ProviderCryptoProto_1, ProviderInfoProto_1, ProviderGetCryptoActionProto_1, ProviderTokenEventProto_1;
 
+var CardReaderEventProto_1;
 let CardReaderActionProto = class CardReaderActionProto extends ActionProto {
 };
 CardReaderActionProto.INDEX = ActionProto.INDEX;
@@ -3645,7 +3655,6 @@ CardReaderRemoveEventProto.ACTION = CardReaderEventProto.ACTION + "/remove";
 CardReaderRemoveEventProto = __decorate([
     ProtobufElement({})
 ], CardReaderRemoveEventProto);
-var CardReaderEventProto_1;
 
 class CardReader extends EventEmitter {
     constructor(client) {
@@ -3693,6 +3702,7 @@ class CardReader extends EventEmitter {
     }
 }
 
+var CryptoActionProto_1;
 let CryptoActionProto = CryptoActionProto_1 = class CryptoActionProto extends ActionProto {
 };
 CryptoActionProto.INDEX = ActionProto.INDEX;
@@ -3731,7 +3741,6 @@ ResetActionProto.ACTION = "crypto/reset";
 ResetActionProto = __decorate([
     ProtobufElement({})
 ], ResetActionProto);
-var CryptoActionProto_1;
 
 function printf(text) {
     var args = [];
@@ -5169,6 +5178,7 @@ var SubtleCrypto = (function () {
     return SubtleCrypto;
 }());
 
+var CryptoCertificateProto_1, CryptoX509CertificateProto_1, CryptoX509CertificateRequestProto_1, ChainItemProto_1, CertificateStorageGetChainResultProto_1, CertificateStorageSetItemActionProto_1, CertificateStorageGetItemActionProto_1, CertificateStorageRemoveItemActionProto_1, CertificateStorageImportActionProto_1, CertificateStorageExportActionProto_1, CertificateStorageIndexOfActionProto_1, CertificateStorageGetCRLActionProto_1, OCSPRequestOptionsProto_1, CertificateStorageGetOCSPActionProto_1;
 let CryptoCertificateProto = CryptoCertificateProto_1 = class CryptoCertificateProto extends CryptoItemProto {
 };
 CryptoCertificateProto.INDEX = CryptoItemProto.INDEX;
@@ -5389,7 +5399,6 @@ __decorate([
 CertificateStorageGetOCSPActionProto = CertificateStorageGetOCSPActionProto_1 = __decorate([
     ProtobufElement({})
 ], CertificateStorageGetOCSPActionProto);
-var CryptoCertificateProto_1, CryptoX509CertificateProto_1, CryptoX509CertificateRequestProto_1, ChainItemProto_1, CertificateStorageGetChainResultProto_1, CertificateStorageSetItemActionProto_1, CertificateStorageGetItemActionProto_1, CertificateStorageRemoveItemActionProto_1, CertificateStorageImportActionProto_1, CertificateStorageExportActionProto_1, CertificateStorageIndexOfActionProto_1, CertificateStorageGetCRLActionProto_1, OCSPRequestOptionsProto_1, CertificateStorageGetOCSPActionProto_1;
 
 class SocketCertificateStorage {
     constructor(provider) {
@@ -5572,6 +5581,7 @@ class SocketCertificateStorage {
     }
 }
 
+var KeyStorageSetItemActionProto_1, KeyStorageGetItemActionProto_1, KeyStorageRemoveItemActionProto_1, KeyStorageIndexOfActionProto_1;
 let KeyStorageSetItemActionProto = KeyStorageSetItemActionProto_1 = class KeyStorageSetItemActionProto extends CryptoActionProto {
 };
 KeyStorageSetItemActionProto.INDEX = CryptoActionProto.INDEX;
@@ -5632,7 +5642,6 @@ __decorate([
 KeyStorageIndexOfActionProto = KeyStorageIndexOfActionProto_1 = __decorate([
     ProtobufElement({})
 ], KeyStorageIndexOfActionProto);
-var KeyStorageSetItemActionProto_1, KeyStorageGetItemActionProto_1, KeyStorageRemoveItemActionProto_1, KeyStorageIndexOfActionProto_1;
 
 class SocketKeyStorage {
     constructor(service) {
@@ -5704,6 +5713,7 @@ class SocketKeyStorage {
     }
 }
 
+var DigestActionProto_1, GenerateKeyActionProto_1, SignActionProto_1, VerifyActionProto_1, DeriveBitsActionProto_1, DeriveKeyActionProto_1, UnwrapKeyActionProto_1, WrapKeyActionProto_1, ExportKeyActionProto_1, ImportKeyActionProto_1;
 let DigestActionProto = DigestActionProto_1 = class DigestActionProto extends CryptoActionProto {
 };
 DigestActionProto.INDEX = CryptoActionProto.INDEX;
@@ -5893,7 +5903,6 @@ __decorate([
 ImportKeyActionProto = ImportKeyActionProto_1 = __decorate([
     ProtobufElement({})
 ], ImportKeyActionProto);
-var DigestActionProto_1, GenerateKeyActionProto_1, SignActionProto_1, VerifyActionProto_1, DeriveBitsActionProto_1, DeriveKeyActionProto_1, UnwrapKeyActionProto_1, WrapKeyActionProto_1, ExportKeyActionProto_1, ImportKeyActionProto_1;
 
 class SocketSubtleCrypto extends SubtleCrypto {
     constructor(crypto) {

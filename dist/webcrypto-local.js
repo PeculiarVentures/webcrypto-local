@@ -118,6 +118,7 @@ class HexStringConverter {
     }
 }
 
+var BaseProto_1, ActionProto_1, BaseAlgorithmProto_1, AlgorithmProto_1, CryptoItemProto_1, CryptoKeyProto_1, CryptoKeyPairProto_1, ErrorProto_1, ResultProto_1;
 let BaseProto = BaseProto_1 = class BaseProto extends tsprotobuf.ObjectProto {
 };
 BaseProto.INDEX = 1;
@@ -344,7 +345,6 @@ ServerIsLoggedInActionProto.ACTION = "server/isLoggedIn";
 ServerIsLoggedInActionProto = tslib_1.__decorate([
     tsprotobuf.ProtobufElement({})
 ], ServerIsLoggedInActionProto);
-var BaseProto_1, ActionProto_1, BaseAlgorithmProto_1, AlgorithmProto_1, CryptoItemProto_1, CryptoKeyProto_1, CryptoKeyPairProto_1, ErrorProto_1, ResultProto_1;
 
 const SERVER_WELL_KNOWN = "/.well-known/webcrypto-socket";
 
@@ -824,6 +824,7 @@ function createError(message) {
     }
 }
 
+var ProviderCryptoProto_1, ProviderInfoProto_1, ProviderGetCryptoActionProto_1, ProviderTokenEventProto_1;
 let ProviderCryptoProto = ProviderCryptoProto_1 = class ProviderCryptoProto extends BaseProto {
     constructor(data) {
         super();
@@ -915,8 +916,8 @@ tslib_1.__decorate([
 ProviderTokenEventProto = ProviderTokenEventProto_1 = tslib_1.__decorate([
     tsprotobuf.ProtobufElement({ name: "ProviderTokenEvent" })
 ], ProviderTokenEventProto);
-var ProviderCryptoProto_1, ProviderInfoProto_1, ProviderGetCryptoActionProto_1, ProviderTokenEventProto_1;
 
+var CardReaderEventProto_1;
 let CardReaderActionProto = class CardReaderActionProto extends ActionProto {
 };
 CardReaderActionProto.INDEX = ActionProto.INDEX;
@@ -966,7 +967,6 @@ CardReaderRemoveEventProto.ACTION = CardReaderEventProto.ACTION + "/remove";
 CardReaderRemoveEventProto = tslib_1.__decorate([
     tsprotobuf.ProtobufElement({})
 ], CardReaderRemoveEventProto);
-var CardReaderEventProto_1;
 
 const DEFAULT_HASH_ALG = "sha256";
 let PV_PKCS11_LIB = "";
@@ -989,7 +989,7 @@ if (process.versions.electron) {
 else {
     switch (os.platform()) {
         case "win32":
-            PV_PKCS11_LIB = "/github/PeculiarVentures/pvpkcs11/build/Debug/pvpkcs11.dll";
+            PV_PKCS11_LIB = "/github/pv/pvpkcs11/build/Debug/pvpkcs11.dll";
             break;
         case "darwin":
             PV_PKCS11_LIB = "/Users/microshine/Library/Developer/Xcode/DerivedData/config-hkruqzwffnciyjeujlpxkaxbdiun/Build/Products/Debug/libpvpkcs11.dylib";
@@ -1380,6 +1380,7 @@ class CardReaderService extends Service {
     }
 }
 
+var CryptoActionProto_1;
 let CryptoActionProto = CryptoActionProto_1 = class CryptoActionProto extends ActionProto {
 };
 CryptoActionProto.INDEX = ActionProto.INDEX;
@@ -1418,8 +1419,8 @@ ResetActionProto.ACTION = "crypto/reset";
 ResetActionProto = tslib_1.__decorate([
     tsprotobuf.ProtobufElement({})
 ], ResetActionProto);
-var CryptoActionProto_1;
 
+var CryptoCertificateProto_1, CryptoX509CertificateProto_1, CryptoX509CertificateRequestProto_1, ChainItemProto_1, CertificateStorageGetChainResultProto_1, CertificateStorageSetItemActionProto_1, CertificateStorageGetItemActionProto_1, CertificateStorageRemoveItemActionProto_1, CertificateStorageImportActionProto_1, CertificateStorageExportActionProto_1, CertificateStorageIndexOfActionProto_1, CertificateStorageGetCRLActionProto_1, OCSPRequestOptionsProto_1, CertificateStorageGetOCSPActionProto_1;
 let CryptoCertificateProto = CryptoCertificateProto_1 = class CryptoCertificateProto extends CryptoItemProto {
 };
 CryptoCertificateProto.INDEX = CryptoItemProto.INDEX;
@@ -1640,7 +1641,6 @@ tslib_1.__decorate([
 CertificateStorageGetOCSPActionProto = CertificateStorageGetOCSPActionProto_1 = tslib_1.__decorate([
     tsprotobuf.ProtobufElement({})
 ], CertificateStorageGetOCSPActionProto);
-var CryptoCertificateProto_1, CryptoX509CertificateProto_1, CryptoX509CertificateRequestProto_1, ChainItemProto_1, CertificateStorageGetChainResultProto_1, CertificateStorageSetItemActionProto_1, CertificateStorageGetItemActionProto_1, CertificateStorageRemoveItemActionProto_1, CertificateStorageImportActionProto_1, CertificateStorageExportActionProto_1, CertificateStorageIndexOfActionProto_1, CertificateStorageGetCRLActionProto_1, OCSPRequestOptionsProto_1, CertificateStorageGetOCSPActionProto_1;
 
 function digest(alg, data) {
     const hash = crypto.createHash(alg);
@@ -2416,6 +2416,9 @@ class Pkcs11Crypto extends nodeWebcryptoP11.WebCrypto {
     getID() {
         return ++this.osslID;
     }
+    getRandomValues(array) {
+        return super.getRandomValues(array);
+    }
 }
 
 graphene.registerAttribute("pinFriendlyName", 0x80000000 | 0x00000102, "string");
@@ -2432,7 +2435,9 @@ class PvKeyStorage extends nodeWebcryptoP11.KeyStorage {
             const template = {
                 token: true,
             };
-            if (key.type === "private" && options && os.platform() === "win32") {
+            const platform = os.platform();
+            if (key.type === "private" && options &&
+                (platform === "win32" || platform === "darwin")) {
                 if (options.pinFriendlyName) {
                     template.pinFriendlyName = options.pinFriendlyName;
                 }
@@ -2510,7 +2515,9 @@ class LocalProvider extends events.EventEmitter {
                             slot,
                             readWrite: true,
                         });
-                        this.addProvider(crypto$$1);
+                        this.addProvider(crypto$$1, {
+                            name: prov.name,
+                        });
                     }
                     catch (err) {
                         this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot load PKCS#11 library by path ${prov.lib}. ${err.message}`));
@@ -2541,9 +2548,14 @@ class LocalProvider extends events.EventEmitter {
             .start(this.config.cards);
         this.emit("listening", await this.getInfo());
     }
-    addProvider(crypto$$1) {
+    addProvider(crypto$$1, params) {
         const info = getSlotInfo(crypto$$1);
         this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
+        if (params) {
+            if (params.name) {
+                info.name = params.name;
+            }
+        }
         this.info.providers.push(new ProviderCryptoProto(info));
         this.crypto.add(info.id, crypto$$1);
     }
@@ -3077,6 +3089,7 @@ async function certC2P(provider, cert) {
     return pkiCert;
 }
 
+var KeyStorageSetItemActionProto_1, KeyStorageGetItemActionProto_1, KeyStorageRemoveItemActionProto_1, KeyStorageIndexOfActionProto_1;
 let KeyStorageSetItemActionProto = KeyStorageSetItemActionProto_1 = class KeyStorageSetItemActionProto extends CryptoActionProto {
 };
 KeyStorageSetItemActionProto.INDEX = CryptoActionProto.INDEX;
@@ -3137,7 +3150,6 @@ tslib_1.__decorate([
 KeyStorageIndexOfActionProto = KeyStorageIndexOfActionProto_1 = tslib_1.__decorate([
     tsprotobuf.ProtobufElement({})
 ], KeyStorageIndexOfActionProto);
-var KeyStorageSetItemActionProto_1, KeyStorageGetItemActionProto_1, KeyStorageRemoveItemActionProto_1, KeyStorageIndexOfActionProto_1;
 
 class KeyStorageService extends Service {
     constructor(server, crypto$$1) {
@@ -3226,6 +3238,7 @@ class KeyStorageService extends Service {
     }
 }
 
+var DigestActionProto_1, GenerateKeyActionProto_1, SignActionProto_1, VerifyActionProto_1, DeriveBitsActionProto_1, DeriveKeyActionProto_1, UnwrapKeyActionProto_1, WrapKeyActionProto_1, ExportKeyActionProto_1, ImportKeyActionProto_1;
 let DigestActionProto = DigestActionProto_1 = class DigestActionProto extends CryptoActionProto {
 };
 DigestActionProto.INDEX = CryptoActionProto.INDEX;
@@ -3415,7 +3428,6 @@ tslib_1.__decorate([
 ImportKeyActionProto = ImportKeyActionProto_1 = tslib_1.__decorate([
     tsprotobuf.ProtobufElement({})
 ], ImportKeyActionProto);
-var DigestActionProto_1, GenerateKeyActionProto_1, SignActionProto_1, VerifyActionProto_1, DeriveBitsActionProto_1, DeriveKeyActionProto_1, UnwrapKeyActionProto_1, WrapKeyActionProto_1, ExportKeyActionProto_1, ImportKeyActionProto_1;
 
 class SubtleService extends Service {
     constructor(server, crypto$$1) {

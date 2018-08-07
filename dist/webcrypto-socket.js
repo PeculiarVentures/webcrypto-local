@@ -1,78 +1,8 @@
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('protobufjs')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'protobufjs'], factory) :
-	(factory((global.WebcryptoSocket = {}),global.protobuf));
-}(this, (function (exports,protobufjs) { 'use strict';
+'use strict';
 
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
+Object.defineProperty(exports, '__esModule', { value: true });
 
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
-
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
-***************************************************************************** */
-/* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
-function __extends(d, b) {
-    extendStatics(d, b);
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-function __decorate(decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-}
-
-function __awaiter(thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-}
-
-function __generator(thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-}
+var protobufjs = require('protobufjs');
 
 function PrepareBuffer(buffer) {
     if (typeof Buffer !== "undefined") {
@@ -251,6 +181,79 @@ function isEqual(bytes1, bytes2) {
         }
     }
     return true;
+}
+
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
+
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+MERCHANTABLITY OR NON-INFRINGEMENT.
+
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
+***************************************************************************** */
+/* global Reflect, Promise */
+
+var extendStatics = function(d, b) {
+    extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return extendStatics(d, b);
+};
+
+function __extends(d, b) {
+    extendStatics(d, b);
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+function __decorate(decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+function __awaiter(thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+}
+
+function __generator(thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
 }
 
 var ArrayBufferConverter = (function () {
@@ -634,9 +637,7 @@ EventEmitter.init = function() {
   this.domain = null;
   if (EventEmitter.usingDomains) {
     // if there is an active domain, then attach to it.
-    if (domain.active && !(this instanceof domain.Domain)) {
-      this.domain = domain.active;
-    }
+    if (domain.active && !(this instanceof domain.Domain)) ;
   }
 
   if (!this._events || this._events === Object.getPrototypeOf(this)._events) {
@@ -725,7 +726,6 @@ function emitMany(handler, isFn, self, args) {
 
 EventEmitter.prototype.emit = function emit(type) {
   var er, handler, len, args, i, events, domain;
-  var needDomainExit = false;
   var doError = (type === 'error');
 
   events = this._events;
@@ -785,9 +785,6 @@ EventEmitter.prototype.emit = function emit(type) {
         args[i - 1] = arguments[i];
       emitMany(handler, isFn, this, args);
   }
-
-  if (needDomainExit)
-    domain.exit();
 
   return true;
 };
@@ -1173,7 +1170,8 @@ var Curve = (function () {
                             publicKey: key.publicKey.key
                         };
                         return [4, key.publicKey.thumbprint()];
-                    case 1: return [2, (_a.thumbprint = _b.sent(), _a)];
+                    case 1: return [2, (_a.thumbprint = _b.sent(),
+                            _a)];
                 }
             });
         });
@@ -1188,7 +1186,8 @@ var Curve = (function () {
                             privateKey: keys.privateKey
                         };
                         return [4, ECPublicKey.create(keys.publicKey)];
-                    case 1: return [2, (_a.publicKey = _b.sent(), _a)];
+                    case 1: return [2, (_a.publicKey = _b.sent(),
+                            _a)];
                 }
             });
         });
@@ -1486,9 +1485,13 @@ var Identity = (function () {
                         };
                         return [4, Curve.ecKeyPairToJson(this.exchangeKey)];
                     case 9:
-                        _h.exchangeKey = _j.sent(), _h.id = this.id, _h.preKeys = preKeys, _h.signedPreKeys = signedPreKeys;
+                        _h.exchangeKey = _j.sent(),
+                            _h.id = this.id,
+                            _h.preKeys = preKeys,
+                            _h.signedPreKeys = signedPreKeys;
                         return [4, Curve.ecKeyPairToJson(this.signingKey)];
-                    case 10: return [2, (_h.signingKey = _j.sent(), _h)];
+                    case 10: return [2, (_h.signingKey = _j.sent(),
+                            _h)];
                 }
             });
         });
@@ -1588,12 +1591,15 @@ var RemoteIdentity = (function () {
                         };
                         return [4, this.exchangeKey.key];
                     case 1:
-                        _a.exchangeKey = _b.sent(), _a.id = this.id, _a.signature = this.signature;
+                        _a.exchangeKey = _b.sent(),
+                            _a.id = this.id,
+                            _a.signature = this.signature;
                         return [4, this.signingKey.key];
                     case 2:
                         _a.signingKey = _b.sent();
                         return [4, this.signingKey.thumbprint()];
-                    case 3: return [2, (_a.thumbprint = _b.sent(), _a)];
+                    case 3: return [2, (_a.thumbprint = _b.sent(),
+                            _a)];
                 }
             });
         });
@@ -1763,6 +1769,7 @@ var IdentityProtocol = (function (_super) {
             });
         });
     };
+    var IdentityProtocol_1;
     __decorate([
         ProtobufProperty({ id: 1, converter: ECDSAPublicKeyConverter })
     ], IdentityProtocol.prototype, "signingKey", void 0);
@@ -1779,7 +1786,6 @@ var IdentityProtocol = (function (_super) {
         ProtobufElement({ name: "Identity" })
     ], IdentityProtocol);
     return IdentityProtocol;
-    var IdentityProtocol_1;
 }(BaseProtocol));
 
 var MessageProtocol = (function (_super) {
@@ -2101,7 +2107,8 @@ var SymmetricRatchet = (function () {
                         };
                         return [4, Secret.importHMAC(nextRootKeyBytes)];
                     case 3:
-                        res = (_a.rootKey = _b.sent(), _a);
+                        res = (_a.rootKey = _b.sent(),
+                            _a);
                         return [2, res];
                 }
             });
@@ -2572,9 +2579,11 @@ var AsymmetricRatchet = (function (_super) {
                         _a.ratchetKey = _b.sent();
                         return [4, this.remoteIdentity.signingKey.thumbprint()];
                     case 2:
-                        _a.remoteIdentity = _b.sent(), _a.rootKey = this.rootKey;
+                        _a.remoteIdentity = _b.sent(),
+                            _a.rootKey = this.rootKey;
                         return [4, this.steps.toJSON()];
-                    case 3: return [2, (_a.steps = _b.sent(), _a)];
+                    case 3: return [2, (_a.steps = _b.sent(),
+                            _a)];
                 }
             });
         });
@@ -2821,14 +2830,14 @@ var DateConverter$1 = (function () {
     function DateConverter() {
     }
     DateConverter.set = function (value) {
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
                 return [2, new Uint8Array(Convert.FromUtf8String(value.toISOString()))];
             });
         });
     };
     DateConverter.get = function (value) {
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
                 return [2, new Date(Convert.ToUtf8String(value))];
             });
@@ -2862,6 +2871,7 @@ var BaseProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     BaseProto_1 = BaseProto;
+    var BaseProto_1;
     BaseProto.INDEX = 1;
     __decorate([
         ProtobufProperty({ id: BaseProto_1.INDEX++, type: "uint32", required: true, defaultValue: 1 })
@@ -2870,7 +2880,6 @@ var BaseProto = (function (_super) {
         ProtobufElement({ name: "BaseMessage" })
     ], BaseProto);
     return BaseProto;
-    var BaseProto_1;
 }(ObjectProto));
 var ActionProto = (function (_super) {
     __extends(ActionProto, _super);
@@ -2880,6 +2889,7 @@ var ActionProto = (function (_super) {
         return _this;
     }
     ActionProto_1 = ActionProto;
+    var ActionProto_1;
     ActionProto.INDEX = BaseProto.INDEX;
     ActionProto.ACTION = "action";
     __decorate([
@@ -2892,7 +2902,6 @@ var ActionProto = (function (_super) {
         ProtobufElement({ name: "Action" })
     ], ActionProto);
     return ActionProto;
-    var ActionProto_1;
 }(BaseProto));
 var BaseAlgorithmProto = (function (_super) {
     __extends(BaseAlgorithmProto, _super);
@@ -2906,6 +2915,7 @@ var BaseAlgorithmProto = (function (_super) {
     BaseAlgorithmProto.prototype.fromAlgorithm = function (alg) {
         this.name = alg.name;
     };
+    var BaseAlgorithmProto_1;
     BaseAlgorithmProto.INDEX = BaseProto.INDEX;
     __decorate([
         ProtobufProperty({ id: BaseAlgorithmProto_1.INDEX++, type: "string", required: true })
@@ -2914,7 +2924,6 @@ var BaseAlgorithmProto = (function (_super) {
         ProtobufElement({ name: "BaseAlgorithm" })
     ], BaseAlgorithmProto);
     return BaseAlgorithmProto;
-    var BaseAlgorithmProto_1;
 }(BaseProto));
 var AlgorithmProto = (function (_super) {
     __extends(AlgorithmProto, _super);
@@ -2966,6 +2975,7 @@ var AlgorithmProto = (function (_super) {
             }
         }
     };
+    var AlgorithmProto_1;
     AlgorithmProto.INDEX = BaseAlgorithmProto.INDEX;
     __decorate([
         ProtobufProperty({ id: AlgorithmProto_1.INDEX++, type: "bytes", parser: BaseAlgorithmProto })
@@ -2998,7 +3008,6 @@ var AlgorithmProto = (function (_super) {
         ProtobufElement({ name: "Algorithm" })
     ], AlgorithmProto);
     return AlgorithmProto;
-    var AlgorithmProto_1;
 }(BaseAlgorithmProto));
 var CryptoItemProto = (function (_super) {
     __extends(CryptoItemProto, _super);
@@ -3006,6 +3015,7 @@ var CryptoItemProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CryptoItemProto_1 = CryptoItemProto;
+    var CryptoItemProto_1;
     CryptoItemProto.INDEX = BaseProto.INDEX;
     __decorate([
         ProtobufProperty({ id: CryptoItemProto_1.INDEX++, type: "string", required: true })
@@ -3020,7 +3030,6 @@ var CryptoItemProto = (function (_super) {
         ProtobufElement({ name: "CryptoItem" })
     ], CryptoItemProto);
     return CryptoItemProto;
-    var CryptoItemProto_1;
 }(BaseProto));
 var CryptoKeyProto = (function (_super) {
     __extends(CryptoKeyProto, _super);
@@ -3028,6 +3037,7 @@ var CryptoKeyProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CryptoKeyProto_1 = CryptoKeyProto;
+    var CryptoKeyProto_1;
     CryptoKeyProto.INDEX = CryptoItemProto.INDEX;
     __decorate([
         ProtobufProperty({ id: CryptoKeyProto_1.INDEX++, type: "bytes", required: true, parser: AlgorithmProto })
@@ -3042,7 +3052,6 @@ var CryptoKeyProto = (function (_super) {
         ProtobufElement({ name: "CryptoKey" })
     ], CryptoKeyProto);
     return CryptoKeyProto;
-    var CryptoKeyProto_1;
 }(CryptoItemProto));
 var CryptoKeyPairProto = (function (_super) {
     __extends(CryptoKeyPairProto, _super);
@@ -3050,6 +3059,7 @@ var CryptoKeyPairProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CryptoKeyPairProto_1 = CryptoKeyPairProto;
+    var CryptoKeyPairProto_1;
     CryptoKeyPairProto.INDEX = BaseProto.INDEX;
     __decorate([
         ProtobufProperty({ id: CryptoKeyPairProto_1.INDEX++, name: "privateKey", type: "bytes", parser: CryptoKeyProto })
@@ -3061,7 +3071,6 @@ var CryptoKeyPairProto = (function (_super) {
         ProtobufElement({ name: "CryptoKeyPair" })
     ], CryptoKeyPairProto);
     return CryptoKeyPairProto;
-    var CryptoKeyPairProto_1;
 }(BaseProto));
 var ErrorProto = (function (_super) {
     __extends(ErrorProto, _super);
@@ -3077,6 +3086,7 @@ var ErrorProto = (function (_super) {
         return _this;
     }
     ErrorProto_1 = ErrorProto;
+    var ErrorProto_1;
     ErrorProto.INDEX = BaseProto.INDEX;
     __decorate([
         ProtobufProperty({ id: ErrorProto_1.INDEX++, type: "uint32", defaultValue: 0 })
@@ -3091,7 +3101,6 @@ var ErrorProto = (function (_super) {
         ProtobufElement({ name: "Error" })
     ], ErrorProto);
     return ErrorProto;
-    var ErrorProto_1;
 }(BaseProto));
 var ResultProto = (function (_super) {
     __extends(ResultProto, _super);
@@ -3104,6 +3113,7 @@ var ResultProto = (function (_super) {
         return _this;
     }
     ResultProto_1 = ResultProto;
+    var ResultProto_1;
     ResultProto.INDEX = ActionProto.INDEX;
     __decorate([
         ProtobufProperty({ id: ResultProto_1.INDEX++, type: "bool", defaultValue: false })
@@ -3118,7 +3128,6 @@ var ResultProto = (function (_super) {
         ProtobufElement({ name: "Result" })
     ], ResultProto);
     return ResultProto;
-    var ResultProto_1;
 }(ActionProto));
 var AuthRequestProto = (function (_super) {
     __extends(AuthRequestProto, _super);
@@ -3249,8 +3258,8 @@ var BrowserStorage = (function () {
     }
     BrowserStorage.create = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
             var db;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, idb.open(this.STORAGE_NAME, 1, function (updater) {
@@ -3266,7 +3275,7 @@ var BrowserStorage = (function () {
         });
     };
     BrowserStorage.prototype.loadWrapKey = function () {
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, Promise, function () {
             var wKey, _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -3302,7 +3311,9 @@ var BrowserStorage = (function () {
                         _a = {};
                         return [4, getEngine().crypto.subtle.exportKey("raw", key.key)];
                     case 1:
-                        key = (_a.key = (_b.sent()), _a.iv = key.iv, _a);
+                        key = (_a.key = (_b.sent()),
+                            _a.iv = key.iv,
+                            _a);
                         _b.label = 2;
                     case 2:
                         tx = this.db.transaction(BrowserStorage.IDENTITY_STORAGE, "readwrite");
@@ -3374,7 +3385,9 @@ var BrowserStorage = (function () {
                         _a = {};
                         return [4, getEngine().crypto.subtle.generateKey({ name: AES_CBC.name, length: 256 }, isEdge(), ["wrapKey", "unwrapKey", "encrypt", "decrypt"])];
                     case 1:
-                        wkey = (_a.key = _f.sent(), _a.iv = getEngine().crypto.getRandomValues(new Uint8Array(AES_CBC.iv)).buffer, _a);
+                        wkey = (_a.key = _f.sent(),
+                            _a.iv = getEngine().crypto.getRandomValues(new Uint8Array(AES_CBC.iv)).buffer,
+                            _a);
                         return [4, this.saveWrapKey(wkey)];
                     case 2:
                         _f.sent();
@@ -3829,6 +3842,7 @@ var ProviderCryptoProto = (function (_super) {
         return _this;
     }
     ProviderCryptoProto_1 = ProviderCryptoProto;
+    var ProviderCryptoProto_1;
     ProviderCryptoProto.INDEX = BaseProto.INDEX;
     __decorate([
         ProtobufProperty({ id: ProviderCryptoProto_1.INDEX++, required: true, type: "string" })
@@ -3855,7 +3869,6 @@ var ProviderCryptoProto = (function (_super) {
         ProtobufElement({})
     ], ProviderCryptoProto);
     return ProviderCryptoProto;
-    var ProviderCryptoProto_1;
 }(BaseProto));
 var ProviderInfoProto = (function (_super) {
     __extends(ProviderInfoProto, _super);
@@ -3863,6 +3876,7 @@ var ProviderInfoProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     ProviderInfoProto_1 = ProviderInfoProto;
+    var ProviderInfoProto_1;
     ProviderInfoProto.INDEX = BaseProto.INDEX;
     __decorate([
         ProtobufProperty({ id: ProviderInfoProto_1.INDEX++, type: "string", required: true })
@@ -3874,7 +3888,6 @@ var ProviderInfoProto = (function (_super) {
         ProtobufElement({})
     ], ProviderInfoProto);
     return ProviderInfoProto;
-    var ProviderInfoProto_1;
 }(BaseProto));
 var ProviderInfoActionProto = (function (_super) {
     __extends(ProviderInfoActionProto, _super);
@@ -3894,6 +3907,7 @@ var ProviderGetCryptoActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     ProviderGetCryptoActionProto_1 = ProviderGetCryptoActionProto;
+    var ProviderGetCryptoActionProto_1;
     ProviderGetCryptoActionProto.INDEX = ActionProto.INDEX;
     ProviderGetCryptoActionProto.ACTION = "provider/action/getCrypto";
     __decorate([
@@ -3903,7 +3917,6 @@ var ProviderGetCryptoActionProto = (function (_super) {
         ProtobufElement({})
     ], ProviderGetCryptoActionProto);
     return ProviderGetCryptoActionProto;
-    var ProviderGetCryptoActionProto_1;
 }(ActionProto));
 var ProviderAuthorizedEventProto = (function (_super) {
     __extends(ProviderAuthorizedEventProto, _super);
@@ -3927,6 +3940,7 @@ var ProviderTokenEventProto = (function (_super) {
         return _this;
     }
     ProviderTokenEventProto_1 = ProviderTokenEventProto;
+    var ProviderTokenEventProto_1;
     ProviderTokenEventProto.INDEX = ActionProto.INDEX;
     ProviderTokenEventProto.ACTION = "provider/event/token";
     __decorate([
@@ -3942,7 +3956,6 @@ var ProviderTokenEventProto = (function (_super) {
         ProtobufElement({ name: "ProviderTokenEvent" })
     ], ProviderTokenEventProto);
     return ProviderTokenEventProto;
-    var ProviderTokenEventProto_1;
 }(ActionProto));
 
 var CardReaderActionProto = (function (_super) {
@@ -3984,6 +3997,7 @@ var CardReaderEventProto = (function (_super) {
         this.reader = e.reader.name;
         this.atr = e.atr.toString("hex");
     };
+    var CardReaderEventProto_1;
     CardReaderEventProto.INDEX = CardReaderActionProto.INDEX;
     __decorate([
         ProtobufProperty({ id: CardReaderEventProto_1.INDEX++, required: true, type: "string", defaultValue: "" })
@@ -3995,7 +4009,6 @@ var CardReaderEventProto = (function (_super) {
         ProtobufElement({})
     ], CardReaderEventProto);
     return CardReaderEventProto;
-    var CardReaderEventProto_1;
 }(CardReaderActionProto));
 var CardReaderInsertEventProto = (function (_super) {
     __extends(CardReaderInsertEventProto, _super);
@@ -4106,6 +4119,7 @@ var CryptoActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CryptoActionProto_1 = CryptoActionProto;
+    var CryptoActionProto_1;
     CryptoActionProto.INDEX = ActionProto.INDEX;
     CryptoActionProto.ACTION = "crypto";
     __decorate([
@@ -4115,7 +4129,6 @@ var CryptoActionProto = (function (_super) {
         ProtobufElement({})
     ], CryptoActionProto);
     return CryptoActionProto;
-    var CryptoActionProto_1;
 }(ActionProto));
 var LoginActionProto = (function (_super) {
     __extends(LoginActionProto, _super);
@@ -5608,6 +5621,7 @@ var CryptoCertificateProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CryptoCertificateProto_1 = CryptoCertificateProto;
+    var CryptoCertificateProto_1;
     CryptoCertificateProto.INDEX = CryptoItemProto.INDEX;
     __decorate([
         ProtobufProperty({ id: CryptoCertificateProto_1.INDEX++, required: true, converter: HexStringConverter })
@@ -5622,7 +5636,6 @@ var CryptoCertificateProto = (function (_super) {
         ProtobufElement({})
     ], CryptoCertificateProto);
     return CryptoCertificateProto;
-    var CryptoCertificateProto_1;
 }(CryptoItemProto));
 var CryptoX509CertificateProto = (function (_super) {
     __extends(CryptoX509CertificateProto, _super);
@@ -5630,6 +5643,7 @@ var CryptoX509CertificateProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CryptoX509CertificateProto_1 = CryptoX509CertificateProto;
+    var CryptoX509CertificateProto_1;
     CryptoX509CertificateProto.INDEX = CryptoCertificateProto.INDEX;
     __decorate([
         ProtobufProperty({ id: CryptoX509CertificateProto_1.INDEX++, required: true, converter: HexStringConverter })
@@ -5650,7 +5664,6 @@ var CryptoX509CertificateProto = (function (_super) {
         ProtobufElement({})
     ], CryptoX509CertificateProto);
     return CryptoX509CertificateProto;
-    var CryptoX509CertificateProto_1;
 }(CryptoCertificateProto));
 var CryptoX509CertificateRequestProto = (function (_super) {
     __extends(CryptoX509CertificateRequestProto, _super);
@@ -5658,6 +5671,7 @@ var CryptoX509CertificateRequestProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CryptoX509CertificateRequestProto_1 = CryptoX509CertificateRequestProto;
+    var CryptoX509CertificateRequestProto_1;
     CryptoX509CertificateRequestProto.INDEX = CryptoCertificateProto.INDEX;
     __decorate([
         ProtobufProperty({ id: CryptoX509CertificateRequestProto_1.INDEX++, required: true, type: "string" })
@@ -5666,7 +5680,6 @@ var CryptoX509CertificateRequestProto = (function (_super) {
         ProtobufElement({})
     ], CryptoX509CertificateRequestProto);
     return CryptoX509CertificateRequestProto;
-    var CryptoX509CertificateRequestProto_1;
 }(CryptoCertificateProto));
 var ChainItemProto = (function (_super) {
     __extends(ChainItemProto, _super);
@@ -5674,6 +5687,7 @@ var ChainItemProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     ChainItemProto_1 = ChainItemProto;
+    var ChainItemProto_1;
     ChainItemProto.INDEX = BaseProto.INDEX;
     __decorate([
         ProtobufProperty({
@@ -5693,7 +5707,6 @@ var ChainItemProto = (function (_super) {
         ProtobufElement({})
     ], ChainItemProto);
     return ChainItemProto;
-    var ChainItemProto_1;
 }(BaseProto));
 var CertificateStorageGetChainResultProto = (function (_super) {
     __extends(CertificateStorageGetChainResultProto, _super);
@@ -5703,6 +5716,7 @@ var CertificateStorageGetChainResultProto = (function (_super) {
         return _this;
     }
     CertificateStorageGetChainResultProto_1 = CertificateStorageGetChainResultProto;
+    var CertificateStorageGetChainResultProto_1;
     CertificateStorageGetChainResultProto.INDEX = BaseProto.INDEX;
     __decorate([
         ProtobufProperty({
@@ -5716,7 +5730,6 @@ var CertificateStorageGetChainResultProto = (function (_super) {
         ProtobufElement({})
     ], CertificateStorageGetChainResultProto);
     return CertificateStorageGetChainResultProto;
-    var CertificateStorageGetChainResultProto_1;
 }(BaseProto));
 var CertificateStorageSetItemActionProto = (function (_super) {
     __extends(CertificateStorageSetItemActionProto, _super);
@@ -5724,6 +5737,7 @@ var CertificateStorageSetItemActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CertificateStorageSetItemActionProto_1 = CertificateStorageSetItemActionProto;
+    var CertificateStorageSetItemActionProto_1;
     CertificateStorageSetItemActionProto.INDEX = CryptoActionProto.INDEX;
     CertificateStorageSetItemActionProto.ACTION = "crypto/certificateStorage/setItem";
     __decorate([
@@ -5733,7 +5747,6 @@ var CertificateStorageSetItemActionProto = (function (_super) {
         ProtobufElement({})
     ], CertificateStorageSetItemActionProto);
     return CertificateStorageSetItemActionProto;
-    var CertificateStorageSetItemActionProto_1;
 }(CryptoActionProto));
 var CertificateStorageGetItemActionProto = (function (_super) {
     __extends(CertificateStorageGetItemActionProto, _super);
@@ -5741,6 +5754,7 @@ var CertificateStorageGetItemActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CertificateStorageGetItemActionProto_1 = CertificateStorageGetItemActionProto;
+    var CertificateStorageGetItemActionProto_1;
     CertificateStorageGetItemActionProto.INDEX = CryptoActionProto.INDEX;
     CertificateStorageGetItemActionProto.ACTION = "crypto/certificateStorage/getItem";
     __decorate([
@@ -5756,7 +5770,6 @@ var CertificateStorageGetItemActionProto = (function (_super) {
         ProtobufElement({})
     ], CertificateStorageGetItemActionProto);
     return CertificateStorageGetItemActionProto;
-    var CertificateStorageGetItemActionProto_1;
 }(CryptoActionProto));
 var CertificateStorageKeysActionProto = (function (_super) {
     __extends(CertificateStorageKeysActionProto, _super);
@@ -5776,6 +5789,7 @@ var CertificateStorageRemoveItemActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CertificateStorageRemoveItemActionProto_1 = CertificateStorageRemoveItemActionProto;
+    var CertificateStorageRemoveItemActionProto_1;
     CertificateStorageRemoveItemActionProto.INDEX = CryptoActionProto.INDEX;
     CertificateStorageRemoveItemActionProto.ACTION = "crypto/certificateStorage/removeItem";
     __decorate([
@@ -5785,7 +5799,6 @@ var CertificateStorageRemoveItemActionProto = (function (_super) {
         ProtobufElement({})
     ], CertificateStorageRemoveItemActionProto);
     return CertificateStorageRemoveItemActionProto;
-    var CertificateStorageRemoveItemActionProto_1;
 }(CryptoActionProto));
 var CertificateStorageClearActionProto = (function (_super) {
     __extends(CertificateStorageClearActionProto, _super);
@@ -5805,6 +5818,7 @@ var CertificateStorageImportActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CertificateStorageImportActionProto_1 = CertificateStorageImportActionProto;
+    var CertificateStorageImportActionProto_1;
     CertificateStorageImportActionProto.INDEX = CryptoActionProto.INDEX;
     CertificateStorageImportActionProto.ACTION = "crypto/certificateStorage/import";
     __decorate([
@@ -5823,7 +5837,6 @@ var CertificateStorageImportActionProto = (function (_super) {
         ProtobufElement({})
     ], CertificateStorageImportActionProto);
     return CertificateStorageImportActionProto;
-    var CertificateStorageImportActionProto_1;
 }(CryptoActionProto));
 var CertificateStorageExportActionProto = (function (_super) {
     __extends(CertificateStorageExportActionProto, _super);
@@ -5831,6 +5844,7 @@ var CertificateStorageExportActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CertificateStorageExportActionProto_1 = CertificateStorageExportActionProto;
+    var CertificateStorageExportActionProto_1;
     CertificateStorageExportActionProto.INDEX = CryptoActionProto.INDEX;
     CertificateStorageExportActionProto.ACTION = "crypto/certificateStorage/export";
     __decorate([
@@ -5843,7 +5857,6 @@ var CertificateStorageExportActionProto = (function (_super) {
         ProtobufElement({})
     ], CertificateStorageExportActionProto);
     return CertificateStorageExportActionProto;
-    var CertificateStorageExportActionProto_1;
 }(CryptoActionProto));
 var CertificateStorageIndexOfActionProto = (function (_super) {
     __extends(CertificateStorageIndexOfActionProto, _super);
@@ -5851,6 +5864,7 @@ var CertificateStorageIndexOfActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CertificateStorageIndexOfActionProto_1 = CertificateStorageIndexOfActionProto;
+    var CertificateStorageIndexOfActionProto_1;
     CertificateStorageIndexOfActionProto.INDEX = CryptoActionProto.INDEX;
     CertificateStorageIndexOfActionProto.ACTION = "crypto/certificateStorage/indexOf";
     __decorate([
@@ -5860,7 +5874,6 @@ var CertificateStorageIndexOfActionProto = (function (_super) {
         ProtobufElement({})
     ], CertificateStorageIndexOfActionProto);
     return CertificateStorageIndexOfActionProto;
-    var CertificateStorageIndexOfActionProto_1;
 }(CryptoActionProto));
 var CertificateStorageGetChainActionProto = (function (_super) {
     __extends(CertificateStorageGetChainActionProto, _super);
@@ -5883,6 +5896,7 @@ var CertificateStorageGetCRLActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CertificateStorageGetCRLActionProto_1 = CertificateStorageGetCRLActionProto;
+    var CertificateStorageGetCRLActionProto_1;
     CertificateStorageGetCRLActionProto.INDEX = CryptoActionProto.INDEX;
     CertificateStorageGetCRLActionProto.ACTION = "crypto/certificateStorage/getCRL";
     __decorate([
@@ -5892,7 +5906,6 @@ var CertificateStorageGetCRLActionProto = (function (_super) {
         ProtobufElement({})
     ], CertificateStorageGetCRLActionProto);
     return CertificateStorageGetCRLActionProto;
-    var CertificateStorageGetCRLActionProto_1;
 }(CryptoActionProto));
 var OCSPRequestOptionsProto = (function (_super) {
     __extends(OCSPRequestOptionsProto, _super);
@@ -5900,6 +5913,7 @@ var OCSPRequestOptionsProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     OCSPRequestOptionsProto_1 = OCSPRequestOptionsProto;
+    var OCSPRequestOptionsProto_1;
     OCSPRequestOptionsProto.INDEX = BaseProto.INDEX;
     __decorate([
         ProtobufProperty({ id: OCSPRequestOptionsProto_1.INDEX++, required: false, type: "string", defaultValue: "get" })
@@ -5908,7 +5922,6 @@ var OCSPRequestOptionsProto = (function (_super) {
         ProtobufElement({})
     ], OCSPRequestOptionsProto);
     return OCSPRequestOptionsProto;
-    var OCSPRequestOptionsProto_1;
 }(BaseProto));
 var CertificateStorageGetOCSPActionProto = (function (_super) {
     __extends(CertificateStorageGetOCSPActionProto, _super);
@@ -5916,6 +5929,7 @@ var CertificateStorageGetOCSPActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CertificateStorageGetOCSPActionProto_1 = CertificateStorageGetOCSPActionProto;
+    var CertificateStorageGetOCSPActionProto_1;
     CertificateStorageGetOCSPActionProto.INDEX = CryptoActionProto.INDEX;
     CertificateStorageGetOCSPActionProto.ACTION = "crypto/certificateStorage/getOCSP";
     __decorate([
@@ -5931,7 +5945,6 @@ var CertificateStorageGetOCSPActionProto = (function (_super) {
         ProtobufElement({})
     ], CertificateStorageGetOCSPActionProto);
     return CertificateStorageGetOCSPActionProto;
-    var CertificateStorageGetOCSPActionProto_1;
 }(CryptoActionProto));
 
 var SocketCertificateStorage = (function () {
@@ -5939,7 +5952,7 @@ var SocketCertificateStorage = (function () {
         this.provider = provider;
     }
     SocketCertificateStorage.prototype.indexOf = function (item) {
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, Promise, function () {
             var proto, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -5956,7 +5969,7 @@ var SocketCertificateStorage = (function () {
         });
     };
     SocketCertificateStorage.prototype.exportCert = function (format, item) {
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, Promise, function () {
             var proto, result, header, res, b64, counter, raw;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -6009,7 +6022,7 @@ var SocketCertificateStorage = (function () {
         });
     };
     SocketCertificateStorage.prototype.importCert = function (type, data, algorithm, keyUsages) {
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, Promise, function () {
             var alg, proto, result, certItem;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -6228,6 +6241,7 @@ var KeyStorageSetItemActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     KeyStorageSetItemActionProto_1 = KeyStorageSetItemActionProto;
+    var KeyStorageSetItemActionProto_1;
     KeyStorageSetItemActionProto.INDEX = CryptoActionProto.INDEX;
     KeyStorageSetItemActionProto.ACTION = "crypto/keyStorage/setItem";
     __decorate([
@@ -6237,7 +6251,6 @@ var KeyStorageSetItemActionProto = (function (_super) {
         ProtobufElement({})
     ], KeyStorageSetItemActionProto);
     return KeyStorageSetItemActionProto;
-    var KeyStorageSetItemActionProto_1;
 }(CryptoActionProto));
 var KeyStorageGetItemActionProto = (function (_super) {
     __extends(KeyStorageGetItemActionProto, _super);
@@ -6245,6 +6258,7 @@ var KeyStorageGetItemActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     KeyStorageGetItemActionProto_1 = KeyStorageGetItemActionProto;
+    var KeyStorageGetItemActionProto_1;
     KeyStorageGetItemActionProto.INDEX = CryptoActionProto.INDEX;
     KeyStorageGetItemActionProto.ACTION = "crypto/keyStorage/getItem";
     __decorate([
@@ -6260,7 +6274,6 @@ var KeyStorageGetItemActionProto = (function (_super) {
         ProtobufElement({})
     ], KeyStorageGetItemActionProto);
     return KeyStorageGetItemActionProto;
-    var KeyStorageGetItemActionProto_1;
 }(CryptoActionProto));
 var KeyStorageKeysActionProto = (function (_super) {
     __extends(KeyStorageKeysActionProto, _super);
@@ -6280,6 +6293,7 @@ var KeyStorageRemoveItemActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     KeyStorageRemoveItemActionProto_1 = KeyStorageRemoveItemActionProto;
+    var KeyStorageRemoveItemActionProto_1;
     KeyStorageRemoveItemActionProto.INDEX = CryptoActionProto.INDEX;
     KeyStorageRemoveItemActionProto.ACTION = "crypto/keyStorage/removeItem";
     __decorate([
@@ -6289,7 +6303,6 @@ var KeyStorageRemoveItemActionProto = (function (_super) {
         ProtobufElement({})
     ], KeyStorageRemoveItemActionProto);
     return KeyStorageRemoveItemActionProto;
-    var KeyStorageRemoveItemActionProto_1;
 }(CryptoActionProto));
 var KeyStorageClearActionProto = (function (_super) {
     __extends(KeyStorageClearActionProto, _super);
@@ -6309,6 +6322,7 @@ var KeyStorageIndexOfActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     KeyStorageIndexOfActionProto_1 = KeyStorageIndexOfActionProto;
+    var KeyStorageIndexOfActionProto_1;
     KeyStorageIndexOfActionProto.INDEX = CryptoActionProto.INDEX;
     KeyStorageIndexOfActionProto.ACTION = "crypto/keyStorage/indexOf";
     __decorate([
@@ -6318,7 +6332,6 @@ var KeyStorageIndexOfActionProto = (function (_super) {
         ProtobufElement({})
     ], KeyStorageIndexOfActionProto);
     return KeyStorageIndexOfActionProto;
-    var KeyStorageIndexOfActionProto_1;
 }(CryptoActionProto));
 
 var SocketKeyStorage = (function () {
@@ -6346,7 +6359,7 @@ var SocketKeyStorage = (function () {
         });
     };
     SocketKeyStorage.prototype.indexOf = function (item) {
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, Promise, function () {
             var proto, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -6450,6 +6463,7 @@ var DigestActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     DigestActionProto_1 = DigestActionProto;
+    var DigestActionProto_1;
     DigestActionProto.INDEX = CryptoActionProto.INDEX;
     DigestActionProto.ACTION = "crypto/subtle/digest";
     __decorate([
@@ -6462,7 +6476,6 @@ var DigestActionProto = (function (_super) {
         ProtobufElement({})
     ], DigestActionProto);
     return DigestActionProto;
-    var DigestActionProto_1;
 }(CryptoActionProto));
 var GenerateKeyActionProto = (function (_super) {
     __extends(GenerateKeyActionProto, _super);
@@ -6470,6 +6483,7 @@ var GenerateKeyActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     GenerateKeyActionProto_1 = GenerateKeyActionProto;
+    var GenerateKeyActionProto_1;
     GenerateKeyActionProto.INDEX = CryptoActionProto.INDEX;
     GenerateKeyActionProto.ACTION = "crypto/subtle/generateKey";
     __decorate([
@@ -6485,7 +6499,6 @@ var GenerateKeyActionProto = (function (_super) {
         ProtobufElement({})
     ], GenerateKeyActionProto);
     return GenerateKeyActionProto;
-    var GenerateKeyActionProto_1;
 }(CryptoActionProto));
 var SignActionProto = (function (_super) {
     __extends(SignActionProto, _super);
@@ -6493,6 +6506,7 @@ var SignActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     SignActionProto_1 = SignActionProto;
+    var SignActionProto_1;
     SignActionProto.INDEX = CryptoActionProto.INDEX;
     SignActionProto.ACTION = "crypto/subtle/sign";
     __decorate([
@@ -6508,7 +6522,6 @@ var SignActionProto = (function (_super) {
         ProtobufElement({})
     ], SignActionProto);
     return SignActionProto;
-    var SignActionProto_1;
 }(CryptoActionProto));
 var VerifyActionProto = (function (_super) {
     __extends(VerifyActionProto, _super);
@@ -6516,6 +6529,7 @@ var VerifyActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     VerifyActionProto_1 = VerifyActionProto;
+    var VerifyActionProto_1;
     VerifyActionProto.INDEX = SignActionProto.INDEX;
     VerifyActionProto.ACTION = "crypto/subtle/verify";
     __decorate([
@@ -6525,7 +6539,6 @@ var VerifyActionProto = (function (_super) {
         ProtobufElement({})
     ], VerifyActionProto);
     return VerifyActionProto;
-    var VerifyActionProto_1;
 }(SignActionProto));
 var EncryptActionProto = (function (_super) {
     __extends(EncryptActionProto, _super);
@@ -6557,6 +6570,7 @@ var DeriveBitsActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     DeriveBitsActionProto_1 = DeriveBitsActionProto;
+    var DeriveBitsActionProto_1;
     DeriveBitsActionProto.INDEX = CryptoActionProto.INDEX;
     DeriveBitsActionProto.ACTION = "crypto/subtle/deriveBits";
     __decorate([
@@ -6572,7 +6586,6 @@ var DeriveBitsActionProto = (function (_super) {
         ProtobufElement({})
     ], DeriveBitsActionProto);
     return DeriveBitsActionProto;
-    var DeriveBitsActionProto_1;
 }(CryptoActionProto));
 var DeriveKeyActionProto = (function (_super) {
     __extends(DeriveKeyActionProto, _super);
@@ -6580,6 +6593,7 @@ var DeriveKeyActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     DeriveKeyActionProto_1 = DeriveKeyActionProto;
+    var DeriveKeyActionProto_1;
     DeriveKeyActionProto.INDEX = CryptoActionProto.INDEX;
     DeriveKeyActionProto.ACTION = "crypto/subtle/deriveKey";
     __decorate([
@@ -6601,7 +6615,6 @@ var DeriveKeyActionProto = (function (_super) {
         ProtobufElement({})
     ], DeriveKeyActionProto);
     return DeriveKeyActionProto;
-    var DeriveKeyActionProto_1;
 }(CryptoActionProto));
 var UnwrapKeyActionProto = (function (_super) {
     __extends(UnwrapKeyActionProto, _super);
@@ -6609,6 +6622,7 @@ var UnwrapKeyActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     UnwrapKeyActionProto_1 = UnwrapKeyActionProto;
+    var UnwrapKeyActionProto_1;
     UnwrapKeyActionProto.INDEX = CryptoActionProto.INDEX;
     UnwrapKeyActionProto.ACTION = "crypto/subtle/unwrapKey";
     __decorate([
@@ -6636,7 +6650,6 @@ var UnwrapKeyActionProto = (function (_super) {
         ProtobufElement({})
     ], UnwrapKeyActionProto);
     return UnwrapKeyActionProto;
-    var UnwrapKeyActionProto_1;
 }(CryptoActionProto));
 var WrapKeyActionProto = (function (_super) {
     __extends(WrapKeyActionProto, _super);
@@ -6644,6 +6657,7 @@ var WrapKeyActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     WrapKeyActionProto_1 = WrapKeyActionProto;
+    var WrapKeyActionProto_1;
     WrapKeyActionProto.INDEX = CryptoActionProto.INDEX;
     WrapKeyActionProto.ACTION = "crypto/subtle/wrapKey";
     __decorate([
@@ -6662,7 +6676,6 @@ var WrapKeyActionProto = (function (_super) {
         ProtobufElement({})
     ], WrapKeyActionProto);
     return WrapKeyActionProto;
-    var WrapKeyActionProto_1;
 }(CryptoActionProto));
 var ExportKeyActionProto = (function (_super) {
     __extends(ExportKeyActionProto, _super);
@@ -6670,6 +6683,7 @@ var ExportKeyActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     ExportKeyActionProto_1 = ExportKeyActionProto;
+    var ExportKeyActionProto_1;
     ExportKeyActionProto.INDEX = CryptoActionProto.INDEX;
     ExportKeyActionProto.ACTION = "crypto/subtle/exportKey";
     __decorate([
@@ -6682,7 +6696,6 @@ var ExportKeyActionProto = (function (_super) {
         ProtobufElement({})
     ], ExportKeyActionProto);
     return ExportKeyActionProto;
-    var ExportKeyActionProto_1;
 }(CryptoActionProto));
 var ImportKeyActionProto = (function (_super) {
     __extends(ImportKeyActionProto, _super);
@@ -6690,6 +6703,7 @@ var ImportKeyActionProto = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     ImportKeyActionProto_1 = ImportKeyActionProto;
+    var ImportKeyActionProto_1;
     ImportKeyActionProto.INDEX = CryptoActionProto.INDEX;
     ImportKeyActionProto.ACTION = "crypto/subtle/importKey";
     __decorate([
@@ -6711,7 +6725,6 @@ var ImportKeyActionProto = (function (_super) {
         ProtobufElement({})
     ], ImportKeyActionProto);
     return ImportKeyActionProto;
-    var ImportKeyActionProto_1;
 }(CryptoActionProto));
 
 var SocketSubtleCrypto = (function (_super) {
@@ -6836,7 +6849,7 @@ var SocketSubtleCrypto = (function (_super) {
         });
     };
     SocketSubtleCrypto.prototype.generateKey = function (algorithm, extractable, keyUsages) {
-        return __awaiter(this, void 0, void 0, function () {
+        return __awaiter(this, void 0, Promise, function () {
             var alg, algProto, action, result, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -7270,7 +7283,3 @@ var SocketProvider = (function (_super) {
 exports.setEngine = setEngine;
 exports.getEngine = getEngine;
 exports.SocketProvider = SocketProvider;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
