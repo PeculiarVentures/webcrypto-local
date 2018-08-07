@@ -13,7 +13,7 @@ import { WebCryptoLocalError } from "./error";
 import { digest } from "./helper";
 import { Pkcs11Crypto } from "./p11_crypto";
 import { Card, CardWatcher, PCSCCard } from "./pcsc_watcher";
-import { PvCrypto } from './pv_crypto/crypto';
+import { PvCrypto } from "./pv_crypto/crypto";
 
 export interface TokenInfo {
     removed: IProvider[];
@@ -31,6 +31,10 @@ export interface IServerProvider {
      */
     slots?: number[];
     libraryParameters?: string;
+    /**
+     * Custom name of provider
+     */
+    name?: string;
 }
 
 export interface IProviderConfig {
@@ -42,6 +46,10 @@ export interface IProviderConfig {
      * Path to card.json
      */
     cards: string;
+}
+
+interface IAddProviderParams {
+    name?: string;
 }
 
 type LocalProviderTokenHandler = (info: TokenInfo) => void;
@@ -143,7 +151,9 @@ export class LocalProvider extends EventEmitter {
                             slot,
                             readWrite: true,
                         });
-                        this.addProvider(crypto);
+                        this.addProvider(crypto, {
+                            name: prov.name,
+                        });
                     } catch (err) {
                         this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot load PKCS#11 library by path ${prov.lib}. ${err.message}`));
                     }
@@ -178,9 +188,14 @@ export class LocalProvider extends EventEmitter {
         this.emit("listening", await this.getInfo());
     }
 
-    public addProvider(crypto: WebCrypto) {
+    public addProvider(crypto: WebCrypto, params?: IAddProviderParams) {
         const info = getSlotInfo(crypto);
         this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
+        if (params) {
+            if (params.name) {
+                info.name = params.name;
+            }
+        }
         this.info.providers.push(new ProviderCryptoProto(info));
         this.crypto.add(info.id, crypto);
     }

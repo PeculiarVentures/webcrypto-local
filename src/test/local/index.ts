@@ -1,3 +1,4 @@
+require("babel-polyfill");
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
@@ -17,7 +18,13 @@ const options: IServerOptions = {
         // cards: path.join(__dirname, "..", "..", "..", ".fortify", "card.json"),
         cards: path.join(os.homedir(), ".fortify", "card.json"),
         providers: [
-            { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0] },
+            { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0], name: "Custom name" },
+            {
+                lib: "/usr/local/Cellar/nss/3.36.1/lib/libsoftokn3.dylib",
+                slots: [1],
+                libraryParameters: "configdir='sql:/Users/microshine/Library/Application Support/Firefox/Profiles/7132ve7i.default' certPrefix='' keyPrefix='' secmod='secmod.db' flags=optimizeSpace updatedir='' updateCertPrefix='' updateKeyPrefix='' updateid='' updateTokenDescription=''  manufacturerID='Mozilla.org' libraryDescription='Внутрен. крипто PSM' cryptoTokenDescription='Общ. криптослужбы' dbTokenDescription='Модуль защиты' cryptoSlotDescription='Внутренние криптослужбы PSM' dbSlotDescription='Закрытые ключи PSM' FIPSSlotDescription='FIPS 140 Службы крипто, ключей, сертиф.' FIPSTokenDescription='Модуль защиты (FIPS)' minPS=0",
+                name: "Firefox NSS",
+            },
         ],
     },
 };

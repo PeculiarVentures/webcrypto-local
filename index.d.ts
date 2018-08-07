@@ -259,6 +259,10 @@ export interface IServerProvider {
      */
     slots?: number[];
     libraryParameters?: string;
+    /**
+     * Name of provider
+     */
+    name?: string;
 }
 
 export interface IProviderConfig {
