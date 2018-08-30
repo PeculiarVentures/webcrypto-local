@@ -1,7 +1,8 @@
 {
 	"$schema": "./card.schema.json",
 	"version": "1.0.17",
-	"cards": [{
+	"cards": [
+		{
 			"atr": "3b9813400aa503010101ad1311",
 			"name": "National Identity Document: Belgian eID",
 			"driver": "89648ea52ed24a799aff9f9ff363eef4"
@@ -12,7 +13,6 @@
 			"readOnly": true,
 			"driver": "993988460d8f49a2ac519a2935f11533"
 		},
-
 		{
 			"atr": "3B7D94000080318065B0831100C883009000",
 			"name": "National Identity Document: Republic of Lithuania eID",
@@ -248,9 +248,15 @@
 			"atr": "3BDC18FF8191FE1FC38073C8211366010B0352000538",
 			"name": "Athena IDProtect Smart Card Logon Card",
 			"driver": "29a2bd60c4b841c686be68d2874c0c02"
+		},
+		{
+			"atr": "3BD595FF8091FE1FC38073C8211385",
+			"name": "Athena IDProtect - Cryptographic Java Card",
+			"driver": "29a2bd60c4b841c686be68d2874c0c02"
 		}
 	],
-	"drivers": [{
+	"drivers": [
+		{
 			"id": "29a2bd60c4b841c686be68d2874c0c02",
 			"name": "Athena IDProtect",
 			"file": {
