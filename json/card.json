@@ -1,6 +1,6 @@
 {
 	"$schema": "./card.schema.json",
-	"version": "1.0.18",
+	"version": "1.0.19",
 	"cards": [
 		{
 			"atr": "3b9813400aa503010101ad1311",
@@ -216,6 +216,11 @@
 			"atr": "3bf99600008131fe45535049564b4559373028",
 			"name": "PIVKey SLE78 (28)",
 			"readOnly": true,
+			"driver": "993988460d8f49a2ac519a2935f11533"
+		},
+		{
+			"atr": "3BDA11FF81B1FE551F0300318473800180009000E4",
+			"name": "Gnuk OpenPGP Token (PKI)",
 			"driver": "993988460d8f49a2ac519a2935f11533"
 		},
 		{
