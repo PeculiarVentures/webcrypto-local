@@ -180,7 +180,7 @@
 		},
 		{
 			"atr": "3BFD1300008131FE158073C021C057597562694B657940",
-			"name": "Yubico Yubikey NEO OTP+U2F+CCID",
+			"name": "Yubico Yubikey 4 OTP+U2F+CCID",
 			"readOnly": true,
 			"driver": "993988460d8f49a2ac519a2935f00533"
 		},
