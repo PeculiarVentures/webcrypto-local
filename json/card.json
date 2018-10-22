@@ -1,6 +1,6 @@
 {
 	"$schema": "./card.schema.json",
-	"version": "1.0.19",
+	"version": "1.0.20",
 	"cards": [
 		{
 			"atr": "3b9813400aa503010101ad1311",
@@ -174,6 +174,12 @@
 		},
 		{
 			"atr": "3BFC1300008131FE15597562696B65794E454F7233E1",
+			"name": "Yubico Yubikey NEO OTP+U2F+CCID",
+			"readOnly": true,
+			"driver": "993988460d8f49a2ac519a2935f00533"
+		},
+		{
+			"atr": "3BFD1300008131FE158073C021C057597562694B657940",
 			"name": "Yubico Yubikey NEO OTP+U2F+CCID",
 			"readOnly": true,
 			"driver": "993988460d8f49a2ac519a2935f00533"
