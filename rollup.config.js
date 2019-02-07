@@ -18,7 +18,8 @@ export default {
     output: [
         {
             file: "dist/webcrypto-socket.js",
-            format: "cjs",
+            name: "WebcryptoSocket",
+            format: "umd",
             globals: {
                 "protobufjs": "protobuf",
             },
