@@ -126,6 +126,12 @@ interface SocketCrypto extends Crypto {
   certStorage?: SocketCertificateStorage;
 }
 
+interface TokenInfo {
+  added: ProviderCrypto[];
+  removed: ProviderCrypto[];
+  error?: Error;
+}
+
 declare class SocketProvider extends EventEmitter {
   /**
    * Connection state
@@ -139,7 +145,15 @@ declare class SocketProvider extends EventEmitter {
 
   public connect(address: string): this;
   public close(): void;
+  public on(event: "error", listener: (error: Error) => void): this;
+  public on(event: "listening", listener: () => void): this;
+  public on(event: "close", listener: () => void): this;
+  public on(event: "token", listener: (tokenInfo: TokenInfo) => void): this;
   public on(event: string | symbol, listener: (...args: any[]) => void): this;
+  public once(event: "error", listener: (error: Error) => void): this;
+  public once(event: "listening", listener: () => void): this;
+  public once(event: "close", listener: () => void): this;
+  public once(event: "token", listener: (tokenInfo: TokenInfo) => void): this;
   public once(event: string | symbol, listener: (...args: any[]) => void): this;
   public info(): Promise<ProviderInfo>;
   public challenge(): Promise<string>;
