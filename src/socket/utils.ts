@@ -47,7 +47,7 @@ export function checkAlgorithm(algorithm: AlgorithmIdentifier, param: string) {
   if (!(algorithm && (typeof algorithm === "object" || typeof algorithm === "string"))) {
     throw new TypeError(`${param}: Is wrong type. Must be Object or String`);
   }
-  if (!(typeof algorithm === "object" && "name" in algorithm)) {
+  if (typeof algorithm === "object" && !("name" in algorithm)) {
     throw new TypeError(`${param}: Required property 'name' is missed`);
   }
 }
