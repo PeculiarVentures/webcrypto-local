@@ -104,9 +104,10 @@ export class CertificateStorageService extends Service<CryptoService> {
                 // prepare incoming data
                 const params = await P.CertificateStorageImportActionProto.importProto(action);
                 const crypto = await this.getCrypto(params.providerID);
+                const data = params.format === "pem" ? Convert.ToUtf8String(params.data) : params.data;
 
                 // do operation
-                const item = await crypto.certStorage.importCert(params.format, params.data, params.algorithm.toAlgorithm(), params.keyUsages);
+                const item = await crypto.certStorage.importCert(params.format, data, params.algorithm.toAlgorithm(), params.keyUsages);
 
                 // add key to memory storage
                 const cryptoKey = new ServiceCryptoItem(item.publicKey, params.providerID);
