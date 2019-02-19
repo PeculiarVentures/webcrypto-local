@@ -1,10 +1,10 @@
-import { WebCrypto, P11WebCryptoParams } from "node-webcrypto-p11";
-import { PvKeyStorage } from './key_storage';
+import { Crypto, CryptoParams } from "node-webcrypto-p11";
+import { PvKeyStorage } from "./key_storage";
 
-export class PvCrypto extends WebCrypto {
+export class PvCrypto extends Crypto {
     public keyStorage: PvKeyStorage;
 
-    constructor(props: P11WebCryptoParams) {
+    constructor(props: CryptoParams) {
         super(props);
 
         this.keyStorage = new PvKeyStorage(this);

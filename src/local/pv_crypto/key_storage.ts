@@ -1,8 +1,7 @@
-import { registerAttribute, ITemplate } from "graphene-pk11";
-import { KeyStorage, CryptoKey } from "node-webcrypto-p11";
+import { ITemplate, registerAttribute } from "graphene-pk11";
+import { CryptoKey, KeyStorage } from "node-webcrypto-p11";
 import * as os from "os";
-import { WebCryptoError } from "webcrypto-core";
-import { PvCrypto } from './crypto';
+import { PvCrypto } from "./crypto";
 
 registerAttribute("pinFriendlyName", 0x80000000 | 0x00000102, "string");
 registerAttribute("pinDescription", 0x80000000 | 0x00000103, "string");
@@ -20,18 +19,20 @@ export class PvKeyStorage extends KeyStorage {
         super(crypto);
     }
 
-    public async setItem(key: NativeCryptoKey, options?: ISetItemOptions): Promise<string> {
+    public async setItem(key: CryptoKey, options?: ISetItemOptions): Promise<string> {
         if (!(key instanceof CryptoKey)) {
-            throw new WebCryptoError("Parameter 1 is not PKCS#11 CryptoKey");
+            throw new TypeError("Parameter 1 is not PKCS#11 CryptoKey");
         }
+        // tslint:disable-next-line:variable-name
+        const _key: any = key;
 
         // don't copy object from token
-        if (!(this.hasItem(key) && key.key.token)) {
+        if (!(this.hasItem(_key) && _key.key.token)) {
             const template: ITemplate = {
                 token: true,
             };
             const platform = os.platform();
-            if (key.type === "private" && options &&
+            if (_key.type === "private" && options &&
                 (platform === "win32" || platform === "darwin")) {
                 if (options.pinFriendlyName) {
                     template.pinFriendlyName = options.pinFriendlyName;
@@ -41,10 +42,10 @@ export class PvKeyStorage extends KeyStorage {
                 }
             }
 
-            const obj = this.crypto.session.copy(key.key, template);
-            return CryptoKey.getID(obj.toType<any>());
+            const obj = (this.crypto as any).session.copy(_key.key, template);
+            return (CryptoKey as any).getID(obj.toType());
         } else {
-            return key.id;
+            return _key.id;
         }
     }
 

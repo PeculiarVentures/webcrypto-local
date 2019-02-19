@@ -162,6 +162,8 @@ export class CryptoKeyProto extends CryptoItemProto implements CryptoKey {
 
     public static INDEX = CryptoItemProto.INDEX;
 
+    public type: KeyType;
+
     @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bytes", required: true, parser: AlgorithmProto })
     public algorithm: AlgorithmProto;
 
@@ -169,7 +171,7 @@ export class CryptoKeyProto extends CryptoItemProto implements CryptoKey {
     public extractable: boolean;
 
     @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "string", repeated: true })
-    public usages: string[];
+    public usages: KeyUsage[];
 
 }
 
@@ -200,8 +202,8 @@ export class ErrorProto extends BaseProto {
     @ProtobufProperty({ id: ErrorProto.INDEX++, type: "string", defaultValue: "" })
     public message: string;
 
-    constructor(message: string, code?: number, type?: string);
     constructor();
+    constructor(message: string, code?: number, type?: string);
     constructor(message?: string, code = 0, type = "error") {
         super();
         if (message) {

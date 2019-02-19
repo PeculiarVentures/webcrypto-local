@@ -1,2 +1,2 @@
 export { setEngine, getEngine } from "2key-ratchet";
-export * from "./client";
+export { SocketProvider } from "./client";

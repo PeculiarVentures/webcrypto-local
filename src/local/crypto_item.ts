@@ -1,3 +1,4 @@
+import * as core from "webcrypto-core";
 import { CryptoKeyProto } from "../core";
 import { CryptoX509CertificateProto, CryptoX509CertificateRequestProto } from "../core/protos/certstorage";
 import { DEFAULT_HASH_ALG } from "./const";
@@ -33,7 +34,7 @@ export class ServiceCryptoItem {
         itemProto.usages = item.usages;
         return itemProto;
     }
-    public toX509Proto(item: CryptoX509Certificate) {
+    public toX509Proto(item: core.CryptoX509Certificate) {
         const itemProto = new CryptoX509CertificateProto();
         itemProto.providerID = this.providerID;
         itemProto.publicKey = this.toKeyProto(item.publicKey);
@@ -46,7 +47,7 @@ export class ServiceCryptoItem {
         itemProto.type = item.type;
         return itemProto;
     }
-    public toX509RequestProto(item: CryptoX509CertificateRequest) {
+    public toX509RequestProto(item: core.CryptoX509CertificateRequest) {
         const itemProto = new CryptoX509CertificateRequestProto();
         itemProto.providerID = this.providerID;
         itemProto.publicKey = this.toKeyProto(item.publicKey);

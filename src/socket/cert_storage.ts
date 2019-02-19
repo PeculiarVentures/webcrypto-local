@@ -1,5 +1,5 @@
 import { Convert } from "pvtsutils";
-import { PrepareAlgorithm } from "webcrypto-core";
+import * as core from "webcrypto-core";
 import {
     CertificateStorageClearActionProto, CertificateStorageExportActionProto, CertificateStorageGetChainActionProto,
     CertificateStorageGetChainResultProto, CertificateStorageGetCRLActionProto, CertificateStorageGetItemActionProto,
@@ -9,8 +9,11 @@ import {
     OCSPRequestOptions,
 } from "../core/protos/certstorage";
 import { SocketCrypto } from "./crypto";
+import * as utils from "./utils";
 
-export class SocketCertificateStorage implements ICertificateStorage {
+const IMPORT_CERT_FORMATS = ["raw", "pem", "x509", "request"];
+
+export class CertificateStorage implements core.CryptoCertificateStorage {
 
     protected readonly provider: SocketCrypto;
 
@@ -18,7 +21,11 @@ export class SocketCertificateStorage implements ICertificateStorage {
         this.provider = provider;
     }
 
-    public async indexOf(item: CryptoCertificateProto): Promise<string> {
+    public indexOf(item: core.CryptoCertificate): Promise<string | null>;
+    public async indexOf(item: CryptoCertificateProto): Promise<string | null> {
+        // check
+        utils.checkCryptoCertificate(item, "item");
+
         // prepare request
         const proto = new CertificateStorageIndexOfActionProto();
         proto.providerID = this.provider.id;
@@ -29,10 +36,19 @@ export class SocketCertificateStorage implements ICertificateStorage {
         return result ? Convert.ToUtf8String(result) : null;
     }
 
-    public exportCert(format: "pem", item: CryptoCertificate): Promise<string>;
-    public exportCert(format: "raw", item: CryptoCertificate): Promise<ArrayBuffer>;
-    public exportCert(format: CryptoCertificateFormat, item: CryptoCertificate): Promise<ArrayBuffer | string>;
-    public async exportCert(format: CryptoCertificateFormat, item: CryptoCertificateProto): Promise<ArrayBuffer | string> {
+    public async hasItem(item: core.CryptoCertificate): Promise<boolean> {
+        const index = await this.indexOf(item);
+        return !!index;
+    }
+
+    public exportCert(format: "raw", item: core.CryptoCertificate): Promise<ArrayBuffer>;
+    public exportCert(format: "pem", item: core.CryptoCertificate): Promise<string>;
+    public exportCert(format: core.CryptoCertificateFormat, item: core.CryptoCertificate): Promise<ArrayBuffer | string>;
+    public async exportCert(format: core.CryptoCertificateFormat, item: CryptoCertificateProto): Promise<ArrayBuffer | string> {
+        // check
+        utils.checkPrimitive(format, "string", "format");
+        utils.checkCryptoCertificate(item, "item");
+
         // prepare request
         const proto = new CertificateStorageExportActionProto();
         proto.providerID = this.provider.id;
@@ -82,17 +98,40 @@ export class SocketCertificateStorage implements ICertificateStorage {
         }
     }
 
-    public importCert(type: "request", data: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoX509CertificateRequest>;
-    public importCert(type: "x509", data: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoX509Certificate>;
-    public async importCert(type: string, data: ArrayBuffer, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoX509Certificate | CryptoX509CertificateRequest> {
-        const alg = PrepareAlgorithm(algorithm as AlgorithmIdentifier);
+    public async importCert(format: "raw" | "x509" | "request", data: BufferSource, algorithm: core.ImportAlgorithms, keyUsages: KeyUsage[]): Promise<core.CryptoCertificate>;
+    public async importCert(format: "pem", data: string, algorithm: core.ImportAlgorithms, keyUsages: KeyUsage[]): Promise<core.CryptoCertificate>;
+    public async importCert(format: core.CryptoCertificateFormat | "x509" | "request", data: BufferSource | string, algorithm: core.ImportAlgorithms, keyUsages: KeyUsage[]): Promise<core.CryptoCertificate>;
+    public async importCert(format: core.CryptoCertificateFormat | "x509" | "request", data: BufferSource | string, algorithm: core.ImportAlgorithms, keyUsages: KeyUsage[]): Promise<core.CryptoCertificate> {
+        // check
+        utils.checkPrimitive(format, "string", "format");
+        if (!~IMPORT_CERT_FORMATS.indexOf(format)) {
+            throw new TypeError(`format: Is invalid value. Must be ${IMPORT_CERT_FORMATS.join(", ")}`);
+        }
+        if (format === "pem") {
+            utils.checkPrimitive(data, "string", "data");
+        } else {
+            utils.checkBufferSource(data, "data");
+        }
+        utils.checkAlgorithm(algorithm, "algorithm");
+        utils.checkArray(keyUsages, "keyUsages");
+
+        // prepare
+        const algProto = utils.prepareAlgorithm(algorithm);
+        let rawData: ArrayBuffer;
+        if (core.BufferSourceConverter.isBufferSource(data)) {
+            rawData = core.BufferSourceConverter.toArrayBuffer(data);
+        } else if (typeof data === "string") {
+            rawData = core.PemConverter.toArrayBuffer(data);
+        } else {
+            throw new TypeError("data: Is not type String, ArrayBuffer or ArrayBufferView");
+        }
 
         // prepare request
         const proto = new CertificateStorageImportActionProto();
         proto.providerID = this.provider.id;
-        proto.type = type;
-        proto.data = data;
-        proto.algorithm.fromAlgorithm(alg);
+        proto.format = format === "x509" || format === "request" ? "raw" : format;
+        proto.data = rawData;
+        proto.algorithm = algProto;
         proto.keyUsages = keyUsages;
 
         // send and receive result
@@ -119,17 +158,23 @@ export class SocketCertificateStorage implements ICertificateStorage {
         return [];
     }
 
-    public getItem(key: string): Promise<CryptoCertificate>;
-    public getItem(key: string, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoCertificate>;
-    public async getItem(key: string, algorithm?: Algorithm, keyUsages?: string[]) {
+    public getItem(key: string): Promise<core.CryptoCertificate>;
+    public getItem(key: string, algorithm: Algorithm, keyUsages: string[]): Promise<core.CryptoCertificate>;
+    public async getItem(key: string, algorithm?: Algorithm, keyUsages?: KeyUsage[]) {
+        // check
+        utils.checkPrimitive(key, "string", "key");
+        if (algorithm) {
+            utils.checkAlgorithm(algorithm, "algorithm");
+            utils.checkArray(keyUsages, "keyUsages");
+        }
+
         // prepare request
         const proto = new CertificateStorageGetItemActionProto();
         proto.providerID = this.provider.id;
         proto.key = key;
 
         if (algorithm) {
-            const alg = PrepareAlgorithm(algorithm);
-            proto.algorithm.fromAlgorithm(alg);
+            proto.algorithm = utils.prepareAlgorithm(algorithm);
             proto.keyUsages = keyUsages;
         }
 
@@ -145,6 +190,9 @@ export class SocketCertificateStorage implements ICertificateStorage {
     }
 
     public async setItem(value: CryptoCertificateProto) {
+        // check
+        utils.checkCryptoCertificate(value, "value");
+
         // prepare request
         const proto = new CertificateStorageSetItemActionProto();
         proto.providerID = this.provider.id;
@@ -156,6 +204,9 @@ export class SocketCertificateStorage implements ICertificateStorage {
     }
 
     public async removeItem(key: string) {
+        // check
+        utils.checkPrimitive(key, "string", "key");
+
         // prepare request
         const proto = new CertificateStorageRemoveItemActionProto();
         proto.providerID = this.provider.id;
@@ -175,6 +226,9 @@ export class SocketCertificateStorage implements ICertificateStorage {
     }
 
     public async getChain(value: CryptoCertificateProto) {
+        // check
+        utils.checkCryptoCertificate(value, "value");
+
         // prepare request
         const proto = new CertificateStorageGetChainActionProto();
         proto.providerID = this.provider.id;
@@ -187,6 +241,9 @@ export class SocketCertificateStorage implements ICertificateStorage {
     }
 
     public async getCRL(url: string) {
+        // check
+        utils.checkPrimitive(url, "string", "url");
+
         // prepare request
         const proto = new CertificateStorageGetCRLActionProto();
         proto.providerID = this.provider.id;
@@ -197,12 +254,16 @@ export class SocketCertificateStorage implements ICertificateStorage {
         return data;
     }
 
-    public async getOCSP(url: string, request: ArrayBuffer, options?: OCSPRequestOptions) {
+    public async getOCSP(url: string, request: BufferSource, options?: OCSPRequestOptions) {
+        // check
+        utils.checkPrimitive(url, "string", "url");
+        utils.checkBufferSource(request, "request");
+
         // prepare request
         const proto = new CertificateStorageGetOCSPActionProto();
         proto.providerID = this.provider.id;
         proto.url = url;
-        proto.request = request;
+        proto.request = core.BufferSourceConverter.toArrayBuffer(request);
 
         if (options) {
             // copy options to proto

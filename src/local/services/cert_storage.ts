@@ -3,6 +3,7 @@ import * as graphene from "graphene-pk11";
 import { Convert } from "pvtsutils";
 import { isEqualBuffer } from "pvutils";
 import request from "request";
+import * as core from "webcrypto-core";
 const pkijs = require("pkijs");
 
 import { Server, Session } from "../../connection/server";
@@ -38,7 +39,7 @@ export class CertificateStorageService extends Service<CryptoService> {
         ]);
     }
 
-    public async getCrypto(id: string): Promise<CryptoEx> {
+    public async getCrypto(id: string): Promise<core.NativeCrypto & core.CryptoStorages> {
         return await this.object.getCrypto(id);
     }
 
@@ -81,7 +82,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                 // prepare incoming data
                 const params = await P.CertificateStorageSetItemActionProto.importProto(action);
                 const crypto = await this.getCrypto(params.providerID);
-                const cert = this.getMemoryStorage().item(params.item.id).item as CryptoCertificate;
+                const cert = this.getMemoryStorage().item(params.item.id).item as core.CryptoCertificate;
                 // do operation
                 const index = await crypto.certStorage.setItem(cert as any);
                 result.data = Convert.FromUtf8String(index);
@@ -105,7 +106,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                 const crypto = await this.getCrypto(params.providerID);
 
                 // do operation
-                const item = await crypto.certStorage.importCert(params.type, params.data, params.algorithm.toAlgorithm(), params.keyUsages);
+                const item = await crypto.certStorage.importCert(params.format, params.data, params.algorithm.toAlgorithm(), params.keyUsages);
 
                 // add key to memory storage
                 const cryptoKey = new ServiceCryptoItem(item.publicKey, params.providerID);
@@ -125,7 +126,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                 const params = await P.CertificateStorageExportActionProto.importProto(action);
 
                 const crypto = await this.getCrypto(params.providerID);
-                const cert = this.getMemoryStorage().item(params.item.id).item as CryptoCertificate;
+                const cert = this.getMemoryStorage().item(params.item.id).item as core.CryptoCertificate;
                 //#endregion
                 //#region do operation
                 const exportedData = await crypto.certStorage.exportCert(params.format, cert as any);
@@ -170,7 +171,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                 const cert = this.getMemoryStorage().item(params.item.id);
 
                 // do operation
-                const index = await crypto.certStorage.indexOf(cert.item as CryptoCertificate);
+                const index = await crypto.certStorage.indexOf(cert.item as core.CryptoCertificate);
                 // result
                 if (index) {
                     result.data = Convert.FromUtf8String(index);
@@ -182,7 +183,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                 // load cert storage
                 const params = await P.CertificateStorageGetChainActionProto.importProto(action);
                 const crypto = await this.getCrypto(params.providerID);
-                const cert = this.getMemoryStorage().item(params.item.id).item as CryptoCertificate;
+                const cert = this.getMemoryStorage().item(params.item.id).item as core.CryptoCertificate;
                 // Get chain works only for x509 item type
                 if (cert.type !== "x509") {
                     throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_COMMON, "Wrong item type, must be 'x509'");
@@ -458,7 +459,7 @@ function prepareData(data: string) {
  * @param crypto      Crypto provider
  * @param cert        Crypto certificate
  */
-async function certC2P(provider: CryptoEx, cert: CryptoCertificate) {
+async function certC2P(provider: core.CryptoStorages, cert: core.CryptoCertificate) {
     const certDer = await provider.certStorage.exportCert("raw", cert as any);
     const asn1 = asn1js.fromBER(certDer);
     const pkiCert = new pkijs.Certificate({ schema: asn1.result });

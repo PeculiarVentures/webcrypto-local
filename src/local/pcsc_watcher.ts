@@ -2,6 +2,7 @@ import { EventEmitter } from "events";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import * as core from "webcrypto-core";
 import { CardReader } from "../types/pcsclite";
 import { PV_PKCS11_LIB } from "./const";
 import { WebCryptoLocalError } from "./error";
@@ -105,22 +106,22 @@ export class PCSCWatcher extends EventEmitter {
 }
 
 interface JsonCard {
-    atr: HexString;
+    atr: core.HexString;
     name: string;
-    mask?: HexString;
+    mask?: core.HexString;
     readOnly?: boolean;
-    driver: HexString;
+    driver: core.HexString;
 }
 
 interface JsonOsArch {
-    x64: string;
-    x86: string;
+    x64: string | string[];
+    x86: string | string[];
 }
 
-type JsonOsType = string | JsonOsArch;
+type JsonOsType = string | string[] | JsonOsArch;
 
 interface JsonDriver {
-    id?: HexString;
+    id?: core.HexString;
     name?: string;
     file: {
         [os: string]: JsonOsType;
@@ -157,7 +158,7 @@ export interface Card {
 }
 
 interface Driver {
-    id?: HexString;
+    id?: core.HexString;
     name?: string;
     libraries: string[];
 }
@@ -225,17 +226,31 @@ export class CardConfig {
             if (driverLib) {
                 if (typeof driverLib === "string") {
                     library = [driverLib];
+                } else if (Array.isArray(driverLib)) {
+                    library = driverLib;
                 } else {
                     if (process.arch === "x64") {
                         if (driverLib.x64) {
-                            library.push(driverLib.x64);
+                            if (Array.isArray(driverLib.x64)) {
+                                library.concat(driverLib.x64);
+                            } else {
+                                library.push(driverLib.x64);
+                            }
                         }
                         if (driverLib.x86) {
-                            library.push(driverLib.x86);
+                            if (Array.isArray(driverLib.x86)) {
+                                library.concat(driverLib.x86);
+                            } else {
+                                library.push(driverLib.x86);
+                            }
                         }
                     } else {
                         if (driverLib.x86) {
-                            library.push(driverLib.x86);
+                            if (Array.isArray(driverLib.x86)) {
+                                library.concat(driverLib.x86);
+                            } else {
+                                library.push(driverLib.x86);
+                            }
                         }
                     }
                 }

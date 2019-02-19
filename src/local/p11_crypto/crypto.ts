@@ -1,5 +1,5 @@
 import * as graphene from "graphene-pk11";
-import { P11WebCryptoParams, WebCrypto } from "node-webcrypto-p11";
+import { Crypto, CryptoParams } from "node-webcrypto-p11";
 
 import { OpenSSLCrypto } from "../ossl_crypto/index";
 import { Pkcs11CertificateStorage } from "./cert_storage";
@@ -11,7 +11,7 @@ import { Pkcs11SubtleCrypto } from "./subtle";
  * This implementation adds OpenSSL crypto to replace PKCS#11 functions for session object creation.
  */
 
-export class Pkcs11Crypto extends WebCrypto {
+export class Pkcs11Crypto extends Crypto {
 
     // NOTE: private methods from node-webcrypto-p11
     public module: graphene.Module;
@@ -22,9 +22,9 @@ export class Pkcs11Crypto extends WebCrypto {
     public ossl: OpenSSLCrypto;
     protected osslID = 0;
 
-    constructor(props: P11WebCryptoParams) {
+    constructor(props: CryptoParams) {
         super(props);
-
+        this.module = this.slot.module;
         this.ossl = new OpenSSLCrypto();
 
         this.subtle = new Pkcs11SubtleCrypto(this);

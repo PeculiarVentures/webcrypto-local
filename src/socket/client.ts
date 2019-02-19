@@ -36,6 +36,7 @@ export class SocketProvider extends EventEmitter {
      * 2. Create 2key-ratchet session from PreKeyBundle
      */
     public connect(address: string): this {
+        this.client = new Client();
         this.client.connect(address)
             .on("error", (e) => {
                 this.emit("error", e.error);

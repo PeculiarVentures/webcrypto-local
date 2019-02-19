@@ -1,15 +1,16 @@
+import * as core from "webcrypto-core";
 import { Client } from "../connection/client";
 import { IsLoggedInActionProto, LoginActionProto, LogoutActionProto, ResetActionProto } from "../core/protos/crypto";
-import { SocketCertificateStorage } from "./cert_storage";
-import { SocketKeyStorage } from "./key_storage";
-import { SocketSubtleCrypto } from "./subtle";
+import { CertificateStorage } from "./cert_storage";
+import { KeyStorage } from "./key_storage";
+import { SubtleCrypto } from "./subtle";
 
-export class SocketCrypto implements Crypto {
+export class SocketCrypto implements Crypto, core.CryptoStorages {
 
     public id: string;
-    public subtle: SocketSubtleCrypto;
-    public keyStorage: IKeyStorage;
-    public certStorage: SocketCertificateStorage;
+    public subtle: SubtleCrypto;
+    public keyStorage: KeyStorage;
+    public certStorage: CertificateStorage;
 
     public client: Client;
 
@@ -17,12 +18,12 @@ export class SocketCrypto implements Crypto {
         this.client = client;
         this.id = id;
 
-        this.subtle = new SocketSubtleCrypto(this);
-        this.keyStorage = new SocketKeyStorage(this);
-        this.certStorage = new SocketCertificateStorage(this);
+        this.subtle = new SubtleCrypto(this);
+        this.keyStorage = new KeyStorage(this);
+        this.certStorage = new CertificateStorage(this);
     }
 
-    public getRandomValues(array: Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView): Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView {
+    public getRandomValues<T extends Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | null>(array: T): T {
         if (!self.crypto) {
             throw new Error("Cannot get native crypto object. Function getRandomValues is not implemented.");
         }

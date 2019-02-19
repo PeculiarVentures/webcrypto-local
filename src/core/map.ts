@@ -1,3 +1,5 @@
+/// <reference path="../types/type.d.ts" />
+
 import { EventEmitter } from "events";
 
 export interface MapChangeEvent<T> {

@@ -1,14 +1,13 @@
-import { IProvider } from "node-webcrypto-p11";
-import { AlgorithmNames } from "webcrypto-core";
+import { Crypto } from "@peculiar/webcrypto";
+import { ProviderInfo } from "node-webcrypto-p11";
+import * as core from "webcrypto-core";
 import { OPENSSL_CERT_STORAGE_DIR, OPENSSL_KEY_STORAGE_DIR } from "../../core/const";
 import { OpenSSLCertificateStorage } from "./ossl_cert_storage";
 import { OpenSSLKeyStorage } from "./ossl_key_storage";
 
-const OSSLCrypto: typeof Crypto = require("node-webcrypto-ossl");
+export class OpenSSLCrypto extends Crypto implements core.CryptoStorages {
 
-export class OpenSSLCrypto extends OSSLCrypto {
-
-    public readonly info: IProvider = {
+    public readonly info: ProviderInfo = {
         id: "61e5e90712ba8abfb6bde6b4504b54bf88d36d0c",
         slot: 0,
         name: "OpenSSL",
@@ -17,25 +16,23 @@ export class OpenSSLCrypto extends OSSLCrypto {
         isRemovable: false,
         isHardware: false,
         algorithms: [
-            AlgorithmNames.Sha1,
-            AlgorithmNames.Sha256,
-            AlgorithmNames.Sha384,
-            AlgorithmNames.Sha512,
-            AlgorithmNames.RsaSSA,
-            AlgorithmNames.RsaPSS,
-            AlgorithmNames.RsaOAEP,
-            AlgorithmNames.Hmac,
-            AlgorithmNames.AesCBC,
-            AlgorithmNames.AesGCM,
-            AlgorithmNames.AesKW,
-            AlgorithmNames.Pbkdf2,
-            AlgorithmNames.EcDH,
-            AlgorithmNames.EcDSA,
+            "SHA-1",
+            "SHA-256",
+            "SHA-384",
+            "SHA-512",
+            "RSASSA-PKCS1-v1_5",
+            "RSA-PSS",
+            "HMAC",
+            "AES-CBC",
+            "AES-GCM",
+            "PBKDF2",
+            "ECDH",
+            "ECDSA",
         ],
     };
 
-    public keyStorage: IKeyStorage = new OpenSSLKeyStorage(`${OPENSSL_KEY_STORAGE_DIR}/store.json`);
-    public certStorage: ICertificateStorage = new OpenSSLCertificateStorage(`${OPENSSL_CERT_STORAGE_DIR}/store.json`);
+    public keyStorage = new OpenSSLKeyStorage(`${OPENSSL_KEY_STORAGE_DIR}/store.json`);
+    public certStorage = new OpenSSLCertificateStorage(`${OPENSSL_CERT_STORAGE_DIR}/store.json`);
 
     public isLoggedIn = true;
 

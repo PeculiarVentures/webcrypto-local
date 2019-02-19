@@ -1,3 +1,5 @@
+/// <reference path="../../types/provider.d.ts" />
+
 import { assign } from "pvtsutils";
 import { ProtobufElement, ProtobufProperty } from "tsprotobuf";
 import { ActionProto, BaseProto, ErrorProto } from "../proto";

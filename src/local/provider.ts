@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import * as fs from "fs";
 import * as graphene from "graphene-pk11";
-import { WebCrypto } from "node-webcrypto-p11";
+import { Crypto } from "node-webcrypto-p11";
 import * as os from "os";
 import { Convert } from "pvtsutils";
 
@@ -188,7 +188,7 @@ export class LocalProvider extends EventEmitter {
         this.emit("listening", await this.getInfo());
     }
 
-    public addProvider(crypto: WebCrypto, params?: IAddProviderParams) {
+    public addProvider(crypto: Crypto, params?: IAddProviderParams) {
         const info = getSlotInfo(crypto);
         this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
         if (params) {
@@ -202,8 +202,10 @@ export class LocalProvider extends EventEmitter {
 
     public hasProvider(slot: graphene.Slot) {
         return this.crypto.some((crypto) => {
-            if (crypto.module.libFile === slot.module.libFile &&
-                crypto.slot.handle.equals(slot.handle)) {
+            const cryptoModule: graphene.Module = (crypto as any).module;
+            const cryptoSlot: graphene.Slot = (crypto as any).slot;
+            if (cryptoModule.libFile === slot.module.libFile &&
+                cryptoSlot.handle.equals(slot.handle)) {
                 return true;
             }
             return false;
@@ -351,8 +353,10 @@ export class LocalProvider extends EventEmitter {
                     //#region Look for removed slots
                     const slots = mod.getSlots(true);
                     this.crypto.forEach((crypto, key) => {
-                        if (crypto.module.libFile === mod.libFile) {
-                            if (slots.indexOf(crypto.slot) === -1) {
+                        const cryptoModule: graphene.Module = (crypto as any).module;
+                        const cryptoSlot: graphene.Slot = (crypto as any).slot;
+                        if (cryptoModule.libFile === mod.libFile) {
+                            if (slots.indexOf(cryptoSlot) === -1) {
                                 cryptoIDs.push(key);
                             }
                         }
@@ -404,12 +408,13 @@ export class LocalProvider extends EventEmitter {
 
     protected onCryptoRemove(e: MapChangeEvent<Pkcs11Crypto>) {
         const LOG = "Provider:RemoveCrypto";
-        this.emit("info", `${LOG} PKCS#11 '${e.item.module.libFile}' '${e.item.module.libName}'`);
+        const cryptoModule = e.item.module;
+        this.emit("info", `${LOG} PKCS#11 '${cryptoModule.libFile}' '${cryptoModule.libName}'`);
 
-        if (!this.crypto.some((crypto) => crypto.module.libFile === e.item.module.libFile)) {
-            this.emit("info", `${LOG} PKCS#11 finalize '${e.item.module.libFile}'`);
+        if (!this.crypto.some((crypto: Pkcs11Crypto) => crypto.module && crypto.module.libFile === cryptoModule.libFile)) {
+            this.emit("info", `${LOG} PKCS#11 finalize '${cryptoModule.libFile}'`);
             try {
-                e.item.module.finalize();
+                cryptoModule.finalize();
             } catch (err) {
                 this.emit("error", err);
             }
@@ -418,8 +423,8 @@ export class LocalProvider extends EventEmitter {
 
 }
 
-function getSlotInfo(p11Crypto: WebCrypto) {
-    const session: graphene.Session = p11Crypto.session;
+function getSlotInfo(p11Crypto: Crypto) {
+    const session: graphene.Session = (p11Crypto as any).session;
     const info: IProvider = p11Crypto.info as any;
     info.readOnly = !(session.flags & graphene.SessionFlag.RW_SESSION);
     return info;

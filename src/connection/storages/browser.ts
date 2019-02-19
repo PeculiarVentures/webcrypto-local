@@ -1,8 +1,7 @@
-/// <reference types="idb" />
 import { Identity, IJsonIdentity } from "2key-ratchet";
 import { IJsonRemoteIdentity, RemoteIdentity } from "2key-ratchet";
 import { AsymmetricRatchet, getEngine, IJsonAsymmetricRatchet } from "2key-ratchet";
-import { DB } from "idb";
+import * as idb from "idb";
 import { Convert } from "pvtsutils";
 import { AES_CBC, ECDH, ECDSA, isEdge, isFirefox, updateEcPublicKey } from "../helper";
 
@@ -20,7 +19,7 @@ export class BrowserStorage {
 
     public static async create() {
         // await idb.delete(this.STORAGE_NAME);
-        const db = await idb.open(this.STORAGE_NAME, 1, (updater) => {
+        const db = await idb.openDb(this.STORAGE_NAME, 1, (updater) => {
             updater.createObjectStore(this.SESSION_STORAGE);
             updater.createObjectStore(this.IDENTITY_STORAGE);
             updater.createObjectStore(this.REMOTE_STORAGE);
@@ -28,9 +27,9 @@ export class BrowserStorage {
         return new BrowserStorage(db);
     }
 
-    protected db: DB;
+    protected db: idb.DB;
 
-    private constructor(db: DB) {
+    private constructor(db: idb.DB) {
         this.db = db;
     }
 

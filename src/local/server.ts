@@ -119,7 +119,7 @@ export class LocalServer extends EventEmitter {
             });
 
         this.server.listen(address);
-        
+
         this.cardReader.start();
 
         return this;

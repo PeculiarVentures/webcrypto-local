@@ -1,9 +1,13 @@
-require("babel-polyfill");
+import { setEngine } from "2key-ratchet";
+import { Crypto } from "@peculiar/webcrypto";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import { IServerOptions } from "../../../index";
 import { LocalServer } from "../../local";
+
+// Set crypto engine for 2key-ratchet
+setEngine("WebCrypto NodeJS", new Crypto());
 
 const APP_DATA_DIR = path.join(os.homedir(), ".fortify");
 const CERT_FILE = path.join(APP_DATA_DIR, "cert.pem");
@@ -16,7 +20,7 @@ const options: IServerOptions = {
     key: fs.readFileSync(KEY_FILE),
     config: {
         // cards: path.join(__dirname, "..", "..", "..", ".fortify", "card.json"),
-        cards: path.join(os.homedir(), ".fortify", "card.json"),
+        cards: path.join(__dirname, "..", "..", "..", "json", "card.json"),
         providers: [
             { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0], name: "Custom name" },
             {

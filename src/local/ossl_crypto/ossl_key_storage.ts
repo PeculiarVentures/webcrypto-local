@@ -1,8 +1,10 @@
+import { Crypto } from "@peculiar/webcrypto";
 import * as fs from "fs";
 import { Convert } from "pvtsutils";
+import * as core from "webcrypto-core";
 import { WebCryptoLocalError } from "../error";
 
-const crypto: Crypto = new (require("node-webcrypto-ossl"))();
+const crypto = new Crypto();
 
 interface IJsonOpenSSLKeyStorage {
     [key: string]: IJsonOpenSSLKey;
@@ -14,7 +16,7 @@ interface IJsonOpenSSLKey extends CryptoKey {
     lastUsed: string;
 }
 
-export class OpenSSLKeyStorage implements IKeyStorage {
+export class OpenSSLKeyStorage implements core.CryptoKeyStorage {
 
     public file: string;
 
@@ -34,6 +36,11 @@ export class OpenSSLKeyStorage implements IKeyStorage {
             return id;
         }
         return null;
+    }
+
+    public async hasItem(item: CryptoKey) {
+        const index = this.indexOf(item);
+        return !!index;
     }
 
     public async setItem(value: CryptoKey) {

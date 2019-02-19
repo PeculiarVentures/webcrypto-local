@@ -82,9 +82,10 @@ export class CryptoService extends Service<ProviderService> {
                 const params = await P.LoginActionProto.importProto(action);
 
                 const crypto = await this.getCrypto(params.providerID);
+                const slot: graphene.Slot = (crypto as any).slot;
 
                 if (crypto.login) {
-                    const token = crypto.slot.getToken();
+                    const token = slot.getToken();
                     if (token.flags & graphene.TokenFlag.LOGIN_REQUIRED) {
                         if (token.flags & graphene.TokenFlag.PROTECTED_AUTHENTICATION_PATH) {
                             crypto.login("");
@@ -94,7 +95,7 @@ export class CryptoService extends Service<ProviderService> {
                                 this.emit("notify", {
                                     type: "pin",
                                     origin: session.headers.origin,
-                                    label: crypto.slot.getToken().label,
+                                    label: slot.getToken().label,
                                     resolve,
                                     reject,
                                 });
