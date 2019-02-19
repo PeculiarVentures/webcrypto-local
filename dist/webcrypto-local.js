@@ -2894,7 +2894,8 @@ class CertificateStorageService extends Service {
             case CertificateStorageImportActionProto.ACTION: {
                 const params = await CertificateStorageImportActionProto.importProto(action);
                 const crypto = await this.getCrypto(params.providerID);
-                const item = await crypto.certStorage.importCert(params.format, params.data, params.algorithm.toAlgorithm(), params.keyUsages);
+                const data = params.format === "pem" ? pvtsutils.Convert.ToUtf8String(params.data) : params.data;
+                const item = await crypto.certStorage.importCert(params.format, data, params.algorithm.toAlgorithm(), params.keyUsages);
                 const cryptoKey = new ServiceCryptoItem(item.publicKey, params.providerID);
                 this.getMemoryStorage().add(cryptoKey);
                 const cryptoCert = new ServiceCryptoItem(item, params.providerID);

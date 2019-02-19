@@ -12522,7 +12522,7 @@ var WebcryptoSocket = (function (exports, protobufjs) {
       throw new TypeError("".concat(param, ": Is wrong type. Must be Object or String"));
     }
 
-    if (!(_typeof(algorithm) === "object" && "name" in algorithm)) {
+    if (_typeof(algorithm) === "object" && !("name" in algorithm)) {
       throw new TypeError("".concat(param, ": Required property 'name' is missed"));
     }
   }
