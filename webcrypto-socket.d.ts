@@ -8,7 +8,7 @@ interface ICryptoEngine {
 //#region Certificate storage
 type HexString = string;
 
-type CryptoCertificateFormat = string | "x509" | "request";
+type CryptoCertificateFormat = string | "x509" | "request" | "pem" | "raw";
 
 interface CryptoCertificate {
   type: CryptoCertificateFormat;
@@ -40,9 +40,11 @@ interface SocketCertificateStorage {
    *
    * @memberOf CertificateStorage
    */
+  importCert(type: "pem", data: string, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoCertificate>;
   importCert(type: "request", data: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoX509CertificateRequest>;
   importCert(type: "x509", data: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoX509Certificate>;
-  importCert(type: CryptoCertificateFormat, data: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoCertificate>;
+  importCert(type: "raw", data: BufferSource, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoCertificate>;
+  importCert(type: CryptoCertificateFormat, data: BufferSource | string, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoCertificate>;
 
   exportCert(format: "pem", item: CryptoCertificate): Promise<string>;
   exportCert(format: "raw", item: CryptoCertificate): Promise<ArrayBuffer>;
