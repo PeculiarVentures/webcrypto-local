@@ -264,6 +264,11 @@
 			"atr": "3BD595FF8091FE1FC38073C8211385",
 			"name": "Athena IDProtect - Cryptographic Java Card",
 			"driver": "29a2bd60c4b841c686be68d2874c0c02"
+		},
+		{
+			"atr": "3BDF18008131FE7D006B020C0182011101434E53103180FC",
+			"name": "Italian healtcare card (TS) National Service Card (CNS) (HealthCare)",
+			"driver": "993988460d8f49a2ac519a2935f11533"
 		}
 	],
 	"drivers": [
@@ -369,7 +374,10 @@
 			"name": "OpenSC driver",
 			"file": {
 				"osx": "/Library/OpenSC/lib/pkcs11/opensc-pkcs11.so",
-				"linux": "/usr/lib/opensc-pkcs11.so",
+				"linux": [
+					"/usr/lib/opensc-pkcs11.so",
+					"/usr/lib/x86_64-linux-gnu/opensc-pkcs11.so"
+				],
 				"windows": "%WINDIR/System32/opensc-pkcs11.dll"
 			}
 		},

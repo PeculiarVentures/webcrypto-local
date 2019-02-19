@@ -44,11 +44,31 @@
                     "properties": {
                         "x86": {
                             "description": "OS architecture x86",
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            ]
                         },
                         "x64": {
                             "description": "OS architecture x64",
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            ]
                         }
                     },
                     "required": [
@@ -58,6 +78,12 @@
                 },
                 {
                     "type": "string"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             ]
         },
