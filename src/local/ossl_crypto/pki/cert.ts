@@ -1,8 +1,6 @@
-import { Crypto } from "@peculiar/webcrypto";
+import { getEngine } from "2key-ratchet";
 import { Convert } from "pvtsutils";
 import * as core from "webcrypto-core";
-
-const crypto = new Crypto();
 
 export interface CertificateConstructor<T> {
   // tslint:disable-next-line:callable-types
@@ -22,6 +20,7 @@ export abstract class Certificate implements core.CryptoCertificate {
   public type: core.CryptoCertificateType;
   public publicKey: CryptoKey;
   public id: string;
+  public crypto = getEngine().crypto;
 
   protected raw: Uint8Array;
 
@@ -46,7 +45,7 @@ export abstract class Certificate implements core.CryptoCertificate {
     const publicKey = await this.exportKey(provider);
     const spki = await provider.subtle.exportKey("spki", publicKey);
     const sha1Hash = await provider.subtle.digest("SHA-1", spki);
-    const rnd = crypto.getRandomValues(new Uint8Array(4));
+    const rnd = this.crypto.getRandomValues(new Uint8Array(4));
     return `${this.type}-${Convert.ToHex(rnd)}-${Convert.ToHex(sha1Hash)}`;
   }
 

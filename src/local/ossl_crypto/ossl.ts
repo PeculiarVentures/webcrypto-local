@@ -1,11 +1,11 @@
-import { Crypto } from "@peculiar/webcrypto";
+import { getEngine } from "2key-ratchet";
 import { ProviderInfo } from "node-webcrypto-p11";
 import * as core from "webcrypto-core";
 import { OPENSSL_CERT_STORAGE_DIR, OPENSSL_KEY_STORAGE_DIR } from "../../core/const";
 import { OpenSSLCertificateStorage } from "./ossl_cert_storage";
 import { OpenSSLKeyStorage } from "./ossl_key_storage";
 
-export class OpenSSLCrypto extends Crypto implements core.CryptoStorages {
+export class OpenSSLCrypto implements core.CryptoStorages, core.NativeCrypto {
 
     public readonly info: ProviderInfo = {
         id: "61e5e90712ba8abfb6bde6b4504b54bf88d36d0c",
@@ -31,13 +31,14 @@ export class OpenSSLCrypto extends Crypto implements core.CryptoStorages {
         ],
     };
 
+    public crypto = getEngine().crypto;
+    public subtle = getEngine().crypto.subtle;
     public keyStorage = new OpenSSLKeyStorage(`${OPENSSL_KEY_STORAGE_DIR}/store.json`);
     public certStorage = new OpenSSLCertificateStorage(`${OPENSSL_CERT_STORAGE_DIR}/store.json`);
 
     public isLoggedIn = true;
 
-    constructor() {
-        super();
+    public getRandomValues<T extends Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView>(array: T): T {
+        return this.crypto.getRandomValues(array);
     }
-
 }

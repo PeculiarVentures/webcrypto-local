@@ -1,10 +1,8 @@
-import { Crypto } from "@peculiar/webcrypto";
+import { getEngine } from "2key-ratchet";
 import * as fs from "fs";
 import { Convert } from "pvtsutils";
 import * as core from "webcrypto-core";
 import { WebCryptoLocalError } from "../error";
-
-const crypto = new Crypto();
 
 interface IJsonOpenSSLKeyStorage {
     [key: string]: IJsonOpenSSLKey;
@@ -19,9 +17,11 @@ interface IJsonOpenSSLKey extends CryptoKey {
 export class OpenSSLKeyStorage implements core.CryptoKeyStorage {
 
     public file: string;
+    public crypto: core.NativeCrypto;
 
     constructor(file: string) {
         this.file = file;
+        this.crypto = getEngine().crypto;
     }
 
     public async keys() {
@@ -104,7 +104,7 @@ export class OpenSSLKeyStorage implements core.CryptoKeyStorage {
         let id: Uint8Array;
         switch (key.type) {
             case "secret": {
-                id = await crypto.getRandomValues(new Uint8Array(20)) as Uint8Array;
+                id = await this.crypto.getRandomValues(new Uint8Array(20)) as Uint8Array;
                 break;
             }
             case "private":
@@ -123,8 +123,8 @@ export class OpenSSLKeyStorage implements core.CryptoKeyStorage {
             default:
                 throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported type of CryptoKey '${key.type}'`);
         }
-        const hash = await crypto.subtle.digest("SHA-1", id);
-        const rnd = crypto.getRandomValues(new Uint8Array(4));
+        const hash = await this.crypto.subtle.digest("SHA-1", id);
+        const rnd = this.crypto.getRandomValues(new Uint8Array(4));
         return `${key.type}-${Convert.ToHex(rnd)}-${Convert.ToHex(hash)}`;
     }
 
@@ -186,7 +186,7 @@ export class OpenSSLKeyStorage implements core.CryptoKeyStorage {
                 throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported type of CryptoKey '${obj.type}'`);
         }
         obj.lastUsed = new Date().toISOString();
-        return crypto.subtle.importKey(format, new Buffer(obj.raw, "base64"), obj.algorithm as any, obj.extractable, obj.usages);
+        return this.crypto.subtle.importKey(format, new Buffer(obj.raw, "base64"), obj.algorithm as any, obj.extractable, obj.usages);
     }
 
 }

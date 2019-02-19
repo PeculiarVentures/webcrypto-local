@@ -27,6 +27,7 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
     "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.3.1",
+    "@peculiar/webcrypto": "^1.0.5",
     "@types/asn1js": "^0.0.1",
     "@types/long": "^4.0.0",
     "@types/node": "^10.12.24",
@@ -44,7 +45,6 @@
   },
   "dependencies": {
     "2key-ratchet": "^1.0.14",
-    "@peculiar/webcrypto": "^1.0.5",
     "asn1js": "^2.0.21",
     "graphene-pk11": "^2.1.1",
     "idb": "^3.0.2",

@@ -1,4 +1,4 @@
-import { Crypto } from "@peculiar/webcrypto";
+import { getEngine } from "2key-ratchet";
 import * as fs from "fs";
 import { Convert } from "pvtsutils";
 import * as core from "webcrypto-core";
@@ -6,8 +6,6 @@ import { WebCryptoLocalError } from "../error";
 import { Certificate } from "./pki/cert";
 import { X509CertificateRequest } from "./pki/request";
 import { X509Certificate } from "./pki/x509";
-
-const crypto = new Crypto();
 
 interface IJsonOpenSSLCertificateStorage {
   [key: string]: IJsonOpenSSLCertificate;
@@ -25,9 +23,11 @@ interface IJsonOpenSSLCertificate {
 export class OpenSSLCertificateStorage implements core.CryptoCertificateStorage {
 
   public file: string;
+  public crypto: core.NativeCrypto;
 
   constructor(file: string) {
     this.file = file;
+    this.crypto = getEngine().crypto;
   }
 
   public exportCert(format: "pem", item: core.CryptoCertificate): Promise<string>;

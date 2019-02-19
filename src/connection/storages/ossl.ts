@@ -1,12 +1,10 @@
 import { Identity } from "2key-ratchet";
 import { RemoteIdentity } from "2key-ratchet";
-import { AsymmetricRatchet } from "2key-ratchet";
-import { Crypto } from "@peculiar/webcrypto";
+import { AsymmetricRatchet, getEngine } from "2key-ratchet";
 import * as fs from "fs";
 import { Convert } from "pvtsutils";
 import { DOUBLE_KEY_RATCHET_STORAGE_DIR } from "../../core/const";
 
-const crypto: Crypto = new Crypto();
 const D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
 
 export interface RemoteIdentityEx extends RemoteIdentity {
@@ -274,13 +272,13 @@ export class OpenSSLStorage {
   protected ecKeyToCryptoKey(base64: string, type: string, alg: string) {
     if (type === "public") {
       // public key
-      return crypto.subtle.importKey("spki", Buffer.from(base64, "base64"), {
+      return getEngine().crypto.subtle.importKey("spki", Buffer.from(base64, "base64"), {
         name: alg,
         namedCurve: "P-256",
       }, true, alg === "ECDSA" ? ["verify"] : []);
     } else {
       // private key
-      return crypto.subtle.importKey("pkcs8", Buffer.from(base64, "base64"), {
+      return getEngine().crypto.subtle.importKey("pkcs8", Buffer.from(base64, "base64"), {
         name: alg,
         namedCurve: "P-256",
       }, true, alg === "ECDSA" ? ["sign"] : ["deriveBits", "deriveKey"]);

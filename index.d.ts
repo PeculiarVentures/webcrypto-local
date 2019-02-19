@@ -4,6 +4,8 @@ import * as https from "https";
 import { ObjectProto } from "tsprotobuf";
 import * as WebSocket from "websocket";
 
+export {setEngine, getEngine} from "2key-ratchet";
+
 declare enum WebCryptoLocalErrorEnum {
     UNKNOWN = 0,
     METHOD_NOT_IMPLEMENTED = 1,

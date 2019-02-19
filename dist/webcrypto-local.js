@@ -12,11 +12,10 @@ var url = require('url');
 var WebSocket = require('websocket');
 var tslib_1 = require('tslib');
 var tsprotobuf = require('tsprotobuf');
-var webcrypto = require('@peculiar/webcrypto');
 var fs = require('fs');
 var os = require('os');
 var path = require('path');
-var crypto$4 = require('crypto');
+var crypto$1 = require('crypto');
 var graphene = require('graphene-pk11');
 var nodeWebcryptoP11 = require('node-webcrypto-p11');
 var core = require('webcrypto-core');
@@ -361,7 +360,6 @@ const DOUBLE_KEY_RATCHET_STORAGE_DIR = declareDir(path.join(APP_DATA_DIR, "2key-
 const OPENSSL_CERT_STORAGE_DIR = declareDir(path.join(APP_DATA_DIR, "certstorage"));
 const OPENSSL_KEY_STORAGE_DIR = declareDir(path.join(APP_DATA_DIR, "keystorage"));
 
-const crypto = new webcrypto.Crypto();
 const D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
 class OpenSSLStorage {
     constructor() {
@@ -514,13 +512,13 @@ class OpenSSLStorage {
     }
     ecKeyToCryptoKey(base64, type, alg) {
         if (type === "public") {
-            return crypto.subtle.importKey("spki", Buffer.from(base64, "base64"), {
+            return _2keyRatchet.getEngine().crypto.subtle.importKey("spki", Buffer.from(base64, "base64"), {
                 name: alg,
                 namedCurve: "P-256",
             }, true, alg === "ECDSA" ? ["verify"] : []);
         }
         else {
-            return crypto.subtle.importKey("pkcs8", Buffer.from(base64, "base64"), {
+            return _2keyRatchet.getEngine().crypto.subtle.importKey("pkcs8", Buffer.from(base64, "base64"), {
                 name: alg,
                 namedCurve: "P-256",
             }, true, alg === "ECDSA" ? ["sign"] : ["deriveBits", "deriveKey"]);
@@ -1669,7 +1667,7 @@ CertificateStorageGetOCSPActionProto = CertificateStorageGetOCSPActionProto_1 = 
 ], CertificateStorageGetOCSPActionProto);
 
 function digest(alg, data) {
-    const hash = crypto$4.createHash(alg);
+    const hash = crypto$1.createHash(alg);
     hash.update(data);
     return hash.digest();
 }
@@ -1860,8 +1858,10 @@ class Map extends events.EventEmitter {
 class CryptoMap extends Map {
 }
 
-const crypto$1 = new webcrypto.Crypto();
 class Certificate {
+    constructor() {
+        this.crypto = _2keyRatchet.getEngine().crypto;
+    }
     static async importCert(provider, rawData, algorithm, keyUsages) {
         const res = new this();
         await res.importCert(provider, rawData, algorithm, keyUsages);
@@ -1879,7 +1879,7 @@ class Certificate {
         const publicKey = await this.exportKey(provider);
         const spki = await provider.subtle.exportKey("spki", publicKey);
         const sha1Hash = await provider.subtle.digest("SHA-1", spki);
-        const rnd = crypto$1.getRandomValues(new Uint8Array(4));
+        const rnd = this.crypto.getRandomValues(new Uint8Array(4));
         return `${this.type}-${pvtsutils.Convert.ToHex(rnd)}-${pvtsutils.Convert.ToHex(sha1Hash)}`;
     }
 }
@@ -2030,10 +2030,10 @@ class X509Certificate extends Certificate {
     }
 }
 
-const crypto$2 = new webcrypto.Crypto();
 class OpenSSLCertificateStorage {
     constructor(file) {
         this.file = file;
+        this.crypto = _2keyRatchet.getEngine().crypto;
     }
     async exportCert(format, item) {
         switch (format) {
@@ -2077,22 +2077,22 @@ class OpenSSLCertificateStorage {
         }
         switch (rawType) {
             case "x509": {
-                const x509 = await X509Certificate.importCert(crypto$2, rawData, algorithm, keyUsages);
+                const x509 = await X509Certificate.importCert(crypto, rawData, algorithm, keyUsages);
                 return x509;
             }
             case "request": {
-                const request = await X509CertificateRequest.importCert(crypto$2, rawData, algorithm, keyUsages);
+                const request = await X509CertificateRequest.importCert(crypto, rawData, algorithm, keyUsages);
                 return request;
             }
             default: {
                 try {
-                    const x509 = await X509Certificate.importCert(crypto$2, rawData, algorithm, keyUsages);
+                    const x509 = await X509Certificate.importCert(crypto, rawData, algorithm, keyUsages);
                     return x509;
                 }
                 catch (e) {
                 }
                 try {
-                    const request = await X509CertificateRequest.importCert(crypto$2, rawData, algorithm, keyUsages);
+                    const request = await X509CertificateRequest.importCert(crypto, rawData, algorithm, keyUsages);
                     return request;
                 }
                 catch (e) {
@@ -2119,7 +2119,7 @@ class OpenSSLCertificateStorage {
         if (item instanceof Certificate) {
             const certs = this.readFile();
             for (const index in certs) {
-                const identity = await item.getID(crypto$2, "SHA-256");
+                const identity = await item.getID(crypto, "SHA-256");
                 if (index === identity) {
                     return index;
                 }
@@ -2178,10 +2178,10 @@ class OpenSSLCertificateStorage {
     }
 }
 
-const crypto$3 = new webcrypto.Crypto();
 class OpenSSLKeyStorage {
     constructor(file) {
         this.file = file;
+        this.crypto = _2keyRatchet.getEngine().crypto;
     }
     async keys() {
         const keys = this.readFile();
@@ -2243,7 +2243,7 @@ class OpenSSLKeyStorage {
         let id;
         switch (key.type) {
             case "secret": {
-                id = await crypto$3.getRandomValues(new Uint8Array(20));
+                id = await this.crypto.getRandomValues(new Uint8Array(20));
                 break;
             }
             case "private":
@@ -2263,8 +2263,8 @@ class OpenSSLKeyStorage {
             default:
                 throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported type of CryptoKey '${key.type}'`);
         }
-        const hash = await crypto$3.subtle.digest("SHA-1", id);
-        const rnd = crypto$3.getRandomValues(new Uint8Array(4));
+        const hash = await this.crypto.subtle.digest("SHA-1", id);
+        const rnd = this.crypto.getRandomValues(new Uint8Array(4));
         return `${key.type}-${pvtsutils.Convert.ToHex(rnd)}-${pvtsutils.Convert.ToHex(hash)}`;
     }
     keyToJson(key) {
@@ -2325,13 +2325,12 @@ class OpenSSLKeyStorage {
                 throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported type of CryptoKey '${obj.type}'`);
         }
         obj.lastUsed = new Date().toISOString();
-        return crypto$3.subtle.importKey(format, new Buffer(obj.raw, "base64"), obj.algorithm, obj.extractable, obj.usages);
+        return this.crypto.subtle.importKey(format, new Buffer(obj.raw, "base64"), obj.algorithm, obj.extractable, obj.usages);
     }
 }
 
-class OpenSSLCrypto extends webcrypto.Crypto {
+class OpenSSLCrypto {
     constructor() {
-        super();
         this.info = {
             id: "61e5e90712ba8abfb6bde6b4504b54bf88d36d0c",
             slot: 0,
@@ -2355,9 +2354,14 @@ class OpenSSLCrypto extends webcrypto.Crypto {
                 "ECDSA",
             ],
         };
+        this.crypto = _2keyRatchet.getEngine().crypto;
+        this.subtle = _2keyRatchet.getEngine().crypto.subtle;
         this.keyStorage = new OpenSSLKeyStorage(`${OPENSSL_KEY_STORAGE_DIR}/store.json`);
         this.certStorage = new OpenSSLCertificateStorage(`${OPENSSL_CERT_STORAGE_DIR}/store.json`);
         this.isLoggedIn = true;
+    }
+    getRandomValues(array) {
+        return this.crypto.getRandomValues(array);
     }
 }
 
@@ -2526,6 +2530,7 @@ class PvKeyStorage extends nodeWebcryptoP11.KeyStorage {
 class PvCrypto extends nodeWebcryptoP11.Crypto {
     constructor(props) {
         super(props);
+        this.module = this.slot.module;
         this.keyStorage = new PvKeyStorage(this);
     }
 }
@@ -3962,5 +3967,7 @@ class LocalServer extends events.EventEmitter {
     }
 }
 
+exports.setEngine = _2keyRatchet.setEngine;
+exports.getEngine = _2keyRatchet.getEngine;
 exports.LocalServer = LocalServer;
 exports.WebCryptoLocalError = WebCryptoLocalError;
