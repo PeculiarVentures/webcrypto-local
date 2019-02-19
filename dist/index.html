@@ -15,6 +15,7 @@
     <script src="https://peculiarventures.github.io/pv-webcrypto-tests/src/elliptic.js"></script>
     <script src="./webcrypto-socket.js"></script>
     <script>
+        console.warn("Program won't work if start it from local file. Use static server.")
         window.PV_WEBCRYPTO_SOCKET_LOG = true;
         const PROVIDER_ID = 1;
 
@@ -35,7 +36,7 @@
                         // console.info(e.ad1dress);
                         // Test
                         // TestGetCrypto();
-                        TestVerify();
+                        // TestVerify();
                         // TestSign();
                         // TestWrap();
                         // TestDeriveBits();
@@ -47,7 +48,7 @@
                         // TestKeyStorageRemoveItem();
                         // TestKeyStorageClear();
                         // TestCertStorageKeys();
-                        // TestCertStorageImportCert();
+                        TestCertStorageImportCert();
                         // TestCertStorageIndexOfCert("x509-c53021e4c84bd1a9e9dee840ba6a169f77928f91");
                         // TestCertStorageImportRequest();
                         // TestCertStorageExportCert();

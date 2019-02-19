@@ -4,22 +4,23 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
+var events = require('events');
 var _2keyRatchet = require('2key-ratchet');
 var pvtsutils = require('pvtsutils');
-var tslib_1 = require('tslib');
-var tsprotobuf = require('tsprotobuf');
-var fs = require('fs');
-var os = require('os');
-var path = require('path');
-var events = require('events');
 var https = require('https');
 var url = require('url');
 var WebSocket = require('websocket');
-var crypto = require('crypto');
-var asn1js = require('asn1js');
-var webcryptoCore = require('webcrypto-core');
+var tslib_1 = require('tslib');
+var tsprotobuf = require('tsprotobuf');
+var webcrypto = require('@peculiar/webcrypto');
+var fs = require('fs');
+var os = require('os');
+var path = require('path');
+var crypto$4 = require('crypto');
 var graphene = require('graphene-pk11');
 var nodeWebcryptoP11 = require('node-webcrypto-p11');
+var core = require('webcrypto-core');
+var asn1js = require('asn1js');
 var pvutils = require('pvutils');
 var request = _interopDefault(require('request'));
 
@@ -360,8 +361,7 @@ const DOUBLE_KEY_RATCHET_STORAGE_DIR = declareDir(path.join(APP_DATA_DIR, "2key-
 const OPENSSL_CERT_STORAGE_DIR = declareDir(path.join(APP_DATA_DIR, "certstorage"));
 const OPENSSL_KEY_STORAGE_DIR = declareDir(path.join(APP_DATA_DIR, "keystorage"));
 
-const WebCrypto = require("node-webcrypto-ossl");
-const crypto$1 = new WebCrypto();
+const crypto = new webcrypto.Crypto();
 const D_KEY_IDENTITY_PRE_KEY_AMOUNT = 10;
 class OpenSSLStorage {
     constructor() {
@@ -514,16 +514,16 @@ class OpenSSLStorage {
     }
     ecKeyToCryptoKey(base64, type, alg) {
         if (type === "public") {
-            return crypto$1.subtle.importKey("spki", new Buffer(base64, "base64"), {
+            return crypto.subtle.importKey("spki", Buffer.from(base64, "base64"), {
                 name: alg,
                 namedCurve: "P-256",
             }, true, alg === "ECDSA" ? ["verify"] : []);
         }
         else {
-            return crypto$1.subtle.importKey("pkcs8", new Buffer(base64, "base64"), {
+            return crypto.subtle.importKey("pkcs8", Buffer.from(base64, "base64"), {
                 name: alg,
                 namedCurve: "P-256",
-            }, false, alg === "ECDSA" ? ["sign"] : ["deriveBits", "deriveKey"]);
+            }, true, alg === "ECDSA" ? ["sign"] : ["deriveBits", "deriveKey"]);
         }
     }
     async saveRemote() {
@@ -536,7 +536,7 @@ class OpenSSLStorage {
                 exchangeKey: await this.ecKeyToBase64(identity.exchangeKey),
                 id: identity.id,
                 thumbprint: identity.thumbprint,
-                signature: new Buffer(identity.signature).toString("base64"),
+                signature: Buffer.from(identity.signature).toString("base64"),
                 createdAt: identity.createdAt,
                 origin: remoteIdentity.origin,
                 userAgent: remoteIdentity.userAgent,
@@ -646,12 +646,12 @@ class Server extends events.EventEmitter {
         this.httpServer.close(callback);
     }
     listen(address) {
-        this.httpServer = https.createServer(this.options, (request$$1, response) => {
+        this.httpServer = https.createServer(this.options, (request, response) => {
             (async () => {
-                if (request$$1.method === "GET") {
-                    const requestUrl = url.parse(request$$1.url);
+                if (request.method === "GET") {
+                    const requestUrl = url.parse(request.url);
                     if (requestUrl.pathname === SERVER_WELL_KNOWN) {
-                        const bundle = await this.getRandomBundle(request$$1.headers.origin);
+                        const bundle = await this.getRandomBundle(request.headers.origin);
                         const preKey = pvtsutils.Convert.ToBase64(bundle);
                         const info = pvtsutils.assign({}, this.info, { preKey });
                         const json = JSON.stringify(info);
@@ -680,10 +680,10 @@ class Server extends events.EventEmitter {
             maxReceivedFrameSize: 128 * 1024 * 1024,
             maxReceivedMessageSize: 128 * 1024 * 1024,
         });
-        this.socketServer.on("request", (request$$1) => {
-            const connection = request$$1.accept(null, request$$1.origin);
+        this.socketServer.on("request", (request) => {
+            const connection = request.accept(null, request.origin);
             const session = {
-                headers: request$$1.httpRequest.headers,
+                headers: request.httpRequest.headers,
                 connection,
                 cipher: null,
                 authorized: false,
@@ -707,7 +707,7 @@ class Server extends events.EventEmitter {
                                 this.emit("info", `Cannot parse MessageSignedProtocol`);
                                 const preKeyProto = await _2keyRatchet.PreKeyMessageProtocol.importProto(buffer);
                                 messageProto = preKeyProto.signedMessage;
-                                session.identity = await this.storage.getIdentity(request$$1.origin);
+                                session.identity = await this.storage.getIdentity(request.origin);
                                 session.cipher = await _2keyRatchet.AsymmetricRatchet.create(session.identity, preKeyProto);
                                 const ok = await this.storage.isTrusted(session.cipher.remoteIdentity);
                                 if (!ok) {
@@ -1131,18 +1131,36 @@ class CardConfig {
                 if (typeof driverLib === "string") {
                     library = [driverLib];
                 }
+                else if (Array.isArray(driverLib)) {
+                    library = driverLib;
+                }
                 else {
                     if (process.arch === "x64") {
                         if (driverLib.x64) {
-                            library.push(driverLib.x64);
+                            if (Array.isArray(driverLib.x64)) {
+                                library.concat(driverLib.x64);
+                            }
+                            else {
+                                library.push(driverLib.x64);
+                            }
                         }
                         if (driverLib.x86) {
-                            library.push(driverLib.x86);
+                            if (Array.isArray(driverLib.x86)) {
+                                library.concat(driverLib.x86);
+                            }
+                            else {
+                                library.push(driverLib.x86);
+                            }
                         }
                     }
                     else {
                         if (driverLib.x86) {
-                            library.push(driverLib.x86);
+                            if (Array.isArray(driverLib.x86)) {
+                                library.concat(driverLib.x86);
+                            }
+                            else {
+                                library.push(driverLib.x86);
+                            }
                         }
                     }
                 }
@@ -1437,6 +1455,10 @@ CryptoCertificateProto = CryptoCertificateProto_1 = tslib_1.__decorate([
     tsprotobuf.ProtobufElement({})
 ], CryptoCertificateProto);
 let CryptoX509CertificateProto = CryptoX509CertificateProto_1 = class CryptoX509CertificateProto extends CryptoCertificateProto {
+    constructor() {
+        super(...arguments);
+        this.type = "x509";
+    }
 };
 CryptoX509CertificateProto.INDEX = CryptoCertificateProto.INDEX;
 tslib_1.__decorate([
@@ -1458,6 +1480,10 @@ CryptoX509CertificateProto = CryptoX509CertificateProto_1 = tslib_1.__decorate([
     tsprotobuf.ProtobufElement({})
 ], CryptoX509CertificateProto);
 let CryptoX509CertificateRequestProto = CryptoX509CertificateRequestProto_1 = class CryptoX509CertificateRequestProto extends CryptoCertificateProto {
+    constructor() {
+        super(...arguments);
+        this.type = "request";
+    }
 };
 CryptoX509CertificateRequestProto.INDEX = CryptoCertificateProto.INDEX;
 tslib_1.__decorate([
@@ -1560,7 +1586,7 @@ CertificateStorageImportActionProto.INDEX = CryptoActionProto.INDEX;
 CertificateStorageImportActionProto.ACTION = "crypto/certificateStorage/import";
 tslib_1.__decorate([
     tsprotobuf.ProtobufProperty({ id: CertificateStorageImportActionProto_1.INDEX++, required: true, type: "string" })
-], CertificateStorageImportActionProto.prototype, "type", void 0);
+], CertificateStorageImportActionProto.prototype, "format", void 0);
 tslib_1.__decorate([
     tsprotobuf.ProtobufProperty({ id: CertificateStorageImportActionProto_1.INDEX++, required: true, converter: tsprotobuf.ArrayBufferConverter })
 ], CertificateStorageImportActionProto.prototype, "data", void 0);
@@ -1643,7 +1669,7 @@ CertificateStorageGetOCSPActionProto = CertificateStorageGetOCSPActionProto_1 = 
 ], CertificateStorageGetOCSPActionProto);
 
 function digest(alg, data) {
-    const hash = crypto.createHash(alg);
+    const hash = crypto$4.createHash(alg);
     hash.update(data);
     return hash.digest();
 }
@@ -1834,7 +1860,7 @@ class Map extends events.EventEmitter {
 class CryptoMap extends Map {
 }
 
-const crypto$2 = new (require("node-webcrypto-ossl"))();
+const crypto$1 = new webcrypto.Crypto();
 class Certificate {
     static async importCert(provider, rawData, algorithm, keyUsages) {
         const res = new this();
@@ -1853,7 +1879,7 @@ class Certificate {
         const publicKey = await this.exportKey(provider);
         const spki = await provider.subtle.exportKey("spki", publicKey);
         const sha1Hash = await provider.subtle.digest("SHA-1", spki);
-        const rnd = crypto$2.getRandomValues(new Uint8Array(4));
+        const rnd = crypto$1.getRandomValues(new Uint8Array(4));
         return `${this.type}-${pvtsutils.Convert.ToHex(rnd)}-${pvtsutils.Convert.ToHex(sha1Hash)}`;
     }
 }
@@ -2004,7 +2030,7 @@ class X509Certificate extends Certificate {
     }
 }
 
-const crypto$3 = new (require("node-webcrypto-ossl"))();
+const crypto$2 = new webcrypto.Crypto();
 class OpenSSLCertificateStorage {
     constructor(file) {
         this.file = file;
@@ -2021,25 +2047,66 @@ class OpenSSLCertificateStorage {
                 throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, "Unsupported format for CryptoCertificate. Must be 'raw' or 'pem'");
         }
     }
-    async importCert(type, data, algorithm, keyUsages) {
-        let res;
-        switch (type) {
-            case "x509": {
-                res = await X509Certificate.importCert(crypto$3, data, algorithm, keyUsages);
+    async importCert(format, data, algorithm, keyUsages) {
+        let rawData;
+        let rawType = null;
+        switch (format) {
+            case "pem":
+                if (typeof data !== "string") {
+                    throw new TypeError("data: Is not type string");
+                }
+                if (core.PemConverter.isCertificate(data)) {
+                    rawType = "x509";
+                }
+                else if (core.PemConverter.isCertificateRequest(data)) {
+                    rawType = "request";
+                }
+                else {
+                    throw new core.OperationError("data: Is not correct PEM data. Must be Certificate or Certificate Request");
+                }
+                rawData = core.PemConverter.toArrayBuffer(data);
                 break;
+            case "raw":
+                if (!core.BufferSourceConverter.isBufferSource(data)) {
+                    throw new TypeError("data: Is not type ArrayBuffer or ArrayBufferView");
+                }
+                rawData = core.BufferSourceConverter.toArrayBuffer(data);
+                break;
+            default:
+                throw new TypeError("format: Is invalid value. Must be 'raw', 'pem'");
+        }
+        switch (rawType) {
+            case "x509": {
+                const x509 = await X509Certificate.importCert(crypto$2, rawData, algorithm, keyUsages);
+                return x509;
             }
             case "request": {
-                res = await X509CertificateRequest.importCert(crypto$3, data, algorithm, keyUsages);
-                break;
+                const request = await X509CertificateRequest.importCert(crypto$2, rawData, algorithm, keyUsages);
+                return request;
             }
-            default:
-                throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported CertificateStorageItem type '${type}'`);
+            default: {
+                try {
+                    const x509 = await X509Certificate.importCert(crypto$2, rawData, algorithm, keyUsages);
+                    return x509;
+                }
+                catch (e) {
+                }
+                try {
+                    const request = await X509CertificateRequest.importCert(crypto$2, rawData, algorithm, keyUsages);
+                    return request;
+                }
+                catch (e) {
+                }
+                throw new core.OperationError("Cannot parse Certificate or Certificate Request from incoming ASN1");
+            }
         }
-        return res;
     }
     async keys() {
         const items = this.readFile();
         return Object.keys(items);
+    }
+    async hasItem(item) {
+        return !!this.indexOf(item);
     }
     async setItem(item) {
         const certs = this.readFile();
@@ -2052,7 +2119,7 @@ class OpenSSLCertificateStorage {
         if (item instanceof Certificate) {
             const certs = this.readFile();
             for (const index in certs) {
-                const identity = await item.getID(crypto$3, "SHA-256");
+                const identity = await item.getID(crypto$2, "SHA-256");
                 if (index === identity) {
                     return index;
                 }
@@ -2093,7 +2160,7 @@ class OpenSSLCertificateStorage {
         };
     }
     async certFromJson(json) {
-        return this.importCert(json.type, pvtsutils.Convert.FromBase64(json.raw), json.algorithm, json.usages);
+        return this.importCert("raw", pvtsutils.Convert.FromBase64(json.raw), json.algorithm, json.usages);
     }
     readFile() {
         if (!fs.existsSync(this.file)) {
@@ -2111,7 +2178,7 @@ class OpenSSLCertificateStorage {
     }
 }
 
-const crypto$4 = new (require("node-webcrypto-ossl"))();
+const crypto$3 = new webcrypto.Crypto();
 class OpenSSLKeyStorage {
     constructor(file) {
         this.file = file;
@@ -2127,6 +2194,10 @@ class OpenSSLKeyStorage {
             return id;
         }
         return null;
+    }
+    async hasItem(item) {
+        const index = this.indexOf(item);
+        return !!index;
     }
     async setItem(value) {
         const keys = this.readFile();
@@ -2172,7 +2243,7 @@ class OpenSSLKeyStorage {
         let id;
         switch (key.type) {
             case "secret": {
-                id = await crypto$4.getRandomValues(new Uint8Array(20));
+                id = await crypto$3.getRandomValues(new Uint8Array(20));
                 break;
             }
             case "private":
@@ -2192,8 +2263,8 @@ class OpenSSLKeyStorage {
             default:
                 throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported type of CryptoKey '${key.type}'`);
         }
-        const hash = await crypto$4.subtle.digest("SHA-1", id);
-        const rnd = crypto$4.getRandomValues(new Uint8Array(4));
+        const hash = await crypto$3.subtle.digest("SHA-1", id);
+        const rnd = crypto$3.getRandomValues(new Uint8Array(4));
         return `${key.type}-${pvtsutils.Convert.ToHex(rnd)}-${pvtsutils.Convert.ToHex(hash)}`;
     }
     keyToJson(key) {
@@ -2254,12 +2325,11 @@ class OpenSSLKeyStorage {
                 throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported type of CryptoKey '${obj.type}'`);
         }
         obj.lastUsed = new Date().toISOString();
-        return crypto$4.subtle.importKey(format, new Buffer(obj.raw, "base64"), obj.algorithm, obj.extractable, obj.usages);
+        return crypto$3.subtle.importKey(format, new Buffer(obj.raw, "base64"), obj.algorithm, obj.extractable, obj.usages);
     }
 }
 
-const OSSLCrypto = require("node-webcrypto-ossl");
-class OpenSSLCrypto extends OSSLCrypto {
+class OpenSSLCrypto extends webcrypto.Crypto {
     constructor() {
         super();
         this.info = {
@@ -2271,20 +2341,18 @@ class OpenSSLCrypto extends OSSLCrypto {
             isRemovable: false,
             isHardware: false,
             algorithms: [
-                webcryptoCore.AlgorithmNames.Sha1,
-                webcryptoCore.AlgorithmNames.Sha256,
-                webcryptoCore.AlgorithmNames.Sha384,
-                webcryptoCore.AlgorithmNames.Sha512,
-                webcryptoCore.AlgorithmNames.RsaSSA,
-                webcryptoCore.AlgorithmNames.RsaPSS,
-                webcryptoCore.AlgorithmNames.RsaOAEP,
-                webcryptoCore.AlgorithmNames.Hmac,
-                webcryptoCore.AlgorithmNames.AesCBC,
-                webcryptoCore.AlgorithmNames.AesGCM,
-                webcryptoCore.AlgorithmNames.AesKW,
-                webcryptoCore.AlgorithmNames.Pbkdf2,
-                webcryptoCore.AlgorithmNames.EcDH,
-                webcryptoCore.AlgorithmNames.EcDSA,
+                "SHA-1",
+                "SHA-256",
+                "SHA-384",
+                "SHA-512",
+                "RSASSA-PKCS1-v1_5",
+                "RSA-PSS",
+                "HMAC",
+                "AES-CBC",
+                "AES-GCM",
+                "PBKDF2",
+                "ECDH",
+                "ECDSA",
             ],
         };
         this.keyStorage = new OpenSSLKeyStorage(`${OPENSSL_KEY_STORAGE_DIR}/store.json`);
@@ -2296,7 +2364,7 @@ class OpenSSLCrypto extends OSSLCrypto {
 function isOsslObject(obj) {
     return !!(obj && obj.__ossl);
 }
-function fixObject(crypto$$1, key, options) {
+function fixObject(crypto, key, options) {
     const osslKey = key;
     let handle;
     if (options && options.handle) {
@@ -2304,12 +2372,12 @@ function fixObject(crypto$$1, key, options) {
     }
     else {
         handle = new Buffer(4);
-        handle.writeInt32LE(crypto$$1.getID(), 0);
+        handle.writeInt32LE(crypto.getID(), 0);
     }
     osslKey.__ossl = true;
     osslKey.p11Object = {
         handle,
-        session: crypto$$1.session,
+        session: crypto.session,
     };
     if (options && options.index) {
         osslKey.__index = options.index;
@@ -2317,21 +2385,20 @@ function fixObject(crypto$$1, key, options) {
 }
 
 class Pkcs11CertificateStorage extends nodeWebcryptoP11.CertificateStorage {
-    constructor(crypto$$1) {
-        super(crypto$$1);
+    constructor(crypto) {
+        super(crypto);
     }
-    async getItem(id, algorithm, usages) {
+    async getItem(index, algorithm, keyUsages) {
         let cert;
         try {
-            cert = await super.getItem(id, algorithm, usages);
+            cert = await super.getItem(index, algorithm, keyUsages);
         }
         catch (err) {
             try {
-                const object = this.getItemById(id).toType();
-                const type = object instanceof graphene.X509Certificate ? "x509" : "request";
-                cert = await this.crypto.ossl.certStorage.importCert(type, object.value, algorithm, usages);
+                const object = this.getItemById(index).toType();
+                cert = await this.crypto.ossl.certStorage.importCert("raw", object.value, algorithm, keyUsages);
                 fixObject(this.crypto, cert, {
-                    index: id,
+                    index,
                     handle: object.handle,
                 });
                 fixObject(this.crypto, cert.publicKey);
@@ -2341,18 +2408,18 @@ class Pkcs11CertificateStorage extends nodeWebcryptoP11.CertificateStorage {
             }
         }
         if (isOsslObject(cert)) {
-            cert.__index = id;
+            cert.__index = index;
         }
         return cert;
     }
-    async importCert(type, data, algorithm, keyUsages) {
+    async importCert(format, data, algorithm, keyUsages) {
         let cert;
         try {
-            cert = await super.importCert(type, data, algorithm, keyUsages);
+            cert = await super.importCert(format, data, algorithm, keyUsages);
         }
         catch (err) {
             try {
-                cert = await this.crypto.ossl.certStorage.importCert(type, data, algorithm, keyUsages);
+                cert = await this.crypto.ossl.certStorage.importCert(format, data, algorithm, keyUsages);
                 fixObject(this.crypto, cert);
                 fixObject(this.crypto, cert.publicKey);
             }
@@ -2381,8 +2448,8 @@ class Pkcs11CertificateStorage extends nodeWebcryptoP11.CertificateStorage {
 }
 
 class Pkcs11SubtleCrypto extends nodeWebcryptoP11.SubtleCrypto {
-    constructor(crypto$$1) {
-        super(crypto$$1);
+    constructor(crypto) {
+        super(crypto);
     }
     async importKey(format, keyData, algorithm, extractable, keyUsages) {
         let key;
@@ -2405,10 +2472,11 @@ class Pkcs11SubtleCrypto extends nodeWebcryptoP11.SubtleCrypto {
     }
 }
 
-class Pkcs11Crypto extends nodeWebcryptoP11.WebCrypto {
+class Pkcs11Crypto extends nodeWebcryptoP11.Crypto {
     constructor(props) {
         super(props);
         this.osslID = 0;
+        this.module = this.slot.module;
         this.ossl = new OpenSSLCrypto();
         this.subtle = new Pkcs11SubtleCrypto(this);
         this.certStorage = new Pkcs11CertificateStorage(this);
@@ -2424,19 +2492,20 @@ class Pkcs11Crypto extends nodeWebcryptoP11.WebCrypto {
 graphene.registerAttribute("pinFriendlyName", 0x80000000 | 0x00000102, "string");
 graphene.registerAttribute("pinDescription", 0x80000000 | 0x00000103, "string");
 class PvKeyStorage extends nodeWebcryptoP11.KeyStorage {
-    constructor(crypto$$1) {
-        super(crypto$$1);
+    constructor(crypto) {
+        super(crypto);
     }
     async setItem(key, options) {
         if (!(key instanceof nodeWebcryptoP11.CryptoKey)) {
-            throw new webcryptoCore.WebCryptoError("Parameter 1 is not PKCS#11 CryptoKey");
+            throw new TypeError("Parameter 1 is not PKCS#11 CryptoKey");
         }
-        if (!(this.hasItem(key) && key.key.token)) {
+        const _key = key;
+        if (!(this.hasItem(_key) && _key.key.token)) {
             const template = {
                 token: true,
             };
             const platform = os.platform();
-            if (key.type === "private" && options &&
+            if (_key.type === "private" && options &&
                 (platform === "win32" || platform === "darwin")) {
                 if (options.pinFriendlyName) {
                     template.pinFriendlyName = options.pinFriendlyName;
@@ -2445,16 +2514,16 @@ class PvKeyStorage extends nodeWebcryptoP11.KeyStorage {
                     template.pinDescription = options.pinDescription;
                 }
             }
-            const obj = this.crypto.session.copy(key.key, template);
+            const obj = this.crypto.session.copy(_key.key, template);
             return nodeWebcryptoP11.CryptoKey.getID(obj.toType());
         }
         else {
-            return key.id;
+            return _key.id;
         }
     }
 }
 
-class PvCrypto extends nodeWebcryptoP11.WebCrypto {
+class PvCrypto extends nodeWebcryptoP11.Crypto {
     constructor(props) {
         super(props);
         this.keyStorage = new PvKeyStorage(this);
@@ -2487,13 +2556,13 @@ class LocalProvider extends events.EventEmitter {
         {
             if (fs.existsSync(PV_PKCS11_LIB)) {
                 try {
-                    const crypto$$1 = new PvCrypto({
+                    const crypto = new PvCrypto({
                         library: PV_PKCS11_LIB,
                         slot: 0,
                         readWrite: true,
                     });
-                    crypto$$1.isLoggedIn = true;
-                    this.addProvider(crypto$$1);
+                    crypto.isLoggedIn = true;
+                    this.addProvider(crypto);
                 }
                 catch (e) {
                     this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot load library by path ${PV_PKCS11_LIB}. ${e.message}`));
@@ -2509,13 +2578,13 @@ class LocalProvider extends events.EventEmitter {
             for (const slot of prov.slots) {
                 if (fs.existsSync(prov.lib)) {
                     try {
-                        const crypto$$1 = new Pkcs11Crypto({
+                        const crypto = new Pkcs11Crypto({
                             library: prov.lib,
                             libraryParameters: prov.libraryParameters,
                             slot,
                             readWrite: true,
                         });
-                        this.addProvider(crypto$$1, {
+                        this.addProvider(crypto, {
                             name: prov.name,
                         });
                     }
@@ -2548,8 +2617,8 @@ class LocalProvider extends events.EventEmitter {
             .start(this.config.cards);
         this.emit("listening", await this.getInfo());
     }
-    addProvider(crypto$$1, params) {
-        const info = getSlotInfo(crypto$$1);
+    addProvider(crypto, params) {
+        const info = getSlotInfo(crypto);
         this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
         if (params) {
             if (params.name) {
@@ -2557,12 +2626,14 @@ class LocalProvider extends events.EventEmitter {
             }
         }
         this.info.providers.push(new ProviderCryptoProto(info));
-        this.crypto.add(info.id, crypto$$1);
+        this.crypto.add(info.id, crypto);
     }
     hasProvider(slot) {
-        return this.crypto.some((crypto$$1) => {
-            if (crypto$$1.module.libFile === slot.module.libFile &&
-                crypto$$1.slot.handle.equals(slot.handle)) {
+        return this.crypto.some((crypto) => {
+            const cryptoModule = crypto.module;
+            const cryptoSlot = crypto.slot;
+            if (cryptoModule.libFile === slot.module.libFile &&
+                cryptoSlot.handle.equals(slot.handle)) {
                 return true;
             }
             return false;
@@ -2576,11 +2647,11 @@ class LocalProvider extends events.EventEmitter {
         return resProto;
     }
     async getCrypto(cryptoID) {
-        const crypto$$1 = this.crypto.item(cryptoID);
-        if (!crypto$$1) {
+        const crypto = this.crypto.item(cryptoID);
+        if (!crypto) {
             throw new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_NOT_FOUND, `Cannot get crypto by given ID '${cryptoID}'`);
         }
-        return crypto$$1;
+        return crypto;
     }
     onTokenInsert(card) {
         const EVENT_LOG = "Provider:Token:Insert";
@@ -2637,18 +2708,18 @@ class LocalProvider extends events.EventEmitter {
                 const addInfos = [];
                 slotIndexes.forEach((slotIndex) => {
                     try {
-                        const crypto$$1 = new Pkcs11Crypto({
+                        const crypto = new Pkcs11Crypto({
                             library,
                             name: card.name,
                             slot: slotIndex,
                             readWrite: !card.readOnly,
                         });
-                        const info = getSlotInfo(crypto$$1);
+                        const info = getSlotInfo(crypto);
                         info.atr = pvtsutils.Convert.ToHex(card.atr);
                         info.library = library;
-                        info.id = digest(DEFAULT_HASH_ALG, card.reader + card.atr + crypto$$1.slot.handle.toString()).toString("hex");
+                        info.id = digest(DEFAULT_HASH_ALG, card.reader + card.atr + crypto.slot.handle.toString()).toString("hex");
                         addInfos.push(info);
-                        this.addProvider(crypto$$1);
+                        this.addProvider(crypto);
                     }
                     catch (err) {
                         this.emit("error", err);
@@ -2694,9 +2765,11 @@ class LocalProvider extends events.EventEmitter {
                         }
                     }
                     const slots = mod.getSlots(true);
-                    this.crypto.forEach((crypto$$1, key) => {
-                        if (crypto$$1.module.libFile === mod.libFile) {
-                            if (slots.indexOf(crypto$$1.slot) === -1) {
+                    this.crypto.forEach((crypto, key) => {
+                        const cryptoModule = crypto.module;
+                        const cryptoSlot = crypto.slot;
+                        if (cryptoModule.libFile === mod.libFile) {
+                            if (slots.indexOf(cryptoSlot) === -1) {
                                 cryptoIDs.push(key);
                             }
                         }
@@ -2737,11 +2810,12 @@ class LocalProvider extends events.EventEmitter {
     }
     onCryptoRemove(e) {
         const LOG = "Provider:RemoveCrypto";
-        this.emit("info", `${LOG} PKCS#11 '${e.item.module.libFile}' '${e.item.module.libName}'`);
-        if (!this.crypto.some((crypto$$1) => crypto$$1.module.libFile === e.item.module.libFile)) {
-            this.emit("info", `${LOG} PKCS#11 finalize '${e.item.module.libFile}'`);
+        const cryptoModule = e.item.module;
+        this.emit("info", `${LOG} PKCS#11 '${cryptoModule.libFile}' '${cryptoModule.libName}'`);
+        if (!this.crypto.some((crypto) => crypto.module && crypto.module.libFile === cryptoModule.libFile)) {
+            this.emit("info", `${LOG} PKCS#11 finalize '${cryptoModule.libFile}'`);
             try {
-                e.item.module.finalize();
+                cryptoModule.finalize();
             }
             catch (err) {
                 this.emit("error", err);
@@ -2759,8 +2833,8 @@ function getSlotInfo(p11Crypto) {
 const pkijs$1 = require("pkijs");
 graphene.registerAttribute("x509Chain", 2147483905, "buffer");
 class CertificateStorageService extends Service {
-    constructor(server, crypto$$1) {
-        super(server, crypto$$1, [
+    constructor(server, crypto) {
+        super(server, crypto, [
             CertificateStorageKeysActionProto,
             CertificateStorageIndexOfActionProto,
             CertificateStorageGetItemActionProto,
@@ -2785,8 +2859,8 @@ class CertificateStorageService extends Service {
         switch (action.action) {
             case CertificateStorageGetItemActionProto.ACTION: {
                 const params = await CertificateStorageGetItemActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                const item = await crypto$$1.certStorage.getItem(params.key, params.algorithm.isEmpty() ? null : params.algorithm.toAlgorithm(), !params.keyUsages ? null : params.keyUsages);
+                const crypto = await this.getCrypto(params.providerID);
+                const item = await crypto.certStorage.getItem(params.key, params.algorithm.isEmpty() ? null : params.algorithm.toAlgorithm(), !params.keyUsages ? null : params.keyUsages);
                 if (item) {
                     const cryptoKey = new ServiceCryptoItem(item.publicKey, params.providerID);
                     this.getMemoryStorage().add(cryptoKey);
@@ -2800,22 +2874,22 @@ class CertificateStorageService extends Service {
             }
             case CertificateStorageSetItemActionProto.ACTION: {
                 const params = await CertificateStorageSetItemActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 const cert = this.getMemoryStorage().item(params.item.id).item;
-                const index = await crypto$$1.certStorage.setItem(cert);
+                const index = await crypto.certStorage.setItem(cert);
                 result.data = pvtsutils.Convert.FromUtf8String(index);
                 break;
             }
             case CertificateStorageRemoveItemActionProto.ACTION: {
                 const params = await CertificateStorageRemoveItemActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                await crypto$$1.certStorage.removeItem(params.key);
+                const crypto = await this.getCrypto(params.providerID);
+                await crypto.certStorage.removeItem(params.key);
                 break;
             }
             case CertificateStorageImportActionProto.ACTION: {
                 const params = await CertificateStorageImportActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                const item = await crypto$$1.certStorage.importCert(params.type, params.data, params.algorithm.toAlgorithm(), params.keyUsages);
+                const crypto = await this.getCrypto(params.providerID);
+                const item = await crypto.certStorage.importCert(params.format, params.data, params.algorithm.toAlgorithm(), params.keyUsages);
                 const cryptoKey = new ServiceCryptoItem(item.publicKey, params.providerID);
                 this.getMemoryStorage().add(cryptoKey);
                 const cryptoCert = new ServiceCryptoItem(item, params.providerID);
@@ -2827,9 +2901,9 @@ class CertificateStorageService extends Service {
             }
             case CertificateStorageExportActionProto.ACTION: {
                 const params = await CertificateStorageExportActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 const cert = this.getMemoryStorage().item(params.item.id).item;
-                const exportedData = await crypto$$1.certStorage.exportCert(params.format, cert);
+                const exportedData = await crypto.certStorage.exportCert(params.format, cert);
                 if (exportedData instanceof ArrayBuffer) {
                     result.data = exportedData;
                 }
@@ -2840,22 +2914,22 @@ class CertificateStorageService extends Service {
             }
             case CertificateStorageKeysActionProto.ACTION: {
                 const params = await CertificateStorageKeysActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                const keys = await crypto$$1.certStorage.keys();
+                const crypto = await this.getCrypto(params.providerID);
+                const keys = await crypto.certStorage.keys();
                 result.data = (await ArrayStringConverter.set(keys)).buffer;
                 break;
             }
             case CertificateStorageClearActionProto.ACTION: {
                 const params = await CertificateStorageKeysActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                await crypto$$1.certStorage.clear();
+                const crypto = await this.getCrypto(params.providerID);
+                await crypto.certStorage.clear();
                 break;
             }
             case CertificateStorageIndexOfActionProto.ACTION: {
                 const params = await CertificateStorageIndexOfActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 const cert = this.getMemoryStorage().item(params.item.id);
-                const index = await crypto$$1.certStorage.indexOf(cert.item);
+                const index = await crypto.certStorage.indexOf(cert.item);
                 if (index) {
                     result.data = pvtsutils.Convert.FromUtf8String(index);
                 }
@@ -2863,20 +2937,20 @@ class CertificateStorageService extends Service {
             }
             case CertificateStorageGetChainActionProto.ACTION: {
                 const params = await CertificateStorageGetChainActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 const cert = this.getMemoryStorage().item(params.item.id).item;
                 if (cert.type !== "x509") {
                     throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_COMMON, "Wrong item type, must be 'x509'");
                 }
                 const resultProto = new CertificateStorageGetChainResultProto();
-                const pkiEntryCert = await certC2P(crypto$$1, cert);
+                const pkiEntryCert = await certC2P(crypto, cert);
                 if (pkiEntryCert.subject.isEqual(pkiEntryCert.issuer)) {
                     const itemProto = new ChainItemProto();
                     itemProto.type = "x509";
                     itemProto.value = pkiEntryCert.toSchema(true).toBER(false);
                     resultProto.items.push(itemProto);
                 }
-                else if ("session" in crypto$$1) {
+                else if ("session" in crypto) {
                     let buffer;
                     let isX509ChainSupported = true;
                     try {
@@ -2913,7 +2987,7 @@ class CertificateStorageService extends Service {
                     }
                     else {
                         this.emit("info", "Service:CertificateStorage:GetChain: CKA_X509_CHAIN is not supported");
-                        const indexes = await crypto$$1.certStorage.keys();
+                        const indexes = await crypto.certStorage.keys();
                         const trustedCerts = [];
                         const certs = [];
                         for (const index of indexes) {
@@ -2921,8 +2995,8 @@ class CertificateStorageService extends Service {
                             if (parts[0] !== "x509") {
                                 continue;
                             }
-                            const cryptoCert = await crypto$$1.certStorage.getItem(index);
-                            const pkiCert = await certC2P(crypto$$1, cryptoCert);
+                            const cryptoCert = await crypto.certStorage.getItem(index);
+                            const pkiCert = await certC2P(crypto, cryptoCert);
                             if (pvutils.isEqualBuffer(pkiEntryCert.tbs, pkiCert.tbs)) {
                                 continue;
                             }
@@ -2937,7 +3011,7 @@ class CertificateStorageService extends Service {
                             trustedCerts.push(pkiEntryCert);
                         }
                         certs.push(pkiEntryCert);
-                        pkijs$1.setEngine("PKCS#11 provider", crypto$$1, new pkijs$1.CryptoEngine({ name: "", crypto: crypto$$1, subtle: crypto$$1.subtle }));
+                        pkijs$1.setEngine("PKCS#11 provider", crypto, new pkijs$1.CryptoEngine({ name: "", crypto, subtle: crypto.subtle }));
                         const chainBuilder = new pkijs$1.CertificateChainValidationEngine({
                             trustedCerts,
                             certs,
@@ -3015,11 +3089,11 @@ class CertificateStorageService extends Service {
             case pkijs$1.CertificateStorageGetOCSPActionProto.ACTION: {
                 const params = await pkijs$1.CertificateStorageGetOCSPActionProto.importProto(action);
                 const ocspArray = await new Promise((resolve, reject) => {
-                    let url$$1 = params.url;
+                    let url = params.url;
                     const options = { encoding: null };
                     if (params.options.method === "get") {
                         const b64 = new Buffer(params.url).toString("hex");
-                        url$$1 += "/" + b64;
+                        url += "/" + b64;
                         options.method = "get";
                     }
                     else {
@@ -3027,7 +3101,7 @@ class CertificateStorageService extends Service {
                         options.headers = { "Content-Type": "application/ocsp-request" };
                         options.body = new Buffer(params.request);
                     }
-                    request(url$$1, options, (err, response, body) => {
+                    request(url, options, (err, response, body) => {
                         try {
                             const message = `Cannot get OCSP by URI '${params.url}'`;
                             if (err) {
@@ -3111,6 +3185,9 @@ tslib_1.__decorate([
     tsprotobuf.ProtobufProperty({ id: KeyStorageGetItemActionProto_1.INDEX++, parser: AlgorithmProto })
 ], KeyStorageGetItemActionProto.prototype, "algorithm", void 0);
 tslib_1.__decorate([
+    tsprotobuf.ProtobufProperty({ id: KeyStorageGetItemActionProto_1.INDEX++, type: "bool" })
+], KeyStorageGetItemActionProto.prototype, "extractable", void 0);
+tslib_1.__decorate([
     tsprotobuf.ProtobufProperty({ id: KeyStorageGetItemActionProto_1.INDEX++, repeated: true, type: "string" })
 ], KeyStorageGetItemActionProto.prototype, "keyUsages", void 0);
 KeyStorageGetItemActionProto = KeyStorageGetItemActionProto_1 = tslib_1.__decorate([
@@ -3152,8 +3229,8 @@ KeyStorageIndexOfActionProto = KeyStorageIndexOfActionProto_1 = tslib_1.__decora
 ], KeyStorageIndexOfActionProto);
 
 class KeyStorageService extends Service {
-    constructor(server, crypto$$1) {
-        super(server, crypto$$1, [
+    constructor(server, crypto) {
+        super(server, crypto, [
             KeyStorageKeysActionProto,
             KeyStorageIndexOfActionProto,
             KeyStorageGetItemActionProto,
@@ -3173,8 +3250,8 @@ class KeyStorageService extends Service {
         switch (action.action) {
             case KeyStorageGetItemActionProto.ACTION: {
                 const params = await KeyStorageGetItemActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                const key = await crypto$$1.keyStorage.getItem(params.key, params.algorithm.isEmpty() ? null : params.algorithm.toAlgorithm(), !params.keyUsages ? null : params.keyUsages);
+                const crypto = await this.getCrypto(params.providerID);
+                const key = await crypto.keyStorage.getItem(params.key, params.algorithm.isEmpty() ? undefined : params.algorithm.toAlgorithm(), params.extractable || undefined, !params.keyUsages ? undefined : params.keyUsages);
                 if (key) {
                     const cryptoKey = new ServiceCryptoItem(key, params.providerID);
                     this.getMemoryStorage().add(cryptoKey);
@@ -3185,41 +3262,41 @@ class KeyStorageService extends Service {
             case KeyStorageSetItemActionProto.ACTION: {
                 const params = await KeyStorageSetItemActionProto.importProto(action);
                 const key = this.getMemoryStorage().item(params.item.id).item;
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 if (key.algorithm.toAlgorithm) {
                     key.algorithm = key.algorithm.toAlgorithm();
                 }
                 let index;
-                if (crypto$$1 instanceof PvCrypto) {
-                    index = await crypto$$1.keyStorage.setItem(key, {
+                if (crypto instanceof PvCrypto) {
+                    index = await crypto.keyStorage.setItem(key, {
                         pinFriendlyName: session.headers.origin,
                         pinDescription: key.usages.join(", "),
                     });
                 }
                 else {
-                    index = await crypto$$1.keyStorage.setItem(key);
+                    index = await crypto.keyStorage.setItem(key);
                 }
                 result.data = pvtsutils.Convert.FromUtf8String(index);
                 break;
             }
             case KeyStorageRemoveItemActionProto.ACTION: {
                 const params = await KeyStorageRemoveItemActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                await crypto$$1.keyStorage.removeItem(params.key);
+                const crypto = await this.getCrypto(params.providerID);
+                await crypto.keyStorage.removeItem(params.key);
                 break;
             }
             case KeyStorageKeysActionProto.ACTION: {
                 const params = await KeyStorageKeysActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                const keys = await crypto$$1.keyStorage.keys();
+                const crypto = await this.getCrypto(params.providerID);
+                const keys = await crypto.keyStorage.keys();
                 result.data = (await ArrayStringConverter.set(keys)).buffer;
                 break;
             }
             case KeyStorageIndexOfActionProto.ACTION: {
                 const params = await KeyStorageIndexOfActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 const key = this.getMemoryStorage().item(params.item.id).item;
-                const index = await crypto$$1.keyStorage.indexOf(key);
+                const index = await crypto.keyStorage.indexOf(key);
                 if (index) {
                     result.data = pvtsutils.Convert.FromUtf8String(index);
                 }
@@ -3227,8 +3304,8 @@ class KeyStorageService extends Service {
             }
             case KeyStorageClearActionProto.ACTION: {
                 const params = await KeyStorageClearActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                await crypto$$1.keyStorage.clear();
+                const crypto = await this.getCrypto(params.providerID);
+                await crypto.keyStorage.clear();
                 break;
             }
             default:
@@ -3430,8 +3507,8 @@ ImportKeyActionProto = ImportKeyActionProto_1 = tslib_1.__decorate([
 ], ImportKeyActionProto);
 
 class SubtleService extends Service {
-    constructor(server, crypto$$1) {
-        super(server, crypto$$1, [
+    constructor(server, crypto) {
+        super(server, crypto, [
             GenerateKeyActionProto,
             ImportKeyActionProto,
             ExportKeyActionProto,
@@ -3457,14 +3534,14 @@ class SubtleService extends Service {
         switch (action.action) {
             case DigestActionProto.ACTION: {
                 const params = await DigestActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                result.data = await crypto$$1.subtle.digest(params.algorithm.toAlgorithm(), params.data);
+                const crypto = await this.getCrypto(params.providerID);
+                result.data = await crypto.subtle.digest(params.algorithm.toAlgorithm(), params.data);
                 break;
             }
             case GenerateKeyActionProto.ACTION: {
                 const params = await GenerateKeyActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                const keys = await crypto$$1.subtle.generateKey(params.algorithm.toAlgorithm(), params.extractable, params.usage);
+                const crypto = await this.getCrypto(params.providerID);
+                const keys = await crypto.subtle.generateKey(params.algorithm.toAlgorithm(), params.extractable, params.usage);
                 let keyProto;
                 if (keys.privateKey) {
                     const keyPair = keys;
@@ -3488,51 +3565,51 @@ class SubtleService extends Service {
             }
             case SignActionProto.ACTION: {
                 const params = await SignActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 const key = this.getMemoryStorage().item(params.key.id).item;
-                result.data = await crypto$$1.subtle.sign(params.algorithm.toAlgorithm(), key, params.data);
+                result.data = await crypto.subtle.sign(params.algorithm.toAlgorithm(), key, params.data);
                 break;
             }
             case VerifyActionProto.ACTION: {
                 const params = await VerifyActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 const key = this.getMemoryStorage().item(params.key.id).item;
-                const ok = await crypto$$1.subtle.verify(params.algorithm.toAlgorithm(), key, params.signature, params.data);
+                const ok = await crypto.subtle.verify(params.algorithm.toAlgorithm(), key, params.signature, params.data);
                 result.data = new Uint8Array([ok ? 1 : 0]).buffer;
                 break;
             }
             case EncryptActionProto.ACTION: {
                 const params = await EncryptActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 const key = this.getMemoryStorage().item(params.key.id).item;
-                result.data = await crypto$$1.subtle.encrypt(params.algorithm.toAlgorithm(), key, params.data);
+                result.data = await crypto.subtle.encrypt(params.algorithm.toAlgorithm(), key, params.data);
                 break;
             }
             case DecryptActionProto.ACTION: {
                 const params = await DecryptActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 const key = this.getMemoryStorage().item(params.key.id).item;
-                result.data = await crypto$$1.subtle.decrypt(params.algorithm.toAlgorithm(), key, params.data);
+                result.data = await crypto.subtle.decrypt(params.algorithm.toAlgorithm(), key, params.data);
                 break;
             }
             case DeriveBitsActionProto.ACTION: {
                 const params = await DeriveBitsActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 const key = this.getMemoryStorage().item(params.key.id).item;
                 const alg = params.algorithm.toAlgorithm();
                 const publicKey = await CryptoKeyProto.importProto(alg.public);
                 alg.public = this.getMemoryStorage().item(publicKey.id).item;
-                result.data = await crypto$$1.subtle.deriveBits(alg, key, params.length);
+                result.data = await crypto.subtle.deriveBits(alg, key, params.length);
                 break;
             }
             case DeriveKeyActionProto.ACTION: {
                 const params = await DeriveKeyActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 const key = this.getMemoryStorage().item(params.key.id).item;
                 const alg = params.algorithm.toAlgorithm();
                 const publicKey = await CryptoKeyProto.importProto(alg.public);
                 alg.public = this.getMemoryStorage().item(publicKey.id).item;
-                const derivedKey = await crypto$$1.subtle.deriveKey(alg, key, params.derivedKeyType, params.extractable, params.usage);
+                const derivedKey = await crypto.subtle.deriveKey(alg, key, params.derivedKeyType, params.extractable, params.usage);
                 const resKey = new ServiceCryptoItem(derivedKey, params.providerID);
                 this.getMemoryStorage().add(resKey);
                 result.data = await resKey.toProto().exportProto();
@@ -3540,17 +3617,17 @@ class SubtleService extends Service {
             }
             case WrapKeyActionProto.ACTION: {
                 const params = await WrapKeyActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 const key = await this.getMemoryStorage().item(params.key.id).item;
                 const wrappingKey = this.getMemoryStorage().item(params.wrappingKey.id).item;
-                result.data = await crypto$$1.subtle.wrapKey(params.format, key, wrappingKey, params.wrapAlgorithm.toAlgorithm());
+                result.data = await crypto.subtle.wrapKey(params.format, key, wrappingKey, params.wrapAlgorithm.toAlgorithm());
                 break;
             }
             case UnwrapKeyActionProto.ACTION: {
                 const params = await UnwrapKeyActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 const unwrappingKey = await this.getMemoryStorage().item(params.unwrappingKey.id).item;
-                const key = await crypto$$1.subtle.unwrapKey(params.format, params.wrappedKey, unwrappingKey, params.unwrapAlgorithm.toAlgorithm(), params.unwrappedKeyAlgorithm.toAlgorithm(), params.extractable, params.keyUsage);
+                const key = await crypto.subtle.unwrapKey(params.format, params.wrappedKey, unwrappingKey, params.unwrapAlgorithm.toAlgorithm(), params.unwrappedKeyAlgorithm.toAlgorithm(), params.extractable, params.keyUsage);
                 const resKey = new ServiceCryptoItem(key, params.providerID);
                 this.getMemoryStorage().add(resKey);
                 result.data = await resKey.toProto().exportProto();
@@ -3558,9 +3635,9 @@ class SubtleService extends Service {
             }
             case ExportKeyActionProto.ACTION: {
                 const params = await ExportKeyActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 const key = await this.getMemoryStorage().item(params.key.id).item;
-                const exportedData = await crypto$$1.subtle.exportKey(params.format, key);
+                const exportedData = await crypto.subtle.exportKey(params.format, key);
                 if (params.format.toLowerCase() === "jwk") {
                     const json = JSON.stringify(exportedData);
                     result.data = pvtsutils.Convert.FromUtf8String(json);
@@ -3572,7 +3649,7 @@ class SubtleService extends Service {
             }
             case ImportKeyActionProto.ACTION: {
                 const params = await ImportKeyActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
+                const crypto = await this.getCrypto(params.providerID);
                 let keyData;
                 if (params.format.toLowerCase() === "jwk") {
                     const json = pvtsutils.Convert.ToUtf8String(params.keyData);
@@ -3581,7 +3658,7 @@ class SubtleService extends Service {
                 else {
                     keyData = params.keyData;
                 }
-                const key = await crypto$$1.subtle.importKey(params.format, keyData, params.algorithm.toAlgorithm(), params.extractable, params.keyUsages);
+                const key = await crypto.subtle.importKey(params.format, keyData, params.algorithm.toAlgorithm(), params.extractable, params.keyUsages);
                 const resKey = new ServiceCryptoItem(key, params.providerID);
                 this.getMemoryStorage().add(resKey);
                 result.data = await resKey.toProto().exportProto();
@@ -3623,31 +3700,32 @@ class CryptoService extends Service {
         switch (action.action) {
             case IsLoggedInActionProto.ACTION: {
                 const params = await IsLoggedInActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                result.data = new Uint8Array([crypto$$1.isLoggedIn ? 1 : 0]).buffer;
+                const crypto = await this.getCrypto(params.providerID);
+                result.data = new Uint8Array([crypto.isLoggedIn ? 1 : 0]).buffer;
                 break;
             }
             case LoginActionProto.ACTION: {
                 const params = await LoginActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                if (crypto$$1.login) {
-                    const token = crypto$$1.slot.getToken();
+                const crypto = await this.getCrypto(params.providerID);
+                const slot = crypto.slot;
+                if (crypto.login) {
+                    const token = slot.getToken();
                     if (token.flags & graphene.TokenFlag.LOGIN_REQUIRED) {
                         if (token.flags & graphene.TokenFlag.PROTECTED_AUTHENTICATION_PATH) {
-                            crypto$$1.login("");
+                            crypto.login("");
                         }
                         else {
                             const promise = new Promise((resolve, reject) => {
                                 this.emit("notify", {
                                     type: "pin",
                                     origin: session.headers.origin,
-                                    label: crypto$$1.slot.getToken().label,
+                                    label: slot.getToken().label,
                                     resolve,
                                     reject,
                                 });
                             });
                             const pin = await promise;
-                            crypto$$1.login(pin);
+                            crypto.login(pin);
                         }
                     }
                 }
@@ -3655,17 +3733,17 @@ class CryptoService extends Service {
             }
             case LogoutActionProto.ACTION: {
                 const params = await LogoutActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                if (crypto$$1.logout) {
-                    crypto$$1.logout();
+                const crypto = await this.getCrypto(params.providerID);
+                if (crypto.logout) {
+                    crypto.logout();
                 }
                 break;
             }
             case ResetActionProto.ACTION: {
                 const params = await ResetActionProto.importProto(action);
-                const crypto$$1 = await this.getCrypto(params.providerID);
-                if ("reset" in crypto$$1) {
-                    await crypto$$1.reset();
+                const crypto = await this.getCrypto(params.providerID);
+                if ("reset" in crypto) {
+                    await crypto.reset();
                 }
                 break;
             }
@@ -3683,11 +3761,11 @@ class ProviderService extends Service {
             ProviderGetCryptoActionProto,
         ]);
         this.memoryStorage = new MemoryStorage();
-        const crypto$$1 = new CryptoService(server, this);
-        this.addService(crypto$$1);
+        const crypto = new CryptoService(server, this);
+        this.addService(crypto);
         this.object.on("token_new", this.onTokenNew.bind(this));
         this.object.on("token", this.onToken.bind(this));
-        crypto$$1.on("notify", this.onNotify.bind(this));
+        crypto.on("notify", this.onNotify.bind(this));
     }
     emit(event, ...args) {
         return super.emit(event, ...args);
