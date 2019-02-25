@@ -15,13 +15,14 @@ export default [
     plugins: [
       typescript({ typescript: require("typescript"), target: "esnext", removeComments: true }),
       // Allows node_modules resolution
-      resolve(),
-      commonjs(),
-      builtins(),
+      // resolve(),
+      // commonjs(),
+      // builtins(),
     ],
     // Specify here external modules which you don"t want to include in your bundle (for instance: "lodash", "moment" etc.)
     // https://rollupjs.org/guide/en#external-e-external
-    external: ["protobufjs"],
+    // external: ["protobufjs"],
+    external: dependencies.concat(["events"]),
     output: [
       {
         file: pkg.module,
@@ -34,11 +35,9 @@ export default [
     input: pkg.module,
     plugins: [
       resolve(),
-      commonjs(),
-      builtins(),
       babel({
         babelrc: false,
-        exclude: 'node_modules/**',
+        // include: dependencies.map(item => `node_modules/${item}/**`).concat(["src/**"]),
         runtimeHelpers: true,
         presets: [
           [
@@ -57,6 +56,8 @@ export default [
           "@babel/proposal-object-rest-spread",
         ],
       }),
+      commonjs(),
+      builtins(),
     ],
     external: ["protobufjs"],
     output: [
@@ -67,8 +68,8 @@ export default [
         globals: {
           "protobufjs": "protobuf",
         },
-      }
-    ]
+      },
+    ],
   },
   // ES bundled file for webcrypto-local
   {
