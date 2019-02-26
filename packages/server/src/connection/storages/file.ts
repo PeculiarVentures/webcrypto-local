@@ -54,10 +54,6 @@ export class FileStorage extends RatchetStorage {
   public remoteIdentities: { [key: string]: RemoteIdentity } = {};
   public sessions: { [key: string]: ratchet.AsymmetricRatchet } = {};
 
-  protected constructor() {
-    super();
-  }
-
   public async loadIdentities(): Promise<void> {
     const identityPath = FileStorage.STORAGE_NAME + "/identity.json";
     this.identities = {}; // Reset identities
