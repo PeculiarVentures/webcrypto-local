@@ -1,11 +1,11 @@
 import { EventEmitter } from "events";
 
-interface Status {
+export interface Status {
   state: number;
   atr?: Buffer;
 }
 
-declare class PCSCLite extends EventEmitter {
+export declare class PCSCLite extends EventEmitter {
   public start(err: Error, data: any): void;
   public close(): void;
 
@@ -14,12 +14,12 @@ declare class PCSCLite extends EventEmitter {
   public on(event: "status", cb: (status: Status) => void): this;
 }
 
-interface CardReaderConnectOptions {
+export interface CardReaderConnectOptions {
   share_mode?: number;
   protocol?: number;
 }
 
-declare class CardReader extends EventEmitter {
+export declare class CardReader extends EventEmitter {
 
   public name: string;
   public connected: boolean;
@@ -69,5 +69,3 @@ declare class CardReader extends EventEmitter {
 
   protected get_status(cb: (err: Error, state: number, atr: Buffer) => void): void;
 }
-
-export as namespace PCSCLite;

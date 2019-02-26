@@ -1,6 +1,3 @@
-// tslint:disable-next-line: no-reference
-/// <reference path="./types/pcsclite.d.ts" />
-
 import { JsonCardConfig } from "@webcrypto-local/cards";
 import { EventEmitter } from "events";
 import * as fs from "fs";
@@ -9,6 +6,7 @@ import * as path from "path";
 import * as core from "webcrypto-core";
 import { PV_PKCS11_LIB } from "./const";
 import { WebCryptoLocalError } from "./error";
+import * as PCSCLite from "./types/pcsclite";
 const pcsc: () => PCSCLite.PCSCLite = require("pcsclite");
 
 export interface PCSCWatcherEvent {
