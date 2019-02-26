@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true
+  },
+  "exclude": [
+    "types/**/*.d.ts"
+  ]
+}

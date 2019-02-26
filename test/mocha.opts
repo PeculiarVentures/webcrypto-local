@@ -1,0 +1,3 @@
+test/bootstrap.ts
+--require ts-node/register
+test/**/*.ts

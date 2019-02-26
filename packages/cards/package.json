@@ -1,0 +1,29 @@
+{
+  "name": "@webcrypto-local/cards",
+  "version": "1.0.0",
+  "description": "A package of `webcrypto-local` framework. TypeScript definitions for card.json",
+  "author": "microshine <microshine@mail.ru>",
+  "homepage": "https://github.com/PeculiarVentures/webcrypto-local/tree/master/packages/cards#readme",
+  "license": "MIT",
+  "types": "index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PeculiarVentures/webcrypto-local.git"
+  },
+  "scripts": {
+    "build": "echo \"@webcrypto-local/cards doesn't have TS files\"",
+    "clear": "echo \"Nothing to remove\""
+  },
+  "bugs": {
+    "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.3",
+    "rollup": "^1.3.0",
+    "rollup-plugin-typescript": "^1.0.0",
+    "typescript": "^3.3.3333"
+  }
+}
