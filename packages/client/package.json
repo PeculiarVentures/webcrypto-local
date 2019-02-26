@@ -36,8 +36,8 @@
   "dependencies": {
     "2key-ratchet": "^1.0.14",
     "@types/node-fetch": "^2.1.6",
-    "@webcrypto-local/core": "file:../core",
-    "@webcrypto-local/proto": "file:../proto",
+    "@webcrypto-local/core": "^1.0.0",
+    "@webcrypto-local/proto": "^1.0.0",
     "idb": "^3.0.2",
     "node-fetch": "^2.3.0",
     "pvtsutils": "^1.0.4",

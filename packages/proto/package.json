@@ -34,7 +34,7 @@
     "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
   },
   "dependencies": {
-    "@webcrypto-local/core": "file:../core",
+    "@webcrypto-local/core": "^1.0.0",
     "pvtsutils": "^1.0.4",
     "tslib": "^1.9.3",
     "tsprotobuf": "^1.0.12"
