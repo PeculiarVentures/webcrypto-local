@@ -69,6 +69,8 @@ export class LocalServer extends EventEmitter {
         callback();
       }
     });
+
+    return this;
   }
 
   public listen(address: string) {

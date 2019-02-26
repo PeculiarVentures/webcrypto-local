@@ -137,7 +137,10 @@ export class Server extends EventEmitter {
   }
 
   public close(callback?: () => void) {
-    this.httpServer.close(callback);
+    this.socketServer.close(() => {
+      this.httpServer.close(callback);
+    });
+    return this;
   }
 
   public listen(address: string) {
