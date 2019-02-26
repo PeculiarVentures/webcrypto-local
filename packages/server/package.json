@@ -1,6 +1,6 @@
 {
   "name": "@webcrypto-local/server",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "A package of `webcrypto-local` framework. WebSocket server",
   "keywords": [
     "webcrypto",
@@ -35,12 +35,14 @@
   },
   "dependencies": {
     "2key-ratchet": "^1.0.14",
+    "@types/ws": "^6.0.1",
     "@webcrypto-local/cards": "^1.0.3",
     "@webcrypto-local/core": "^1.0.0",
     "@webcrypto-local/proto": "^1.0.3",
     "asn1js": "^2.0.22",
     "graphene-pk11": "^2.1.1",
     "node-webcrypto-p11": "^2.0.2",
+    "pcsclite": "^0.6.0",
     "pkijs": "^2.1.75",
     "pvtsutils": "^1.0.4",
     "pvutils": "^1.0.17",
