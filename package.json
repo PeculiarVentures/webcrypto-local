@@ -10,8 +10,8 @@
     "test": "",
     "clear": "lerna run clear",
     "build": "lerna run build",
-    "prepublish": "npm run clear && npm run build",
-    "publish": "lerna publish"
+    "prepub": "npm run clear && npm run build",
+    "pub": "lerna publish"
   },
   "repository": {
     "type": "git",
