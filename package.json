@@ -1,7 +1,7 @@
 {
   "name": "webcrypto-local",
   "version": "1.0.0",
-  "description": "* Clone latest version this repository  * `npm install`  * `npm run development`",
+  "description": "`webcrypto-local` framework",
   "main": "dist/webcrypto-local.js",
   "module": "dist/webcrypto-socket.es.js",
   "browser": "dist/webcrypto-socket.js",
@@ -9,14 +9,16 @@
   "scripts": {
     "test": "",
     "clear": "lerna run clear",
-    "build": "lerna run build"
+    "build": "lerna run build",
+    "prepublish": "npm run clear && npm run build",
+    "publish": "lerna publish"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/PeculiarVentures/webcrypto-local.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
   },
