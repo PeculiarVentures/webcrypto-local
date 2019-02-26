@@ -7,7 +7,7 @@ import { Crypto } from "node-webcrypto-p11";
 import * as os from "os";
 import { Convert } from "pvtsutils";
 
-import { DEFAULT_HASH_ALG, PV_PKCS11_LIB } from "./const";
+import { DEFAULT_HASH_ALG } from "./const";
 import { Pkcs11Crypto, PvCrypto } from "./crypto";
 import { CryptoMap } from "./crypto_map";
 import { WebCryptoLocalError } from "./error";
@@ -40,6 +40,7 @@ export interface IProviderConfig {
    * Path to card.json
    */
   cards: string;
+  pvpkcs11?: string[];
 }
 
 interface IAddProviderParams {
@@ -112,22 +113,24 @@ export class LocalProvider extends EventEmitter {
     this.info.providers = [];
 
     //#region System via pvpkcs11
-    {
-      if (fs.existsSync(PV_PKCS11_LIB)) {
-        try {
-          const crypto = new PvCrypto({
-            library: PV_PKCS11_LIB,
-            slot: 0,
-            readWrite: true,
-          });
+    if (this.config.pvpkcs11) {
+      for (const pvpkcs11 of this.config.pvpkcs11) {
+        if (fs.existsSync(pvpkcs11)) {
+          try {
+            const crypto = new PvCrypto({
+              library: pvpkcs11,
+              slot: 0,
+              readWrite: true,
+            });
 
-          crypto.isLoggedIn = true;
-          this.addProvider(crypto);
-        } catch (e) {
-          this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot load library by path ${PV_PKCS11_LIB}. ${e.message}`));
+            crypto.isLoggedIn = true;
+            this.addProvider(crypto);
+          } catch (e) {
+            this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot load library by path ${pvpkcs11}. ${e.message}`));
+          }
+        } else {
+          this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot find pvpkcs11 by path ${pvpkcs11}`));
         }
-      } else {
-        this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot find pvpkcs11 by path ${PV_PKCS11_LIB}`));
       }
     }
     //#endregion
@@ -152,7 +155,7 @@ export class LocalProvider extends EventEmitter {
             this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot load PKCS#11 library by path ${prov.lib}. ${err.message}`));
           }
         } else {
-          this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot find PKCS#11 library by path ${prov.lib}`));
+          this.emit("info", `${EVENT_LOG} File ${prov.lib} does not exist`);
         }
       }
     }
@@ -398,7 +401,7 @@ export class LocalProvider extends EventEmitter {
   }
 
   protected onCryptoAdd(e: MapChangeEvent<Pkcs11Crypto>) {
-    this.emit("info", `Provider:AddCrypto PKCS#11 '${e.item.module.libFile}' '${e.item.module.libName}'`);
+    this.emit("info", `Provider:AddCrypto: PKCS#11 '${e.item.module.libFile}' '${e.item.module.libName}'`);
   }
 
   protected onCryptoRemove(e: MapChangeEvent<Pkcs11Crypto>) {

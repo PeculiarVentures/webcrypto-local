@@ -4,7 +4,6 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as core from "webcrypto-core";
-import { PV_PKCS11_LIB } from "./const";
 import { WebCryptoLocalError } from "./error";
 import * as PCSCLite from "./types/pcsclite";
 const pcsc: () => PCSCLite.PCSCLite = require("pcsclite");
@@ -132,6 +131,10 @@ interface Driver {
   libraries: string[];
 }
 
+export interface CardOptions {
+  pvpkcs11: string[];
+}
+
 export class CardConfig {
 
   public static readFile(fPath: string) {
@@ -141,6 +144,13 @@ export class CardConfig {
   }
 
   public cards: { [atr: string]: Card } = {};
+  public options: CardOptions;
+
+  constructor(options: Partial<CardOptions> = {}) {
+    this.options = {
+      pvpkcs11: options.pvpkcs11 || [],
+    };
+  }
 
   public readFile(fPath: string) {
     if (!fs.existsSync(fPath)) {
@@ -225,7 +235,7 @@ export class CardConfig {
         }
       }
       if (os.platform() === "win32") {
-        library.push(PV_PKCS11_LIB);
+        library.concat(this.options.pvpkcs11);
       }
       driver.libraries = library.map((lib) => {
         let res = replaceTemplates(lib, process.env as any, "%");
@@ -269,13 +279,18 @@ export class CardWatcher extends EventEmitter {
    * List of allowed cards
    */
   public cards: Card[] = [];
+  public options: CardOptions;
 
   protected watcher: PCSCWatcher;
-  protected config = new CardConfig();
+  protected config: CardConfig;
 
-  constructor() {
+  constructor(options: Partial<CardOptions> = {}) {
     super();
 
+    this.options = {
+      pvpkcs11: options.pvpkcs11 || [],
+    };
+    this.config = new CardConfig(options);
     this.watcher = new PCSCWatcher();
     this.watcher
       .on("info", (message) => {
@@ -287,11 +302,11 @@ export class CardWatcher extends EventEmitter {
       .on("insert", (e) => {
         try {
           let card = e.atr ? this.config.getItem(e.atr) : null;
-          if (!card && os.platform() === "win32") {
+          if (!card && os.platform() === "win32" && options.pvpkcs11) {
             card = {
               atr: e.atr,
               reader: e.reader.name,
-              libraries: [PV_PKCS11_LIB],
+              libraries: this.options.pvpkcs11,
               name: "SCard Windows API",
               readOnly: false,
             };
@@ -317,7 +332,7 @@ export class CardWatcher extends EventEmitter {
             card = {
               atr: e.atr,
               reader: e.reader.name,
-              libraries: [PV_PKCS11_LIB],
+              libraries: this.options.pvpkcs11,
               name: "SCard Windows API",
               readOnly: false,
             };

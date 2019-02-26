@@ -87,7 +87,7 @@ export class LocalServer extends EventEmitter {
       })
       .on("disconnect", (e) => {
         // TODO: Remove closed session from `this.sessions`
-        this.emit("info", `Server: Close session ${e.description} (code: ${e.reasonCode})`);
+        this.emit("info", `Server: Close session ${e.description} origin:${e.remoteAddress} (code: ${e.reasonCode})`);
       })
       .on("info", (message) => {
         this.emit("info", message);

@@ -26,6 +26,9 @@ const options: server.IServerOptions = {
     providers: [
       { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0], name: "Custom name" },
     ],
+    pvpkcs11: [
+      "/Users/microshine/github/pv/fortify/libpvpkcs11.dylib",
+    ],
   },
 };
 const localServer = new server.LocalServer(options);
