@@ -45,7 +45,7 @@ export interface ServerInfo {
   preKey: string;
 }
 
-export interface IProvider {
+export interface ProviderCrypto {
   name: string;
   id: string;
   readOnly: boolean;
@@ -58,9 +58,15 @@ export interface IProvider {
 
 export interface IModule {
   name: string;
-  providers: IProvider[];
+  providers: ProviderCrypto[];
 }
 
 export interface Assoc<T> {
   [key: string]: T;
+}
+
+export interface TokenInfo {
+  removed: ProviderCrypto[];
+  added: ProviderCrypto[];
+  error?: Error;
 }

@@ -1,8 +1,9 @@
+import * as core from "@webcrypto-local/core";
 import * as proto from "@webcrypto-local/proto";
 import { Server, Session } from "../connection";
 import { MemoryStorage } from "../memory_storage";
 import { PCSCCard } from "../pcsc_watcher";
-import { IProviderConfig, LocalProvider, TokenInfo } from "../provider";
+import { IProviderConfig, LocalProvider } from "../provider";
 import { CryptoService } from "./crypto";
 import { Service } from "./service";
 
@@ -88,7 +89,7 @@ export class ProviderService extends Service<LocalProvider> {
     this.emit("token_new", e);
   }
 
-  protected onToken(info: TokenInfo) {
+  protected onToken(info: core.TokenInfo) {
     if (info.error) {
       this.emit("error", info.error);
     } else {

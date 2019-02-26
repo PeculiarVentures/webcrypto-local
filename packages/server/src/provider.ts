@@ -15,12 +15,6 @@ import { digest } from "./helper";
 import { MapChangeEvent } from "./map";
 import { Card, CardWatcher, PCSCCard } from "./pcsc_watcher";
 
-export interface TokenInfo {
-  removed: core.IProvider[];
-  added: core.IProvider[];
-  error?: Error;
-}
-
 export interface IServerProvider {
   /**
    * Path to PKCS#11 lib
@@ -52,7 +46,7 @@ interface IAddProviderParams {
   name?: string;
 }
 
-type LocalProviderTokenHandler = (info: TokenInfo) => void;
+type LocalProviderTokenHandler = (info: core.TokenInfo) => void;
 type LocalProviderTokenNewHandler = (info: PCSCCard) => void;
 type LocalProviderListeningHandler = (info: core.IModule[]) => void;
 type LocalProviderErrorHandler = (e: Error) => void;
@@ -102,7 +96,7 @@ export class LocalProvider extends EventEmitter {
     return super.once(event, listener);
   }
 
-  public emit(event: "token", info: TokenInfo): boolean;
+  public emit(event: "token", info: core.TokenInfo): boolean;
   public emit(event: "token_new", info: PCSCCard): boolean;
   public emit(event: "info", message: string): boolean;
   public emit(event: "error", error: Error | string): boolean;
@@ -287,7 +281,7 @@ export class LocalProvider extends EventEmitter {
           continue;
         }
 
-        const addInfos: core.IProvider[] = [];
+        const addInfos: core.ProviderCrypto[] = [];
         slotIndexes.forEach((slotIndex) => {
           try {
             const crypto = new Pkcs11Crypto({
@@ -426,7 +420,7 @@ export class LocalProvider extends EventEmitter {
 
 function getSlotInfo(p11Crypto: Crypto) {
   const session: graphene.Session = (p11Crypto as any).session;
-  const info: core.IProvider = p11Crypto.info as any;
+  const info: core.ProviderCrypto = p11Crypto.info as any;
   info.readOnly = !(session.flags & graphene.SessionFlag.RW_SESSION);
   return info;
 }

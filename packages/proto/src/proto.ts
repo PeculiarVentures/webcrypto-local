@@ -192,7 +192,7 @@ export class CryptoKeyPairProto extends BaseProto implements CryptoKeyPair {
 }
 
 @ProtobufElement({ name: "Error" })
-export class ErrorProto extends BaseProto {
+export class ErrorProto extends BaseProto implements Error {
 
   public static INDEX = BaseProto.INDEX;
 
@@ -204,6 +204,12 @@ export class ErrorProto extends BaseProto {
 
   @ProtobufProperty({ id: ErrorProto.INDEX++, type: "string", defaultValue: "" })
   public message: string;
+
+  @ProtobufProperty({ id: ErrorProto.INDEX++, type: "string", defaultValue: "Error" })
+  public name: string;
+
+  @ProtobufProperty({ id: ErrorProto.INDEX++, type: "string", defaultValue: "" })
+  public stack: string;
 
   constructor();
   constructor(message: string, code?: number, type?: string);

@@ -6,7 +6,7 @@ import { ActionProto, BaseProto, ErrorProto } from "./proto";
 // Objects
 
 @ProtobufElement({})
-export class ProviderCryptoProto extends BaseProto implements core.IProvider {
+export class ProviderCryptoProto extends BaseProto implements core.ProviderCrypto {
 
   public static INDEX = BaseProto.INDEX;
 
@@ -33,7 +33,7 @@ export class ProviderCryptoProto extends BaseProto implements core.IProvider {
   @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, type: "bool", defaultValue: false })
   public isHardware: boolean;
 
-  constructor(data?: core.IProvider) {
+  constructor(data?: core.ProviderCrypto) {
     super();
 
     if (data) {
@@ -88,7 +88,7 @@ export class ProviderAuthorizedEventProto extends ActionProto {
 }
 
 @ProtobufElement({ name: "ProviderTokenEvent" })
-export class ProviderTokenEventProto extends ActionProto {
+export class ProviderTokenEventProto extends ActionProto implements core.TokenInfo {
 
   public static INDEX = ActionProto.INDEX;
   public static ACTION = "provider/event/token";
@@ -102,7 +102,7 @@ export class ProviderTokenEventProto extends ActionProto {
   @ProtobufProperty({ id: ProviderTokenEventProto.INDEX++, type: "bytes", parser: ErrorProto })
   public error: ErrorProto;
 
-  constructor(data?: { added: core.IProvider[], removed: core.IProvider[] }) {
+  constructor(data?: { added: core.ProviderCrypto[], removed: core.ProviderCrypto[] }) {
     super();
 
     if (data) {
