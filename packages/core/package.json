@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "A package of `webcrypto-local` framework",
   "keywords": [],
-  "author": "microshine <microshine@mail.ru>",
+  "author": "PeculiarVentures",
+  "contributors": [
+    "Miroshin Stepan<microshine@mail.ru>"
+  ],
   "homepage": "https://github.com/PeculiarVentures/webcrypto-local/tree/master/packages/core#readme",
   "license": "MIT",
   "main": "build/index.js",

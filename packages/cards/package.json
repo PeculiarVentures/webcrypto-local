@@ -2,7 +2,10 @@
   "name": "@webcrypto-local/cards",
   "version": "1.0.0",
   "description": "A package of `webcrypto-local` framework. TypeScript definitions for card.json",
-  "author": "microshine <microshine@mail.ru>",
+  "author": "PeculiarVentures",
+  "contributors": [
+    "Miroshin Stepan<microshine@mail.ru>"
+  ],
   "homepage": "https://github.com/PeculiarVentures/webcrypto-local/tree/master/packages/cards#readme",
   "license": "MIT",
   "types": "index.d.ts",
