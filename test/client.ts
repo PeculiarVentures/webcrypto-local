@@ -6,7 +6,7 @@ context("WebCrypto Socket", () => {
   const ws = new client.SocketProvider({ storage: new client.MemoryStorage() });
 
   before((done) => {
-    ws.connect(SERVER_ADDRESS)
+    ws.connect(SERVER_ADDRESS, { rejectUnauthorized: false })
       .on("listening", () => {
         done();
       })

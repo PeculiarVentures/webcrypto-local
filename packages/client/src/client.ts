@@ -1,5 +1,6 @@
 import * as Proto from "@webcrypto-local/proto";
 import { EventEmitter } from "events";
+import * as WebSocket from "ws";
 import { CardReader } from "./card_reader";
 import { Client } from "./connection";
 import { RatchetStorage } from "./connection/storages";
@@ -42,9 +43,9 @@ export class SocketProvider extends EventEmitter {
    * - if server not found emits `error`
    * 2. Create 2key-ratchet session from PreKeyBundle
    */
-  public connect(address: string): this {
+  public connect(address: string, options?: WebSocket.ClientOptions): this {
     this.removeAllListeners();
-    this.client.connect(address)
+    this.client.connect(address, options)
       .on("error", (e) => {
         this.emit("error", e.error);
       })

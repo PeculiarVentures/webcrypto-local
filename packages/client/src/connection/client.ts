@@ -60,11 +60,14 @@ export class Client extends EventEmitter {
    * - if server not found emits `error`
    * 2. Create 2key-ratchet session from PreKeyBundle
    */
-  public connect(address: string): this {
+  public connect(address: string, options?: WebSocket.ClientOptions): this {
     this.getServerInfo(address)
       .then((info) => {
         this.serviceInfo = info;
-        this.socket = new WebSocket(`wss://${address}`, undefined, { rejectUnauthorized: false });
+        const url = `wss://${address}`;
+        this.socket = options
+          ? new WebSocket(url, undefined, options)
+          : new WebSocket(url);
         this.socket.binaryType = "arraybuffer";
         this.socket.onerror = (e: any) => {
           this.emit("error", new events.ClientErrorEvent(this, e.error));
