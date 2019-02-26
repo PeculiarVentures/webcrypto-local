@@ -2,7 +2,11 @@
   "name": "@webcrypto-local/server",
   "version": "1.0.0",
   "description": "A package of `webcrypto-local` framework. WebSocket server",
-  "keywords": ["webcrypto", "server", "websocket"],
+  "keywords": [
+    "webcrypto",
+    "server",
+    "websocket"
+  ],
   "author": "microshine <microshine@mail.ru>",
   "homepage": "https://github.com/PeculiarVentures/webcrypto-local/tree/master/packages/server#readme",
   "license": "MIT",
