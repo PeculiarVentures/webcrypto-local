@@ -7,7 +7,7 @@ import * as https from "https";
 import { assign, Convert } from "pvtsutils";
 import { ObjectProto } from "tsprotobuf";
 import * as url from "url";
-import WebSocket from "ws";
+import * as WebSocket from "ws";
 import { WebCryptoLocalError } from "../error";
 import * as events from "./events";
 import { RatchetStorage } from "./storages";
@@ -182,7 +182,7 @@ export class Server extends EventEmitter {
       maxPayload: 128 * 1024 * 1024,    // 128 Mib
     });
 
-    this.socketServer.on("connection", (ws, request) => {
+    this.socketServer.on("connection", (ws: WebSocket, request) => {
       const session: Session = {
         origin: getOrigin(request),
         headers: request.headers,
