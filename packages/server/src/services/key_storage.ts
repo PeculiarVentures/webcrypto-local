@@ -70,7 +70,7 @@ export class KeyStorageService extends Service<CryptoService> {
         let index: string;
         if (crypto instanceof PvCrypto) {
           index = await crypto.keyStorage.setItem(key, {
-            pinFriendlyName: session.headers.origin,
+            pinFriendlyName: session.origin,
             pinDescription: key.usages.join(", "),
           });
         } else {

@@ -92,7 +92,7 @@ export class CryptoService extends Service<ProviderService> {
               const promise = new Promise<string>((resolve, reject) => {
                 this.emit("notify", {
                   type: "pin",
-                  origin: session.headers.origin,
+                  origin: session.origin,
                   label: slot.getToken().label,
                   resolve,
                   reject,

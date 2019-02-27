@@ -157,7 +157,7 @@ export class LocalServer extends EventEmitter {
           const promise = new Promise<boolean>((resolve, reject) => {
             this.emit("notify", {
               type: "2key",
-              origin: session.headers.host,
+              origin: session.origin,
               pin,
               resolve,
               reject,
@@ -166,7 +166,7 @@ export class LocalServer extends EventEmitter {
           const ok = await promise;
           if (ok) {
             const remoteIdentity: RemoteIdentity = session.cipher.remoteIdentity;
-            remoteIdentity.origin = session.headers.host;
+            remoteIdentity.origin = session.origin;
             remoteIdentity.userAgent = session.headers["user-agent"];
             this.server.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, remoteIdentity);
             session.authorized = true;
