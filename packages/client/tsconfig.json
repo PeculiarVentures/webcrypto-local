@@ -7,6 +7,6 @@
     "moduleResolution": "node"
   },
   "exclude": [
-    "types/**/*.d.ts"
+    "build/**/*.d.ts"
   ]
 }
