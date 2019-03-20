@@ -5,7 +5,7 @@
 
 import { X509Certificate } from "graphene-pk11";
 import { CertificateStorage } from "node-webcrypto-p11";
-import * as core from "webcrypto-core";
+import { CryptoCertificate, CryptoCertificateFormat, ImportAlgorithms } from "webcrypto-core";
 
 import { Pkcs11Crypto } from "./crypto";
 import { fixObject, isOsslObject } from "./helper";
@@ -18,10 +18,10 @@ export class Pkcs11CertificateStorage extends CertificateStorage {
     super(crypto);
   }
 
-  public getItem(index: string): Promise<core.CryptoCertificate>;
-  public getItem(index: string, algorithm: core.ImportAlgorithms, keyUsages: KeyUsage[]): Promise<core.CryptoCertificate>;
-  public async getItem(index: string, algorithm?: core.ImportAlgorithms, keyUsages?: KeyUsage[]) {
-    let cert: core.CryptoCertificate;
+  public getItem(index: string): Promise<CryptoCertificate>;
+  public getItem(index: string, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
+  public async getItem(index: string, algorithm?: ImportAlgorithms, keyUsages?: KeyUsage[]) {
+    let cert: CryptoCertificate;
 
     try {
       cert = await super.getItem(index, algorithm!, keyUsages!);
@@ -46,11 +46,11 @@ export class Pkcs11CertificateStorage extends CertificateStorage {
     return cert;
   }
 
-  public importCert(format: "raw", data: BufferSource, algorithm: core.ImportAlgorithms, keyUsages: KeyUsage[]): Promise<core.CryptoCertificate>;
-  public importCert(format: "pem", data: string, algorithm: core.ImportAlgorithms, keyUsages: KeyUsage[]): Promise<core.CryptoCertificate>;
-  public importCert(format: core.CryptoCertificateFormat, data: BufferSource | string, algorithm: core.ImportAlgorithms, keyUsages: KeyUsage[]): Promise<core.CryptoCertificate>;
-  public async importCert(format: core.CryptoCertificateFormat, data: BufferSource | string, algorithm?: Algorithm, keyUsages?: KeyUsage[]) {
-    let cert: core.CryptoCertificate;
+  public importCert(format: "raw", data: BufferSource, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
+  public importCert(format: "pem", data: string, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
+  public importCert(format: CryptoCertificateFormat, data: BufferSource | string, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
+  public async importCert(format: CryptoCertificateFormat, data: BufferSource | string, algorithm?: Algorithm, keyUsages?: KeyUsage[]) {
+    let cert: CryptoCertificate;
 
     try {
       cert = await super.importCert(format, data, algorithm!, keyUsages!);
@@ -67,10 +67,10 @@ export class Pkcs11CertificateStorage extends CertificateStorage {
     return cert;
   }
 
-  public exportCert(format: "raw", item: core.CryptoCertificate): Promise<ArrayBuffer>;
-  public exportCert(format: "pem", item: core.CryptoCertificate): Promise<string>;
-  public exportCert(format: core.CryptoCertificateFormat, item: core.CryptoCertificate): Promise<ArrayBuffer | string>;
-  public async exportCert(format: core.CryptoCertificateFormat, item: core.CryptoCertificate): Promise<ArrayBuffer | string> {
+  public exportCert(format: "raw", item: CryptoCertificate): Promise<ArrayBuffer>;
+  public exportCert(format: "pem", item: CryptoCertificate): Promise<string>;
+  public exportCert(format: CryptoCertificateFormat, item: CryptoCertificate): Promise<ArrayBuffer | string>;
+  public async exportCert(format: CryptoCertificateFormat, item: CryptoCertificate): Promise<ArrayBuffer | string> {
     if (!isOsslObject(item)) {
       return super.exportCert(format, item);
     } else {
@@ -78,7 +78,7 @@ export class Pkcs11CertificateStorage extends CertificateStorage {
     }
   }
 
-  public async indexOf(item: core.CryptoCertificate): Promise<string | null> {
+  public async indexOf(item: CryptoCertificate): Promise<string | null> {
     if (isOsslObject(item)) {
       return item.__index || null;
     } else {

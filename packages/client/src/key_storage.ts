@@ -1,10 +1,10 @@
 import * as Proto from "@webcrypto-local/proto";
 import { Convert } from "pvtsutils";
-import * as core from "webcrypto-core";
+import { CryptoKeyStorage } from "webcrypto-core";
 import { SocketCrypto } from "./crypto";
 import * as utils from "./utils";
 
-export class KeyStorage implements core.CryptoKeyStorage {
+export class KeyStorage implements CryptoKeyStorage {
 
   protected readonly service: SocketCrypto;
 

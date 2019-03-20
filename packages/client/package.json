@@ -15,7 +15,8 @@
   "license": "MIT",
   "main": "build/index.js",
   "module": "build/index.es.js",
-  "types": "types/index.d.ts",
+  "browser": "build/webcrypto-socket.js",
+  "types": "build/webcrypto-socket.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -25,10 +26,8 @@
   },
   "scripts": {
     "test": "mocha",
-    "build": "npm run build:js && npm run build:types",
-    "build:js": "rollup -c",
-    "build:types": "tsc --declaration --outDir types --emitDeclarationOnly",
-    "clear": "rimraf build types"
+    "build": "rollup -c",
+    "clear": "rimraf build"
   },
   "bugs": {
     "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
@@ -41,6 +40,7 @@
     "idb": "^3.0.2",
     "node-fetch": "^2.3.0",
     "pvtsutils": "^1.0.4",
+    "tslib": "^1.9.3",
     "webcrypto-core": "^1.0.6",
     "ws": "^6.1.4"
   },
@@ -48,7 +48,7 @@
     "@types/ws": "^6.0.1",
     "rimraf": "^2.6.3",
     "rollup": "^1.3.0",
-    "rollup-plugin-typescript": "^1.0.0",
+    "rollup-plugin-dts": "^0.13.0",
     "typescript": "^3.3.3333"
   }
 }

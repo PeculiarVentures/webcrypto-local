@@ -4,9 +4,9 @@
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
   },
   "exclude": [
-    "types/**/*.d.ts"
+    "build/**/*.d.ts"
   ]
 }

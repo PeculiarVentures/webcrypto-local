@@ -9,5 +9,8 @@
         "noUnusedLocals": true,
         "allowSyntheticDefaultImports": true,
         "outDir": "out"
-    }
+    },
+    "exclude": [
+        "packages/**/build/**/*.d.ts"
+    ]
 }

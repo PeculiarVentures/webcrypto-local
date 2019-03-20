@@ -4,11 +4,12 @@
     "module": "commonjs",
     "strict": true,
     "strictPropertyInitialization": false,
+    "importHelpers": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
     "experimentalDecorators": true
   },
   "exclude": [
-    "types/**/*.d.ts"
+    "build/**/*.d.ts"
   ]
 }

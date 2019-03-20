@@ -1,7 +1,7 @@
 import { getEngine } from "2key-ratchet";
 import * as fs from "fs";
 import { Convert } from "pvtsutils";
-import * as core from "webcrypto-core";
+import { CryptoKeyStorage, NativeCrypto } from "webcrypto-core";
 import { WebCryptoLocalError } from "../../error";
 
 interface IJsonOpenSSLKeyStorage {
@@ -14,10 +14,10 @@ interface IJsonOpenSSLKey extends CryptoKey {
   lastUsed: string;
 }
 
-export class OpenSSLKeyStorage implements core.CryptoKeyStorage {
+export class OpenSSLKeyStorage implements CryptoKeyStorage {
 
   public file: string;
-  public crypto: core.NativeCrypto;
+  public crypto: NativeCrypto;
 
   constructor(file: string) {
     this.file = file;

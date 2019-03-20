@@ -1,39 +1,46 @@
-import typescript from "rollup-plugin-typescript";
-import ts from "typescript";
+import { dts, ts } from "rollup-plugin-dts";
 
 const pkg = require("./package.json");
 
-const banner = [];
+const banner = [].join("\n");
 const input = "src/index.ts";
 const external = Object.keys(pkg.dependencies);
 
 export default [
-  // main
   {
     input,
     plugins: [
-      typescript({ typescript: ts, target: "esnext", removeComments: true }),
+      ts({
+        compilerOptions: {
+          removeComments: true,
+        }
+      }),
     ],
     external,
     output: [
       {
-        banner: banner.join("\n"),
+        banner,
         file: pkg.main,
         format: "cjs",
+      },
+      {
+        banner,
+        file: pkg.module,
+        format: "es",
       }
     ]
   },
-  // lib
+  // types
   {
     input,
     plugins: [
-      typescript({ typescript: ts, target: "esnext", removeComments: true }),
+      dts(),
     ],
     external,
     output: [
       {
-        banner: banner.join("\n"),
-        file: pkg.module,
+        banner,
+        file: pkg.types,
         format: "es",
       }
     ]

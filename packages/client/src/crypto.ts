@@ -1,12 +1,12 @@
 import { getEngine } from "2key-ratchet";
 import * as Proto from "@webcrypto-local/proto";
-import * as core from "webcrypto-core";
+import { CryptoStorages } from "webcrypto-core";
 import { CertificateStorage } from "./cert_storage";
 import { Client } from "./connection";
 import { KeyStorage } from "./key_storage";
 import { SubtleCrypto } from "./subtle";
 
-export class SocketCrypto implements Crypto, core.CryptoStorages {
+export class SocketCrypto implements Crypto, CryptoStorages {
 
   public id: string;
   public subtle: SubtleCrypto;

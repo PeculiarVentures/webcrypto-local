@@ -1,11 +1,11 @@
 import { getEngine } from "2key-ratchet";
 import { ProviderInfo } from "node-webcrypto-p11";
-import * as core from "webcrypto-core";
+import { CryptoStorages, NativeCrypto } from "webcrypto-core";
 import { OPENSSL_CERT_STORAGE_DIR, OPENSSL_KEY_STORAGE_DIR } from "../../const";
 import { OpenSSLCertificateStorage } from "./cert_storage";
 import { OpenSSLKeyStorage } from "./key_storage";
 
-export class OpenSSLCrypto implements core.CryptoStorages, core.NativeCrypto {
+export class OpenSSLCrypto implements CryptoStorages, NativeCrypto {
 
   public readonly info: ProviderInfo = {
     id: "61e5e90712ba8abfb6bde6b4504b54bf88d36d0c",

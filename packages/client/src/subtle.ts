@@ -1,11 +1,11 @@
 import { getEngine } from "2key-ratchet";
 import * as Proto from "@webcrypto-local/proto";
 import { Convert } from "pvtsutils";
-import * as core from "webcrypto-core";
+import { BufferSourceConverter, NativeSubtleCrypto } from "webcrypto-core";
 import { SocketCrypto } from "./crypto";
 import * as utils from "./utils";
 
-export class SubtleCrypto implements core.NativeSubtleCrypto {
+export class SubtleCrypto implements NativeSubtleCrypto {
 
   protected readonly service: SocketCrypto;
 
@@ -79,7 +79,7 @@ export class SubtleCrypto implements core.NativeSubtleCrypto {
 
     // prepare
     const algProto = utils.prepareAlgorithm(algorithm);
-    const rawData = core.BufferSourceConverter.toArrayBuffer(data);
+    const rawData = BufferSourceConverter.toArrayBuffer(data);
 
     // Use native digest if possible
     return getEngine().crypto.subtle.digest(algorithm, rawData);
@@ -150,7 +150,7 @@ export class SubtleCrypto implements core.NativeSubtleCrypto {
       preparedKeyData = Convert.FromUtf8String(JSON.stringify(keyData));
     } else {
       utils.checkBufferSource(keyData, "keyData");
-      preparedKeyData = core.BufferSourceConverter.toArrayBuffer(keyData as BufferSource);
+      preparedKeyData = BufferSourceConverter.toArrayBuffer(keyData as BufferSource);
     }
 
     // fill action
@@ -175,7 +175,7 @@ export class SubtleCrypto implements core.NativeSubtleCrypto {
 
     // prepare
     const algProto = utils.prepareAlgorithm(algorithm as AlgorithmIdentifier);
-    const rawData = core.BufferSourceConverter.toArrayBuffer(data);
+    const rawData = BufferSourceConverter.toArrayBuffer(data);
 
     // fill action
     const action = new Proto.SignActionProto();
@@ -198,8 +198,8 @@ export class SubtleCrypto implements core.NativeSubtleCrypto {
 
     // prepare
     const algProto = utils.prepareAlgorithm(algorithm as AlgorithmIdentifier);
-    const rawSignature = core.BufferSourceConverter.toArrayBuffer(signature);
-    const rawData = core.BufferSourceConverter.toArrayBuffer(data);
+    const rawSignature = BufferSourceConverter.toArrayBuffer(signature);
+    const rawData = BufferSourceConverter.toArrayBuffer(data);
 
     // fill action
 
@@ -251,7 +251,7 @@ export class SubtleCrypto implements core.NativeSubtleCrypto {
     // prepare
     const unwrapAlgProto = utils.prepareAlgorithm(unwrapAlgorithm);
     const unwrappedKeyAlgProto = utils.prepareAlgorithm(unwrappedKeyAlgorithm);
-    const rawWrappedKey = core.BufferSourceConverter.toArrayBuffer(wrappedKey);
+    const rawWrappedKey = BufferSourceConverter.toArrayBuffer(wrappedKey);
 
     // fill action
     const action = new Proto.UnwrapKeyActionProto();
@@ -277,7 +277,7 @@ export class SubtleCrypto implements core.NativeSubtleCrypto {
 
     // prepare
     const algProto = utils.prepareAlgorithm(algorithm);
-    const rawData = core.BufferSourceConverter.toArrayBuffer(data);
+    const rawData = BufferSourceConverter.toArrayBuffer(data);
 
     // select encrypt/decrypt action
     let ActionClass: typeof Proto.EncryptActionProto;

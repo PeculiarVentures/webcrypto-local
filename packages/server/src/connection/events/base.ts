@@ -1,4 +1,4 @@
-import * as core from "@webcrypto-local/core";
+import { Event } from "@webcrypto-local/core";
 import { Server } from "../server";
 
-export class ServerEvent extends core.Event<Server> { }
+export class ServerEvent extends Event<Server> { }

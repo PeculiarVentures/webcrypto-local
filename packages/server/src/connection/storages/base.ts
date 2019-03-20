@@ -1,6 +1,6 @@
-import * as ratchet from "2key-ratchet";
+import { AsymmetricRatchet, Identity, RemoteIdentity as RatchetRemoteIdentity } from "2key-ratchet";
 
-export interface RemoteIdentity extends ratchet.RemoteIdentity {
+export interface RemoteIdentity extends RatchetRemoteIdentity {
   userAgent?: string;
   origin?: string;
 }
@@ -19,10 +19,10 @@ export abstract class RatchetStorage {
    * If identity doesn't exist creates new
    * @param origin Domain origin
    */
-  public abstract getIdentity(origin: string): Promise<ratchet.Identity>;
+  public abstract getIdentity(origin: string): Promise<Identity>;
 
   public async createIdentity(preKeyAmount: number = 10) {
-    const identity = await ratchet.Identity.create(0, preKeyAmount);
+    const identity = await Identity.create(0, preKeyAmount);
     return identity;
   }
 
@@ -38,7 +38,7 @@ export abstract class RatchetStorage {
    * @param key     identifier of identity
    * @param value   remote identity
    */
-  public abstract saveRemoteIdentity(key: string, value: ratchet.RemoteIdentity): Promise<void>;
+  public abstract saveRemoteIdentity(key: string, value: RatchetRemoteIdentity): Promise<void>;
   /**
    * Remove remote identity from storage by key
    *
@@ -46,7 +46,7 @@ export abstract class RatchetStorage {
    */
   public abstract removeRemoteIdentity(key: string): Promise<void>;
 
-  public async isTrusted(remoteIdentity: ratchet.RemoteIdentity): Promise<boolean> {
+  public async isTrusted(remoteIdentity: RatchetRemoteIdentity): Promise<boolean> {
     const ok = await remoteIdentity.verify();
     if (!ok) {
       return false;
@@ -58,9 +58,9 @@ export abstract class RatchetStorage {
     return true;
   }
 
-  public abstract loadSession(key: string): Promise<ratchet.AsymmetricRatchet>;
-  public abstract saveSession(key: string, value: ratchet.AsymmetricRatchet): Promise<void>;
-  public abstract findSession(key: CryptoKey): Promise<null | ratchet.AsymmetricRatchet>;
+  public abstract loadSession(key: string): Promise<AsymmetricRatchet>;
+  public abstract saveSession(key: string, value: AsymmetricRatchet): Promise<void>;
+  public abstract findSession(key: CryptoKey): Promise<null | AsymmetricRatchet>;
 
   protected abstract create(): Promise<void>;
 }

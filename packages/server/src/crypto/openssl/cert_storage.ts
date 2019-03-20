@@ -1,7 +1,11 @@
 import { getEngine } from "2key-ratchet";
 import * as fs from "fs";
 import { Convert } from "pvtsutils";
-import * as core from "webcrypto-core";
+import {
+  BufferSourceConverter, CryptoCertificate, CryptoCertificateFormat,
+  CryptoCertificateStorage, CryptoCertificateType, ImportAlgorithms,
+  NativeCrypto, OperationError, PemConverter,
+} from "webcrypto-core";
 import { WebCryptoLocalError } from "../../error";
 import { Certificate } from "./pki/cert";
 import { X509CertificateRequest } from "./pki/request";
@@ -14,26 +18,26 @@ interface IJsonOpenSSLCertificateStorage {
 interface IJsonOpenSSLCertificate {
   algorithm: Algorithm;
   usages: KeyUsage[];
-  type: core.CryptoCertificateType;
+  type: CryptoCertificateType;
   raw: string;
   createdAt: string;
   lastUsed: string;
 }
 
-export class OpenSSLCertificateStorage implements core.CryptoCertificateStorage {
+export class OpenSSLCertificateStorage implements CryptoCertificateStorage {
 
   public file: string;
-  public crypto: core.NativeCrypto;
+  public crypto: NativeCrypto;
 
   constructor(file: string) {
     this.file = file;
     this.crypto = getEngine().crypto;
   }
 
-  public exportCert(format: "pem", item: core.CryptoCertificate): Promise<string>;
-  public exportCert(format: "raw", item: core.CryptoCertificate): Promise<ArrayBuffer>;
-  public exportCert(format: core.CryptoCertificateFormat, item: core.CryptoCertificate): Promise<ArrayBuffer | string>;
-  public async exportCert(format: core.CryptoCertificateFormat, item: Certificate): Promise<ArrayBuffer | string> {
+  public exportCert(format: "pem", item: CryptoCertificate): Promise<string>;
+  public exportCert(format: "raw", item: CryptoCertificate): Promise<ArrayBuffer>;
+  public exportCert(format: CryptoCertificateFormat, item: CryptoCertificate): Promise<ArrayBuffer | string>;
+  public async exportCert(format: CryptoCertificateFormat, item: Certificate): Promise<ArrayBuffer | string> {
     switch (format) {
       case "raw": {
         return item.exportRaw();
@@ -46,12 +50,12 @@ export class OpenSSLCertificateStorage implements core.CryptoCertificateStorage 
     }
   }
 
-  public importCert(format: "raw", data: BufferSource, algorithm: core.ImportAlgorithms, keyUsages: KeyUsage[]): Promise<core.CryptoCertificate>;
-  public importCert(format: "pem", data: string, algorithm: core.ImportAlgorithms, keyUsages: KeyUsage[]): Promise<core.CryptoCertificate>;
-  public importCert(format: core.CryptoCertificateFormat, data: BufferSource | string, algorithm: core.ImportAlgorithms, keyUsages: KeyUsage[]): Promise<core.CryptoCertificate>;
-  public async importCert(format: core.CryptoCertificateFormat, data: BufferSource | string, algorithm?: Algorithm, keyUsages?: KeyUsage[]) {
+  public importCert(format: "raw", data: BufferSource, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
+  public importCert(format: "pem", data: string, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
+  public importCert(format: CryptoCertificateFormat, data: BufferSource | string, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
+  public async importCert(format: CryptoCertificateFormat, data: BufferSource | string, algorithm?: Algorithm, keyUsages?: KeyUsage[]) {
     let rawData: ArrayBuffer;
-    let rawType: core.CryptoCertificateType | null = null;
+    let rawType: CryptoCertificateType | null = null;
 
     //#region Check
     switch (format) {
@@ -59,20 +63,20 @@ export class OpenSSLCertificateStorage implements core.CryptoCertificateStorage 
         if (typeof data !== "string") {
           throw new TypeError("data: Is not type string");
         }
-        if (core.PemConverter.isCertificate(data)) {
+        if (PemConverter.isCertificate(data)) {
           rawType = "x509";
-        } else if (core.PemConverter.isCertificateRequest(data)) {
+        } else if (PemConverter.isCertificateRequest(data)) {
           rawType = "request";
         } else {
-          throw new core.OperationError("data: Is not correct PEM data. Must be Certificate or Certificate Request");
+          throw new OperationError("data: Is not correct PEM data. Must be Certificate or Certificate Request");
         }
-        rawData = core.PemConverter.toArrayBuffer(data);
+        rawData = PemConverter.toArrayBuffer(data);
         break;
       case "raw":
-        if (!core.BufferSourceConverter.isBufferSource(data)) {
+        if (!BufferSourceConverter.isBufferSource(data)) {
           throw new TypeError("data: Is not type ArrayBuffer or ArrayBufferView");
         }
-        rawData = core.BufferSourceConverter.toArrayBuffer(data);
+        rawData = BufferSourceConverter.toArrayBuffer(data);
         break;
       default:
         throw new TypeError("format: Is invalid value. Must be 'raw', 'pem'");
@@ -102,7 +106,7 @@ export class OpenSSLCertificateStorage implements core.CryptoCertificateStorage 
           // nothing
         }
 
-        throw new core.OperationError("Cannot parse Certificate or Certificate Request from incoming ASN1");
+        throw new OperationError("Cannot parse Certificate or Certificate Request from incoming ASN1");
       }
     }
   }
@@ -112,7 +116,7 @@ export class OpenSSLCertificateStorage implements core.CryptoCertificateStorage 
     return Object.keys(items);
   }
 
-  public async hasItem(item: core.CryptoCertificate) {
+  public async hasItem(item: CryptoCertificate) {
     return !!this.indexOf(item);
   }
 
@@ -125,7 +129,7 @@ export class OpenSSLCertificateStorage implements core.CryptoCertificateStorage 
     return item.id;
   }
 
-  public async indexOf(item: core.CryptoCertificate) {
+  public async indexOf(item: CryptoCertificate) {
     if (item instanceof Certificate) {
       const certs = this.readFile();
       for (const index in certs) {

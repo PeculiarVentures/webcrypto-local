@@ -4,6 +4,7 @@ import * as proto from "@webcrypto-local/proto";
 import { EventEmitter } from "events";
 import * as http from "http";
 import * as https from "https";
+import { ServerOptions as HttpsServerOptions } from "https";
 import { assign, Convert } from "pvtsutils";
 import { ObjectProto } from "tsprotobuf";
 import * as url from "url";
@@ -12,7 +13,7 @@ import { WebCryptoLocalError } from "../error";
 import * as events from "./events";
 import { RatchetStorage } from "./storages";
 
-export interface ServerOptions extends https.ServerOptions {
+export interface ServerOptions extends HttpsServerOptions {
   storage: RatchetStorage;
 }
 
@@ -93,7 +94,7 @@ export class Server extends EventEmitter {
 
   protected httpServer!: https.Server;
   protected socketServer!: WebSocket.Server;
-  protected options: https.ServerOptions;
+  protected options: HttpsServerOptions;
 
   constructor(options: ServerOptions) {
     super();
