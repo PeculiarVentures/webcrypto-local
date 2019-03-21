@@ -1,5 +1,6 @@
 import * as client from "@webcrypto-local/client";
-import { SERVER_ADDRESS } from "./config";
+import * as assert from "assert";
+import { SERVER_ADDRESS } from "../config";
 
 context("WebCrypto Socket", () => {
 
@@ -29,7 +30,8 @@ context("WebCrypto Socket", () => {
     }
 
     const info = await ws.info();
-    console.log(info);
+    assert.equal(info.name, "WebcryptoLocal");
+    assert.equal(info.providers.length > 0, true);
   });
 
 });

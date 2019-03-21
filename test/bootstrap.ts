@@ -6,6 +6,9 @@ import * as os from "os";
 import * as path from "path";
 import { SERVER_ADDRESS } from "./config";
 
+// disable TLS certificate validation
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 // Set crypto engine for 2key-ratchet
 setEngine("WebCrypto NodeJS", new Crypto());
 
