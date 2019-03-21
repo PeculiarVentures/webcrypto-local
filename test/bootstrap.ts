@@ -18,6 +18,7 @@ const options: server.IServerOptions = {
   cert: Buffer.from(CERT),
   key: Buffer.from(KEY),
   storage: new server.MemoryStorage(),
+  disablePCSC: true,
   config: {
     cards: "card.json",
     providers: [
