@@ -14,6 +14,7 @@ jobs:
             sudo apt-get install autoconf -y
             sudo apt-get install automake -y
             sudo apt-get install libtool -y
+            sudo apt-get install libpcsclite1 libpcsclite-dev
             
             # Installing SoftHSM
             git clone https://github.com/opendnssec/SoftHSMv2.git -b develop
