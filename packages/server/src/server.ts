@@ -10,6 +10,10 @@ import { ProviderService } from "./services/provider";
 
 export interface IServerOptions extends ServerOptions {
   config: IProviderConfig;
+  /**
+   * Disables using of PCSC. No emit CardReader and Provider token events
+   */
+  disablePCSC?: boolean;
 }
 
 /**
@@ -31,20 +35,25 @@ export class LocalServer extends EventEmitter {
   public sessions: Session[] = [];
 
   public provider: ProviderService;
-  public cardReader: CardReaderService;
+  public cardReader?: CardReaderService;
 
   constructor(options: IServerOptions) {
     super();
 
     this.server = new Server(options);
 
-    this.cardReader = new CardReaderService(this.server)
-      .on("info", (e) => {
-        this.emit("info", e);
-      })
-      .on("error", (e) => {
-        this.emit("error", e);
-      });
+    if (!options.disablePCSC) {
+      // Disable PCSC for provider too
+      options.config.disablePCSC = true;
+
+      this.cardReader = new CardReaderService(this.server)
+        .on("info", (e) => {
+          this.emit("info", e);
+        })
+        .on("error", (e) => {
+          this.emit("error", e);
+        });
+    }
     this.provider = new ProviderService(this.server, options.config)
       .on("info", (e) => {
         this.emit("info", e);
@@ -61,7 +70,9 @@ export class LocalServer extends EventEmitter {
   }
 
   public close(callback?: () => void) {
-    this.cardReader.stop();
+    if (this.cardReader) {
+      this.cardReader.stop();
+    }
 
     this.server.close(() => {
       this.provider.close();
@@ -119,7 +130,9 @@ export class LocalServer extends EventEmitter {
 
     this.server.listen(address);
 
-    this.cardReader.start();
+    if (this.cardReader) {
+      this.cardReader.start();
+    }
 
     return this;
   }

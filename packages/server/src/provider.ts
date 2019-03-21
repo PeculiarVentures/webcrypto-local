@@ -41,6 +41,10 @@ export interface IProviderConfig {
    */
   cards: string;
   pvpkcs11?: string[];
+  /**
+   * Disable using of PCSC
+   */
+  disablePCSC?: boolean;
 }
 
 interface IAddProviderParams {
@@ -58,7 +62,7 @@ export class LocalProvider extends EventEmitter {
   public info!: proto.ProviderInfoProto;
   public crypto: CryptoMap;
 
-  protected cards: CardWatcher;
+  protected cards?: CardWatcher;
   protected config: IProviderConfig;
 
   /**
@@ -69,7 +73,9 @@ export class LocalProvider extends EventEmitter {
     super();
 
     this.config = config;
-    this.cards = new CardWatcher();
+    if (!config.disablePCSC) {
+      this.cards = new CardWatcher();
+    }
     this.crypto = new CryptoMap()
       .on("add", this.onCryptoAdd.bind(this))
       .on("remove", this.onCryptoRemove.bind(this));
@@ -162,24 +168,26 @@ export class LocalProvider extends EventEmitter {
     //#endregion
 
     //#region Add pkcs11
-    this.cards
-      .on("error", (err) => {
-        this.emit("error", err);
-        return this.emit("token", {
-          added: [],
-          removed: [],
-          error: err,
-        });
-      })
-      .on("info", (message) => {
-        this.emit("info", message);
-      })
-      .on("new", (card) => {
-        return this.emit("token_new", card);
-      })
-      .on("insert", this.onTokenInsert.bind(this))
-      .on("remove", this.onTokenRemove.bind(this))
-      .start(this.config.cards);
+    if (this.cards) {
+      this.cards
+        .on("error", (err) => {
+          this.emit("error", err);
+          return this.emit("token", {
+            added: [],
+            removed: [],
+            error: err,
+          });
+        })
+        .on("info", (message) => {
+          this.emit("info", message);
+        })
+        .on("new", (card) => {
+          return this.emit("token_new", card);
+        })
+        .on("insert", this.onTokenInsert.bind(this))
+        .on("remove", this.onTokenRemove.bind(this))
+        .start(this.config.cards);
+    }
     //#endregion
 
     this.emit("listening", await this.getInfo());
