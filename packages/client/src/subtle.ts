@@ -29,7 +29,7 @@ export class SubtleCrypto implements NativeSubtleCrypto {
 
     // prepare
     const algProto = utils.prepareAlgorithm(algorithm);
-    utils.checkCryptoKey(algProto, "algorithm.public");
+    utils.checkCryptoKey(algProto.public, "algorithm.public");
     algProto.public = await utils.Cast<Proto.CryptoKeyProto>(algProto.public).exportProto();
 
     // fill action
@@ -54,7 +54,7 @@ export class SubtleCrypto implements NativeSubtleCrypto {
 
     // prepare incoming data
     const algProto = utils.prepareAlgorithm(algorithm);
-    utils.checkCryptoKey(algProto, "algorithm.public");
+    utils.checkCryptoKey(algProto.public, "algorithm.public");
     algProto.public = await utils.Cast<Proto.CryptoKeyProto>(algProto.public).exportProto();
     const algKeyType = utils.prepareAlgorithm(derivedKeyType);
 

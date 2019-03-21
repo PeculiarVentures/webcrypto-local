@@ -149,7 +149,7 @@ export class SubtleService extends Service<CryptoService> {
         const publicKey = await proto.CryptoKeyProto.importProto(alg.public);
         alg.public = this.getMemoryStorage().item(publicKey.id).item as CryptoKey;
 
-        const derivedKey = await crypto.subtle.deriveKey(alg, key, params.derivedKeyType, params.extractable, params.usage);
+        const derivedKey = await crypto.subtle.deriveKey(alg, key, params.derivedKeyType.toAlgorithm(), params.extractable, params.usage);
 
         // put key to memory storage
         const resKey = new ServiceCryptoItem(derivedKey, params.providerID);
