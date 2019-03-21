@@ -4,7 +4,7 @@ import { Convert } from "pvtsutils";
 import { CryptoX509Certificate, CryptoX509CertificateRequest, PemConverter } from "webcrypto-core";
 import { PROVIDER_NAME, SERVER_ADDRESS } from "../config";
 
-context.only("WebCrypto Socket", () => {
+context("WebCrypto Socket", () => {
 
   context("Certificate storage", () => {
 

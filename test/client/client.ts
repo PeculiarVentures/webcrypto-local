@@ -18,7 +18,6 @@ context("WebCrypto Socket", () => {
 
   after((done) => {
     ws.on("close", () => {
-      console.log("WS: Close");
       done();
     });
     ws.close();
