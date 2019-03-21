@@ -11,7 +11,9 @@
     "clear": "lerna run clear",
     "build": "lerna run build",
     "prepub": "npm run clear && npm run build",
-    "pub": "lerna publish"
+    "pub": "lerna publish",
+    "lint": "tslint -p .",
+    "lint:fix": "tslint --fix -p ."
   },
   "repository": {
     "type": "git",
