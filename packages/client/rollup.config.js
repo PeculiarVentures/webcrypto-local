@@ -118,7 +118,7 @@ const browser = [
 ]
 
 export default [
-  // main,
+  main,
   types,
-  // ...browser,
+  ...browser,
 ];
