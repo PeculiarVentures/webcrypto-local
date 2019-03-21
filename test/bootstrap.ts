@@ -4,7 +4,7 @@ import * as server from "@webcrypto-local/server";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { SERVER_ADDRESS } from "./config";
+import { PROVIDER_NAME, SERVER_ADDRESS } from "./config";
 
 // disable TLS certificate validation
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -23,7 +23,7 @@ const options: server.IServerOptions = {
   config: {
     cards: "oops",
     providers: [
-      { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0], name: "Custom name" },
+      { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0], name: PROVIDER_NAME },
     ],
     pvpkcs11: [
       "/Users/microshine/github/pv/fortify/libpvpkcs11.dylib",

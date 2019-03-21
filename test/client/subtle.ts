@@ -170,7 +170,7 @@ context("WebCrypto Socket", () => {
       assert.equal(bits.byteLength, 16);
     });
 
-    it.only("derive key", async () => {
+    it("derive key", async () => {
       const keys = await subtle.generateKey(ECDH_P256_ALG, false, ["deriveBits", "deriveKey"]);
       const key = await subtle.deriveKey({ ...ECDH_P256_ALG, public: keys.publicKey }, keys.privateKey, AES_128_CBC, false, ["encrypt"]);
       assert.equal(key.algorithm.name, AES_128_CBC.name);

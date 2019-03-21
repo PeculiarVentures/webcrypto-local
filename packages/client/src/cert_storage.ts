@@ -110,7 +110,7 @@ export class CertificateStorage implements CryptoCertificateStorage {
     // prepare request
     const proto = new Proto.CertificateStorageImportActionProto();
     proto.providerID = this.provider.id;
-    proto.format = format === "x509" || format === "request" ? "raw" : format;
+    proto.format = "raw";
     proto.data = rawData;
     proto.algorithm = algProto;
     proto.keyUsages = keyUsages;
@@ -170,6 +170,7 @@ export class CertificateStorage implements CryptoCertificateStorage {
     throw new Error("Cannot get CryptoCertificate from storage by index");
   }
 
+  public async setItem(value: CryptoCertificate): Promise<string>;
   public async setItem(value: Proto.CryptoCertificateProto) {
     // check
     utils.checkCryptoCertificate(value, "value");
@@ -206,6 +207,7 @@ export class CertificateStorage implements CryptoCertificateStorage {
     await this.provider.client.send(proto);
   }
 
+  public async getChain(value: CryptoCertificate): Promise<Proto.ChainItemProto[]>;
   public async getChain(value: Proto.CryptoCertificateProto) {
     // check
     utils.checkCryptoCertificate(value, "value");

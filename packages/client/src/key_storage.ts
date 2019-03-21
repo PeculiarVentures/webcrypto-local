@@ -77,6 +77,7 @@ export class KeyStorage implements CryptoKeyStorage {
     return socketKey;
   }
 
+  public async setItem(value: CryptoKey): Promise<string>;
   public async setItem(value: Proto.CryptoKeyProto) {
     // check
     utils.checkCryptoKey(value, "value");

@@ -13,14 +13,17 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     this.service = crypto;
   }
 
+  public async encrypt(algorithm: Algorithm, key: CryptoKey, data: BufferSource): Promise<ArrayBuffer>;
   public async encrypt(algorithm: Algorithm, key: Proto.CryptoKeyProto, data: BufferSource) {
     return this.encryptData(algorithm, key, data, "encrypt");
   }
 
+  public async decrypt(algorithm: Algorithm, key: CryptoKey, data: BufferSource): Promise<ArrayBuffer>;
   public async decrypt(algorithm: Algorithm, key: Proto.CryptoKeyProto, data: BufferSource) {
     return this.encryptData(algorithm, key, data, "decrypt");
   }
 
+  public async deriveBits(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfCtrParams | Pbkdf2Params, baseKey: CryptoKey, length: number): Promise<ArrayBuffer>;
   public async deriveBits(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfCtrParams | Pbkdf2Params, baseKey: Proto.CryptoKeyProto, length: number) {
     // check
     utils.checkAlgorithm(algorithm, "algorithm");
@@ -116,7 +119,10 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     }
   }
 
-  public async exportKey(format: string, key: Proto.CryptoKeyProto) {
+  public async exportKey(format: "jwk", key: CryptoKey): Promise<JsonWebKey>;
+  public async exportKey(format: "raw" | "spki" | "pkcs8", key: CryptoKey): Promise<ArrayBuffer>;
+  public async exportKey(format: KeyFormat, key: CryptoKey): Promise<JsonWebKey | ArrayBuffer>;
+  public async exportKey(format: KeyFormat, key: Proto.CryptoKeyProto) {
     // check
     utils.checkPrimitive(format, "string", "format");
     utils.checkCryptoKey(key, "key");
@@ -136,7 +142,7 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     }
   }
 
-  public async importKey(format: KeyFormat, keyData: JsonWebKey | BufferSource, algorithm: string | RsaHashedImportParams | EcKeyImportParams | HmacImportParams | DhImportKeyParams, extractable: boolean, keyUsages: string[]) {
+  public async importKey(format: KeyFormat, keyData: JsonWebKey | BufferSource, algorithm: string | RsaHashedImportParams | EcKeyImportParams | HmacImportParams | DhImportKeyParams, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey> {
     // check
     utils.checkPrimitive(format, "string", "format");
     utils.checkAlgorithm(algorithm, "algorithm");
@@ -167,6 +173,7 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     return await Proto.CryptoKeyProto.importProto(result);
   }
 
+  public async sign(algorithm: string | RsaPssParams | EcdsaParams | AesCmacParams, key: CryptoKey, data: BufferSource): Promise<ArrayBuffer>;
   public async sign(algorithm: string | RsaPssParams | EcdsaParams | AesCmacParams, key: Proto.CryptoKeyProto, data: BufferSource) {
     // check
     utils.checkAlgorithm(algorithm, "algorithm");
@@ -189,6 +196,7 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     return result;
   }
 
+  public async verify(algorithm: string | RsaPssParams | EcdsaParams | AesCmacParams, key: CryptoKey, signature: BufferSource, data: BufferSource): Promise<boolean>;
   public async verify(algorithm: string | RsaPssParams | EcdsaParams | AesCmacParams, key: Proto.CryptoKeyProto, signature: BufferSource, data: BufferSource) {
     // check
     utils.checkAlgorithm(algorithm, "algorithm");
@@ -215,7 +223,8 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     return !!(new Uint8Array(result)[0]);
   }
 
-  public async wrapKey(format: string, key: Proto.CryptoKeyProto, wrappingKey: Proto.CryptoKeyProto, wrapAlgorithm: AlgorithmIdentifier) {
+  public async wrapKey(format: KeyFormat, key: CryptoKey, wrappingKey: CryptoKey, wrapAlgorithm: AlgorithmIdentifier): Promise<ArrayBuffer>;
+  public async wrapKey(format: KeyFormat, key: Proto.CryptoKeyProto, wrappingKey: Proto.CryptoKeyProto, wrapAlgorithm: AlgorithmIdentifier) {
     // check
     utils.checkPrimitive(format, "string", "format");
     utils.checkCryptoKey(key, "key");
@@ -238,7 +247,8 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     return result;
   }
 
-  public async unwrapKey(format: string, wrappedKey: BufferSource, unwrappingKey: Proto.CryptoKeyProto, unwrapAlgorithm: AlgorithmIdentifier, unwrappedKeyAlgorithm: AlgorithmIdentifier, extractable: boolean, keyUsages: string[]) {
+  public async unwrapKey(format: KeyFormat, wrappedKey: BufferSource, unwrappingKey: CryptoKey, unwrapAlgorithm: AlgorithmIdentifier, unwrappedKeyAlgorithm: AlgorithmIdentifier, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
+  public async unwrapKey(format: KeyFormat, wrappedKey: BufferSource, unwrappingKey: Proto.CryptoKeyProto, unwrapAlgorithm: AlgorithmIdentifier, unwrappedKeyAlgorithm: AlgorithmIdentifier, extractable: boolean, keyUsages: KeyUsage[]) {
     // check
     utils.checkPrimitive(format, "string", "format");
     utils.checkBufferSource(wrappedKey, "wrappedKey");
