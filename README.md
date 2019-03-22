@@ -18,10 +18,6 @@ npm run build
 npm test
 ```
 
-#### Example
-
-Open `dist/index.html`
-
 ### Related
 - [2key-ratchet](https://github.com/PeculiarVentures/2key-ratchet)
 - [pvpkcs11](https://github.com/PeculiarVentures/pvpkcs11)

@@ -2,7 +2,7 @@ import * as Proto from "@webcrypto-local/proto";
 import { Convert } from "pvtsutils";
 import {
   BufferSourceConverter, CryptoCertificate, CryptoCertificateFormat,
-  CryptoCertificateStorage, ImportAlgorithms, PemConverter, CryptoX509Certificate, CryptoX509CertificateRequest,
+  CryptoCertificateStorage, CryptoX509Certificate, CryptoX509CertificateRequest, ImportAlgorithms, PemConverter,
 } from "webcrypto-core";
 import { SocketCrypto } from "./crypto";
 import * as utils from "./utils";
