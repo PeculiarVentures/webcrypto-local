@@ -1,6 +1,6 @@
 {
   "name": "@webcrypto-local/cards",
-  "version": "1.0.3",
+  "version": "1.0.9",
   "description": "A package of `webcrypto-local` framework. TypeScript definitions for card.json",
   "author": "PeculiarVentures",
   "contributors": [
