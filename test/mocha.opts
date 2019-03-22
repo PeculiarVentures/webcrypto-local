@@ -1,0 +1,5 @@
+test/bootstrap.ts
+--require ts-node/register
+test/**/*.ts
+--timeout 10000
+--exit
