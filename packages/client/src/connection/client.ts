@@ -5,6 +5,7 @@ import { EventEmitter } from "events";
 import fetch from "node-fetch";
 import { Convert } from "pvtsutils";
 import WebSocket from "ws";
+import { CryptoServerError } from "../errors";
 import * as events from "./events";
 import { RatchetStorage } from "./storages";
 
@@ -251,9 +252,7 @@ export class Client extends EventEmitter {
       const messageProto = await proto.ResultProto.importProto(await p.exportProto());
       if (messageProto.error && messageProto.error.message) {
         const errorProto = messageProto.error;
-        const error = new Error(messageProto.error.message) as any;
-        error.code = errorProto.code;
-        error.type = errorProto.type;
+        const error = new CryptoServerError(errorProto);
         promise.reject(error);
       } else {
         promise.resolve(messageProto.data);
