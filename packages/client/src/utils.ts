@@ -16,6 +16,9 @@ export function isHashedAlgorithm(data: any): data is HashedAlgorithm {
 }
 
 export function prepareAlgorithm(algorithm: AlgorithmIdentifier) {
+  if (algorithm instanceof proto.AlgorithmProto) {
+    return algorithm;
+  }
   const algProto = new proto.AlgorithmProto();
   if (typeof algorithm === "string") {
     algProto.fromAlgorithm({ name: algorithm });

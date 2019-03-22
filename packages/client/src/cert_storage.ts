@@ -2,7 +2,7 @@ import * as Proto from "@webcrypto-local/proto";
 import { Convert } from "pvtsutils";
 import {
   BufferSourceConverter, CryptoCertificate, CryptoCertificateFormat,
-  CryptoCertificateStorage, ImportAlgorithms, PemConverter,
+  CryptoCertificateStorage, ImportAlgorithms, PemConverter, CryptoX509Certificate, CryptoX509CertificateRequest,
 } from "webcrypto-core";
 import { SocketCrypto } from "./crypto";
 import * as utils from "./utils";
@@ -79,6 +79,8 @@ export class CertificateStorage implements CryptoCertificateStorage {
     }
   }
 
+  public async importCert(format: "x509", data: BufferSource, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoX509Certificate>;
+  public async importCert(format: "request", data: BufferSource, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoX509CertificateRequest>;
   public async importCert(format: "raw" | "x509" | "request", data: BufferSource, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
   public async importCert(format: "pem", data: string, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
   public async importCert(format: CryptoCertificateFormat | "x509" | "request", data: BufferSource | string, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
@@ -97,7 +99,7 @@ export class CertificateStorage implements CryptoCertificateStorage {
     utils.checkArray(keyUsages, "keyUsages");
 
     // prepare
-    const algProto = utils.prepareAlgorithm(algorithm);
+    const algProto = utils.prepareAlgorithm(algorithm!);
     let rawData: ArrayBuffer;
     if (BufferSourceConverter.isBufferSource(data)) {
       rawData = BufferSourceConverter.toArrayBuffer(data);
@@ -120,6 +122,13 @@ export class CertificateStorage implements CryptoCertificateStorage {
 
     // prepare result
     const certItem = await Proto.CryptoCertificateProto.importProto(result);
+
+    // certItem type for request and x509 format
+    if ((format === "request" || format === "x509")
+      && certItem.type !== format) {
+      throw new TypeError(`Imported item is not ${format}`);
+    }
+
     return this.prepareCertItem(certItem) as any;
   }
 

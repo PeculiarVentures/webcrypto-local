@@ -53,7 +53,7 @@ const types = {
 };
 
 const browserExternals = {
-  "protobufjs": "protobufjs",
+  "protobufjs": "protobuf",
   "ws": "WebSocket",
   "node-fetch": "fetch",
 };

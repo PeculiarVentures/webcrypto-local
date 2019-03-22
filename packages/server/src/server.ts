@@ -43,9 +43,6 @@ export class LocalServer extends EventEmitter {
     this.server = new Server(options);
 
     if (!options.disablePCSC) {
-      // Disable PCSC for provider too
-      options.config.disablePCSC = true;
-
       this.cardReader = new CardReaderService(this.server)
         .on("info", (e) => {
           this.emit("info", e);
@@ -53,6 +50,9 @@ export class LocalServer extends EventEmitter {
         .on("error", (e) => {
           this.emit("error", e);
         });
+    } else {
+      // Disable PCSC for provider too
+      options.config.disablePCSC = true;
     }
     this.provider = new ProviderService(this.server, options.config)
       .on("info", (e) => {

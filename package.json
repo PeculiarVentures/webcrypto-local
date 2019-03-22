@@ -14,7 +14,8 @@
     "prepub": "npm run clear && npm run build",
     "pub": "lerna publish",
     "lint": "tslint -p .",
-    "lint:fix": "tslint --fix -p ."
+    "lint:fix": "tslint --fix -p .",
+    "start": "ts-node scripts/server.ts"
   },
   "repository": {
     "type": "git",
@@ -65,7 +66,7 @@
     "graphene-pk11": "^2.1.1",
     "idb": "^3.0.2",
     "node-fetch": "^2.3.0",
-    "node-webcrypto-p11": "^2.0.2",
+    "node-webcrypto-p11": "^2.0.3",
     "pcsclite": "^0.6.0",
     "pkijs": "^2.1.75",
     "pvtsutils": "^1.0.4",

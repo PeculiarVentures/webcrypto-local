@@ -83,6 +83,11 @@ context("WebCrypto Socket", () => {
           const raw = await crypto.certStorage.exportCert("raw", item);
           assert.equal(Convert.ToHex(raw), Convert.ToHex(CERT_RAW));
         });
+
+        it("throw error if imported item doesn't match to `x509` format", async () => {
+          await assert.rejects(crypto.certStorage.importCert("x509", REQ_RAW, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" } as RsaHashedImportParams, ["verify"]));
+        });
+
       });
       context("request", () => {
         it("raw", async () => {
@@ -110,6 +115,10 @@ context("WebCrypto Socket", () => {
 
           const raw = await crypto.certStorage.exportCert("raw", item);
           assert.equal(Convert.ToHex(raw), Convert.ToHex(REQ_RAW));
+        });
+
+        it("throw error if imported item doesn't match to `request` format", async () => {
+          await assert.rejects(crypto.certStorage.importCert("request", CERT_RAW, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" } as RsaHashedImportParams, ["verify"]));
         });
       });
     });
