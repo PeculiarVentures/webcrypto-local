@@ -1,6 +1,6 @@
 {
 	"$schema": "./card.schema.json",
-	"version": "1.0.20",
+	"version": "1.0.21",
 	"cards": [
 		{
 			"atr": "3b9813400aa503010101ad1311",
@@ -269,7 +269,12 @@
 			"atr": "3BDF18008131FE7D006B020C0182011101434E53103180FC",
 			"name": "Italian healtcare card (TS) National Service Card (CNS) (HealthCare)",
 			"driver": "993988460d8f49a2ac519a2935f11533"
-		}
+		},
+		{
+      "atr": "3B7D96000080318065B0A31101F383009000",
+      "name": "Telia EID IP5a (eID)",
+      "driver": "993988460d8f49a2ac519a2935f11533"
+    }
 	],
 	"drivers": [
 		{
