@@ -1,6 +1,6 @@
 {
 	"$schema": "./card.schema.json",
-	"version": "1.0.21",
+	"version": "1.0.22",
 	"cards": [
 		{
 			"atr": "3b9813400aa503010101ad1311",
@@ -271,10 +271,15 @@
 			"driver": "993988460d8f49a2ac519a2935f11533"
 		},
 		{
-      "atr": "3B7D96000080318065B0A31101F383009000",
-      "name": "Telia EID IP5a (eID)",
-      "driver": "993988460d8f49a2ac519a2935f11533"
-    }
+			"atr": "3B7D96000080318065B0A31101F383009000",
+			"name": "Telia EID IP5a (eID)",
+			"driver": "993988460d8f49a2ac519a2935f11533"
+		},
+		{
+			"atr": "3b7e9400008025d20310010056000000020200",
+			"name": "National Identity Document: Czech eID (since 7/2018)",
+			"driver": "445912C0D3A36598078024B49C87336F45B16EA9"
+		}
 	],
 	"drivers": [
 		{
@@ -420,6 +425,18 @@
 				"windows": {
 					"x86": "%PROGRAMFILES(X86)/Gemalto/Classic Client/BIN/gclib.dll",
 					"x64": "%PROGRAMFILES/Gemalto/Classic Client/BIN/gclib.dll"
+				}
+			}
+		},
+		{
+			"id": "445912C0D3A36598078024B49C87336F45B16EA9",
+			"name": "eOP Czech",
+			"file": {
+				"osx": "/usr/local/lib/eOPCZE/libeop2v1czep11.dylib",
+				"linux": "/usr/lib/x86_64-linux-gnu/libeop2v1czep11.so",
+				"windows": {
+					"x86": "%WINDIR/System32/eop2v1czep11.dll",
+					"x64": "%WINDIR/SysWOW64/eop2v1czep11.dll"
 				}
 			}
 		}
