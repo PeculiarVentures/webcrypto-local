@@ -1,4 +1,4 @@
-import { ArrayBufferConverter, IProtobufScheme, ObjectProto, ProtobufElement, ProtobufProperty } from "tsprotobuf";
+import { ArrayBufferConverter, ObjectProto, ProtobufElement, ProtobufProperty } from "tsprotobuf";
 import { HexStringConverter } from "./converters";
 
 export interface IAlgorithmConvertible {
@@ -95,7 +95,7 @@ export class AlgorithmProto extends BaseAlgorithmProto {
 
   public toAlgorithm() {
     const res: { [key: string]: any } = {};
-    const thisStatic = this.constructor as IProtobufScheme;
+    const thisStatic = this.constructor as any;
     for (const key in thisStatic.items) {
       // ignore 'version'
       if (key === "version") {
@@ -119,7 +119,7 @@ export class AlgorithmProto extends BaseAlgorithmProto {
     if (alg instanceof AlgorithmProto) {
       alg = alg.toAlgorithm();
     }
-    const thisStatic = this.constructor as IProtobufScheme;
+    const thisStatic = this.constructor as any;
     for (const key in alg) {
       if (!thisStatic.items) {
         continue;
