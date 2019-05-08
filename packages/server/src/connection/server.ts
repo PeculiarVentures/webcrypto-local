@@ -246,7 +246,12 @@ export class Server extends EventEmitter {
                     throw new Error("Session cipher was not initialized yet");
                   }
                   const sessionIdentitySHA256 = await session.cipher.remoteIdentity.signingKey.thumbprint();
-                  this.emit("info", `Server: session:${sessionIdentitySHA256} ${actionProto.action}`);
+                  if (new RegExp("^crypto\/").test(actionProto.action)) {
+                    const cryptoActionProto = await proto.CryptoActionProto.importProto(actionProto);
+                    this.emit("info", `Server: session:${sessionIdentitySHA256} provider:${cryptoActionProto.providerID} ${actionProto.action}`);
+                  } else {
+                    this.emit("info", `Server: session:${sessionIdentitySHA256} ${actionProto.action}`);
+                  }
                   this.emit("message", new events.ServerMessageEvent(this, session, actionProto, resolve, reject));
                 })()
                   .catch((err) => {
