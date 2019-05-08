@@ -1,6 +1,6 @@
 {
   "name": "@webcrypto-local/client",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "A package of `webcrypto-local` framework. WebSocket client",
   "keywords": [
     "webcrypto",
@@ -36,7 +36,7 @@
     "2key-ratchet": "^1.0.14",
     "@types/node-fetch": "^2.1.6",
     "@webcrypto-local/core": "^1.0.9",
-    "@webcrypto-local/proto": "^1.0.9",
+    "@webcrypto-local/proto": "^1.0.10",
     "idb": "^3.0.2",
     "node-fetch": "^2.3.0",
     "pvtsutils": "^1.0.4",
