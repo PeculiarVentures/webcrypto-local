@@ -85,7 +85,7 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     const rawData = BufferSourceConverter.toArrayBuffer(data);
 
     // Use native digest if possible
-    return getEngine().crypto.subtle.digest(algorithm, rawData);
+    return getEngine().crypto.subtle.digest(algProto, rawData);
   }
 
   public generateKey(algorithm: string, extractable: boolean, keyUsages: string[]): Promise<CryptoKeyPair | CryptoKey>;
