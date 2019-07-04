@@ -134,7 +134,8 @@ export class CardWatcher extends EventEmitter {
   }
 
   private getCard(atr: Buffer) {
-    const configCard = Object.assign({}, this.config.getItem(atr));
+    const configCard = this.config.getItem(atr);
+    let res = configCard ? Object.assign({}, configCard) : null;
 
     // get custom card
     let customCard: Card | undefined;
@@ -151,12 +152,21 @@ export class CardWatcher extends EventEmitter {
       for (const item of customCard.libraries) {
         libraries.push(item);
       }
-      for (const item of configCard.libraries) {
-        libraries.push(item);
+      if (res) {
+        for (const item of res.libraries) {
+          libraries.push(item);
+        }
+      } else {
+        res = {
+          atr,
+          libraries,
+          name: customCard.name,
+          readOnly: customCard.readOnly,
+        };
       }
-      configCard.libraries = libraries;
+      res.libraries = libraries;
     }
 
-    return configCard;
+    return res;
   }
 }
