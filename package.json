@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "2key-ratchet": "^1.0.14",
+    "@peculiar/json-schema": "^1.1.5",
     "@webcrypto-local/cards": "file:packages/cards",
     "@webcrypto-local/client": "file:packages/client",
     "@webcrypto-local/core": "file:packages/core",
