@@ -134,7 +134,6 @@ export class CardWatcher extends EventEmitter {
   }
 
   private getCard(atr: Buffer) {
-    debugger;
     const configCard = Object.assign({}, this.config.getItem(atr));
 
     // get custom card

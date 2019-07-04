@@ -76,16 +76,8 @@ export class SubtleCrypto implements NativeSubtleCrypto {
   }
 
   public async digest(algorithm: AlgorithmIdentifier, data: BufferSource) {
-    // check
-    utils.checkAlgorithm(algorithm, "algorithm");
-    utils.checkBufferSource(data, "data");
-
-    // prepare
-    const algProto = utils.prepareAlgorithm(algorithm);
-    const rawData = BufferSourceConverter.toArrayBuffer(data);
-
     // Use native digest if possible
-    return getEngine().crypto.subtle.digest(algProto, rawData);
+    return getEngine().crypto.subtle.digest(algorithm, data as ArrayBuffer);
   }
 
   public generateKey(algorithm: string, extractable: boolean, keyUsages: string[]): Promise<CryptoKeyPair | CryptoKey>;

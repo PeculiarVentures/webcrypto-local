@@ -2,7 +2,7 @@ import { JsonParser, JsonSerializer } from "@peculiar/json-schema";
 import { Card, Cards, Driver, File, Variables } from "@webcrypto-local/cards";
 import * as assert from "assert";
 
-context.only("Cards JSON", () => {
+context("Cards JSON", () => {
 
   it("parse", () => {
     const cards = JsonParser.fromJSON({
