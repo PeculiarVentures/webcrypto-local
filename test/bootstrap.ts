@@ -20,10 +20,11 @@ const options: server.IServerOptions = {
   storage: new server.MemoryStorage(),
   disablePCSC: true,
   config: {
-    cards: "card.json",
+    cardConfigPath: "card.json",
     providers: [
       { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0], name: PROVIDER_NAME },
     ],
+    cards: [],
   },
 };
 const localServer = new server.LocalServer(options);

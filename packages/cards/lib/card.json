@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "cards": [
     {
       "atr": "3b9813400aa503010101ad1311",
@@ -258,6 +258,11 @@
     {
       "atr": "3BDC18FF8191FE1FC38073C8211366010B0352000538",
       "name": "Athena IDProtect Smart Card Logon Card",
+      "driver": "29a2bd60c4b841c686be68d2874c0c02"
+    },
+    {
+      "atr": "3BDC18FF8091FE1FC38073C8211366010B0352000539",
+      "name": "Digital Signature Costa Rica (eID)",
       "driver": "29a2bd60c4b841c686be68d2874c0c02"
     },
     {

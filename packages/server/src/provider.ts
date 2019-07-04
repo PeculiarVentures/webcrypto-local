@@ -13,7 +13,7 @@ import { CryptoMap } from "./crypto_map";
 import { WebCryptoLocalError } from "./error";
 import { digest } from "./helper";
 import { MapChangeEvent } from "./map";
-import { Card, CardWatcher, PCSCCard } from "./pcsc_watcher";
+import { Card, CardWatcher, PCSCCard } from "./pcsc";
 
 export interface IServerProvider {
   /**
@@ -39,12 +39,16 @@ export interface IProviderConfig {
   /**
    * Path to card.json
    */
-  cards: string;
+  cardConfigPath: string;
   pvpkcs11?: string[];
   /**
    * Disable using of PCSC
    */
   disablePCSC?: boolean;
+  /**
+   * Additional cards
+   */
+  cards: Card[];
 }
 
 interface IAddProviderParams {
@@ -62,8 +66,8 @@ export class LocalProvider extends EventEmitter {
   public info!: proto.ProviderInfoProto;
   public crypto: CryptoMap;
 
-  protected cards?: CardWatcher;
-  protected config: IProviderConfig;
+  public cards?: CardWatcher;
+  public config: IProviderConfig;
 
   /**
    *
@@ -74,7 +78,9 @@ export class LocalProvider extends EventEmitter {
 
     this.config = config;
     if (!config.disablePCSC) {
-      this.cards = new CardWatcher();
+      this.cards = new CardWatcher({
+        cards: config.cards,
+      });
     }
     this.crypto = new CryptoMap()
       .on("add", this.onCryptoAdd.bind(this))
@@ -186,7 +192,7 @@ export class LocalProvider extends EventEmitter {
         })
         .on("insert", this.onTokenInsert.bind(this))
         .on("remove", this.onTokenRemove.bind(this))
-        .start(this.config.cards);
+        .start(this.config.cardConfigPath);
     }
     //#endregion
 
@@ -235,14 +241,16 @@ export class LocalProvider extends EventEmitter {
   }
 
   protected onTokenInsert(card: Card) {
-    const EVENT_LOG = "Provider:Token:Insert";
+    const EVENT_LOG = "Provider:Token:Insert:";
     this.emit("info", `${EVENT_LOG} reader:'${card.reader}' name:'${card.name}' atr:${card.atr ? card.atr.toString("hex") : "unknown"}`);
     let lastError: Error | null = null;
     for (const library of card.libraries) {
       try {
+        this.emit("info", `${EVENT_LOG} Loading PKCS#11 library from ${library}`);
         lastError = null; // remove last error
         if (!fs.existsSync(library)) {
           lastError = new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_NOT_FOUND, library);
+          this.emit("error", `${EVENT_LOG} File ${library} does not exist`);
           continue;
         }
 

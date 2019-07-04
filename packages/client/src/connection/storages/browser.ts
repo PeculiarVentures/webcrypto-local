@@ -17,25 +17,27 @@ export class BrowserStorage extends RatchetStorage {
   public static REMOTE_STORAGE = "remoteIdentity";
 
   public static async create() {
-    // await idb.delete(this.STORAGE_NAME);
-    const db = await idb.openDb(this.STORAGE_NAME, 1, (updater) => {
-      updater.createObjectStore(this.SESSION_STORAGE);
-      updater.createObjectStore(this.IDENTITY_STORAGE);
-      updater.createObjectStore(this.REMOTE_STORAGE);
+    const db = await idb.openDB(this.STORAGE_NAME, 1, {
+      upgrade: (updater) => {
+        updater.createObjectStore(this.SESSION_STORAGE);
+        updater.createObjectStore(this.IDENTITY_STORAGE);
+        updater.createObjectStore(this.REMOTE_STORAGE);
+      },
     });
     return new BrowserStorage(db);
   }
 
-  protected db: idb.DB;
+  protected db: idb.IDBPDatabase;
 
-  private constructor(db: idb.DB) {
+  private constructor(db: idb.IDBPDatabase) {
     super();
     this.db = db;
   }
 
   public async loadWrapKey(): Promise<IWrapKey | null> {
     const wKey = await this.db.transaction(BrowserStorage.IDENTITY_STORAGE)
-      .objectStore(BrowserStorage.IDENTITY_STORAGE).get("wkey") as IWrapKey;
+      .objectStore(BrowserStorage.IDENTITY_STORAGE)
+      .get("wkey") as IWrapKey;
     if (wKey) {
       if (isEdge()) {
         if (!(wKey.key instanceof ArrayBuffer)) {
@@ -56,14 +58,15 @@ export class BrowserStorage extends RatchetStorage {
       };
 
     }
-    const tx = this.db.transaction(BrowserStorage.IDENTITY_STORAGE, "readwrite");
-    tx.objectStore(BrowserStorage.IDENTITY_STORAGE).put(key, "wkey");
-    return tx.complete;
+    await this.db.transaction(BrowserStorage.IDENTITY_STORAGE, "readwrite")
+      .objectStore(BrowserStorage.IDENTITY_STORAGE)
+      .put(key, "wkey");
   }
 
   public async loadIdentity() {
     const json: ratchet.IJsonIdentity = await this.db.transaction(BrowserStorage.IDENTITY_STORAGE)
-      .objectStore(BrowserStorage.IDENTITY_STORAGE).get("identity");
+      .objectStore(BrowserStorage.IDENTITY_STORAGE)
+      .get("identity");
     let res: ratchet.Identity | null = null;
     if (json) {
       if (isFirefox() || isEdge()) {
@@ -134,14 +137,15 @@ export class BrowserStorage extends RatchetStorage {
       }
     }
 
-    const tx = this.db.transaction(BrowserStorage.IDENTITY_STORAGE, "readwrite");
-    tx.objectStore(BrowserStorage.IDENTITY_STORAGE).put(json, "identity");
-    return tx.complete;
+    await this.db.transaction(BrowserStorage.IDENTITY_STORAGE, "readwrite")
+      .objectStore(BrowserStorage.IDENTITY_STORAGE)
+      .put(json, "identity");
   }
 
   public async loadRemoteIdentity(key: string) {
     const json: ratchet.IJsonRemoteIdentity = await this.db.transaction(BrowserStorage.REMOTE_STORAGE)
-      .objectStore(BrowserStorage.REMOTE_STORAGE).get(key);
+      .objectStore(BrowserStorage.REMOTE_STORAGE)
+      .get(key);
     let res: ratchet.RemoteIdentity | null = null;
     if (json) {
       res = await ratchet.RemoteIdentity.fromJSON(json);
@@ -151,14 +155,15 @@ export class BrowserStorage extends RatchetStorage {
 
   public async saveRemoteIdentity(key: string, value: ratchet.RemoteIdentity) {
     const json = await value.toJSON();
-    const tx = this.db.transaction(BrowserStorage.REMOTE_STORAGE, "readwrite");
-    tx.objectStore(BrowserStorage.REMOTE_STORAGE).put(json, key);
-    return tx.complete;
+    await this.db.transaction(BrowserStorage.REMOTE_STORAGE, "readwrite")
+      .objectStore(BrowserStorage.REMOTE_STORAGE)
+      .put(json, key);
   }
 
   public async loadSession(key: string) {
     const json: ratchet.IJsonAsymmetricRatchet = await this.db.transaction(BrowserStorage.SESSION_STORAGE)
-      .objectStore(BrowserStorage.SESSION_STORAGE).get(key);
+      .objectStore(BrowserStorage.SESSION_STORAGE)
+      .get(key);
     let res: ratchet.AsymmetricRatchet | null = null;
     if (json) {
       const identity = await this.loadIdentity();
@@ -176,9 +181,9 @@ export class BrowserStorage extends RatchetStorage {
 
   public async saveSession(key: string, value: ratchet.AsymmetricRatchet) {
     const json = await value.toJSON();
-    const tx = this.db.transaction(BrowserStorage.SESSION_STORAGE, "readwrite");
-    tx.objectStore(BrowserStorage.SESSION_STORAGE).put(json, key);
-    return tx.complete;
+    await this.db.transaction(BrowserStorage.SESSION_STORAGE, "readwrite")
+      .objectStore(BrowserStorage.SESSION_STORAGE)
+      .put(json, key);
   }
 
 }
