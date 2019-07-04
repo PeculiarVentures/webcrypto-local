@@ -2,7 +2,7 @@ import * as core from "@webcrypto-local/core";
 import * as proto from "@webcrypto-local/proto";
 import { Server, Session } from "../connection";
 import { MemoryStorage } from "../memory_storage";
-import { PCSCCard } from "../pcsc_watcher";
+import { PCSCCard } from "../pcsc";
 import { IProviderConfig, LocalProvider } from "../provider";
 import { CryptoService } from "./crypto";
 import { Service } from "./service";

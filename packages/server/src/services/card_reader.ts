@@ -3,7 +3,7 @@ import { Convert } from "pvtsutils";
 
 import { Server, Session } from "../connection";
 import { WebCryptoLocalError } from "../error";
-import { PCSCWatcher, PCSCWatcherEvent } from "../pcsc_watcher";
+import { PCSCWatcher, PCSCWatcherEvent } from "../pcsc";
 import { Service } from "./service";
 
 export class CardReaderService extends Service<PCSCWatcher> {

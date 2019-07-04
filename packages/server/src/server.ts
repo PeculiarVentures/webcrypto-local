@@ -3,7 +3,7 @@ import * as proto from "@webcrypto-local/proto";
 import { EventEmitter } from "events";
 import { RemoteIdentity, Server, ServerOptions, Session } from "./connection";
 import { WebCryptoLocalError } from "./error";
-import { PCSCCard } from "./pcsc_watcher";
+import { PCSCCard } from "./pcsc";
 import { IProviderConfig } from "./provider";
 import { CardReaderService } from "./services/card_reader";
 import { ProviderService } from "./services/provider";

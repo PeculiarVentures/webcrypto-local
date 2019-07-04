@@ -21,13 +21,21 @@ async function main() {
     key: fs.readFileSync(KEY_FILE),
     storage: new server.MemoryStorage(),
     config: {
-      cards: path.join(APP_DATA_DIR, "card.json"),
+      cardConfigPath: path.join(APP_DATA_DIR, "card.json"),
       providers: [
         { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0], name: "SoftHSM" },
       ],
       // pvpkcs11: [
       //   "/Users/microshine/github/pv/fortify/libpvpkcs11.dylib",
       // ],
+      cards: [
+        {
+          atr: Buffer.from("3b8b015275746f6b656e20445320c1", "hex"),
+          name: "custom",
+          libraries: ["/tmp/some/lib/pkcs11.dylib"],
+          readOnly: false,
+        },
+      ],
     },
   };
 

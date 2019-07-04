@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "2key-ratchet": "^1.0.14",
+    "@peculiar/json-schema": "^1.1.5",
     "@types/ws": "^6.0.1",
     "@webcrypto-local/cards": "^1.0.10",
     "@webcrypto-local/core": "^1.0.9",
