@@ -8,8 +8,9 @@
   ],
   "homepage": "https://github.com/PeculiarVentures/webcrypto-local/tree/master/packages/cards#readme",
   "license": "MIT",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "build/index.js",
+  "module": "build/index.es.js",
+  "types": "build/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -18,8 +19,8 @@
     "url": "git+https://github.com/PeculiarVentures/webcrypto-local.git"
   },
   "scripts": {
-    "build": "echo \"@webcrypto-local/cards doesn't have TS files\"",
-    "clear": "echo \"Nothing to remove\""
+    "build": "rollup -c",
+    "clear": "rimraf build"
   },
   "bugs": {
     "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
@@ -31,6 +32,7 @@
     "typescript": "^3.5.2"
   },
   "dependencies": {
+    "@peculiar/json-schema": "^1.1.5",
     "tslib": "^1.10.0"
   }
 }
