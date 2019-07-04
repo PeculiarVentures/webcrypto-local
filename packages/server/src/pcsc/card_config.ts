@@ -47,7 +47,6 @@ export class CardConfig {
 
   public readFile(fPath: string) {
     if (!fs.existsSync(fPath)) {
-      console.log(fPath);
       throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, `Cannot find file '${fPath}'`);
     }
     const data = fs.readFileSync(fPath);
