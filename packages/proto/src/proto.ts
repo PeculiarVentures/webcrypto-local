@@ -60,6 +60,7 @@ export class AlgorithmProto extends BaseAlgorithmProto {
 
   public static INDEX = BaseAlgorithmProto.INDEX;
 
+  // hashed
   @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "bytes", parser: BaseAlgorithmProto })
   public hash: BaseAlgorithmProto;
 
@@ -93,6 +94,16 @@ export class AlgorithmProto extends BaseAlgorithmProto {
   @ProtobufProperty({ id: AlgorithmProto.INDEX++ })
   public iv: Uint8Array;
 
+  // PKCS11
+  @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "bool" })
+  public token: boolean;
+
+  @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "bool" })
+  public sensitive: boolean;
+
+  @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "string" })
+  public labelStr: string;
+
   public toAlgorithm() {
     const res: { [key: string]: any } = {};
     const thisStatic = this.constructor as any;
@@ -102,6 +113,10 @@ export class AlgorithmProto extends BaseAlgorithmProto {
         continue;
       }
       const value = (this as any)[key];
+      if (key === "labelStr") {
+        res.label = value;
+        continue;
+      }
       if (value !== void 0) {
         if (value instanceof BaseAlgorithmProto) {
           if (!value.isEmpty()) {
@@ -136,7 +151,11 @@ export class AlgorithmProto extends BaseAlgorithmProto {
               throw new Error(`Unsupported parser '${item.parser.name}'`);
           }
         } else {
-          (this as any)[key] = (alg as any)[key];
+          if (key === "label" && typeof (alg as any).label === "string") {
+            this.labelStr = (alg as any).label;
+          } else {
+            (this as any)[key] = (alg as any)[key];
+          }
         }
       }
     }

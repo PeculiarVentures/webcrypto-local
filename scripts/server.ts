@@ -22,6 +22,9 @@ async function main() {
     storage: new server.MemoryStorage(),
     config: {
       cardConfigPath: path.join(APP_DATA_DIR, "card.json"),
+      pvpkcs11: [
+        "/Users/microshine/Library/Developer/Xcode/DerivedData/config-hkruqzwffnciyjeujlpxkaxbdiun/Build/Products/Debug/libpvpkcs11.dylib",
+      ],
       providers: [
         { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0], name: "SoftHSM" },
       ],
@@ -62,7 +65,20 @@ async function main() {
         }
         case "pin": {
           // auto PIN for all token's
-          p.resolve("12345");
+          switch (p.label) {
+            case "Rutoken U:12345678 A:87654321":
+              p.resolve("12345678");
+              break;
+            case "SafeNet U:39sp85MY":
+              p.resolve("39sp85MY");
+              break;
+            case "My slot 0":
+              p.resolve("12345");
+              break;
+            default:
+              throw new Error("Uknown token");
+          }
+          throw new Error("Oops");
           break;
         }
         default:

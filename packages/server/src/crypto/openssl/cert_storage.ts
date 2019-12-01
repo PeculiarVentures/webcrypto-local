@@ -1,12 +1,13 @@
-import { getEngine } from "2key-ratchet";
 import * as fs from "fs";
+import * as wcp11 from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
 import {
   BufferSourceConverter, CryptoCertificate, CryptoCertificateFormat,
-  CryptoCertificateStorage, CryptoCertificateType, ImportAlgorithms,
-  NativeCrypto, OperationError, PemConverter,
+  CryptoCertificateType,
+  OperationError, PemConverter,
 } from "webcrypto-core";
 import { WebCryptoLocalError } from "../../error";
+import { OpenSSLCrypto } from "./crypto";
 import { Certificate } from "./pki/cert";
 import { X509CertificateRequest } from "./pki/request";
 import { X509Certificate } from "./pki/x509";
@@ -22,16 +23,17 @@ interface IJsonOpenSSLCertificate {
   raw: string;
   createdAt: string;
   lastUsed: string;
+  label: string;
 }
 
-export class OpenSSLCertificateStorage implements CryptoCertificateStorage {
+export class OpenSSLCertificateStorage implements wcp11.CertificateStorage {
 
   public file: string;
-  public crypto: NativeCrypto;
+  public crypto: OpenSSLCrypto;
 
-  constructor(file: string) {
+  constructor(file: string, crypto: OpenSSLCrypto) {
     this.file = file;
-    this.crypto = getEngine().crypto;
+    this.crypto = crypto;
   }
 
   public exportCert(format: "pem", item: CryptoCertificate): Promise<string>;
@@ -50,10 +52,9 @@ export class OpenSSLCertificateStorage implements CryptoCertificateStorage {
     }
   }
 
-  public importCert(format: "raw", data: BufferSource, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
-  public importCert(format: "pem", data: string, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
-  public importCert(format: CryptoCertificateFormat, data: BufferSource | string, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
-  public async importCert(format: CryptoCertificateFormat, data: BufferSource | string, algorithm?: Algorithm, keyUsages?: KeyUsage[]) {
+  public importCert(format: "raw", data: BufferSource, algorithm: wcp11.Pkcs11ImportAlgorithms, keyUsages: KeyUsage[]): Promise<wcp11.CryptoCertificate>;
+  public importCert(format: "pem", data: string, algorithm: wcp11.Pkcs11ImportAlgorithms, keyUsages: KeyUsage[]): Promise<wcp11.CryptoCertificate>;
+  public async importCert(format: any, data: string | BufferSource, algorithm: wcp11.Pkcs11ImportAlgorithms, keyUsages: KeyUsage[]): Promise<wcp11.CryptoCertificate> {
     let rawData: ArrayBuffer;
     let rawType: CryptoCertificateType | null = null;
 
@@ -82,26 +83,27 @@ export class OpenSSLCertificateStorage implements CryptoCertificateStorage {
         throw new TypeError("format: Is invalid value. Must be 'raw', 'pem'");
     }
     //#endregion
+    let item: Certificate | undefined;
     switch (rawType) {
       case "x509": {
-        const x509 = await X509Certificate.importCert(crypto, rawData, algorithm, keyUsages);
-        return x509;
+        item = await X509Certificate.importCert(crypto, rawData, algorithm, keyUsages);
+        break;
       }
       case "request": {
-        const request = await X509CertificateRequest.importCert(crypto, rawData, algorithm, keyUsages);
-        return request;
+        item = await X509CertificateRequest.importCert(crypto, rawData, algorithm, keyUsages);
+        break;
       }
       default: {
         try {
-          const x509 = await X509Certificate.importCert(crypto, rawData, algorithm, keyUsages);
-          return x509;
+          item = await X509Certificate.importCert(crypto, rawData, algorithm, keyUsages);
+          break;
         } catch (e) {
           // nothing
         }
 
         try {
-          const request = await X509CertificateRequest.importCert(crypto, rawData, algorithm, keyUsages);
-          return request;
+          item = await X509CertificateRequest.importCert(crypto, rawData, algorithm, keyUsages);
+          break;
         } catch (e) {
           // nothing
         }
@@ -109,6 +111,14 @@ export class OpenSSLCertificateStorage implements CryptoCertificateStorage {
         throw new OperationError("Cannot parse Certificate or Certificate Request from incoming ASN1");
       }
     }
+    item.label = algorithm.label || "";
+
+    if (algorithm.token) {
+      const index = await this.setItem(item);
+      return this.getItem(index);
+    }
+
+    return item;
   }
 
   public async keys() {
@@ -116,12 +126,14 @@ export class OpenSSLCertificateStorage implements CryptoCertificateStorage {
     return Object.keys(items);
   }
 
-  public async hasItem(item: CryptoCertificate) {
+  public async hasItem(item: wcp11.CryptoCertificate) {
     return !!this.indexOf(item);
   }
 
-  public setItem(item: Certificate): Promise<string>;
-  public async setItem(item: Certificate) {
+  public async setItem(item: wcp11.CryptoCertificate) {
+    if (!(item instanceof Certificate)) {
+      throw new TypeError("item is not OpenSSL Certificate");
+    }
     const certs = this.readFile();
     const value = await this.certToJson(item);
     certs[item.id] = value;
@@ -129,7 +141,7 @@ export class OpenSSLCertificateStorage implements CryptoCertificateStorage {
     return item.id;
   }
 
-  public async indexOf(item: CryptoCertificate) {
+  public async indexOf(item: wcp11.CryptoCertificate) {
     if (item instanceof Certificate) {
       const certs = this.readFile();
       for (const index in certs) {
@@ -155,7 +167,9 @@ export class OpenSSLCertificateStorage implements CryptoCertificateStorage {
     value.lastUsed = new Date().toISOString();
     this.writeFile(certs);
 
-    return this.certFromJson(value);
+    const item = await this.certFromJson(value);
+    (item as Certificate).token = true;
+    return item;
   }
 
   public async removeItem(key: string) {
@@ -168,7 +182,10 @@ export class OpenSSLCertificateStorage implements CryptoCertificateStorage {
     this.writeFile({});
   }
 
-  protected async certToJson(cert: Certificate) {
+  protected async certToJson(cert: wcp11.CryptoCertificate) {
+    if (!(cert instanceof Certificate)) {
+      throw new TypeError("cert is not OpenSSL Certificate");
+    }
     const date = new Date().toISOString();
     return {
       algorithm: (cert.publicKey.algorithm as any).toAlgorithm ? (cert.publicKey.algorithm as any).toAlgorithm() : cert.publicKey.algorithm,
@@ -176,6 +193,7 @@ export class OpenSSLCertificateStorage implements CryptoCertificateStorage {
       type: cert.type,
       createdAt: date,
       lastUsed: date,
+      label: cert.label,
       raw: Convert.ToBase64(cert.exportRaw()),
     } as IJsonOpenSSLCertificate;
   }

@@ -1,4 +1,5 @@
 import * as proto from "@webcrypto-local/proto";
+import { CryptoKey } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
 
 import { Server, Session } from "../connection";

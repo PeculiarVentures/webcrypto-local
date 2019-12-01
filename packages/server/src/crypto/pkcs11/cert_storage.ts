@@ -4,8 +4,9 @@
  */
 
 import { X509Certificate } from "graphene-pk11";
-import { CertificateStorage } from "node-webcrypto-p11";
-import { CryptoCertificate, CryptoCertificateFormat, ImportAlgorithms } from "webcrypto-core";
+import { CertificateStorage, CryptoCertificate, Pkcs11ImportAlgorithms } from "node-webcrypto-p11";
+import { CryptoCertificateFormat, ImportAlgorithms } from "webcrypto-core";
+import * as core from "webcrypto-core";
 
 import { Pkcs11Crypto } from "./crypto";
 import { fixObject, isOsslObject } from "./helper";
@@ -46,17 +47,17 @@ export class Pkcs11CertificateStorage extends CertificateStorage {
     return cert;
   }
 
-  public importCert(format: "raw", data: BufferSource, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
-  public importCert(format: "pem", data: string, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
-  public importCert(format: CryptoCertificateFormat, data: BufferSource | string, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
-  public async importCert(format: CryptoCertificateFormat, data: BufferSource | string, algorithm?: Algorithm, keyUsages?: KeyUsage[]) {
+  public importCert(format: core.CryptoCertificateFormat, data: BufferSource | string, algorithm: Pkcs11ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
+  public importCert(format: "raw", data: BufferSource, algorithm: Pkcs11ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
+  public importCert(format: "pem", data: string, algorithm: Pkcs11ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
+  public async importCert(format: any, data: any, algorithm: any, keyUsages: any) {
     let cert: CryptoCertificate;
 
     try {
       cert = await super.importCert(format, data, algorithm!, keyUsages!);
     } catch (err) {
       try {
-        cert = await this.crypto.ossl.certStorage.importCert(format, data, algorithm!, keyUsages!);
+        cert = await this.crypto.ossl.certStorage.importCert(format, data, algorithm, keyUsages!);
         fixObject(this.crypto, cert);
         fixObject(this.crypto, cert.publicKey);
       } catch (e) {

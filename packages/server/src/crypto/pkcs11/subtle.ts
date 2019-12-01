@@ -2,9 +2,9 @@
  * NOTE: We are using PKCS#11 Subtle directly from built folder,
  * because it's not exported from node-webcrypto-p11 module
  */
-import { SubtleCrypto } from "node-webcrypto-p11";
+import { CryptoKey, SubtleCrypto } from "node-webcrypto-p11";
 import { Pkcs11Crypto } from "./crypto";
-import { fixObject, isOsslObject, OsslCryptoKey } from "./helper";
+import { fixObject, isOsslObject } from "./helper";
 
 export class Pkcs11SubtleCrypto extends SubtleCrypto {
 
@@ -19,7 +19,7 @@ export class Pkcs11SubtleCrypto extends SubtleCrypto {
     try {
       key = await super.importKey(format, keyData, algorithm, extractable, keyUsages);
     } catch (err) {
-      key = await this.crypto.ossl.subtle.importKey(format, keyData, algorithm, extractable, keyUsages) as OsslCryptoKey;
+      key = await this.crypto.ossl.subtle.importKey(format, keyData, algorithm, extractable, keyUsages);
       fixObject(this.crypto, key);
     }
     return key;

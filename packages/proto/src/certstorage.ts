@@ -21,6 +21,15 @@ export class CryptoCertificateProto extends CryptoItemProto implements CryptoCer
   @ProtobufProperty({ id: CryptoCertificateProto.INDEX++, required: true, type: "string" })
   public type: CryptoCertificateType;
 
+  @ProtobufProperty({ id: CryptoCertificateProto.INDEX++, type: "string", defaultValue: "" })
+  public label: string = "";
+
+  @ProtobufProperty({ id: CryptoCertificateProto.INDEX++, type: "bool", defaultValue: false })
+  public token: boolean = false;
+
+  @ProtobufProperty({ id: CryptoCertificateProto.INDEX++, type: "bool", defaultValue: false })
+  public sensitive: boolean = false;
+
 }
 
 @ProtobufElement({})
