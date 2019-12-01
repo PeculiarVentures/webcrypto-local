@@ -9,8 +9,8 @@
   "homepage": "https://github.com/PeculiarVentures/webcrypto-local/tree/master/packages/cards#readme",
   "license": "MIT",
   "main": "build/index.js",
-  "module": "build/index.es.js",
-  "types": "build/index.d.ts",
+  "module": "build/index.mjs",
+  "types": "build/types/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -19,8 +19,11 @@
     "url": "git+https://github.com/PeculiarVentures/webcrypto-local.git"
   },
   "scripts": {
-    "build": "rollup -c",
-    "clear": "rimraf build"
+    "build": "npm run build:module && npm run build:types",
+    "clear": "rimraf build/*",
+    "rebuild": "npm run clear && npm run build",
+    "build:module": "rollup -c",
+    "build:types": "tsc -p tsconfig.types.json"
   },
   "bugs": {
     "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
@@ -28,7 +31,7 @@
   "devDependencies": {
     "rimraf": "^2.6.3",
     "rollup": "^1.16.3",
-    "rollup-plugin-dts": "^0.13.0",
+    "rollup-plugin-typescript2": "^0.25.2",
     "typescript": "^3.5.2"
   },
   "dependencies": {
