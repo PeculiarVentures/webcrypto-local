@@ -1,16 +1,18 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "esnext",
+        "module": "es2015",
+        "target": "es6",
         "noImplicitAny": true,
         "experimentalDecorators": true,
+        "moduleResolution": "node",
         "sourceMap": false,
         "importHelpers": true,
         "noUnusedLocals": true,
+        "removeComments": true,
         "allowSyntheticDefaultImports": true,
-        "outDir": "out"
     },
     "exclude": [
-        "packages/**/build/**/*.d.ts"
+        "packages/*/build/**/*.d.ts",
+        "build/**/*.d.ts"
     ]
 }
