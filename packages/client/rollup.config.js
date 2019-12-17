@@ -77,7 +77,7 @@ const browser = [
             "@babel/env",
             {
               targets: {
-                ie: "11",
+                // ie: "11",
                 chrome: "60",
               },
               useBuiltIns: "entry"
