@@ -18,6 +18,11 @@ const main = {
     typescript({
       check: true,
       clean: true,
+      tsconfigOverride: {
+        compilerOptions: {
+          module: "ES2015",
+        }
+      },
     }),
   ],
   external,
@@ -55,6 +60,11 @@ const browser = [
         typescript: require("typescript"),
         check: true,
         clean: true,
+        tsconfigOverride: {
+          compilerOptions: {
+            module: "ES2015",
+          }
+        },
       }),
     ],
     external: Object.keys(browserExternals),

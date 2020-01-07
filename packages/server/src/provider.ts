@@ -391,7 +391,7 @@ export class LocalProvider extends EventEmitter {
             `${EVENT_LOG} PKCS#11 lib ${library}. ${err.message}`,
           ));
         }
-      };
+      }
 
       if (!cryptoIDs.length) {
         this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.TOKEN_REMOVE_NO_SLOTS_FOUND));

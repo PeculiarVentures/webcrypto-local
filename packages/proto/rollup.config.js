@@ -13,6 +13,11 @@ export default [
       typescript({
         check: true,
         clean: true,
+        tsconfigOverride: {
+          compilerOptions: {
+            module: "ES2015",
+          }
+        },
       }),
     ],
     external,
