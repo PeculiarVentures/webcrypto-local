@@ -276,6 +276,11 @@
       "driver": "29a2bd60c4b841c686be68d2874c0c02"
     },
     {
+      "atr": "3BDF18008131FE7D006B020C0182010101434E53103180EC",
+      "name": "Athena ASEPCOS-TS/CNS 1.82",
+      "driver": "29a2bd60c4b841c686be68d2874c0c02"
+    },
+    {
       "atr": "3BDF18008131FE7D006B020C0182011101434E53103180FC",
       "name": "Italian healtcare card (TS) National Service Card (CNS) (HealthCare)",
       "driver": "993988460d8f49a2ac519a2935f11533"
