@@ -294,6 +294,11 @@
       "atr": "3b7e9400008025d20310010056000000020200",
       "name": "National Identity Document: Czech eID (since 7/2018)",
       "driver": "445912C0D3A36598078024B49C87336F45B16EA9"
+    },
+    {
+      "atr": "3BFF9600FF8131FE55006B02090403010101434E5310318014",
+      "name": "Incard J-Sign 2048",
+      "driver": "DBADF7126B4E3656FA5E8CF2AE8D712DE953BC98"
     }
   ],
   "drivers": [
@@ -463,6 +468,14 @@
           "x86": "%WINDIR/System32/bit4ipki.dll",
           "x64": "%WINDIR/SysWOW64/bit4ipki.dll"
         }
+      }
+    },
+    {
+      "id": "DBADF7126B4E3656FA5E8CF2AE8D712DE953BC98",
+      "name": "Bit4id Universal Middleware",
+      "file": {
+        "windows": "%WINDIR/System32/bit4xpki.dll",
+        "osx": "/System/Library/bit4id/libbit4xpki.dylib"
       }
     }
   ]
