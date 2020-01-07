@@ -27,10 +27,15 @@ async function main() {
       ],
       providers: [
         { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0], name: "SoftHSM" },
+        {
+          lib: "/Applications/Fortify.app/Contents/MacOS/libsoftokn3.dylib",
+          slots: [
+            1,
+          ],
+          libraryParameters: "configdir='sql:/Users/microshine/Library/Application Support/Firefox/Profiles/oq1p6wql.default-1562532817687' certPrefix='' keyPrefix='' secmod='secmod.db' flags=optimizeSpace updatedir='' updateCertPrefix='' updateKeyPrefix='' updateid='' updateTokenDescription=''  manufacturerID='Mozilla.org' libraryDescription='Внутрен. крипто PSM' cryptoTokenDescription='Общ. криптослужбы' dbTokenDescription='Модуль защиты' cryptoSlotDescription='Внутренние криптослужбы PSM' dbSlotDescription='Закрытые ключи PSM' FIPSSlotDescription='FIPS 140 Службы крипто, ключей, сертиф.' FIPSTokenDescription='Модуль защиты (FIPS)' minPS=0",
+          name: "Firefox NSS",
+        },
       ],
-      // pvpkcs11: [
-      //   "/Users/microshine/github/pv/fortify/libpvpkcs11.dylib",
-      // ],
       cards: [
         {
           atr: Buffer.from("3b8b015275746f6b656e20445320c1", "hex"),
