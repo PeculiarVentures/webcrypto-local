@@ -22,12 +22,20 @@ async function main() {
     storage: new server.MemoryStorage(),
     config: {
       cardConfigPath: path.join(APP_DATA_DIR, "card.json"),
+      pvpkcs11: [
+        "/Users/microshine/Library/Developer/Xcode/DerivedData/config-hkruqzwffnciyjeujlpxkaxbdiun/Build/Products/Debug/libpvpkcs11.dylib",
+      ],
       providers: [
         { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0], name: "SoftHSM" },
+        {
+          lib: "/Applications/Fortify.app/Contents/MacOS/libsoftokn3.dylib",
+          slots: [
+            1,
+          ],
+          libraryParameters: "configdir='sql:/Users/microshine/Library/Application Support/Firefox/Profiles/oq1p6wql.default-1562532817687' certPrefix='' keyPrefix='' secmod='secmod.db' flags=optimizeSpace updatedir='' updateCertPrefix='' updateKeyPrefix='' updateid='' updateTokenDescription=''  manufacturerID='Mozilla.org' libraryDescription='Внутрен. крипто PSM' cryptoTokenDescription='Общ. криптослужбы' dbTokenDescription='Модуль защиты' cryptoSlotDescription='Внутренние криптослужбы PSM' dbSlotDescription='Закрытые ключи PSM' FIPSSlotDescription='FIPS 140 Службы крипто, ключей, сертиф.' FIPSTokenDescription='Модуль защиты (FIPS)' minPS=0",
+          name: "Firefox NSS",
+        },
       ],
-      // pvpkcs11: [
-      //   "/Users/microshine/github/pv/fortify/libpvpkcs11.dylib",
-      // ],
       cards: [
         {
           atr: Buffer.from("3b8b015275746f6b656e20445320c1", "hex"),
@@ -62,7 +70,20 @@ async function main() {
         }
         case "pin": {
           // auto PIN for all token's
-          p.resolve("12345");
+          switch (p.label) {
+            case "Rutoken U:12345678 A:87654321":
+              p.resolve("12345678");
+              break;
+            case "SafeNet U:39sp85MY":
+              p.resolve("39sp85MY");
+              break;
+            case "My slot 0":
+              p.resolve("12345");
+              break;
+            default:
+              throw new Error("Uknown token");
+          }
+          throw new Error("Oops");
           break;
         }
         default:

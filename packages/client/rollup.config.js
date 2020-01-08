@@ -2,7 +2,7 @@ import resolve from "rollup-plugin-node-resolve";
 import babel from "rollup-plugin-babel";
 import builtins from "rollup-plugin-node-builtins";
 import commonjs from "rollup-plugin-commonjs";
-import { dts, ts } from "rollup-plugin-dts";
+import typescript from "rollup-plugin-typescript2";
 
 const pkg = require("./package.json");
 
@@ -15,9 +15,13 @@ const external = Object.keys(pkg.dependencies)
 const main = {
   input,
   plugins: [
-    ts({
-      compilerOptions: {
-        removeComments: true,
+    typescript({
+      check: true,
+      clean: true,
+      tsconfigOverride: {
+        compilerOptions: {
+          module: "ES2015",
+        }
       },
     }),
   ],
@@ -32,24 +36,8 @@ const main = {
       banner,
       file: pkg.module,
       format: "es",
-    }
-  ]
-};
-
-// types
-const types = {
-  input,
-  plugins: [
-    dts(),
+    },
   ],
-  external,
-  output: [
-    {
-      banner,
-      file: pkg.types,
-      format: "es"
-    }
-  ]
 };
 
 const browserExternals = {
@@ -61,14 +49,21 @@ const browser = [
   {
     input,
     plugins: [
-      resolve(),
+      resolve({
+        preferBuiltins: true,
+      }),
       commonjs(),
       builtins({
         events: true,
       }),
-      ts({
-        compilerOptions: {
-          removeComments: true,
+      typescript({
+        typescript: require("typescript"),
+        check: true,
+        clean: true,
+        tsconfigOverride: {
+          compilerOptions: {
+            module: "ES2015",
+          }
         },
       }),
     ],
@@ -119,6 +114,5 @@ const browser = [
 
 export default [
   main,
-  types,
   ...browser,
 ];

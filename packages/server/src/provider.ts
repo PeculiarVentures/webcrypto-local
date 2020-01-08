@@ -61,6 +61,12 @@ type LocalProviderListeningHandler = (info: core.IModule[]) => void;
 type LocalProviderErrorHandler = (e: Error) => void;
 type LocalProviderStopHandler = () => void;
 
+function pauseAsync(ms: number = 1000) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 export class LocalProvider extends EventEmitter {
 
   public info!: proto.ProviderInfoProto;
@@ -240,7 +246,7 @@ export class LocalProvider extends EventEmitter {
     return crypto;
   }
 
-  protected onTokenInsert(card: Card) {
+  protected async onTokenInsert(card: Card) {
     const EVENT_LOG = "Provider:Token:Insert:";
     this.emit("info", `${EVENT_LOG} reader:'${card.reader}' name:'${card.name}' atr:${card.atr ? card.atr.toString("hex") : "unknown"}`);
     let lastError: Error | null = null;
@@ -264,6 +270,7 @@ export class LocalProvider extends EventEmitter {
         }
 
         try {
+          await pauseAsync();
           mod.initialize();
         } catch (err) {
           if (!/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
@@ -341,7 +348,7 @@ export class LocalProvider extends EventEmitter {
     }
   }
 
-  protected onTokenRemove(card: Card) {
+  protected async onTokenRemove(card: Card) {
     try {
       const EVENT_LOG = "Provider:Token:Remove";
       this.emit("info", `${EVENT_LOG} reader:'${card.reader}' name:'${card.name}' atr:${card.atr ? card.atr.toString("hex") : "unknown"}`);
@@ -352,10 +359,11 @@ export class LocalProvider extends EventEmitter {
 
       //#region Find slots from removed token
       const cryptoIDs: string[] = [];
-      card.libraries.forEach((library) => {
+      for (const library of card.libraries) {
         try {
 
           const mod = graphene.Module.load(library, card.name);
+          await pauseAsync();
           try {
             mod.initialize();
           } catch (err) {
@@ -383,7 +391,7 @@ export class LocalProvider extends EventEmitter {
             `${EVENT_LOG} PKCS#11 lib ${library}. ${err.message}`,
           ));
         }
-      });
+      }
 
       if (!cryptoIDs.length) {
         this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.TOKEN_REMOVE_NO_SLOTS_FOUND));

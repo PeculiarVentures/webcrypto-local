@@ -1,15 +1,9 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "esnext",
-    "module": "commonjs",
-    "strict": true,
-    "strictPropertyInitialization": false,
-    "importHelpers": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "experimentalDecorators": true
+    "strictPropertyInitialization": false
   },
   "exclude": [
-    "build/**/*.d.ts"
+    "build"
   ]
 }

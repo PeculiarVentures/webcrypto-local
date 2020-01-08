@@ -1,6 +1,7 @@
 import { getEngine } from "2key-ratchet";
+import { CryptoCertificate, CryptoKey } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
-import { CryptoCertificate, CryptoCertificateType } from "webcrypto-core";
+import { CryptoCertificateType } from "webcrypto-core";
 
 export interface CertificateConstructor<T> {
   // tslint:disable-next-line:callable-types
@@ -8,7 +9,6 @@ export interface CertificateConstructor<T> {
 }
 
 export abstract class Certificate implements CryptoCertificate {
-
   public static importCert<T extends Certificate>(this: CertificateConstructor<T>, provider: Crypto, rawData: BufferSource): Promise<T>;
   public static importCert<T extends Certificate>(this: CertificateConstructor<T>, provider: Crypto, rawData: BufferSource, algorithm: Algorithm, keyUsages: KeyUsage[]): Promise<T>;
   public static importCert<T extends Certificate>(this: CertificateConstructor<T>, provider: Crypto, rawData: BufferSource, algorithm?: Algorithm, keyUsages?: KeyUsage[]): Promise<T>;
@@ -22,6 +22,12 @@ export abstract class Certificate implements CryptoCertificate {
   public publicKey!: CryptoKey;
   public id!: string;
   public crypto = getEngine().crypto;
+
+  public token: boolean = false;
+  public label: string = "";
+  public get sensitive() {
+    return false;
+  }
 
   protected raw!: Uint8Array;
 

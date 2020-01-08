@@ -1,11 +1,11 @@
 import * as Asn1Js from "asn1js";
-import * as core from "webcrypto-core";
+import { Crypto, CryptoKey, CryptoX509CertificateRequest } from "node-webcrypto-p11";
 import { Certificate } from "./cert";
 import { nameToString } from "./x500_name";
 
 const { CertificationRequest, setEngine, CryptoEngine } = require("pkijs");
 
-export class X509CertificateRequest extends Certificate implements core.CryptoX509CertificateRequest {
+export class X509CertificateRequest extends Certificate implements CryptoX509CertificateRequest {
 
   public type: "request" = "request";
 

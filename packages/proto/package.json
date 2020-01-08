@@ -1,6 +1,6 @@
 {
   "name": "@webcrypto-local/proto",
-  "version": "1.0.11",
+  "version": "1.0.13-next.0",
   "description": "A package of `webcrypto-local` framework. Google protobuf schemas for client/server messages",
   "keywords": [
     "protobuf",
@@ -15,7 +15,7 @@
   "license": "MIT",
   "main": "build/index.js",
   "module": "build/index.es.js",
-  "types": "build/index.d.ts",
+  "types": "build/types/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -25,14 +25,17 @@
   },
   "scripts": {
     "test": "mocha",
-    "build": "rollup -c",
-    "clear": "rimraf build"
+    "build": "npm run build:module && npm run build:types",
+    "clear": "rimraf build/*",
+    "rebuild": "npm run clear && npm run build",
+    "build:module": "rollup -c",
+    "build:types": "tsc -p tsconfig.types.json"
   },
   "bugs": {
     "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
   },
   "dependencies": {
-    "@webcrypto-local/core": "^1.0.11",
+    "@webcrypto-local/core": "^1.0.13-next.0",
     "pvtsutils": "^1.0.4",
     "tslib": "^1.10.0",
     "tsprotobuf": "^1.0.13"
@@ -42,7 +45,7 @@
     "mocha": "^6.1.4",
     "rimraf": "^2.6.3",
     "rollup": "^1.16.3",
-    "rollup-plugin-dts": "^0.13.0",
+    "rollup-plugin-typescript2": "^0.25.2",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.2"
   }

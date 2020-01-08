@@ -1,6 +1,6 @@
 {
   "name": "@webcrypto-local/client",
-  "version": "1.0.12",
+  "version": "1.0.13-next.0",
   "description": "A package of `webcrypto-local` framework. WebSocket client",
   "keywords": [
     "webcrypto",
@@ -15,8 +15,8 @@
   "license": "MIT",
   "main": "build/index.js",
   "module": "build/index.es.js",
+  "types": "build/types/index.d.ts",
   "browser": "build/webcrypto-socket.js",
-  "types": "build/webcrypto-socket.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -26,8 +26,11 @@
   },
   "scripts": {
     "test": "mocha",
-    "build": "rollup -c",
-    "clear": "rimraf build"
+    "build": "npm run build:module && npm run build:types",
+    "clear": "rimraf build/*",
+    "rebuild": "npm run clear && npm run build",
+    "build:module": "rollup -c",
+    "build:types": "tsc -p tsconfig.types.json"
   },
   "bugs": {
     "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
@@ -35,8 +38,8 @@
   "dependencies": {
     "2key-ratchet": "^1.0.14",
     "@types/node-fetch": "^2.3.7",
-    "@webcrypto-local/core": "^1.0.11",
-    "@webcrypto-local/proto": "^1.0.11",
+    "@webcrypto-local/core": "^1.0.13-next.0",
+    "@webcrypto-local/proto": "^1.0.13-next.0",
     "idb": "^4.0.3",
     "node-fetch": "^2.6.0",
     "pvtsutils": "^1.0.4",
@@ -48,15 +51,14 @@
     "@babel/core": "^7.4.5",
     "@babel/plugin-proposal-class-properties": "^7.4.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
-    "@babel/preset-env": "^7.4.5",
     "@types/ws": "^6.0.1",
     "rimraf": "^2.6.3",
     "rollup": "^1.16.3",
     "rollup-plugin-babel": "^4.3.3",
-    "rollup-plugin-commonjs": "^10.0.1",
-    "rollup-plugin-dts": "^0.13.0",
+    "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-typescript2": "^0.25.2",
     "typescript": "^3.5.2"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@webcrypto-local/server",
-  "version": "1.0.12",
+  "version": "1.0.13-next.0",
   "description": "A package of `webcrypto-local` framework. WebSocket server",
   "keywords": [
     "webcrypto",
@@ -15,7 +15,7 @@
   "license": "MIT",
   "main": "build/index.js",
   "module": "build/index.es.js",
-  "types": "build/index.d.ts",
+  "types": "build/types/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
@@ -25,8 +25,11 @@
   },
   "scripts": {
     "test": "mocha",
-    "build": "rollup -c",
-    "clear": "rimraf build"
+    "build": "npm run build:module && npm run build:types",
+    "clear": "rimraf build/*",
+    "rebuild": "npm run clear && npm run build",
+    "build:module": "rollup -c",
+    "build:types": "tsc -p tsconfig.types.json"
   },
   "bugs": {
     "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
@@ -35,12 +38,12 @@
     "2key-ratchet": "^1.0.14",
     "@peculiar/json-schema": "^1.1.5",
     "@types/ws": "^6.0.1",
-    "@webcrypto-local/cards": "^1.0.11",
-    "@webcrypto-local/core": "^1.0.11",
-    "@webcrypto-local/proto": "^1.0.11",
+    "@webcrypto-local/cards": "^1.0.13-next.0",
+    "@webcrypto-local/core": "^1.0.13-next.0",
+    "@webcrypto-local/proto": "^1.0.13-next.0",
     "asn1js": "^2.0.22",
     "graphene-pk11": "^2.1.2",
-    "node-webcrypto-p11": "^2.0.3",
+    "node-webcrypto-p11": "^2.0.4",
     "pcsclite": "^1.0.0",
     "pkijs": "^2.1.78",
     "pvtsutils": "^1.0.4",
@@ -53,7 +56,7 @@
   "devDependencies": {
     "rimraf": "^2.6.3",
     "rollup": "^1.16.3",
-    "rollup-plugin-dts": "^0.13.0",
+    "rollup-plugin-typescript2": "^0.25.2",
     "typescript": "^3.5.2"
   }
 }

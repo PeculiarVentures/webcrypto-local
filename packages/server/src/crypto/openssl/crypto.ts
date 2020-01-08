@@ -1,13 +1,16 @@
 import { getEngine } from "2key-ratchet";
-import { ProviderInfo } from "node-webcrypto-p11";
-import { CryptoStorages, NativeCrypto } from "webcrypto-core";
+import * as wcp11 from "node-webcrypto-p11";
 import { OPENSSL_CERT_STORAGE_DIR, OPENSSL_KEY_STORAGE_DIR } from "../../const";
 import { OpenSSLCertificateStorage } from "./cert_storage";
 import { OpenSSLKeyStorage } from "./key_storage";
+import { OpenSSLSubtleCrypto } from "./subtle";
 
-export class OpenSSLCrypto implements CryptoStorages, NativeCrypto {
+export class OpenSSLCrypto implements wcp11.Crypto {
 
-  public readonly info: ProviderInfo = {
+  public isReadWrite = true;
+  public isLoginRequired = false;
+
+  public readonly info: wcp11.ProviderInfo = {
     id: "61e5e90712ba8abfb6bde6b4504b54bf88d36d0c",
     slot: 0,
     name: "OpenSSL",
@@ -32,14 +35,36 @@ export class OpenSSLCrypto implements CryptoStorages, NativeCrypto {
   };
 
   public crypto = getEngine().crypto;
-  public subtle = getEngine().crypto.subtle;
-  public keyStorage = new OpenSSLKeyStorage(`${OPENSSL_KEY_STORAGE_DIR}/store.json`);
-  public certStorage = new OpenSSLCertificateStorage(`${OPENSSL_CERT_STORAGE_DIR}/store.json`);
+  public subtle: OpenSSLSubtleCrypto;
+  public keyStorage: OpenSSLKeyStorage;
+  public certStorage: OpenSSLCertificateStorage;
 
   public isLoggedIn = true;
 
+  constructor() {
+    this.keyStorage = new OpenSSLKeyStorage(`${OPENSSL_KEY_STORAGE_DIR}/store.json`, this);
+    this.certStorage = new OpenSSLCertificateStorage(`${OPENSSL_CERT_STORAGE_DIR}/store.json`, this);
+    this.subtle = new OpenSSLSubtleCrypto(this);
+  }
+
   public getRandomValues<T extends Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | null>(array: T): T {
     return this.crypto.getRandomValues(array);
+  }
+
+  public open(rw?: boolean | undefined): void {
+    throw new Error("Method not implemented.");
+  }
+  public reset(): void {
+    throw new Error("Method not implemented.");
+  }
+  public login(pin?: string | undefined): void {
+    throw new Error("Method not implemented.");
+  }
+  public logout(): void {
+    throw new Error("Method not implemented.");
+  }
+  public close(): void {
+    throw new Error("Method not implemented.");
   }
 
 }

@@ -1,8 +1,10 @@
-import { getEngine } from "2key-ratchet";
 import * as fs from "fs";
+import * as wcp11 from "node-webcrypto-p11";
+import { CryptoKey } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
-import { CryptoKeyStorage, NativeCrypto } from "webcrypto-core";
+import * as core from "webcrypto-core";
 import { WebCryptoLocalError } from "../../error";
+import { OpenSSLCrypto } from "./crypto";
 
 interface IJsonOpenSSLKeyStorage {
   [key: string]: IJsonOpenSSLKey;
@@ -14,14 +16,14 @@ interface IJsonOpenSSLKey extends CryptoKey {
   lastUsed: string;
 }
 
-export class OpenSSLKeyStorage implements CryptoKeyStorage {
+export class OpenSSLKeyStorage implements wcp11.KeyStorage {
 
   public file: string;
-  public crypto: NativeCrypto;
+  public crypto: wcp11.Crypto;
 
-  constructor(file: string) {
+  constructor(file: string, crypto: OpenSSLCrypto) {
     this.file = file;
-    this.crypto = getEngine().crypto;
+    this.crypto = crypto;
   }
 
   public async keys() {
@@ -51,14 +53,17 @@ export class OpenSSLKeyStorage implements CryptoKeyStorage {
     return id;
   }
 
-  public async getItem(key: string) {
+  public getItem(index: string): Promise<CryptoKey>;
+  public getItem(index: string, algorithm: core.ImportAlgorithms, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
+  public async getItem(key: string, algorithm?: core.ImportAlgorithms, extractable?: boolean, keyUsages?: KeyUsage[]) {
     const keys = this.readFile();
     const keyJson = keys[key];
     if (!keyJson) {
       throw new Error("Cannot get CryptoKey from storage by index");
     }
-    const res = this.keyFromJson(keyJson);
+    const res = await this.keyFromJson(keyJson, algorithm, extractable, keyUsages);
     this.writeFile(keys);
+    res.algorithm.token = true;
     return res;
   }
 
@@ -170,7 +175,9 @@ export class OpenSSLKeyStorage implements CryptoKeyStorage {
       });
   }
 
-  protected async keyFromJson(obj: IJsonOpenSSLKey) {
+  protected keyFromJson(obj: IJsonOpenSSLKey): Promise<wcp11.CryptoKey>;
+  protected keyFromJson(obj: IJsonOpenSSLKey, algorithm?: core.ImportAlgorithms, extractable?: boolean, keyUsages?: KeyUsage[]): Promise<wcp11.CryptoKey>;
+  protected async keyFromJson(obj: IJsonOpenSSLKey, algorithm?: core.ImportAlgorithms, extractable?: boolean, keyUsages?: KeyUsage[]) {
     let format: string;
     switch (obj.type) {
       case "secret":
@@ -186,7 +193,12 @@ export class OpenSSLKeyStorage implements CryptoKeyStorage {
         throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CASE_ERROR, `Unsupported type of CryptoKey '${obj.type}'`);
     }
     obj.lastUsed = new Date().toISOString();
-    return this.crypto.subtle.importKey(format, Buffer.from(obj.raw, "base64"), obj.algorithm as any, obj.extractable, obj.usages);
+    return this.crypto.subtle.importKey(
+      format,
+      Buffer.from(obj.raw, "base64"),
+      (algorithm || obj.algorithm) as any,
+      extractable ?? obj.extractable,
+      keyUsages || obj.usages);
   }
 
 }

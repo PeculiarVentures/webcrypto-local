@@ -1,4 +1,4 @@
-import { dts, ts } from "rollup-plugin-dts";
+import typescript from "rollup-plugin-typescript2";
 
 const pkg = require("./package.json");
 
@@ -12,9 +12,13 @@ export default [
   {
     input,
     plugins: [
-      ts({
-        compilerOptions: {
-          removeComments: true,
+      typescript({
+        check: true,
+        clean: true,
+        tsconfigOverride: {
+          compilerOptions: {
+            module: "ES2015",
+          }
         },
       }),
     ],
@@ -29,22 +33,7 @@ export default [
         banner,
         file: pkg.module,
         format: "es",
-      }
-    ]
-  },
-  // lib
-  {
-    input,
-    plugins: [
-      dts(),
+      },
     ],
-    external,
-    output: [
-      {
-        banner,
-        file: pkg.types,
-        format: "es",
-      }
-    ]
   },
 ];
