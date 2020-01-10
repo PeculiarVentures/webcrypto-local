@@ -1,9 +1,9 @@
 import { setEngine } from "2key-ratchet";
 import { Crypto } from "@peculiar/webcrypto";
-import * as server from "@webcrypto-local/server";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import * as server from "../packages/server/src";
 
 async function main() {
   // disable TLS certificate validation
