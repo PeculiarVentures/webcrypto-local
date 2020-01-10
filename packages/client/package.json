@@ -17,6 +17,7 @@
   "module": "build/index.es.js",
   "types": "build/types/index.d.ts",
   "browser": "build/webcrypto-socket.js",
+  "browserMin": "build/webcrypto-socket.min.js",
   "publishConfig": {
     "access": "public"
   },

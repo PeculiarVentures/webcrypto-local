@@ -1,8 +1,9 @@
-import resolve from "rollup-plugin-node-resolve";
+import resolve from "@rollup/plugin-node-resolve";
 import babel from "rollup-plugin-babel";
 import builtins from "rollup-plugin-node-builtins";
 import commonjs from "rollup-plugin-commonjs";
 import typescript from "rollup-plugin-typescript2";
+import { terser } from "rollup-plugin-terser";
 
 const pkg = require("./package.json");
 
@@ -50,6 +51,7 @@ const browser = [
     input,
     plugins: [
       resolve({
+        mainFields: ["jsnext", "module", "main"],
         preferBuiltins: true,
       }),
       commonjs(),
@@ -87,7 +89,7 @@ const browser = [
             "@babel/env",
             {
               targets: {
-                // ie: "11",
+                ie: "11",
                 chrome: "60",
               },
               useBuiltIns: "entry"
@@ -107,6 +109,15 @@ const browser = [
         format: "iife",
         name: "WebcryptoSocket",
         globals: browserExternals,
+      },
+      {
+        file: pkg.browserMin,
+        format: "iife",
+        name: "WebcryptoSocket",
+        globals: browserExternals,
+        plugins: [
+          terser(),
+        ]
       },
     ],
   }
