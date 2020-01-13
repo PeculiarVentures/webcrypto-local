@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "cards": [
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
@@ -299,6 +299,11 @@
       "atr": "3BFF9600FF8131FE55006B02090403010101434E5310318014",
       "name": "Incard J-Sign 2048",
       "driver": "DBADF7126B4E3656FA5E8CF2AE8D712DE953BC98"
+    },
+    {
+      "atr": "3BDA13FF8131FB468012392F31C173C601C03B",
+      "name": "Individual Number Card ",
+      "driver": "993988460d8f49a2ac519a2935f11533"
     }
   ],
   "drivers": [
@@ -406,6 +411,7 @@
         "osx": "/Library/OpenSC/lib/pkcs11/opensc-pkcs11.so",
         "linux": [
           "/usr/lib/opensc-pkcs11.so",
+          "/usr/local/lib/opensc-pkcs11.so",
           "/usr/lib/x86_64-linux-gnu/opensc-pkcs11.so"
         ],
         "windows": "%WINDIR/System32/opensc-pkcs11.dll"
