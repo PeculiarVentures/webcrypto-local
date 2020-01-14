@@ -208,10 +208,8 @@ export class LocalProvider extends EventEmitter {
   public addProvider(crypto: Crypto, params?: IAddProviderParams) {
     const info = getSlotInfo(crypto);
     this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
-    if (params) {
-      if (params.name) {
-        info.name = params.name;
-      }
+    if (params?.name) {
+      info.name = params.name;
     }
     this.info.providers.push(new proto.ProviderCryptoProto(info));
     this.crypto.add(info.id, crypto);
