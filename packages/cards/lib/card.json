@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "cards": [
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
@@ -304,6 +304,11 @@
       "atr": "3BDA13FF8131FB468012392F31C173C601C03B",
       "name": "Individual Number Card ",
       "driver": "993988460d8f49a2ac519a2935f11533"
+    }, 
+    {
+      "atr": "3BF99600008131FE4553434537200E00202028",
+      "description": "StarSign Crypto USB Token",
+      "driver": "3bcf3e1d4952cfa3e486934887f45a0f"
     }
   ],
   "drivers": [
@@ -441,7 +446,8 @@
       "id": "3bcf3e1d4952cfa3e486934887f45a0f",
       "name": "AET",
       "file": {
-        "windows": "%WINDIR/System32/aetpkss1.dll"
+        "windows": "%WINDIR/System32/aetpkss1.dll",
+        "linux": "/usr/lib/libaetpkss.so.3"
       }
     },
     {
