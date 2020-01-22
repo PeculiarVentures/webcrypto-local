@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "cards": [
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
@@ -245,6 +245,11 @@
       "driver": "3bcf3e1d4952cfa3e486934887f45a0f"
     },
     {
+      "atr": "3BFD1800008031FE45736674652D63643038302D6E66DC",
+      "name": "Nonus SmartNonus [BR]",
+      "driver": "3bcf3e1d4952cfa3e486934887f45a0f"
+    },
+    {
       "atr": "3B7F96000080318065B084413DF6120FFE829000",
       "name": "Gemalto IDPrime MD",
       "driver": "0ca280b5af17d6aa91af084f2d39d2a3"
@@ -314,6 +319,16 @@
       "atr": "3BF99600008131FE4553434537200E00202028",
       "name": "StarSign Crypto USB Token",
       "driver": "3bcf3e1d4952cfa3e486934887f45a0f"
+    },
+    {
+      "atr": "3B1696417374726964",
+      "name": "Gemalto IDPrime .NET",
+      "driver": "fb52636e98f44ebe837db93c46721463"
+    },
+    {
+      "atr": "3B7D96000080318065B0830201F383009000",
+      "name": "Gemalto IDClassic 340",
+      "driver": "244EAB624FE437DFDD4E3A2C0E01B7AA21191D69"
     }
   ],
   "drivers": [
@@ -368,8 +383,11 @@
       "id": "fea007cafe404e4fb56a8be39f60dc8f",
       "name": "Safran Morpho",
       "file": {
-        "windows": "%WINDIR/SysWOW64/CnfPkcs11v220.dll",
-        "osx": "/usr/local/lib/libCnfPkcs11.dylib "
+        "windows": {
+          "x86": "%WINDIR/system32/CnfPkcs11v220.dll",
+          "x64": "%WINDIR/SysWOW64/CnfPkcs11v220.dll"
+        },
+        "osx": "/usr/local/lib/libCnfPkcs11.dylib"
       }
     },
     {
@@ -493,6 +511,31 @@
       "file": {
         "windows": "%WINDIR/System32/bit4xpki.dll",
         "osx": "/System/Library/bit4id/libbit4xpki.dylib"
+      }
+    },
+    {
+      "id": "FB52636E98F44EBE837DB93C46721463",
+      "name": "Gemalto ID Go",
+      "file": {
+        "windows": {
+          "x86": "%PROGRAMFILES(X86)/Gemalto/IDGo 800 PKCS#11/IDPrimePKCS11.dll",
+          "x64": "%PROGRAMFILES/Gemalto/IDGo 800 PKCS#11/IDPrimePKCS1164.dll"
+        },
+        "linux": [
+          "/usr/lib/libIDPrimePKCS11.so",
+          "/usr/lib64/libIDPrimePKCS11.so"
+        ],
+        "osx": "/usr/local/lib/libidprimepkcs11.0.dylib"
+      }
+    },
+    {
+      "id": "244EAB624FE437DFDD4E3A2C0E01B7AA21191D69",
+      "name": "Nexus Personal",
+      "file": {
+        "windows": {
+          "x86": "%PROGRAMFILES(X86)/Personal/bin/personal.dll",
+          "x64": "%PROGRAMFILES(X86)/Personal/bin64/personal64.dll"
+        }
       }
     }
   ]
