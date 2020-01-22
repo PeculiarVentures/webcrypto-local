@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.28",
+  "version": "1.0.29",
   "cards": [
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
@@ -22,6 +22,11 @@
       "atr": "3B7D94000080318065B0831100C883009000",
       "name": "National Identity Document: Republic of Lithuania eID",
       "readOnly": true,
+      "driver": "71789068c5ff4891aeeaf7fb9608a22f"
+    },
+    {
+      "atr": "3b7d96000080318065b0830201f383009000",
+      "name": "Gemalto IDClassic 340",
       "driver": "71789068c5ff4891aeeaf7fb9608a22f"
     },
     {
