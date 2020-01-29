@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "cards": [
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
@@ -326,9 +326,19 @@
       "driver": "FB52636E98F44EBE837DB93C46721463"
     },
     {
+      "atr": "3B7F96000080318065B0855956FB120FFE829000",
+      "name": "MD840",
+      "driver": "FB52636E98F44EBE837DB93C46721463"
+    },
+    {
       "atr": "3B7D96000080318065B0830201F383009000",
       "name": "Gemalto IDClassic 340",
       "driver": "244EAB624FE437DFDD4E3A2C0E01B7AA21191D69"
+    },
+    {
+      "atr": "3BF91800008031FE4580574E454F574156457D",
+      "name": "Charismathics",
+      "driver": "B967CCBF2E20B2EF3EDF0275206E706D517657F5"
     }
   ],
   "drivers": [
@@ -525,7 +535,10 @@
           "/usr/lib/libIDPrimePKCS11.so",
           "/usr/lib64/libIDPrimePKCS11.so"
         ],
-        "osx": "/usr/local/lib/libidprimepkcs11.0.dylib"
+        "osx": [
+          "/usr/local/lib/libidprimepkcs11.0.dylib",
+          "/usr/local/lib/pkcs11/libidprimepkcs11.dylib"
+        ]
       }
     },
     {
@@ -536,6 +549,13 @@
           "x86": "%PROGRAMFILES(X86)/Personal/bin/personal.dll",
           "x64": "%PROGRAMFILES(X86)/Personal/bin64/personal64.dll"
         }
+      }
+    },
+    {
+      "id": "B967CCBF2E20B2EF3EDF0275206E706D517657F5",
+      "name": "NeoWave",
+      "file": {
+        "windows": "%WINDIR/System32/cmp1164.dll"
       }
     }
   ]
