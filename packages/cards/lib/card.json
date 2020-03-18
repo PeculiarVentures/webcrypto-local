@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "cards": [
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
@@ -291,6 +291,11 @@
       "driver": "29a2bd60c4b841c686be68d2874c0c02"
     },
     {
+      "atr": "3BDF18008131FE7D006B150C0181011101434E53103180E8",
+      "name": "Athena ASEPCOS-TS/CNS 1.81",
+      "driver": "29a2bd60c4b841c686be68d2874c0c02"
+    },
+    {
       "atr": "3BDF18008131FE7D006B020C0182011101434E53103180FC",
       "name": "Italian healtcare card (TS) National Service Card (CNS) (HealthCare)",
       "driver": "993988460d8f49a2ac519a2935f11533"
@@ -307,6 +312,11 @@
     },
     {
       "atr": "3BFF9600FF8131FE55006B02090403010101434E5310318014",
+      "name": "Incard J-Sign 2048",
+      "driver": "DBADF7126B4E3656FA5E8CF2AE8D712DE953BC98"
+    },
+    {
+      "atr": "3BFF1800008131FE55006B02090403010101434E5310318065",
       "name": "Incard J-Sign 2048",
       "driver": "DBADF7126B4E3656FA5E8CF2AE8D712DE953BC98"
     },
