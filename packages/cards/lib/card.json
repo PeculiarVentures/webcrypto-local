@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.32",
+  "version": "1.0.33",
   "cards": [
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
@@ -324,7 +324,7 @@
       "atr": "3BDA13FF8131FB468012392F31C173C601C03B",
       "name": "Individual Number Card ",
       "driver": "993988460d8f49a2ac519a2935f11533"
-    }, 
+    },
     {
       "atr": "3BF99600008131FE4553434537200E00202028",
       "name": "StarSign Crypto USB Token",
@@ -349,6 +349,11 @@
       "atr": "3BF91800008031FE4580574E454F574156457D",
       "name": "Charismathics",
       "driver": "B967CCBF2E20B2EF3EDF0275206E706D517657F5"
+    },
+    {
+      "atr": "3BFF1800008131FE45006B04050100012101434E5310318059",
+      "name": "National Service Card (CNS)",
+      "driver": "F4460DEC1A2DB75426614475E0C814C3CA849857"
     }
   ],
   "drivers": [
@@ -566,6 +571,18 @@
       "name": "NeoWave",
       "file": {
         "windows": "%WINDIR/System32/cmp1164.dll"
+      }
+    },
+    {
+      "id": "F4460DEC1A2DB75426614475E0C814C3CA849857",
+      "name": "Bit4id Universal Middleware",
+      "file": {
+        "windows": {
+          "x86": "%WINDIR/System32/bit4opki.dll",
+          "x64": "%WINDIR/SysWOW64/bit4opki.dll"
+        },
+        "linux": "/usr/lib/bit4id/libbit4opki.so",
+        "osx": "/usr/lib/bit4id/libbit4opki.dylib"
       }
     }
   ]
