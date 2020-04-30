@@ -1,10 +1,15 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "cards": [
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
       "name": "Bit4ID",
+      "driver": "709F7FAFA0BF267C91C832E29AAED0D06AB22D92"
+    },
+    {
+      "atr": "3BFF1800FF8131FE55006B02090200011101434E531131808E",
+      "name": "Infocamere CNS",
       "driver": "709F7FAFA0BF267C91C832E29AAED0D06AB22D92"
     },
     {
