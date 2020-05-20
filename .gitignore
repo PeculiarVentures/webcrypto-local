@@ -1,6 +1,7 @@
 .vscode
 node_modules
 out
+docs
 dist/*.map.js
 
 .DS_Store
