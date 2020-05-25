@@ -37,16 +37,7 @@
   "dependencies": {
     "@webcrypto-local/core": "^1.0.13",
     "pvtsutils": "^1.0.4",
-    "tslib": "^1.10.0",
+    "tslib": "^2.0.0",
     "tsprotobuf": "^1.0.13"
-  },
-  "devDependencies": {
-    "@types/mocha": "^5.2.7",
-    "mocha": "^6.1.4",
-    "rimraf": "^2.6.3",
-    "rollup": "^1.16.3",
-    "rollup-plugin-typescript2": "^0.25.2",
-    "ts-node": "^8.3.0",
-    "typescript": "^3.5.2"
   }
 }

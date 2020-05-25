@@ -16,8 +16,10 @@
   "main": "build/index.js",
   "module": "build/index.es.js",
   "types": "build/types/index.d.ts",
-  "browser": "build/webcrypto-socket.js",
-  "browserMin": "build/webcrypto-socket.min.js",
+  "browser": "build/webcrypto-socket.mjs",
+  "browser:min": "build/webcrypto-socket.min.mjs",
+  "browser:es5": "build/webcrypto-socket.js",
+  "browser:es5:min": "build/webcrypto-socket.min.js",
   "publishConfig": {
     "access": "public"
   },
@@ -37,29 +39,15 @@
     "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
   },
   "dependencies": {
-    "2key-ratchet": "^1.0.14",
+    "2key-ratchet": "^1.0.18",
     "@types/node-fetch": "^2.3.7",
     "@webcrypto-local/core": "^1.0.13",
     "@webcrypto-local/proto": "^1.0.13",
-    "idb": "^4.0.3",
+    "idb": "^2",
     "node-fetch": "^2.6.0",
     "pvtsutils": "^1.0.4",
-    "tslib": "^1.10.0",
+    "tslib": "^2.0.0",
     "webcrypto-core": "^1.0.12",
     "ws": "^7.0.1"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.4.5",
-    "@babel/plugin-proposal-class-properties": "^7.4.4",
-    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
-    "@types/ws": "^6.0.1",
-    "rimraf": "^2.6.3",
-    "rollup": "^1.16.3",
-    "rollup-plugin-babel": "^4.3.3",
-    "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-typescript2": "^0.25.2",
-    "typescript": "^3.5.2"
   }
 }
