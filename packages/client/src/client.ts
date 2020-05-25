@@ -44,7 +44,6 @@ export class SocketProvider extends EventEmitter {
    * 2. Create 2key-ratchet session from PreKeyBundle
    */
   public connect(address: string, options?: WebSocket.ClientOptions): this {
-    console.log("SocketProvider:connect");
     this.removeAllListeners();
     this.client.connect(address, options)
       .on("error", (e) => {

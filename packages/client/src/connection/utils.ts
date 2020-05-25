@@ -13,6 +13,10 @@ export function isEdge() {
   return /edge\/([\d\.]+)/i.test(self.navigator.userAgent);
 }
 
+export function isIE() {
+  return !!(window.document as any).documentMode;
+}
+
 export const ECDH = { name: "ECDH", namedCurve: "P-256" };
 export const ECDSA = { name: "ECDSA", namedCurve: "P-256" };
 export const AES_CBC = { name: "AES-CBC", iv: new ArrayBuffer(16) };
@@ -46,6 +50,11 @@ async function createEcPublicKey(publicKey: CryptoKey) {
   };
 }
 
+/**
+ * Fills 2key-ratchet EC public key by data from CryptoKey
+ * @param ecPublicKey 2key-ratchet EC public key
+ * @param publicKey EC public CryptoKey
+ */
 export async function updateEcPublicKey(ecPublicKey: ECPublicKey, publicKey: CryptoKey) {
   const data = await createEcPublicKey(publicKey);
   ecPublicKey.id = data.id;

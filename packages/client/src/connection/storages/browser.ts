@@ -1,11 +1,16 @@
 import * as ratchet from "2key-ratchet";
-import * as idb from "idb";
-import { Convert } from "pvtsutils";
-import { AES_CBC, ECDH, ECDSA, isEdge, isFirefox, updateEcPublicKey } from "../utils";
+import idb from "idb";
+import { DB } from "idb";
+import { AES_CBC, ECDH, ECDSA, isEdge, isFirefox, isIE, updateEcPublicKey } from "../utils";
 import { RatchetStorage } from "./base";
 
 interface IWrapKey {
   key: CryptoKey;
+  iv: ArrayBuffer;
+}
+
+interface IWrapKeyStorage {
+  key: CryptoKey | ArrayBuffer;
   iv: ArrayBuffer;
 }
 
@@ -15,80 +20,100 @@ export class BrowserStorage extends RatchetStorage {
   public static IDENTITY_STORAGE = "identity";
   public static SESSION_STORAGE = "sessions";
   public static REMOTE_STORAGE = "remoteIdentity";
+  public static WRAP_KEY = "wkey";
+  public static IDENTITY = "identity";
 
   public static async create() {
-    const db = await idb.openDB(this.STORAGE_NAME, 1, {
-      upgrade: (updater) => {
-        updater.createObjectStore(this.SESSION_STORAGE);
-        updater.createObjectStore(this.IDENTITY_STORAGE);
-        updater.createObjectStore(this.REMOTE_STORAGE);
-      },
+    const db = await idb.open(this.STORAGE_NAME, 2, (updater) => {
+      if (updater.oldVersion === 1) {
+        updater.deleteObjectStore(this.SESSION_STORAGE);
+        updater.deleteObjectStore(this.IDENTITY_STORAGE);
+        updater.deleteObjectStore(this.REMOTE_STORAGE);
+      }
+      updater.createObjectStore(this.SESSION_STORAGE);
+      updater.createObjectStore(this.IDENTITY_STORAGE);
+      updater.createObjectStore(this.REMOTE_STORAGE);
     });
     return new BrowserStorage(db);
   }
 
-  protected db: idb.IDBPDatabase;
+  protected db: DB;
 
-  private constructor(db: idb.IDBPDatabase) {
+  private constructor(db: DB) {
     super();
     this.db = db;
   }
 
+  /**
+   * Gets a wrapping key from the storage
+   */
   public async loadWrapKey(): Promise<IWrapKey | null> {
     const wKey = await this.db.transaction(BrowserStorage.IDENTITY_STORAGE)
-      .objectStore(BrowserStorage.IDENTITY_STORAGE)
-      .get("wkey") as IWrapKey;
+      .objectStore<IWrapKeyStorage, string>(BrowserStorage.IDENTITY_STORAGE)
+      .get(BrowserStorage.WRAP_KEY);
     if (wKey) {
-      if (isEdge()) {
-        if (!(wKey.key instanceof ArrayBuffer)) {
-          return null;
-        }
-        wKey.key = await ratchet.getEngine().crypto.subtle.importKey("raw", wKey.key, { name: AES_CBC.name, length: 256 } as any, false, ["encrypt", "decrypt", "wrapKey", "unwrapKey"]) as any;
+      AES_CBC.iv = wKey.iv; // todo don't use global variable
+      if (wKey.key instanceof ArrayBuffer) {
+        const key = await ratchet.getEngine().crypto.subtle
+          .importKey("raw", wKey.key, { name: AES_CBC.name, length: 256 }, true, ["encrypt", "decrypt", "wrapKey", "unwrapKey"]) as any;
+        return {
+          key,
+          iv: wKey.iv,
+        };
       }
-      AES_CBC.iv = wKey.iv;
+      return {
+        key: wKey.key,
+        iv: wKey.iv,
+      };
     }
-    return wKey || null;
+    return null;
   }
 
+  /**
+   * Adds wrapping key to the storage
+   * @param key Wrapping key
+   */
   public async saveWrapKey(key: IWrapKey) {
-    if (isEdge()) {
-      key = {
-        key: await ratchet.getEngine().crypto.subtle.exportKey("raw", key.key) as any,
+    let item: IWrapKeyStorage;
+    // Some browsers doesn't allow to keep CryptoKey in IndexedDB. We need to serialize them
+    if (isEdge() || isIE()) {
+      const raw = await ratchet.getEngine().crypto.subtle.exportKey("raw", key.key);
+      item = {
+        key: raw,
         iv: key.iv,
       };
-
+    } else {
+      item = { ...key };
     }
     await this.db.transaction(BrowserStorage.IDENTITY_STORAGE, "readwrite")
-      .objectStore(BrowserStorage.IDENTITY_STORAGE)
-      .put(key, "wkey");
+      .objectStore<IWrapKeyStorage, string>(BrowserStorage.IDENTITY_STORAGE)
+      .put(item, BrowserStorage.WRAP_KEY);
   }
 
   public async loadIdentity() {
     const json: ratchet.IJsonIdentity = await this.db.transaction(BrowserStorage.IDENTITY_STORAGE)
-      .objectStore(BrowserStorage.IDENTITY_STORAGE)
-      .get("identity");
+      .objectStore<ratchet.IJsonIdentity>(BrowserStorage.IDENTITY_STORAGE)
+      .get(BrowserStorage.IDENTITY);
     let res: ratchet.Identity | null = null;
     if (json) {
-      if (isFirefox() || isEdge()) {
-        const wkey = await this.loadWrapKey();
-        if (!(wkey && wkey.key.usages.some((usage) => usage === "encrypt")
+      if (isFirefox() || isEdge() || isIE()) {
+        // If IndexedDB storage doesn't support CryptoKey object
+        // we need use wrapping key to protect serialized key
+        const wKey = await this.loadWrapKey();
+        if (!(wKey && wKey.key.usages.some((usage) => usage === "encrypt")
           && json.exchangeKey.privateKey instanceof ArrayBuffer)) {
           return null;
         }
         // Replace private data to CryptoKey
-        json.exchangeKey.privateKey = await ratchet.getEngine().crypto.subtle.decrypt(AES_CBC, wkey.key, json.exchangeKey.privateKey as any)
-          .then((buf) =>
-            ratchet.getEngine().crypto.subtle.importKey("jwk", JSON.parse(Convert.ToUtf8String(buf)), ECDH, false, ["deriveKey", "deriveBits"]),
-          );
-        json.signingKey.privateKey = await ratchet.getEngine().crypto.subtle.decrypt(AES_CBC, wkey.key, json.signingKey.privateKey as any)
-          .then((buf) =>
-            ratchet.getEngine().crypto.subtle.importKey("jwk", JSON.parse(Convert.ToUtf8String(buf)), ECDSA, false, ["sign"]),
-          );
+        json.exchangeKey.privateKey = await ratchet.getEngine().crypto
+          .subtle.unwrapKey("jwk", json.exchangeKey.privateKey as any, wKey.key, AES_CBC, ECDH, false, ["deriveKey", "deriveBits"]);
+        json.signingKey.privateKey = await ratchet.getEngine().crypto
+          .subtle.unwrapKey("jwk", json.signingKey.privateKey as any, wKey.key, AES_CBC, ECDSA, false, ["sign"]);
 
-        if (isEdge()) {
-          json.exchangeKey.publicKey = await ratchet.getEngine().crypto.subtle.unwrapKey("jwk", json.exchangeKey.publicKey as any, wkey.key, AES_CBC, ECDH, true, []);
-          json.signingKey.publicKey = await ratchet.getEngine().crypto.subtle.unwrapKey("jwk", json.signingKey.publicKey as any, wkey.key, AES_CBC, ECDSA, true, ["verify"]);
-        }
+        json.exchangeKey.publicKey = await ratchet.getEngine().crypto
+          .subtle.unwrapKey("jwk", json.exchangeKey.publicKey as any, wKey.key, AES_CBC, ECDH, true, []);
+        json.signingKey.publicKey = await ratchet.getEngine().crypto
+          .subtle.unwrapKey("jwk", json.signingKey.publicKey as any, wKey.key, AES_CBC, ECDSA, true, ["verify"]);
       }
 
       res = await ratchet.Identity.fromJSON(json);
@@ -97,15 +122,15 @@ export class BrowserStorage extends RatchetStorage {
   }
 
   public async saveIdentity(value: ratchet.Identity) {
-    let wkey: IWrapKey | undefined;
-    if (isFirefox() || isEdge()) {
+    let wKey: IWrapKey | undefined;
+    if (isFirefox() || isEdge() || isIE()) {
       // TODO: Remove after Firefox is fixed
       // Create wrap key
-      wkey = {
-        key: await ratchet.getEngine().crypto.subtle.generateKey({ name: AES_CBC.name, length: 256 }, isEdge(), ["wrapKey", "unwrapKey", "encrypt", "decrypt"]),
+      wKey = {
+        key: await ratchet.getEngine().crypto.subtle.generateKey({ name: AES_CBC.name, length: 256 }, isEdge() || isIE(), ["wrapKey", "unwrapKey", "encrypt", "decrypt"]),
         iv: ratchet.getEngine().crypto.getRandomValues(new Uint8Array(AES_CBC.iv)).buffer,
       };
-      await this.saveWrapKey(wkey);
+      await this.saveWrapKey(wKey);
 
       // Regenerate identity with extractable flag
       const exchangeKeyPair = await ratchet.getEngine().crypto.subtle
@@ -121,25 +146,21 @@ export class BrowserStorage extends RatchetStorage {
 
     const json = await value.toJSON();
 
-    if (isFirefox() || isEdge()) {
-      if (!wkey) {
-        throw new Error("WrapKey is empty");
-      }
-
+    if (wKey) {
       // Replace private key data
-      json.exchangeKey.privateKey = await ratchet.getEngine().crypto.subtle.wrapKey("jwk", value.exchangeKey.privateKey, wkey.key, AES_CBC) as any;
-      json.signingKey.privateKey = await ratchet.getEngine().crypto.subtle.wrapKey("jwk", value.signingKey.privateKey, wkey.key, AES_CBC) as any;
+      json.exchangeKey.privateKey = await ratchet.getEngine().crypto.subtle
+        .wrapKey("jwk", value.exchangeKey.privateKey, wKey.key, AES_CBC) as any;
+      json.signingKey.privateKey = await ratchet.getEngine().crypto.subtle
+        .wrapKey("jwk", value.signingKey.privateKey, wKey.key, AES_CBC) as any;
 
-      if (isEdge()) {
-        // Replace public key data, because Edge doesn't support EC
-        json.exchangeKey.publicKey = await ratchet.getEngine().crypto.subtle.wrapKey("jwk", value.exchangeKey.publicKey.key, wkey.key, AES_CBC) as any;
-        json.signingKey.publicKey = await ratchet.getEngine().crypto.subtle.wrapKey("jwk", value.signingKey.publicKey.key, wkey.key, AES_CBC) as any;
-      }
+      // Replace public key data, because Edge doesn't support EC
+      json.exchangeKey.publicKey = await ratchet.getEngine().crypto.subtle.wrapKey("jwk", value.exchangeKey.publicKey.key, wKey.key, AES_CBC) as any;
+      json.signingKey.publicKey = await ratchet.getEngine().crypto.subtle.wrapKey("jwk", value.signingKey.publicKey.key, wKey.key, AES_CBC) as any;
     }
 
     await this.db.transaction(BrowserStorage.IDENTITY_STORAGE, "readwrite")
       .objectStore(BrowserStorage.IDENTITY_STORAGE)
-      .put(json, "identity");
+      .put(json, BrowserStorage.IDENTITY);
   }
 
   public async loadRemoteIdentity(key: string) {
@@ -148,6 +169,16 @@ export class BrowserStorage extends RatchetStorage {
       .get(key);
     let res: ratchet.RemoteIdentity | null = null;
     if (json) {
+
+      const wKey = await this.loadWrapKey();
+      if (wKey) {
+        // Replace private key data
+        json.exchangeKey = await ratchet.getEngine().crypto.subtle
+          .unwrapKey("jwk", json.exchangeKey as any, wKey.key, AES_CBC, ECDH, true, []) as any;
+        json.signingKey = await ratchet.getEngine().crypto.subtle
+          .unwrapKey("jwk", json.signingKey as any, wKey.key, AES_CBC, ECDSA, true, ["verify"]) as any;
+      }
+
       res = await ratchet.RemoteIdentity.fromJSON(json);
     }
     return res;
@@ -155,14 +186,24 @@ export class BrowserStorage extends RatchetStorage {
 
   public async saveRemoteIdentity(key: string, value: ratchet.RemoteIdentity) {
     const json = await value.toJSON();
+
+    const wKey = await this.loadWrapKey();
+    if (wKey) {
+      // Replace private key data
+      json.exchangeKey = await ratchet.getEngine().crypto.subtle
+        .wrapKey("jwk", json.exchangeKey, wKey.key, AES_CBC) as any;
+      json.signingKey = await ratchet.getEngine().crypto.subtle
+        .wrapKey("jwk", json.signingKey, wKey.key, AES_CBC) as any;
+    }
+
     await this.db.transaction(BrowserStorage.REMOTE_STORAGE, "readwrite")
       .objectStore(BrowserStorage.REMOTE_STORAGE)
       .put(json, key);
   }
 
   public async loadSession(key: string) {
-    const json: ratchet.IJsonAsymmetricRatchet = await this.db.transaction(BrowserStorage.SESSION_STORAGE)
-      .objectStore(BrowserStorage.SESSION_STORAGE)
+    const json = await this.db.transaction(BrowserStorage.SESSION_STORAGE)
+      .objectStore<any, string>(BrowserStorage.SESSION_STORAGE)
       .get(key);
     let res: ratchet.AsymmetricRatchet | null = null;
     if (json) {

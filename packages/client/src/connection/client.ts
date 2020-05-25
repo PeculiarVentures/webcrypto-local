@@ -8,6 +8,7 @@ import WebSocket from "ws";
 import { CryptoServerError } from "../errors";
 import * as events from "./events";
 import { RatchetStorage } from "./storages";
+import { isEdge, isFirefox, isIE } from "./utils";
 
 export interface PromiseStackItem {
   resolve: (...args: any[]) => void;
@@ -80,7 +81,7 @@ export class Client extends EventEmitter {
               // if ((self as any).PV_WEBCRYPTO_SOCKET_LOG) {
               //   console.info("Generates new identity");
               // }
-              identity = await ratchet.Identity.create(1);
+              identity = await ratchet.Identity.create(1, 0, 0, isIE() || isEdge() || isFirefox());
               await this.storage.saveIdentity(identity);
             }
             const remoteIdentityId = "0";
