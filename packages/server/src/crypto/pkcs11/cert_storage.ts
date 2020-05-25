@@ -22,7 +22,7 @@ export class Pkcs11CertificateStorage extends CertificateStorage {
   public getItem(index: string): Promise<CryptoCertificate>;
   public getItem(index: string, algorithm: ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
   public async getItem(index: string, algorithm?: ImportAlgorithms, keyUsages?: KeyUsage[]) {
-    let cert: CryptoCertificate;
+    let cert: CryptoCertificate | undefined;
 
     try {
       cert = await super.getItem(index, algorithm!, keyUsages!);
@@ -41,6 +41,7 @@ export class Pkcs11CertificateStorage extends CertificateStorage {
     }
 
     if (isOsslObject(cert)) {
+      // @ts-ignore
       cert.__index = index;
     }
 
@@ -81,6 +82,7 @@ export class Pkcs11CertificateStorage extends CertificateStorage {
 
   public async indexOf(item: CryptoCertificate): Promise<string | null> {
     if (isOsslObject(item)) {
+      // @ts-ignore
       return item.__index || null;
     } else {
       return super.indexOf(item);

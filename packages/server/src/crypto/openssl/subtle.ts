@@ -17,7 +17,7 @@ export class OpenSSLSubtleCrypto implements wcp11.SubtleCrypto {
     return this.crypto.crypto.subtle.deriveBits(algorithm, baseKey, length);
   }
 
-  public async deriveKey(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfCtrParams | Pbkdf2Params, baseKey: wcp11.CryptoKey, derivedKeyType: string | ConcatParams | HkdfCtrParams | Pbkdf2Params | AesDerivedKeyParams | HmacImportParams, extractable: boolean, keyUsages: string[]): Promise<wcp11.CryptoKey> {
+  public async deriveKey(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfCtrParams | Pbkdf2Params, baseKey: wcp11.CryptoKey, derivedKeyType: string | ConcatParams | HkdfCtrParams | Pbkdf2Params | AesDerivedKeyParams | HmacImportParams, extractable: boolean, keyUsages: KeyUsage[]): Promise<wcp11.CryptoKey> {
     const key = await this.crypto.crypto.subtle.deriveKey(algorithm, baseKey, derivedKeyType, extractable, keyUsages);
     return this.processKey(key, derivedKeyType);
   }
@@ -64,7 +64,7 @@ export class OpenSSLSubtleCrypto implements wcp11.SubtleCrypto {
     return this.crypto.crypto.subtle.sign(algorithm, key, data);
   }
 
-  public async unwrapKey(format: string, wrappedKey: Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer, unwrappingKey: wcp11.CryptoKey, unwrapAlgorithm: string | Algorithm, unwrappedKeyAlgorithm: string | Algorithm, extractable: boolean, keyUsages: string[]): Promise<wcp11.CryptoKey> {
+  public async unwrapKey(format: string, wrappedKey: Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer, unwrappingKey: wcp11.CryptoKey, unwrapAlgorithm: string | Algorithm, unwrappedKeyAlgorithm: string | Algorithm, extractable: boolean, keyUsages: KeyUsage[]): Promise<wcp11.CryptoKey> {
     const key = await this.crypto.crypto.subtle.unwrapKey(format, wrappedKey, unwrappingKey, unwrapAlgorithm, unwrappedKeyAlgorithm, extractable, keyUsages);
     return this.processKey(key, unwrappedKeyAlgorithm);
   }
