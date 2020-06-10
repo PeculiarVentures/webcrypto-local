@@ -23,7 +23,7 @@ async function main() {
     config: {
       cardConfigPath: path.join(APP_DATA_DIR, "card.json"),
       pvpkcs11: [
-        "/Users/microshine/Library/Developer/Xcode/DerivedData/config-hkruqzwffnciyjeujlpxkaxbdiun/Build/Products/Debug/libpvpkcs11.dylib",
+        "/Users/microshine/github/pv/fortify/libpvpkcs11.dylib",
       ],
       providers: [
         { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0], name: "SoftHSM" },
