@@ -21,6 +21,8 @@ export interface SocketProviderOptions {
  */
 export class SocketProvider extends EventEmitter {
 
+  public static FORTIFY = "127.0.0.1:31337";
+
   public client: Client;
 
   public get state() {
@@ -42,8 +44,10 @@ export class SocketProvider extends EventEmitter {
    * 1. Requests info data from Server
    * - if server not found emits `error`
    * 2. Create 2key-ratchet session from PreKeyBundle
+   * @param address Address to WebCrypto server. Default value is Fortify address (127.0.0.1:31337)
+   * @param options WebSocket options
    */
-  public connect(address: string, options?: WebSocket.ClientOptions): this {
+  public connect(address = SocketProvider.FORTIFY, options?: WebSocket.ClientOptions): this {
     this.removeAllListeners();
     this.client.connect(address, options)
       .on("error", (e) => {
