@@ -1,4 +1,5 @@
 import * as Proto from "@webcrypto-local/proto";
+import { CryptoX509CertificateProto, CryptoX509CertificateRequestProto } from "@webcrypto-local/proto";
 import { Convert } from "pvtsutils";
 import {
   BufferSourceConverter, CryptoCertificate, CryptoCertificateFormat,
@@ -10,6 +11,14 @@ import * as utils from "./utils";
 const IMPORT_CERT_FORMATS = ["raw", "pem", "x509", "request"];
 
 export class CertificateStorage implements CryptoCertificateStorage {
+
+  public static isX509Certificate(data: any): data is CryptoX509CertificateProto {
+    return data instanceof CryptoX509CertificateProto;
+  }
+
+  public static isCertificateRequest(data: any): data is CryptoX509CertificateRequestProto {
+    return data instanceof CryptoX509CertificateRequestProto;
+  }
 
   protected readonly provider: SocketCrypto;
 
@@ -267,6 +276,28 @@ export class CertificateStorage implements CryptoCertificateStorage {
     // send and receive result
     const data = await this.provider.client.send(proto);
     return data;
+  }
+
+  public async findPrivateKey(item: string | CryptoCertificate): Promise<CryptoKey | null>;
+  public async findPrivateKey(item: string | Proto.CryptoCertificateProto) {
+    let certId = typeof item === "string"
+      ? item
+      : await this.provider.certStorage.indexOf(item);
+    if (!certId) {
+      certId = "";
+    }
+    const [, , spki] = certId.split("-");
+
+    const index = (await this.provider.keyStorage.keys())
+      .find((o) => {
+        const [type, , id] = o.split("-");
+        return type === "private" && id === spki;
+      });
+    if (!index) {
+      return null;
+    }
+
+    return await this.provider.keyStorage.getItem(index);
   }
 
   protected async prepareCertItem(item: Proto.CryptoCertificateProto) {
