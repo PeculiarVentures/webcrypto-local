@@ -43,6 +43,7 @@ export class ServiceCryptoItem {
     itemProto.subjectName = item.subjectName;
     itemProto.notBefore = item.notBefore;
     itemProto.notAfter = item.notAfter;
+    itemProto.label = (item as any).label ?? "";
     itemProto.type = item.type;
     return itemProto;
   }
@@ -52,6 +53,7 @@ export class ServiceCryptoItem {
     itemProto.publicKey = this.toKeyProto(item.publicKey);
     itemProto.id = itemProto.publicKey.id;
     itemProto.subjectName = item.subjectName;
+    itemProto.label = (item as any).label ?? "";
     itemProto.type = item.type;
     return itemProto;
   }
