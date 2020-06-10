@@ -7,7 +7,7 @@ export class Driver {
   @JsonProp({
     type: JsonPropTypes.String,
   })
-  public id: string;
+  public id: string = "";
 
   @JsonProp({
     type: JsonPropTypes.String,

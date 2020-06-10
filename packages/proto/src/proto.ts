@@ -12,7 +12,7 @@ export class BaseProto extends ObjectProto {
   public static INDEX = 1;
 
   @ProtobufProperty({ id: BaseProto.INDEX++, type: "uint32", required: true, defaultValue: 1 })
-  public version: number;
+  public version: number = 0;
 }
 
 @ProtobufElement({ name: "Action" })
@@ -29,7 +29,7 @@ export class ActionProto extends BaseProto {
    * Identity of action (needs to link request to response)
    */
   @ProtobufProperty({ id: ActionProto.INDEX++, type: "string", required: false })
-  public actionId: string;
+  public actionId: string = "";
 
   constructor() {
     super();
@@ -44,7 +44,7 @@ export class BaseAlgorithmProto extends BaseProto {
   public static INDEX = BaseProto.INDEX;
 
   @ProtobufProperty({ id: BaseAlgorithmProto.INDEX++, type: "string", required: true })
-  public name: string;
+  public name: string = "";
 
   public toAlgorithm() {
     return { name: this.name };
@@ -62,47 +62,47 @@ export class AlgorithmProto extends BaseAlgorithmProto {
 
   // hashed
   @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "bytes", parser: BaseAlgorithmProto })
-  public hash: BaseAlgorithmProto;
+  public hash?: BaseAlgorithmProto;
 
   // RSA
   @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "bytes" })
-  public publicExponent: Uint8Array;
+  public publicExponent?: Uint8Array;
 
   @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "uint32" })
-  public modulusLength: number;
+  public modulusLength?: number;
 
   // RSA-PSS
   @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "uint32" })
-  public saltLength: number;
+  public saltLength?: number;
 
   // RSA-OAEP
   @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "bytes" })
-  public label: Uint8Array;
+  public label?: Uint8Array;
 
   // EC
   @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "string" })
-  public namedCurve: string;
+  public namedCurve?: string;
 
   @ProtobufProperty({ id: AlgorithmProto.INDEX++, converter: ArrayBufferConverter }) // Cannot to use CryptoKeyProto parser
-  public public: ArrayBuffer;
+  public public?: ArrayBuffer;
 
   // AES
 
   @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "uint32" })
-  public length: number;
+  public length?: number;
 
   @ProtobufProperty({ id: AlgorithmProto.INDEX++ })
-  public iv: Uint8Array;
+  public iv?: Uint8Array;
 
   // PKCS11
   @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "bool" })
-  public token: boolean;
+  public token?: boolean;
 
   @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "bool" })
-  public sensitive: boolean;
+  public sensitive?: boolean;
 
   @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "string" })
-  public labelStr: string;
+  public labelStr?: string;
 
   public toAlgorithm() {
     const res: { [key: string]: any } = {};
@@ -169,13 +169,13 @@ export class CryptoItemProto extends BaseProto {
   public static INDEX = BaseProto.INDEX;
 
   @ProtobufProperty({ id: CryptoItemProto.INDEX++, type: "string", required: true })
-  public providerID: string;
+  public providerID: string = "";
 
   @ProtobufProperty({ id: CryptoItemProto.INDEX++, type: "bytes", required: true, converter: HexStringConverter })
-  public id: string;
+  public id: string = "";
 
   @ProtobufProperty({ id: CryptoItemProto.INDEX++, type: "string", required: true })
-  public type: string;
+  public type: string = "";
 
 }
 
@@ -184,16 +184,16 @@ export class CryptoKeyProto extends CryptoItemProto implements CryptoKey {
 
   public static INDEX = CryptoItemProto.INDEX;
 
-  public type: KeyType;
+  public type: KeyType = "secret";
 
   @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bytes", required: true, parser: AlgorithmProto })
-  public algorithm: AlgorithmProto;
+  public algorithm: AlgorithmProto = new AlgorithmProto();
 
   @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bool" })
-  public extractable: boolean;
+  public extractable: boolean = false;
 
   @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "string", repeated: true })
-  public usages: KeyUsage[];
+  public usages: KeyUsage[] = [];
 
 }
 
@@ -202,11 +202,22 @@ export class CryptoKeyPairProto extends BaseProto implements CryptoKeyPair {
 
   public static INDEX = BaseProto.INDEX;
 
-  @ProtobufProperty({ id: CryptoKeyPairProto.INDEX++, name: "privateKey", type: "bytes", parser: CryptoKeyProto })
-  public privateKey: CryptoKeyProto;
+  @ProtobufProperty({
+    id: CryptoKeyPairProto.INDEX++,
+    name: "privateKey",
+    type: "bytes",
+    required: true,
+    parser: CryptoKeyProto,
+  })
+  public privateKey: CryptoKeyProto = new CryptoKeyProto();
 
-  @ProtobufProperty({ id: CryptoKeyPairProto.INDEX++, name: "publicKey", type: "bytes", parser: CryptoKeyProto })
-  public publicKey: CryptoKeyProto;
+  @ProtobufProperty({
+    id: CryptoKeyPairProto.INDEX++,
+    name: "publicKey",
+    type: "bytes",
+    parser: CryptoKeyProto,
+  })
+  public publicKey: CryptoKeyProto = new CryptoKeyProto();
 
 }
 
@@ -216,19 +227,19 @@ export class ErrorProto extends BaseProto implements Error {
   public static INDEX = BaseProto.INDEX;
 
   @ProtobufProperty({ id: ErrorProto.INDEX++, type: "uint32", defaultValue: 0 })
-  public code: number;
+  public code: number = 0;
 
   @ProtobufProperty({ id: ErrorProto.INDEX++, type: "string", defaultValue: "error" })
-  public type: string;
+  public type: string = "error";
 
   @ProtobufProperty({ id: ErrorProto.INDEX++, type: "string", defaultValue: "" })
-  public message: string;
+  public message: string = "";
 
   @ProtobufProperty({ id: ErrorProto.INDEX++, type: "string", defaultValue: "Error" })
-  public name: string;
+  public name: string = "Error";
 
   @ProtobufProperty({ id: ErrorProto.INDEX++, type: "string", defaultValue: "" })
-  public stack: string;
+  public stack: string = "";
 
   constructor();
   constructor(message: string, code?: number, type?: string);
@@ -250,10 +261,10 @@ export class ResultProto extends ActionProto {
   public static INDEX = ActionProto.INDEX;
 
   @ProtobufProperty({ id: ResultProto.INDEX++, type: "bool", defaultValue: false })
-  public status: boolean;
+  public status: boolean = false;
 
   @ProtobufProperty({ id: ResultProto.INDEX++, type: "bytes", parser: ErrorProto })
-  public error: ErrorProto;
+  public error?: ErrorProto;
 
   @ProtobufProperty({ id: ResultProto.INDEX++, type: "bytes", converter: ArrayBufferConverter })
   public data?: ArrayBuffer;

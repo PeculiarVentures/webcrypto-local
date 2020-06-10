@@ -191,7 +191,7 @@ export class CertificateStorageService extends Service<CryptoService> {
         const resultProto = new proto.CertificateStorageGetChainResultProto();
         const pkiEntryCert = await certC2P(crypto, cert);
         if (pkiEntryCert.subject.isEqual(pkiEntryCert.issuer)) { // self-signed
-          // Dont build chain for self-signed certificates
+          // Don't build chain for self-signed certificates
           const itemProto = new proto.ChainItemProto();
           itemProto.type = "x509";
           itemProto.value = pkiEntryCert.toSchema(true).toBER(false);

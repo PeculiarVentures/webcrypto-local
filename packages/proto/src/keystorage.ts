@@ -9,7 +9,7 @@ export class KeyStorageSetItemActionProto extends CryptoActionProto {
   public static ACTION = "crypto/keyStorage/setItem";
 
   @ProtobufProperty({ id: KeyStorageSetItemActionProto.INDEX++, required: true, parser: CryptoKeyProto })
-  public item: CryptoKeyProto;
+  public item: CryptoKeyProto = new CryptoKeyProto();
 
 }
 
@@ -20,16 +20,16 @@ export class KeyStorageGetItemActionProto extends CryptoActionProto {
   public static ACTION = "crypto/keyStorage/getItem";
 
   @ProtobufProperty({ id: KeyStorageGetItemActionProto.INDEX++, required: true, type: "string" })
-  public key: string;
+  public key: string = "";
 
   @ProtobufProperty({ id: KeyStorageGetItemActionProto.INDEX++, parser: AlgorithmProto })
-  public algorithm: AlgorithmProto;
+  public algorithm: AlgorithmProto = new AlgorithmProto();
 
   @ProtobufProperty({ id: KeyStorageGetItemActionProto.INDEX++, type: "bool" })
-  public extractable: boolean;
+  public extractable: boolean = false;
 
   @ProtobufProperty({ id: KeyStorageGetItemActionProto.INDEX++, repeated: true, type: "string" })
-  public keyUsages: KeyUsage[];
+  public keyUsages: KeyUsage[] = [];
 
 }
 
@@ -48,7 +48,7 @@ export class KeyStorageRemoveItemActionProto extends CryptoActionProto {
   public static ACTION = "crypto/keyStorage/removeItem";
 
   @ProtobufProperty({ id: KeyStorageRemoveItemActionProto.INDEX++, required: true, type: "string" })
-  public key: string;
+  public key: string = "";
 
 }
 
@@ -67,6 +67,6 @@ export class KeyStorageIndexOfActionProto extends CryptoActionProto {
   public static ACTION = "crypto/keyStorage/indexOf";
 
   @ProtobufProperty({ id: KeyStorageIndexOfActionProto.INDEX++, required: true, parser: CryptoKeyProto })
-  public item: CryptoKeyProto;
+  public item: CryptoKeyProto = new CryptoKeyProto();
 
 }

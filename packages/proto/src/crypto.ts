@@ -8,7 +8,7 @@ export class CryptoActionProto extends ActionProto {
   public static ACTION = "crypto";
 
   @ProtobufProperty({ id: CryptoActionProto.INDEX++, required: true, type: "string" })
-  public providerID: string;
+  public providerID: string = "";
 
 }
 

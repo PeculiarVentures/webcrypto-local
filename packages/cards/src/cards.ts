@@ -6,7 +6,7 @@ import { Variables } from "./variables";
 export class Cards {
 
   @JsonProp()
-  public version: string;
+  public version: string = "";
 
   @JsonProp({
     type: Card,

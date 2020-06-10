@@ -5,22 +5,22 @@ export class Card {
   @JsonProp({
     type: JsonPropTypes.String,
   })
-  public atr: string;
+  public atr: string = "";
 
   @JsonProp({
     type: JsonPropTypes.String,
   })
-  public name: string;
+  public name: string = "";
 
   @JsonProp({
     type: JsonPropTypes.String,
   })
-  public driver: string;
+  public driver: string = "";
 
   @JsonProp({
     type: JsonPropTypes.Boolean,
     defaultValue: false,
   })
-  public readOnly: string;
+  public readOnly: boolean = false;
 
 }

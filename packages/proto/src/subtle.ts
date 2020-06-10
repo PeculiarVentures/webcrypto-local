@@ -9,10 +9,10 @@ export class DigestActionProto extends CryptoActionProto {
   public static ACTION = "crypto/subtle/digest";
 
   @ProtobufProperty({ id: DigestActionProto.INDEX++, required: true, parser: AlgorithmProto })
-  public algorithm: AlgorithmProto;
+  public algorithm: AlgorithmProto = new AlgorithmProto();
 
   @ProtobufProperty({ id: DigestActionProto.INDEX++, required: true, converter: ArrayBufferConverter })
-  public data: ArrayBuffer;
+  public data: ArrayBuffer = new ArrayBuffer(0);
 
 }
 
@@ -23,13 +23,13 @@ export class GenerateKeyActionProto extends CryptoActionProto {
   public static ACTION = "crypto/subtle/generateKey";
 
   @ProtobufProperty({ id: GenerateKeyActionProto.INDEX++, type: "bytes", required: true, parser: AlgorithmProto })
-  public algorithm: AlgorithmProto;
+  public algorithm: AlgorithmProto = new AlgorithmProto();
 
   @ProtobufProperty({ id: GenerateKeyActionProto.INDEX++, type: "bool", required: true })
-  public extractable: boolean;
+  public extractable: boolean = false;
 
   @ProtobufProperty({ id: GenerateKeyActionProto.INDEX++, type: "string", repeated: true })
-  public usage: string[];
+  public usage: string[] = [];
 
 }
 
@@ -40,13 +40,13 @@ export class SignActionProto extends CryptoActionProto {
   public static ACTION = "crypto/subtle/sign";
 
   @ProtobufProperty({ id: SignActionProto.INDEX++, required: true, parser: AlgorithmProto })
-  public algorithm: AlgorithmProto;
+  public algorithm: AlgorithmProto = new AlgorithmProto();
 
   @ProtobufProperty({ id: SignActionProto.INDEX++, required: true, parser: CryptoKeyProto })
-  public key: CryptoKeyProto;
+  public key: CryptoKeyProto = new CryptoKeyProto();
 
   @ProtobufProperty({ id: SignActionProto.INDEX++, required: true, converter: ArrayBufferConverter })
-  public data: ArrayBuffer;
+  public data: ArrayBuffer = new ArrayBuffer(0);
 
 }
 
@@ -57,7 +57,7 @@ export class VerifyActionProto extends SignActionProto {
   public static ACTION = "crypto/subtle/verify";
 
   @ProtobufProperty({ id: VerifyActionProto.INDEX++, required: true, converter: ArrayBufferConverter })
-  public signature: ArrayBuffer;
+  public signature: ArrayBuffer = new ArrayBuffer(0);
 
 }
 
@@ -84,13 +84,13 @@ export class DeriveBitsActionProto extends CryptoActionProto {
   public static ACTION = "crypto/subtle/deriveBits";
 
   @ProtobufProperty({ id: DeriveBitsActionProto.INDEX++, required: true, parser: AlgorithmProto })
-  public algorithm: AlgorithmProto;
+  public algorithm: AlgorithmProto = new AlgorithmProto();
 
   @ProtobufProperty({ id: DeriveBitsActionProto.INDEX++, required: true, parser: CryptoKeyProto })
-  public key: CryptoKeyProto;
+  public key: CryptoKeyProto = new CryptoKeyProto();
 
   @ProtobufProperty({ id: DeriveBitsActionProto.INDEX++, required: true, type: "uint32" })
-  public length: number;
+  public length: number = 0;
 
 }
 
@@ -101,19 +101,19 @@ export class DeriveKeyActionProto extends CryptoActionProto {
   public static ACTION = "crypto/subtle/deriveKey";
 
   @ProtobufProperty({ id: DeriveKeyActionProto.INDEX++, required: true, parser: AlgorithmProto })
-  public algorithm: AlgorithmProto;
+  public algorithm: AlgorithmProto = new AlgorithmProto();
 
   @ProtobufProperty({ id: DeriveKeyActionProto.INDEX++, required: true, parser: CryptoKeyProto })
-  public key: CryptoKeyProto;
+  public key: CryptoKeyProto = new CryptoKeyProto();
 
   @ProtobufProperty({ id: DeriveKeyActionProto.INDEX++, required: true, parser: AlgorithmProto })
-  public derivedKeyType: AlgorithmProto;
+  public derivedKeyType: AlgorithmProto = new AlgorithmProto();
 
   @ProtobufProperty({ id: DeriveKeyActionProto.INDEX++, type: "bool" })
-  public extractable: boolean;
+  public extractable: boolean = false;
 
   @ProtobufProperty({ id: DeriveKeyActionProto.INDEX++, type: "string", repeated: true })
-  public usage: string[];
+  public usage: string[] = [];
 
 }
 
@@ -124,25 +124,25 @@ export class UnwrapKeyActionProto extends CryptoActionProto {
   public static ACTION = "crypto/subtle/unwrapKey";
 
   @ProtobufProperty({ id: UnwrapKeyActionProto.INDEX++, required: true, type: "string" })
-  public format: string;
+  public format: string = "";
 
   @ProtobufProperty({ id: UnwrapKeyActionProto.INDEX++, required: true, converter: ArrayBufferConverter })
-  public wrappedKey: ArrayBuffer;
+  public wrappedKey: ArrayBuffer = new ArrayBuffer(0);
 
   @ProtobufProperty({ id: UnwrapKeyActionProto.INDEX++, required: true, parser: CryptoKeyProto })
-  public unwrappingKey: CryptoKeyProto;
+  public unwrappingKey: CryptoKeyProto = new CryptoKeyProto();
 
   @ProtobufProperty({ id: UnwrapKeyActionProto.INDEX++, required: true, parser: AlgorithmProto })
-  public unwrapAlgorithm: AlgorithmProto;
+  public unwrapAlgorithm: AlgorithmProto = new AlgorithmProto();
 
   @ProtobufProperty({ id: UnwrapKeyActionProto.INDEX++, required: true, parser: AlgorithmProto })
-  public unwrappedKeyAlgorithm: AlgorithmProto;
+  public unwrappedKeyAlgorithm: AlgorithmProto = new AlgorithmProto();
 
   @ProtobufProperty({ id: UnwrapKeyActionProto.INDEX++, type: "bool" })
-  public extractable: boolean;
+  public extractable: boolean = false;
 
   @ProtobufProperty({ id: UnwrapKeyActionProto.INDEX++, type: "string", repeated: true })
-  public keyUsage: string[];
+  public keyUsage: string[] = [];
 
 }
 
@@ -153,16 +153,16 @@ export class WrapKeyActionProto extends CryptoActionProto {
   public static ACTION = "crypto/subtle/wrapKey";
 
   @ProtobufProperty({ id: WrapKeyActionProto.INDEX++, required: true, type: "string" })
-  public format: string;
+  public format: string = "";
 
   @ProtobufProperty({ id: WrapKeyActionProto.INDEX++, required: true, parser: CryptoKeyProto })
-  public key: CryptoKeyProto;
+  public key: CryptoKeyProto = new CryptoKeyProto();
 
   @ProtobufProperty({ id: WrapKeyActionProto.INDEX++, required: true, parser: CryptoKeyProto })
-  public wrappingKey: CryptoKeyProto;
+  public wrappingKey: CryptoKeyProto = new CryptoKeyProto();
 
   @ProtobufProperty({ id: WrapKeyActionProto.INDEX++, required: true, parser: AlgorithmProto })
-  public wrapAlgorithm: AlgorithmProto;
+  public wrapAlgorithm: AlgorithmProto = new AlgorithmProto();
 
 }
 
@@ -173,10 +173,10 @@ export class ExportKeyActionProto extends CryptoActionProto {
   public static ACTION = "crypto/subtle/exportKey";
 
   @ProtobufProperty({ id: ExportKeyActionProto.INDEX++, type: "string", required: true })
-  public format: string;
+  public format: string = "";
 
   @ProtobufProperty({ id: ExportKeyActionProto.INDEX++, required: true, parser: CryptoKeyProto })
-  public key: CryptoKeyProto;
+  public key: CryptoKeyProto = new CryptoKeyProto();
 
 }
 
@@ -187,18 +187,18 @@ export class ImportKeyActionProto extends CryptoActionProto {
   public static ACTION = "crypto/subtle/importKey";
 
   @ProtobufProperty({ id: ImportKeyActionProto.INDEX++, type: "string", required: true })
-  public format: string;
+  public format: string = "";
 
   @ProtobufProperty({ id: ImportKeyActionProto.INDEX++, required: true, converter: ArrayBufferConverter })
-  public keyData: ArrayBuffer;
+  public keyData: ArrayBuffer = new ArrayBuffer(0);
 
   @ProtobufProperty({ id: ImportKeyActionProto.INDEX++, required: true, parser: AlgorithmProto })
-  public algorithm: AlgorithmProto;
+  public algorithm: AlgorithmProto = new AlgorithmProto();
 
   @ProtobufProperty({ id: ImportKeyActionProto.INDEX++, required: true, type: "bool" })
-  public extractable: boolean;
+  public extractable: boolean = false;
 
   @ProtobufProperty({ id: ImportKeyActionProto.INDEX++, type: "string", repeated: true })
-  public keyUsages: string[];
+  public keyUsages: string[] = [];
 
 }

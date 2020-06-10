@@ -13,13 +13,13 @@ export class CryptoCertificateProto extends CryptoItemProto implements CryptoCer
   public static INDEX = CryptoItemProto.INDEX;
 
   @ProtobufProperty({ id: CryptoCertificateProto.INDEX++, required: true, converter: HexStringConverter })
-  public id: string;
+  public id: string = "";
 
   @ProtobufProperty({ id: CryptoCertificateProto.INDEX++, required: true, parser: CryptoKeyProto })
-  public publicKey: CryptoKeyProto;
+  public publicKey: CryptoKeyProto = new CryptoKeyProto();
 
   @ProtobufProperty({ id: CryptoCertificateProto.INDEX++, required: true, type: "string" })
-  public type: CryptoCertificateType;
+  public type: CryptoCertificateType = "x509";
 
   @ProtobufProperty({ id: CryptoCertificateProto.INDEX++, type: "string", defaultValue: "" })
   public label: string = "";
@@ -40,19 +40,19 @@ export class CryptoX509CertificateProto extends CryptoCertificateProto implement
   public type: "x509" = "x509";
 
   @ProtobufProperty({ id: CryptoX509CertificateProto.INDEX++, required: true, converter: HexStringConverter })
-  public serialNumber: string;
+  public serialNumber: string = "";
 
   @ProtobufProperty({ id: CryptoX509CertificateProto.INDEX++, required: true, type: "string" })
-  public issuerName: string;
+  public issuerName: string = "";
 
   @ProtobufProperty({ id: CryptoX509CertificateProto.INDEX++, required: true, type: "string" })
-  public subjectName: string;
+  public subjectName: string = "";
 
   @ProtobufProperty({ id: CryptoX509CertificateProto.INDEX++, required: true, converter: DateConverter })
-  public notBefore: Date;
+  public notBefore: Date = new Date();
 
   @ProtobufProperty({ id: CryptoX509CertificateProto.INDEX++, required: true, converter: DateConverter })
-  public notAfter: Date;
+  public notAfter: Date = new Date();
 
 }
 
@@ -64,7 +64,7 @@ export class CryptoX509CertificateRequestProto extends CryptoCertificateProto im
   public type: "request" = "request";
 
   @ProtobufProperty({ id: CryptoX509CertificateRequestProto.INDEX++, required: true, type: "string" })
-  public subjectName: string;
+  public subjectName: string = "";
 
 }
 
@@ -78,14 +78,14 @@ export class ChainItemProto extends BaseProto {
     required: true,
     type: "string",
   })
-  public type: string;
+  public type: string = "";
 
   @ProtobufProperty({
     id: ChainItemProto.INDEX++,
     required: true,
     converter: ArrayBufferConverter,
   })
-  public value: ArrayBuffer;
+  public value: ArrayBuffer = new ArrayBuffer(0);
 }
 
 @ProtobufElement({})
@@ -112,7 +112,7 @@ export class CertificateStorageSetItemActionProto extends CryptoActionProto {
   public static ACTION = "crypto/certificateStorage/setItem";
 
   @ProtobufProperty({ id: CertificateStorageSetItemActionProto.INDEX++, required: true, parser: CryptoCertificateProto })
-  public item: CryptoCertificateProto;
+  public item: CryptoCertificateProto = new CryptoCertificateProto();
 
 }
 
@@ -123,13 +123,13 @@ export class CertificateStorageGetItemActionProto extends CryptoActionProto {
   public static ACTION = "crypto/certificateStorage/getItem";
 
   @ProtobufProperty({ id: CertificateStorageGetItemActionProto.INDEX++, required: true, type: "string" })
-  public key: string;
+  public key: string = "";
 
   @ProtobufProperty({ id: CertificateStorageGetItemActionProto.INDEX++, parser: AlgorithmProto })
-  public algorithm: AlgorithmProto;
+  public algorithm: AlgorithmProto = new AlgorithmProto();
 
   @ProtobufProperty({ id: CertificateStorageGetItemActionProto.INDEX++, repeated: true, type: "string" })
-  public keyUsages: KeyUsage[];
+  public keyUsages: KeyUsage[] = [];
 
 }
 
@@ -148,7 +148,7 @@ export class CertificateStorageRemoveItemActionProto extends CryptoActionProto {
   public static ACTION = "crypto/certificateStorage/removeItem";
 
   @ProtobufProperty({ id: CertificateStorageRemoveItemActionProto.INDEX++, required: true, type: "string" })
-  public key: string;
+  public key: string = "";
 
 }
 
@@ -167,16 +167,16 @@ export class CertificateStorageImportActionProto extends CryptoActionProto {
   public static ACTION = "crypto/certificateStorage/import";
 
   @ProtobufProperty({ id: CertificateStorageImportActionProto.INDEX++, required: true, type: "string" })
-  public format: CryptoCertificateFormat;
+  public format: CryptoCertificateFormat = "raw";
 
   @ProtobufProperty({ id: CertificateStorageImportActionProto.INDEX++, required: true, converter: ArrayBufferConverter })
-  public data: ArrayBuffer;
+  public data: ArrayBuffer = new ArrayBuffer(0);
 
   @ProtobufProperty({ id: CertificateStorageImportActionProto.INDEX++, required: true, parser: AlgorithmProto })
-  public algorithm: AlgorithmProto;
+  public algorithm: AlgorithmProto = new AlgorithmProto();
 
   @ProtobufProperty({ id: CertificateStorageImportActionProto.INDEX++, repeated: true, type: "string" })
-  public keyUsages: KeyUsage[];
+  public keyUsages: KeyUsage[] = [];
 
 }
 
@@ -187,10 +187,10 @@ export class CertificateStorageExportActionProto extends CryptoActionProto {
   public static ACTION = "crypto/certificateStorage/export";
 
   @ProtobufProperty({ id: CertificateStorageExportActionProto.INDEX++, required: true, type: "string" })
-  public format: CryptoCertificateFormat;
+  public format: CryptoCertificateFormat = "raw";
 
   @ProtobufProperty({ id: CertificateStorageExportActionProto.INDEX++, required: true, parser: CryptoCertificateProto })
-  public item: CryptoCertificateProto;
+  public item: CryptoCertificateProto = new CryptoCertificateProto();
 
 }
 
@@ -201,7 +201,7 @@ export class CertificateStorageIndexOfActionProto extends CryptoActionProto {
   public static ACTION = "crypto/certificateStorage/indexOf";
 
   @ProtobufProperty({ id: CertificateStorageIndexOfActionProto.INDEX++, required: true, parser: CryptoCertificateProto })
-  public item: CryptoCertificateProto;
+  public item: CryptoCertificateProto = new CryptoCertificateProto();
 
 }
 
@@ -212,7 +212,7 @@ export class CertificateStorageGetChainActionProto extends CryptoActionProto {
   public static ACTION = "crypto/certificateStorage/getChain";
 
   @ProtobufProperty({ id: CertificateStorageSetItemActionProto.INDEX++, required: true, parser: CryptoCertificateProto })
-  public item: CryptoCertificateProto;
+  public item: CryptoCertificateProto = new CryptoCertificateProto();
 
 }
 
@@ -223,7 +223,7 @@ export class CertificateStorageGetCRLActionProto extends CryptoActionProto {
   public static ACTION = "crypto/certificateStorage/getCRL";
 
   @ProtobufProperty({ id: CertificateStorageGetCRLActionProto.INDEX++, required: true, type: "string" })
-  public url: string;
+  public url: string = "";
 
 }
 
@@ -237,7 +237,7 @@ export class OCSPRequestOptionsProto extends BaseProto implements OCSPRequestOpt
   public static INDEX = BaseProto.INDEX;
 
   @ProtobufProperty({ id: OCSPRequestOptionsProto.INDEX++, required: false, type: "string", defaultValue: "get" })
-  public method: "post" | "get";
+  public method: "post" | "get" = "get";
 
 }
 
@@ -248,12 +248,12 @@ export class CertificateStorageGetOCSPActionProto extends CryptoActionProto {
   public static ACTION = "crypto/certificateStorage/getOCSP";
 
   @ProtobufProperty({ id: CertificateStorageGetOCSPActionProto.INDEX++, required: true, type: "string" })
-  public url: string;
+  public url: string = "";
 
   @ProtobufProperty({ id: CertificateStorageGetOCSPActionProto.INDEX++, required: true, converter: ArrayBufferConverter })
-  public request: ArrayBuffer;
+  public request: ArrayBuffer = new ArrayBuffer(0);
 
   @ProtobufProperty({ id: CertificateStorageGetOCSPActionProto.INDEX++, required: false, parser: OCSPRequestOptionsProto })
-  public options: OCSPRequestOptionsProto;
+  public options: OCSPRequestOptionsProto = new OCSPRequestOptionsProto();
 
 }

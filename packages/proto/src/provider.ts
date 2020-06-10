@@ -11,27 +11,27 @@ export class ProviderCryptoProto extends BaseProto implements ProviderCrypto {
   public static INDEX = BaseProto.INDEX;
 
   @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, required: true, type: "string" })
-  public id: string;
+  public id: string = "";
 
   @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, required: true, type: "string" })
-  public name: string;
+  public name: string = "";
 
   @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, type: "bool", defaultValue: false })
-  public readOnly: boolean;
+  public readOnly: boolean = false;
 
   public library?: string;
 
   @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, repeated: true, type: "string" })
-  public algorithms: string[];
+  public algorithms: string[] = [];
 
   @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, type: "bool", defaultValue: false })
-  public isRemovable: boolean;
+  public isRemovable: boolean = false;
 
   @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, type: "string" })
-  public atr: string;
+  public atr: string = "";
 
   @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, type: "bool", defaultValue: false })
-  public isHardware: boolean;
+  public isHardware: boolean = false;
 
   constructor(data?: ProviderCrypto) {
     super();
@@ -49,10 +49,10 @@ export class ProviderInfoProto extends BaseProto {
   public static INDEX = BaseProto.INDEX;
 
   @ProtobufProperty({ id: ProviderInfoProto.INDEX++, type: "string", required: true })
-  public name: string;
+  public name: string = "";
 
   @ProtobufProperty({ id: ProviderInfoProto.INDEX++, repeated: true, parser: ProviderCryptoProto })
-  public providers: ProviderCryptoProto[];
+  public providers: ProviderCryptoProto[] = [];
 
 }
 
@@ -73,7 +73,7 @@ export class ProviderGetCryptoActionProto extends ActionProto {
   public static ACTION = "provider/action/getCrypto";
 
   @ProtobufProperty({ id: ProviderGetCryptoActionProto.INDEX++, required: true, type: "string" })
-  public cryptoID: string;
+  public cryptoID: string = "";
 
 }
 
@@ -94,13 +94,13 @@ export class ProviderTokenEventProto extends ActionProto implements TokenInfo {
   public static ACTION = "provider/event/token";
 
   @ProtobufProperty({ id: ProviderTokenEventProto.INDEX++, repeated: true, parser: ProviderCryptoProto })
-  public added: ProviderCryptoProto[];
+  public added: ProviderCryptoProto[] = [];
 
   @ProtobufProperty({ id: ProviderTokenEventProto.INDEX++, repeated: true, parser: ProviderCryptoProto })
-  public removed: ProviderCryptoProto[];
+  public removed: ProviderCryptoProto[] = [];
 
   @ProtobufProperty({ id: ProviderTokenEventProto.INDEX++, type: "bytes", parser: ErrorProto })
-  public error: ErrorProto;
+  public error?: ErrorProto;
 
   constructor(data?: { added: ProviderCrypto[], removed: ProviderCrypto[] }) {
     super();

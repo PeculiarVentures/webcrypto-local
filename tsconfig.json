@@ -1,17 +1,24 @@
 {
+    "extends": "./tsconfig.compile.json",
     "compilerOptions": {
-        "module": "CommonJS",
-        "target": "es2018",
-        "noImplicitAny": true,
-        "experimentalDecorators": true,
-        "sourceMap": false,
-        "importHelpers": true,
-        "noUnusedLocals": true,
-        "removeComments": true,
-        "allowSyntheticDefaultImports": true,
+      "baseUrl": ".",
+      "paths": {
+        "@webcrypto-local/cards": [
+          "./packages/cards/src"
+        ],
+        "@webcrypto-local/core": [
+          "./packages/core/src"
+        ],
+        "@webcrypto-local/proto": [
+          "./packages/proto/src"
+        ],
+        "@webcrypto-local/server": [
+          "./packages/server/src"
+        ],
+      }
     },
     "exclude": [
-        "packages/*/build/**/*.d.ts",
-        "build/**/*.d.ts"
+      "packages/*/build"
     ]
-}
+  }
+  

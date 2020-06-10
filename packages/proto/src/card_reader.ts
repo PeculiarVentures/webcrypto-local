@@ -28,10 +28,10 @@ class CardReaderEventProto extends CardReaderActionProto {
   public static INDEX = CardReaderActionProto.INDEX;
 
   @ProtobufProperty({ id: CardReaderEventProto.INDEX++, required: true, type: "string", defaultValue: "" })
-  public reader: string;
+  public reader: string = "";
 
   @ProtobufProperty({ id: CardReaderEventProto.INDEX++, required: true, converter: HexStringConverter })
-  public atr: string;
+  public atr: string = "";
 
   constructor();
   constructor(reader: string, atr: string);
