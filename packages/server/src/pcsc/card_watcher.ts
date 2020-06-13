@@ -1,7 +1,8 @@
 import { EventEmitter } from "events";
 import * as os from "os";
+import { OpenSC } from "../opensc";
 import { Card, CardConfig, CardOptions } from "./card_config";
-import { PCSCWatcher } from "./pcsc_watcher";
+import { PCSCWatcher, PCSCWatcherEvent } from "./pcsc_watcher";
 
 export interface PCSCCard {
   /**
@@ -32,6 +33,9 @@ export class CardWatcher extends EventEmitter {
       pvpkcs11: options.pvpkcs11 || [],
       cards: options.cards || [],
     };
+    if (options.opensc) {
+      this.options.opensc = options.opensc;
+    }
     this.config = new CardConfig(options);
     this.watcher = new PCSCWatcher();
     this.watcher
@@ -44,21 +48,11 @@ export class CardWatcher extends EventEmitter {
       .on("insert", (e) => {
         try {
           if (!e.atr) {
-            this.emit("info", `CardConfig:Insert: Cannot check token because it use empty ATR. Reader: '${e.reader.name}'`);
+            this.emit("info", `CardConfig:Insert: Cannot check token because it uses an empty ATR. Reader: '${e.reader.name}'`);
             return;
           }
 
-          let card = e.atr ? this.getCard(e.atr) : null;
-          if (!card && os.platform() === "win32" && options.pvpkcs11) {
-            this.emit("info", `CardConfig:Insert: Cannot get Card config for ATR:${e.atr}. Use pvpkcs11 SmartCard slot'`);
-            card = {
-              atr: e.atr,
-              reader: e.reader.name,
-              libraries: this.options.pvpkcs11,
-              name: "SCard Windows API",
-              readOnly: false,
-            };
-          }
+          const card = this.getCardObject(e);
           if (card) {
             card.reader = e.reader.name;
             this.add(card);
@@ -75,20 +69,12 @@ export class CardWatcher extends EventEmitter {
       })
       .on("remove", (e) => {
         try {
-          let card = e.atr ? this.getCard(e.atr) : null;
-          if (!card && os.platform() === "win32") {
-            card = {
-              atr: e.atr,
-              reader: e.reader.name,
-              libraries: this.options.pvpkcs11,
-              name: "SCard Windows API",
-              readOnly: false,
-            };
-          }
-          if (card) {
-            card.reader = e.reader.name;
-            this.remove(card);
-            this.emit("remove", card);
+          const removed = this.cards.filter((o) => o.reader === e.reader.name && o.atr && e.atr && o.atr.equals(e.atr));
+          if (removed.length) {
+            this.cards = this.cards.filter((o) => !removed.includes(o));
+            for (const card of removed) {
+              this.emit("remove", card);
+            }
           }
         } catch (e) {
           this.emit("error", e);
@@ -131,6 +117,41 @@ export class CardWatcher extends EventEmitter {
 
   protected remove(card: Card) {
     this.cards = this.cards.filter((item) => item.atr !== card.atr);
+  }
+
+  private getCardObject(e: PCSCWatcherEvent) {
+    let card = e.atr ? this.getCard(e.atr) : null;
+    if (!card && os.platform() === "win32" && this.options.pvpkcs11) {
+      this.emit("info", `CardConfig:Insert: Cannot get Card config for ATR:${e.atr}. Use pvpkcs11 SmartCard slot'`);
+      card = {
+        atr: e.atr,
+        reader: e.reader.name,
+        libraries: this.options.pvpkcs11,
+        name: "SCard Windows API",
+        readOnly: false,
+      };
+    }
+
+    if (this.options.opensc) {
+      const opensc = new OpenSC(this.options.opensc);
+      opensc.open();
+      const slotIndex = opensc.indexOf(e.reader.name);
+      if (slotIndex !== -1) {
+        if (card) {
+          card.libraries.push(opensc.library);
+        } else {
+          const slot = opensc.module.getSlots(slotIndex);
+          card = {
+            atr: e.atr,
+            reader: e.reader.name,
+            libraries: [opensc.library],
+            name: slot.getToken().label,
+            readOnly: false,
+          };
+        }
+      }
+    }
+    return card;
   }
 
   private getCard(atr: Buffer) {

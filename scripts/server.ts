@@ -25,6 +25,7 @@ async function main() {
       pvpkcs11: [
         "/Users/microshine/github/pv/fortify/libpvpkcs11.dylib",
       ],
+      opensc: "/Users/microshine/github/pv/fortify/node_modules/electron/dist/Electron.app/Contents/MacOS/opensc-pkcs11.so",
       providers: [
         { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0], name: "SoftHSM" },
         {
@@ -71,17 +72,19 @@ async function main() {
         case "pin": {
           // auto PIN for all token's
           switch (p.label) {
-            case "Rutoken U:12345678 A:87654321":
-              p.resolve("12345678");
-              break;
             case "SafeNet U:39sp85MY":
               p.resolve("39sp85MY");
               break;
             case "My slot 0":
               p.resolve("12345");
               break;
+            case "Rutoken U:12345678 A:87654321":
+              p.resolve("12345678");
+              break;
             default:
-              throw new Error("Uknown token");
+              p.resolve("12345678");
+              break;
+            // throw new Error("Unknown token");
           }
           throw new Error("Oops");
           break;

@@ -127,7 +127,10 @@ export class ProviderService extends Service<LocalProvider> {
       case proto.ProviderGetCryptoActionProto.ACTION: {
         const getCryptoParams = await proto.ProviderGetCryptoActionProto.importProto(action);
 
-        await this.object.getCrypto(getCryptoParams.cryptoID);
+        const crypto = await this.object.getCrypto(getCryptoParams.cryptoID);
+
+        const sessionIdentitySHA256 = await session.cipher!.remoteIdentity.signingKey.thumbprint();
+        this.emit("info", `Server: session:${sessionIdentitySHA256} provider/action/getCrypto reader:'${crypto.info.reader}' name:'${crypto.info.name}' id:${crypto.info.id}`);
 
         break;
       }

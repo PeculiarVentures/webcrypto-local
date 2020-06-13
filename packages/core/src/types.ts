@@ -47,6 +47,7 @@ export interface ServerInfo {
 
 export interface ProviderCrypto {
   name: string;
+  card: string;
   id: string;
   readOnly: boolean;
   library?: string;

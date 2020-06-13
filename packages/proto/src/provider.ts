@@ -33,6 +33,9 @@ export class ProviderCryptoProto extends BaseProto implements ProviderCrypto {
   @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, type: "bool", defaultValue: false })
   public isHardware: boolean = false;
 
+  @ProtobufProperty({ id: ProviderCryptoProto.INDEX++, type: "string" })
+  public card: string = "";
+
   constructor(data?: ProviderCrypto) {
     super();
 

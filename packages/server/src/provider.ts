@@ -41,6 +41,7 @@ export interface IProviderConfig {
    */
   cardConfigPath: string;
   pvpkcs11?: string[];
+  opensc?: string;
   /**
    * Disable using of PCSC
    */
@@ -86,6 +87,8 @@ export class LocalProvider extends EventEmitter {
     if (!config.disablePCSC) {
       this.cards = new CardWatcher({
         cards: config.cards,
+        pvpkcs11: config.pvpkcs11,
+        opensc: config.opensc,
       });
     }
     this.crypto = new CryptoMap()
@@ -209,7 +212,8 @@ export class LocalProvider extends EventEmitter {
     const info = getSlotInfo(crypto);
     this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
     if (params?.name) {
-      info.name = params.name;
+      info.name = info.name;
+      info.card = params.name;
     }
     this.info.providers.push(new proto.ProviderCryptoProto(info));
     this.crypto.add(info.id, crypto);

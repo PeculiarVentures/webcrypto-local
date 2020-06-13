@@ -24,6 +24,7 @@ interface Driver {
 
 export interface CardOptions {
   pvpkcs11: string[];
+  opensc?: string;
   cards: Card[];
 }
 
