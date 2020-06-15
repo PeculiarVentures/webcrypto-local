@@ -142,15 +142,21 @@ export class CardWatcher extends EventEmitter {
       }
     }
 
-    if (!card && os.platform() === "win32" && this.options.pvpkcs11) {
-      this.emit("info", `CardConfig:Insert: Cannot get Card config for ATR:${e.atr}. Use pvpkcs11 SmartCard slot'`);
-      card = {
-        atr: e.atr,
-        reader: e.reader.name,
-        libraries: this.options.pvpkcs11,
-        name: "SCard Windows API",
-        readOnly: false,
-      };
+    if (os.platform() === "win32" && this.options.pvpkcs11) {
+      if (card) {
+        for (const lib of this.options.pvpkcs11) {
+          card.libraries.push(lib);
+        }
+      } else {
+        this.emit("info", `CardConfig:Insert: Cannot get Card config for ATR:${e.atr}. Use pvpkcs11 SmartCard slot'`);
+        card = {
+          atr: e.atr,
+          reader: e.reader.name,
+          libraries: this.options.pvpkcs11,
+          name: "SCard Windows API",
+          readOnly: false,
+        };
+      }
     }
 
     return card;
