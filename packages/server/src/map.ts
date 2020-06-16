@@ -57,11 +57,13 @@ export class Map<T> extends EventEmitter {
 
   public remove(key: string) {
     const item = this.items[key];
-    delete this.items[key];
-    this.emit("remove", ({
-      key,
-      item,
-    }));
+    if (item) {
+      delete this.items[key];
+      this.emit("remove", ({
+        key,
+        item,
+      }));
+    }
   }
 
   public clear() {
