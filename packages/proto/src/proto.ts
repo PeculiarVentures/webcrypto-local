@@ -46,6 +46,10 @@ export class BaseAlgorithmProto extends BaseProto {
   @ProtobufProperty({ id: BaseAlgorithmProto.INDEX++, type: "string", required: true })
   public name: string = "";
 
+  public isEmpty() {
+    return !this.name;
+  }
+
   public toAlgorithm() {
     return { name: this.name };
   }
