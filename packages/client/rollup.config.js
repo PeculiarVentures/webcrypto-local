@@ -114,17 +114,15 @@ const browser = [
     output: [
       {
         banner,
-        footer: "self.WebcryptoSocket=WebcryptoSocket;",
         file: pkg["browser"],
-        format: "iife",
+        format: "umd",
         name: "WebcryptoSocket",
         globals: browserExternals,
       },
       {
         banner,
-        footer: "self.WebcryptoSocket=WebcryptoSocket;",
         file: pkg["browser:min"],
-        format: "iife",
+        format: "umd",
         name: "WebcryptoSocket",
         globals: browserExternals,
         plugins: [
@@ -144,14 +142,14 @@ const browser = [
       {
         banner,
         file: pkg["browser:es5"],
-        format: "iife",
+        format: "umd",
         name: "WebcryptoSocket",
         globals: browserExternals,
       },
       {
         banner,
         file: pkg["browser:es5:min"],
-        format: "iife",
+        format: "umd",
         name: "WebcryptoSocket",
         globals: browserExternals,
         plugins: [
