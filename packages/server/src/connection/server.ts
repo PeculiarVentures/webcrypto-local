@@ -61,7 +61,7 @@ export interface Session {
 export class Server extends EventEmitter {
 
   public info: ServerInfo = {
-    version: "1.0.0",
+    version: require("../../package.json").version,
     name: "webcrypto-socket",
     preKey: "",
     providers: [

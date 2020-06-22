@@ -142,6 +142,16 @@ export class CertificateStorageKeysActionProto extends CryptoActionProto {
 }
 
 @ProtobufElement({})
+export class CertificateStorageGetValueActionProto extends CryptoActionProto {
+
+  public static INDEX = CryptoActionProto.INDEX;
+  public static ACTION = "crypto/certificateStorage/getValue";
+
+  @ProtobufProperty({ id: CertificateStorageGetValueActionProto.INDEX++, required: true, type: "string" })
+  public key: string = "";
+}
+
+@ProtobufElement({})
 export class CertificateStorageRemoveItemActionProto extends CryptoActionProto {
 
   public static INDEX = CryptoActionProto.INDEX;

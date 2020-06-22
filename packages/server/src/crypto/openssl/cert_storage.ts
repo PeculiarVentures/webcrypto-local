@@ -36,6 +36,14 @@ export class OpenSSLCertificateStorage implements wcp11.CertificateStorage {
     this.crypto = crypto;
   }
 
+  public async getValue(index: string): Promise<ArrayBuffer | null> {
+    const item = await this.getItem(index);
+    if (item) {
+      return this.exportCert("raw", item);
+    }
+    return null;
+  }
+
   public exportCert(format: "pem", item: CryptoCertificate): Promise<string>;
   public exportCert(format: "raw", item: CryptoCertificate): Promise<ArrayBuffer>;
   public exportCert(format: CryptoCertificateFormat, item: CryptoCertificate): Promise<ArrayBuffer | string>;

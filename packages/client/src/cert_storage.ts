@@ -157,6 +157,24 @@ export class CertificateStorage implements CryptoCertificateStorage {
     return [];
   }
 
+  public async getValue(key: string) {
+    utils.checkPrimitive(key, "string", "key");
+
+    // prepare request
+    const proto = new Proto.CertificateStorageGetValueActionProto();
+    proto.providerID = this.provider.id;
+    proto.key = key;
+
+    // send and receive data
+    const result = await this.provider.client.send(proto);
+
+    // prepare result
+    if (result) {
+      return result;
+    }
+    return null;
+  }
+
   public getItem(key: string): Promise<CryptoCertificate>;
   public getItem(key: string, algorithm: Algorithm, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
   public async getItem(key: string, algorithm?: Algorithm, keyUsages?: KeyUsage[]) {

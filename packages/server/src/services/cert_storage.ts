@@ -1,10 +1,11 @@
 import * as proto from "@webcrypto-local/proto";
 import * as asn1js from "asn1js";
 import * as graphene from "graphene-pk11";
+import { IGetValue } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
 import { isEqualBuffer } from "pvutils";
 import request from "request";
-import { CryptoCertificate, CryptoStorages, NativeCrypto } from "webcrypto-core";
+import { CryptoCertificate, CryptoCertificateStorage, CryptoStorages, NativeCrypto } from "webcrypto-core";
 const pkijs = require("pkijs");
 
 import { Server, Session } from "../connection";
@@ -16,12 +17,17 @@ import { Service } from "./service";
 // register new attribute for pkcs11 modules
 graphene.registerAttribute("x509Chain", 2147483905, "buffer");
 
+export interface CryptoStoragesEx extends CryptoStorages {
+  certStorage: CryptoCertificateStorage & IGetValue;
+}
+
 export class CertificateStorageService extends Service<CryptoService> {
 
   constructor(server: Server, crypto: CryptoService) {
     super(server, crypto, [
       //#region List of actions
       proto.CertificateStorageKeysActionProto,
+      proto.CertificateStorageGetValueActionProto,
       proto.CertificateStorageIndexOfActionProto,
       proto.CertificateStorageGetItemActionProto,
       proto.CertificateStorageSetItemActionProto,
@@ -36,7 +42,7 @@ export class CertificateStorageService extends Service<CryptoService> {
     ]);
   }
 
-  public async getCrypto(id: string): Promise<NativeCrypto & CryptoStorages> {
+  public async getCrypto(id: string): Promise<NativeCrypto & CryptoStoragesEx> {
     return await this.object.getCrypto(id);
   }
 
@@ -47,6 +53,19 @@ export class CertificateStorageService extends Service<CryptoService> {
   protected async onMessage(session: Session, action: proto.ActionProto) {
     const result = new proto.ResultProto(action);
     switch (action.action) {
+      // getItem
+      case proto.CertificateStorageGetValueActionProto.ACTION: {
+        // prepare incoming data
+        const params = await proto.CertificateStorageGetValueActionProto.importProto(action);
+        const crypto = await this.getCrypto(params.providerID);
+        // do operation
+        const item = await crypto.certStorage.getValue(params.key);
+
+        if (item) {
+          result.data = item;
+        }
+        break;
+      }
       // getItem
       case proto.CertificateStorageGetItemActionProto.ACTION: {
         // prepare incoming data
