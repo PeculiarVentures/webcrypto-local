@@ -65,6 +65,14 @@ export class Client extends EventEmitter {
   public connect(address: string, options?: WebSocket.ClientOptions): this {
     this.getServerInfo(address)
       .then((info) => {
+
+        // validate
+        const [major, minor, build] = info.version.split(".")
+          .map((o) => parseInt(o, 10));
+        if (major < 1 || (major === 1 && minor < 2)) {
+          throw new Error(`Current version of WebCryptoSocket doesn't work with WebCryptoServer v${info.version}. Please update your client to the latest version.`);
+        }
+
         this.serviceInfo = info;
         const url = `wss://${address}`;
         this.socket = options
