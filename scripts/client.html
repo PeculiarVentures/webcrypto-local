@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- Babel Polyfill -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.8.3/polyfill.min.js"></script>
+  <!-- Crypto -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/asmCrypto/2.3.2/asmcrypto.all.es5.min.js"></script>
+  <script src="https://cdn.rawgit.com/indutny/elliptic/master/dist/elliptic.min.js"></script>
+  <script src="https://unpkg.com/webcrypto-liner@1.1.4/build/webcrypto-liner.shim.min.js"></script>
+  <!-- WebCrypto Socket -->
+  <script src="https://unpkg.com/protobufjs@6.8.8/dist/protobuf.min.js"></script>
+  <script src="../packages/client/build/webcrypto-socket.js"></script>
+</head>
+
+<body>
+  <script>
+    async function main() {
+      window.ws = new WebcryptoSocket.SocketProvider({
+        storage: await WebcryptoSocket.BrowserStorage.create()
+      })
+        .connect()
+        .on("error", (e) => {
+          console.error(e);
+        })
+        .on("listening", async e => {
+          if (!(await ws.isLoggedIn())) {
+            const pin = await ws.challenge();
+            // show PIN
+            setTimeout(() => {
+              alert("2key session PIN:" + pin);
+            }, 100);
+            // ask to approve session
+            await ws.login();
+          }
+
+          const info = await ws.info();
+          window.provider = await ws.getCrypto(info.providers[0].id);
+          const keys = await provider.certStorage.keys();
+          for (const key of keys) {
+            const raw = await provider.certStorage.getValue(key);
+            console.log(raw);
+          }
+        });
+    }
+
+    main().catch(e => console.error(e));
+  </script>
+</body>
+
+</html>
