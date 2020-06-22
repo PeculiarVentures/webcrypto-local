@@ -12,38 +12,52 @@ async function main() {
   // Set crypto engine for 2key-ratchet
   setEngine("WebCrypto NodeJS", new Crypto());
 
-  const APP_DATA_DIR = path.join(os.homedir(), ".fortify");
+  const platform = os.platform()
+  const FORTIFY_DATA_DIR = path.join(os.homedir(), ".fortify");
+  const APP_DATA_DIR = platform === "win32"
+    ? path.join(process.env.ProgramData!, "Fortify")
+    : path.join(os.homedir(), ".fortify");
   const CERT_FILE = path.join(APP_DATA_DIR, "cert.pem");
-  const KEY_FILE = path.join(APP_DATA_DIR, "key.pem");
+  const KEY_FILE = path.join(APP_DATA_DIR, "cert.key");
+
+  const pvpkcs11: string[] = [];
+  let opensc: string | undefined;
+  const providers: any[] = require(path.join(FORTIFY_DATA_DIR, "config.json")).providers;
+  switch (platform) {
+    case "win32":
+      pvpkcs11.push(path.join(__dirname, "../../fortify/pvpkcs11.dll"));
+      opensc = path.join(__dirname, "../../fortify/node_modules/electron/dist/opensc-pkcs11.dll");
+      break;
+    case "darwin":
+      pvpkcs11.push(path.join(__dirname, "../../fortify/libpvpkcs11.dylib"));
+      opensc = path.join(__dirname, "../../fortify/node_modules/electron/dist/Electron.app/Contents/MacOS/opensc-pkcs11.so");
+      providers.push({
+        lib: "/usr/local/lib/softhsm/libsofthsm2.so",
+        slots: [0],
+        name: "SoftHSM",
+      })
+      break;
+    case "linux":
+    default:
+    // nothing
+  }
 
   const options: server.IServerOptions = {
     cert: fs.readFileSync(CERT_FILE),
     key: fs.readFileSync(KEY_FILE),
     storage: new server.MemoryStorage(),
     config: {
-      cardConfigPath: path.join(APP_DATA_DIR, "card.json"),
-      pvpkcs11: [
-        "/Users/microshine/github/pv/fortify/libpvpkcs11.dylib",
-      ],
-      opensc: "/Users/microshine/github/pv/fortify/node_modules/electron/dist/Electron.app/Contents/MacOS/opensc-pkcs11.so",
-      providers: [
-        { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0], name: "SoftHSM" },
-        {
-          lib: "/Applications/Fortify.app/Contents/MacOS/libsoftokn3.dylib",
-          slots: [
-            1,
-          ],
-          libraryParameters: "configdir='sql:/Users/microshine/Library/Application Support/Firefox/Profiles/oq1p6wql.default-1562532817687' certPrefix='' keyPrefix='' secmod='secmod.db' flags=optimizeSpace updatedir='' updateCertPrefix='' updateKeyPrefix='' updateid='' updateTokenDescription=''  manufacturerID='Mozilla.org' libraryDescription='Внутрен. крипто PSM' cryptoTokenDescription='Общ. криптослужбы' dbTokenDescription='Модуль защиты' cryptoSlotDescription='Внутренние криптослужбы PSM' dbSlotDescription='Закрытые ключи PSM' FIPSSlotDescription='FIPS 140 Службы крипто, ключей, сертиф.' FIPSTokenDescription='Модуль защиты (FIPS)' minPS=0",
-          name: "Firefox NSS",
-        },
-      ],
+      cardConfigPath: path.join(FORTIFY_DATA_DIR, "card.json"),
+      pvpkcs11,
+      opensc,
+      providers,
       cards: [
-        {
-          atr: Buffer.from("3b8b015275746f6b656e20445320c1", "hex"),
-          name: "custom",
-          libraries: ["/tmp/some/lib/pkcs11.dylib"],
-          readOnly: false,
-        },
+        // {
+        //   atr: Buffer.from("3b8b015275746f6b656e20445320c1", "hex"),
+        //   name: "custom",
+        //   libraries: ["/tmp/some/lib/pkcs11.dylib"],
+        //   readOnly: false,
+        // },
       ],
     },
   };
