@@ -123,22 +123,26 @@ export class CardWatcher extends EventEmitter {
     let card = e.atr ? this.getCard(e.atr) : null;
 
     if (this.options.opensc) {
-      const opensc = new OpenSC(this.options.opensc);
-      opensc.open();
-      const slotIndex = opensc.indexOf(e.reader.name);
-      if (slotIndex !== -1) {
-        if (card) {
-          card.libraries.push(opensc.library);
-        } else {
-          const slot = opensc.module.getSlots(slotIndex);
-          card = {
-            atr: e.atr,
-            reader: e.reader.name,
-            libraries: [opensc.library],
-            name: slot.getToken().label,
-            readOnly: false,
-          };
+      try {
+        const opensc = new OpenSC(this.options.opensc);
+        opensc.open();
+        const slotIndex = opensc.indexOf(e.reader.name);
+        if (slotIndex !== -1) {
+          if (card) {
+            card.libraries.push(opensc.library);
+          } else {
+            const slot = opensc.module.getSlots(slotIndex);
+            card = {
+              atr: e.atr,
+              reader: e.reader.name,
+              libraries: [opensc.library],
+              name: slot.getToken().label,
+              readOnly: false,
+            };
+          }
         }
+      } catch (e) {
+        this.emit("error", e);
       }
     }
 
