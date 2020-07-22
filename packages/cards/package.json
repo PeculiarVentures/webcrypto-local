@@ -29,7 +29,7 @@
     "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
   },
   "dependencies": {
-    "@peculiar/json-schema": "^1.1.5",
+    "@peculiar/json-schema": "^1.1.12",
     "tslib": "^2.0.0"
   }
 }
