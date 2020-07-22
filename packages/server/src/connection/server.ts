@@ -147,6 +147,15 @@ export class Server extends EventEmitter {
   public listen(address: string) {
     this.httpServer = https.createServer(this.options, (request: http.IncomingMessage, response: http.ServerResponse) => {
       (async () => {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Request-Method", "*");
+        response.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET");
+        response.setHeader("Access-Control-Allow-Headers", "*");
+        if (request.method === "OPTIONS") {
+          response.writeHead(200);
+          response.end();
+          return;
+        }
         if (request.method === "GET") {
           if (!request.url) {
             throw new Error("Cannot parse URL from Response");
@@ -159,7 +168,6 @@ export class Server extends EventEmitter {
             const info = assign({}, this.info, { preKey });
             const json = JSON.stringify(info);
             response.setHeader("content-length", json.length.toString());
-            response.setHeader("Access-Control-Allow-Origin", "*");
             response.end(json);
           }
         }
