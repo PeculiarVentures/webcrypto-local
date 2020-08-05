@@ -6,15 +6,15 @@ import { Convert } from "pvtsutils";
  */
 
 export function isFirefox() {
-  return /firefox/i.test(self.navigator.userAgent);
+  return /firefox\/([\w\.-]+)$/i.test(self.navigator.userAgent);
 }
 
 export function isEdge() {
-  return /edge\/([\d\.]+)/i.test(self.navigator.userAgent);
+  return /(edge|edgios|edga|edg)\/((\d+)?[\w\.]+)/i.test(self.navigator.userAgent);
 }
 
 export function isIE() {
-  return !!(window.document as any).documentMode;
+  return /(trident).+rv[:\s]([\w\.]+).+like\sgecko/i.test(self.navigator.userAgent);
 }
 
 export const ECDH = { name: "ECDH", namedCurve: "P-256" };
