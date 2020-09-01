@@ -43,12 +43,9 @@ export class KeyStorageService extends Service<CryptoService> {
         const crypto = await this.getCrypto(params.providerID);
 
         // do operation
-        const key = await crypto.keyStorage.getItem(
-          params.key,
-          (params.algorithm.isEmpty() ? undefined : params.algorithm.toAlgorithm())!,
-          (params.extractable || undefined)!,
-          (!params.keyUsages ? undefined : params.keyUsages)!,
-        );
+        const key = !params.algorithm.isEmpty()
+          ? await crypto.keyStorage.getItem(params.key, params.algorithm.toAlgorithm(), params.extractable, params.keyUsages)
+          : await crypto.keyStorage.getItem(params.key);
 
         if (key) {
           // add keys to memory storage
