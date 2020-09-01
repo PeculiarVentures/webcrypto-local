@@ -31,8 +31,8 @@
     "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
   },
   "dependencies": {
-    "2key-ratchet": "^1.0.14",
+    "2key-ratchet": "1.0.18",
     "pvtsutils": "^1.0.10",
-    "tslib": "^2.0.0"
+    "tslib": "2.0.1"
   }
 }

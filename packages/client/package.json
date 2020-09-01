@@ -39,14 +39,14 @@
     "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
   },
   "dependencies": {
-    "2key-ratchet": "^1.0.18",
+    "2key-ratchet": "1.0.18",
     "@types/node-fetch": "^2.3.7",
     "@webcrypto-local/core": "^1.2.3",
     "@webcrypto-local/proto": "^1.2.3",
     "idb": "^2",
     "node-fetch": "^2.6.0",
     "pvtsutils": "^1.0.10",
-    "tslib": "^2.0.0",
+    "tslib": "2.0.1",
     "webcrypto-core": "^1.1.2",
     "ws": "^7.3.1"
   }
