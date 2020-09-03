@@ -69,7 +69,7 @@ function babelOptions(ie) {
 const browserExternals = {
   "protobufjs": "protobuf",
   "ws": "WebSocket",
-  "node-fetch": "fetch",
+  "node-fetch": "fetch.bind(self)",
 };
 const browser = [
   {
