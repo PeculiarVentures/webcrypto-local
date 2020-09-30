@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.0.36",
+  "version": "1.0.37",
   "cards": [
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
@@ -369,6 +369,11 @@
       "atr": "3BFF1800008131FE45006B04050100012101434E5310318059",
       "name": "National Service Card (CNS)",
       "driver": "F4460DEC1A2DB75426614475E0C814C3CA849857"
+    },
+    {
+      "atr": "3B9F968131FE45806755454B41451293318073B3A1806B",
+      "name": "AKIS",
+      "driver": "F4460DEC1A2DB75426614475E0C814C3CA849845"
     }
   ],
   "drivers": [
@@ -595,6 +600,18 @@
         "windows": {
           "x86": "%WINDIR/System32/bit4opki.dll",
           "x64": "%WINDIR/SysWOW64/bit4opki.dll"
+        },
+        "linux": "/usr/lib/bit4id/libbit4opki.so",
+        "osx": "/usr/lib/bit4id/libbit4opki.dylib"
+      }
+    },
+    {
+      "id": "F4460DEC1A2DB75426614475E0C814C3CA849845",
+      "name": "AKIS",
+      "file": {
+        "windows": {
+          "x86": "%WINDIR/System32/akisp11.dll",
+          "x64": "%WINDIR/SysWOW64/akisp11.dll"
         },
         "linux": "/usr/lib/bit4id/libbit4opki.so",
         "osx": "/usr/lib/bit4id/libbit4opki.dylib"
