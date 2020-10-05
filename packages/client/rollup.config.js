@@ -1,5 +1,5 @@
 import resolve from "@rollup/plugin-node-resolve";
-import babel from "rollup-plugin-babel";
+import { getBabelOutputPlugin } from "@rollup/plugin-babel";
 import builtins from "rollup-plugin-node-builtins";
 import cleanup from "rollup-plugin-cleanup";
 import commonjs from "rollup-plugin-commonjs";
@@ -101,17 +101,20 @@ const browser = [
         file: pkg["browser:es5"],
         format: "es",
         globals: browserExternals,
-      }
-    ]
-  },
-  // ES2015
-  {
-    input: pkg["browser:es5"],
-    plugins: [
-      babel(babelOptions(false)),
-    ],
-    external: Object.keys(browserExternals),
-    output: [
+        plugins: [
+          getBabelOutputPlugin({
+            allowAllFormats: true,
+            presets: [
+              ["@babel/preset-env", {
+                targets: {
+                  chrome: "60"
+                },
+              }],
+            ],
+          }),
+        ]
+      },
+      // ES2015
       {
         banner,
         footer: "self.WebcryptoSocket=WebcryptoSocket;",
@@ -119,6 +122,18 @@ const browser = [
         format: "iife",
         name: "WebcryptoSocket",
         globals: browserExternals,
+        plugins: [
+          getBabelOutputPlugin({
+            allowAllFormats: true,
+            presets: [
+              ["@babel/preset-env", {
+                targets: {
+                  chrome: "60"
+                },
+              }],
+            ],
+          }),
+        ]
       },
       {
         banner,
@@ -128,25 +143,38 @@ const browser = [
         name: "WebcryptoSocket",
         globals: browserExternals,
         plugins: [
+          getBabelOutputPlugin({
+            allowAllFormats: true,
+            presets: [
+              ["@babel/preset-env", {
+                targets: {
+                  chrome: "60"
+                },
+              }],
+            ],
+          }),
           terser(),
         ]
       },
-    ],
-  },
-  // ES5
-  {
-    input: pkg["browser:es5"],
-    plugins: [
-      babel(babelOptions(true)),
-    ],
-    external: Object.keys(browserExternals),
-    output: [
+      // ES5
       {
         banner,
         file: pkg["browser:es5"],
         format: "iife",
         name: "WebcryptoSocket",
         globals: browserExternals,
+        plugins: [
+          getBabelOutputPlugin({
+            allowAllFormats: true,
+            presets: [
+              ["@babel/preset-env", {
+                targets: {
+                  ie: "11"
+                },
+              }],
+            ],
+          }),
+        ]
       },
       {
         banner,
@@ -155,11 +183,21 @@ const browser = [
         name: "WebcryptoSocket",
         globals: browserExternals,
         plugins: [
+          getBabelOutputPlugin({
+            allowAllFormats: true,
+            presets: [
+              ["@babel/preset-env", {
+                targets: {
+                  ie: "11"
+                },
+              }],
+            ],
+          }),
           terser(),
         ]
       },
-    ],
-  }
+    ]
+  },
 ]
 
 export default [
