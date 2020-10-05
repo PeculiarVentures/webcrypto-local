@@ -1,14 +1,15 @@
 import * as proto from "@webcrypto-local/proto";
 import * as asn1js from "asn1js";
 import * as graphene from "graphene-pk11";
-import { IGetValue } from "node-webcrypto-p11";
+import { IGetValue, CryptoCertificate } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
 import { isEqualBuffer } from "pvutils";
 import request from "request";
-import { CryptoCertificate, CryptoCertificateStorage, CryptoStorages, NativeCrypto } from "webcrypto-core";
+import { CryptoCertificateStorage, CryptoStorages } from "webcrypto-core";
 const pkijs = require("pkijs");
 
 import { Server, Session } from "../connection";
+import { PvCrypto } from "../crypto";
 import { ServiceCryptoItem } from "../crypto_item";
 import { WebCryptoLocalError } from "../error";
 import { CryptoService } from "./crypto";
@@ -42,7 +43,7 @@ export class CertificateStorageService extends Service<CryptoService> {
     ]);
   }
 
-  public async getCrypto(id: string): Promise<NativeCrypto & CryptoStoragesEx> {
+  public async getCrypto(id: string): Promise<(globalThis.Crypto & CryptoStoragesEx) | PvCrypto> {
     return await this.object.getCrypto(id);
   }
 
