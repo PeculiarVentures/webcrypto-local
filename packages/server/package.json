@@ -41,15 +41,15 @@
     "@webcrypto-local/core": "^1.2.6",
     "@webcrypto-local/proto": "^1.2.6",
     "asn1js": "2.0.26",
-    "graphene-pk11": "^2.1.8",
-    "node-webcrypto-p11": "2.2.4",
+    "graphene-pk11": "^2.1.13",
+    "node-webcrypto-p11": "2.2.5",
     "pcsclite": "^1.0.0",
     "pkijs": "^2.1.89",
-    "pvtsutils": "^1.0.10",
+    "pvtsutils": "^1.0.14",
     "pvutils": "^1.0.17",
     "request": "^2.88.0",
     "tslib": "2.0.1",
-    "webcrypto-core": "^1.1.2",
+    "webcrypto-core": "^1.1.8",
     "ws": "^7.3.1"
   }
 }
