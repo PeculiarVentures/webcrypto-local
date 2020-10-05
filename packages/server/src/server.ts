@@ -143,6 +143,7 @@ export class LocalServer extends EventEmitter {
   public on(event: "error", cb: (err: Error) => void): this;
   public on(event: "close", cb: (e: any) => void): this;
   public on(event: "notify", cb: (e: any) => void): this;
+  public on(event: "identity_changed", cb: () => void): this;
   public on(event: string, cb: (...args: any[]) => void) {
     return super.on(event, cb);
   }
@@ -182,6 +183,7 @@ export class LocalServer extends EventEmitter {
             remoteIdentity.origin = session.origin;
             remoteIdentity.userAgent = session.headers["user-agent"];
             this.server.storage.saveRemoteIdentity(session.cipher.remoteIdentity.signingKey.id, remoteIdentity);
+            this.emit("identity_changed");
             session.authorized = true;
           } else {
             throw new WebCryptoLocalError(WebCryptoLocalError.CODE.RATCHET_KEY_NOT_APPROVED);

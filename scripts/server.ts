@@ -31,11 +31,6 @@ async function main() {
     case "darwin":
       pvpkcs11.push(path.join(__dirname, "../../fortify/libpvpkcs11.dylib"));
       opensc = path.join(__dirname, "../../fortify/node_modules/electron/dist/Electron.app/Contents/MacOS/opensc-pkcs11.so");
-      providers.push({
-        lib: "/usr/local/lib/softhsm/libsofthsm2.so",
-        slots: [0],
-        name: "SoftHSM",
-      })
       break;
     case "linux":
     default:
@@ -72,6 +67,9 @@ async function main() {
     })
     .on("token_new", (card) => {
       console.log("New token:", card);
+    })
+    .on("identity_changed", () => {
+      console.log("Identity changed");
     })
     .on("error", (e: Error) => {
       console.error(e);
