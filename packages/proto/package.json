@@ -11,6 +11,10 @@
   "contributors": [
     "Miroshin Stepan<microshine@mail.ru>"
   ],
+  "files": [
+    "build/**/*.{ts,js}",
+    "README.md"
+  ],
   "homepage": "https://github.com/PeculiarVentures/webcrypto-local/tree/master/packages/proto#readme",
   "license": "MIT",
   "main": "build/index.js",
