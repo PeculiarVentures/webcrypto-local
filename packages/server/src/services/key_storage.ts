@@ -42,10 +42,22 @@ export class KeyStorageService extends Service<CryptoService> {
         const params = await proto.KeyStorageGetItemActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
 
+        this.log("info", "keyStorage/getItem", {
+          crypto: this.logCrypto(crypto),
+          index: params.key,
+        });
+
         // do operation
         const key = !params.algorithm.isEmpty()
           ? await crypto.keyStorage.getItem(params.key, params.algorithm.toAlgorithm(), params.extractable, params.keyUsages)
           : await crypto.keyStorage.getItem(params.key);
+
+        this.log("info", "keyStorage/getItem", {
+          crypto: this.logCrypto(crypto as any),
+          key: key
+            ? this.logCryptoKey(key)
+            : null,
+        });
 
         if (key) {
           // add keys to memory storage
@@ -61,6 +73,12 @@ export class KeyStorageService extends Service<CryptoService> {
         const params = await proto.KeyStorageSetItemActionProto.importProto(action);
         const key = this.getMemoryStorage().item(params.item.id).item as CryptoKey;
         const crypto = await this.getCrypto(params.providerID);
+
+        this.log("info", "keyStorage/setItem", {
+          crypto: this.logCrypto(crypto),
+          key: this.logCryptoKey(key),
+        });
+
         // do operation
         if ((key.algorithm as any).toAlgorithm) {
           (key as any).algorithm = (key.algorithm as any).toAlgorithm();
@@ -82,6 +100,12 @@ export class KeyStorageService extends Service<CryptoService> {
         // prepare incoming data
         const params = await proto.KeyStorageRemoveItemActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
+
+        this.log("info", "keyStorage/removeItem", {
+          crypto: this.logCrypto(crypto),
+          index: params.key
+        });
+
         // do operation
         await crypto.keyStorage.removeItem(params.key);
         // result
@@ -91,6 +115,11 @@ export class KeyStorageService extends Service<CryptoService> {
         // load key storage
         const params = await proto.KeyStorageKeysActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
+
+        this.log("info", "keyStorage/keys", {
+          crypto: this.logCrypto(crypto),
+        });
+
         // do operation
         const keys = await crypto.keyStorage.keys();
         // result
@@ -102,6 +131,11 @@ export class KeyStorageService extends Service<CryptoService> {
         const params = await proto.KeyStorageIndexOfActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
         const key = this.getMemoryStorage().item(params.item.id).item as CryptoKey;
+
+        this.log("info", "keyStorage/getItem", {
+          crypto: this.logCrypto(crypto),
+          key: this.logCryptoKey(key),
+        });
 
         // do operation
         const index = await crypto.keyStorage.indexOf(key as any);
@@ -115,6 +149,10 @@ export class KeyStorageService extends Service<CryptoService> {
         // load cert storage
         const params = await proto.KeyStorageClearActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
+
+        this.log("info", "keyStorage/clear", {
+          crypto: this.logCrypto(crypto),
+        });
 
         // do operation
         await crypto.keyStorage.clear();

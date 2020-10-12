@@ -1,4 +1,5 @@
 import * as proto from "@webcrypto-local/proto";
+import { CryptoKey } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
 import { ObjectProto } from "tsprotobuf";
 
@@ -47,6 +48,10 @@ export class SubtleService extends Service<CryptoService> {
 
         const crypto = await this.getCrypto(params.providerID);
 
+        this.log("info", "digest", {
+          crypto: crypto.info.name,
+          algorithm: params.algorithm.name,
+        });
         result.data = await crypto.subtle.digest(params.algorithm.toAlgorithm(), params.data);
         break;
       }
@@ -55,6 +60,12 @@ export class SubtleService extends Service<CryptoService> {
         const params = await proto.GenerateKeyActionProto.importProto(action);
 
         const crypto = await this.getCrypto(params.providerID);
+        this.log("info", "generateKey", {
+          crypto: this.logCrypto(crypto),
+          algorithm: this.logKeyAlgorithm(params.algorithm.toAlgorithm()),
+          extractable: params.extractable,
+          kyUsages: params.usage,
+        });
         const keys = await crypto.subtle.generateKey(params.algorithm.toAlgorithm(), params.extractable, params.usage);
 
         // add key to memory storage
@@ -88,9 +99,14 @@ export class SubtleService extends Service<CryptoService> {
       case proto.SignActionProto.ACTION: {
         const params = await proto.SignActionProto.importProto(action);
 
-        const crypto = await this.getCrypto(params.providerID) as Crypto;
-
+        const crypto = await this.getCrypto(params.providerID);
         const key = this.getMemoryStorage().item(params.key.id).item as CryptoKey;
+        this.log("info", "sign", {
+          crypto: this.logCrypto(crypto),
+          algorithm: this.logAlgorithm(params.algorithm.toAlgorithm()),
+          key: this.logCryptoKey(key),
+        });
+
         result.data = await crypto.subtle.sign(params.algorithm.toAlgorithm(), key, params.data);
         break;
       }
@@ -98,8 +114,13 @@ export class SubtleService extends Service<CryptoService> {
       case proto.VerifyActionProto.ACTION: {
         const params = await proto.VerifyActionProto.importProto(action);
 
-        const crypto = await this.getCrypto(params.providerID) as Crypto;
+        const crypto = await this.getCrypto(params.providerID);
         const key = this.getMemoryStorage().item(params.key.id).item as CryptoKey;
+        this.log("info", "verify", {
+          crypto: this.logCrypto(crypto),
+          algorithm: this.logAlgorithm(params.algorithm.toAlgorithm()),
+          key: this.logCryptoKey(key),
+        });
 
         const ok = await crypto.subtle.verify(params.algorithm.toAlgorithm(), key, params.signature, params.data);
 
@@ -110,8 +131,13 @@ export class SubtleService extends Service<CryptoService> {
       case proto.EncryptActionProto.ACTION: {
         const params = await proto.EncryptActionProto.importProto(action);
 
-        const crypto = await this.getCrypto(params.providerID) as Crypto;
+        const crypto = await this.getCrypto(params.providerID);
         const key = this.getMemoryStorage().item(params.key.id).item as CryptoKey;
+        this.log("info", "encrypt", {
+          crypto: this.logCrypto(crypto),
+          algorithm: this.logAlgorithm(params.algorithm.toAlgorithm()),
+          key: this.logCryptoKey(key),
+        });
 
         result.data = await crypto.subtle.encrypt(params.algorithm.toAlgorithm(), key, params.data);
         break;
@@ -120,8 +146,13 @@ export class SubtleService extends Service<CryptoService> {
       case proto.DecryptActionProto.ACTION: {
         const params = await proto.DecryptActionProto.importProto(action);
 
-        const crypto = await this.getCrypto(params.providerID) as Crypto;
+        const crypto = await this.getCrypto(params.providerID);
         const key = this.getMemoryStorage().item(params.key.id).item as CryptoKey;
+        this.log("info", "decrypt", {
+          crypto: this.logCrypto(crypto),
+          algorithm: this.logAlgorithm(params.algorithm.toAlgorithm()),
+          key: this.logCryptoKey(key),
+        });
 
         result.data = await crypto.subtle.decrypt(params.algorithm.toAlgorithm(), key, params.data);
         break;
@@ -131,10 +162,15 @@ export class SubtleService extends Service<CryptoService> {
         const params = await proto.DeriveBitsActionProto.importProto(action);
 
         const crypto = await this.getCrypto(params.providerID);
-        const key = this.getMemoryStorage().item(params.key.id).item;
+        const key = this.getMemoryStorage().item(params.key.id).item as CryptoKey;
         const alg = params.algorithm.toAlgorithm();
         const publicKey = await proto.CryptoKeyProto.importProto(alg.public);
         alg.public = this.getMemoryStorage().item(publicKey.id).item;
+        this.log("info", "deriveBits", {
+          crypto: this.logCrypto(crypto),
+          algorithm: this.logAlgorithm(alg),
+          key: this.logCryptoKey(key),
+        });
 
         result.data = await crypto.subtle.deriveBits(alg, key as any, params.length);
         break;
@@ -144,12 +180,21 @@ export class SubtleService extends Service<CryptoService> {
         const params = await proto.DeriveKeyActionProto.importProto(action);
 
         const crypto = await this.getCrypto(params.providerID);
-        const key = this.getMemoryStorage().item(params.key.id).item;
+        const key = this.getMemoryStorage().item(params.key.id).item as CryptoKey;
         const alg = params.algorithm.toAlgorithm();
         const publicKey = await proto.CryptoKeyProto.importProto(alg.public);
         alg.public = this.getMemoryStorage().item(publicKey.id).item;
 
-        const derivedKey = await crypto.subtle.deriveKey(alg, key as any, params.derivedKeyType.toAlgorithm(), params.extractable, params.usage);
+        this.log("info", "deriveKey", {
+          crypto: this.logCrypto(crypto),
+          algorithm: this.logAlgorithm(alg),
+          key: this.logCryptoKey(key),
+          derivedKeyType: this.logKeyAlgorithm(params.derivedKeyType.toAlgorithm()),
+          extractable: params.extractable,
+          keyUsages: params.usage,
+        });
+
+        const derivedKey = await crypto.subtle.deriveKey(alg, key, params.derivedKeyType.toAlgorithm(), params.extractable, params.usage);
 
         // put key to memory storage
         const resKey = new ServiceCryptoItem(derivedKey, params.providerID);
@@ -163,13 +208,21 @@ export class SubtleService extends Service<CryptoService> {
         const params = await proto.WrapKeyActionProto.importProto(action);
 
         const crypto = await this.getCrypto(params.providerID);
-        const key = await this.getMemoryStorage().item(params.key.id).item;
-        const wrappingKey = this.getMemoryStorage().item(params.wrappingKey.id).item;
+        const key = await this.getMemoryStorage().item(params.key.id).item as CryptoKey;
+        const wrappingKey = this.getMemoryStorage().item(params.wrappingKey.id).item as CryptoKey;
+
+        this.log("info", "wrapKey", {
+          crypto: this.logCrypto(crypto),
+          format: params.format,
+          key: this.logCryptoKey(key),
+          wrappingKey: this.logCryptoKey(wrappingKey),
+          algorithm: this.logAlgorithm(params.wrapAlgorithm.toAlgorithm()),
+        });
 
         result.data = await crypto.subtle.wrapKey(
           params.format,
-          key as any,
-          wrappingKey as any,
+          key,
+          wrappingKey,
           params.wrapAlgorithm.toAlgorithm(),
         );
         break;
@@ -179,12 +232,22 @@ export class SubtleService extends Service<CryptoService> {
         const params = await proto.UnwrapKeyActionProto.importProto(action);
 
         const crypto = await this.getCrypto(params.providerID);
-        const unwrappingKey = await this.getMemoryStorage().item(params.unwrappingKey.id).item;
+        const unwrappingKey = await this.getMemoryStorage().item(params.unwrappingKey.id).item as CryptoKey;
+
+        this.log("info", "unwrapKey", {
+          crypto: this.logCrypto(crypto),
+          format: params.format,
+          unwrappingKey: this.logCryptoKey(unwrappingKey),
+          unwrapAlgorithm: this.logAlgorithm(params.unwrapAlgorithm.toAlgorithm()),
+          unwrappedKeyAlgorithm: this.logKeyAlgorithm(params.unwrappedKeyAlgorithm.toAlgorithm()),
+          extractable: params.extractable,
+          keyUsages: params.keyUsage,
+        });
 
         const key = await crypto.subtle.unwrapKey(
           params.format,
           params.wrappedKey,
-          unwrappingKey as any,
+          unwrappingKey,
           params.unwrapAlgorithm.toAlgorithm(),
           params.unwrappedKeyAlgorithm.toAlgorithm(),
           params.extractable,
@@ -202,8 +265,14 @@ export class SubtleService extends Service<CryptoService> {
       case proto.ExportKeyActionProto.ACTION: {
         const params = await proto.ExportKeyActionProto.importProto(action);
 
-        const crypto = await this.getCrypto(params.providerID) as Crypto;
+        const crypto = await this.getCrypto(params.providerID);
         const key = await this.getMemoryStorage().item(params.key.id).item as CryptoKey;
+
+        this.log("info", "exportKey", {
+          crypto: this.logCrypto(crypto),
+          format: params.format,
+          key: this.logCryptoKey(key),
+        });
 
         const exportedData = await crypto.subtle.exportKey(
           params.format,
@@ -224,6 +293,14 @@ export class SubtleService extends Service<CryptoService> {
         const params = await proto.ImportKeyActionProto.importProto(action);
 
         const crypto = await this.getCrypto(params.providerID);
+
+        this.log("info", "importKey", {
+          crypto: this.logCrypto(crypto),
+          format: params.format,
+          algorithm: this.logKeyAlgorithm(params.algorithm.toAlgorithm()),
+          extractable: params.extractable,
+          keyUsages: params.keyUsages,
+        });
 
         let keyData: JsonWebKey | ArrayBuffer;
         if (params.format.toLowerCase() === "jwk") {

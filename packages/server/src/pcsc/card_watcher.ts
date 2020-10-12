@@ -1,4 +1,4 @@
-import { EventEmitter } from "events";
+import * as core from "@webcrypto-local/core";
 import * as os from "os";
 import { OpenSC } from "../opensc";
 import { Card, CardConfig, CardOptions } from "./card_config";
@@ -15,7 +15,9 @@ export interface PCSCCard {
   atr: Buffer;
 }
 
-export class CardWatcher extends EventEmitter {
+export class CardWatcher extends core.EventLogEmitter {
+
+  public source = "card-watcher";
 
   /**
    * List of allowed cards
@@ -39,8 +41,8 @@ export class CardWatcher extends EventEmitter {
     this.config = new CardConfig(options);
     this.watcher = new PCSCWatcher();
     this.watcher
-      .on("info", (message) => {
-        this.emit("info", message);
+      .on("info", (level, source, message, data) => {
+        this.emit("info", level, source, message, data);
       })
       .on("error", (err) => {
         this.emit("error", err);
@@ -48,7 +50,9 @@ export class CardWatcher extends EventEmitter {
       .on("insert", (e) => {
         try {
           if (!e.atr) {
-            this.emit("info", `CardConfig:Insert: Cannot check token because it uses an empty ATR. Reader: '${e.reader.name}'`);
+            this.log("warn", "Cannot check token because it uses an empty ATR", {
+              reader: e.reader.name,
+            });
             return;
           }
 
@@ -82,13 +86,22 @@ export class CardWatcher extends EventEmitter {
       });
   }
 
-  public on(event: "info", cb: (message: string) => void): this;
+  public on(event: "info", cb: core.LogHandler): this;
   public on(event: "error", cb: (err: Error) => void): this;
   public on(event: "insert", cb: (card: Card) => void): this;
   public on(event: "new", cb: (card: PCSCCard) => void): this;
   public on(event: "remove", cb: (card: Card) => void): this;
   public on(event: string, cb: (...args: any[]) => void) {
     return super.on(event, cb);
+  }
+
+  public emit(event: "info", level: core.LogLevel, source: string, message: string, data?: core.LogData): boolean;
+  public emit(event: "error", err: Error): boolean;
+  public emit(event: "insert", card: Card): boolean;
+  public emit(event: "new", card: PCSCCard): boolean;
+  public emit(event: "remove", card: Card): boolean;
+  public emit(event: string, ...args: any[]) {
+    return super.emit(event, ...args);
   }
 
   /**
@@ -152,7 +165,10 @@ export class CardWatcher extends EventEmitter {
           card.libraries.push(lib);
         }
       } else {
-        this.emit("info", `CardConfig:Insert: Cannot get Card config for ATR:${e.atr}. Use pvpkcs11 SmartCard slot'`);
+        this.log("info", `Cannot get Card config. Use pvpkcs11 SmartCard slot`, {
+          reader: e.reader,
+          atr: e.atr,
+        });
         card = {
           atr: e.atr,
           reader: e.reader.name,

@@ -1,6 +1,5 @@
 import * as core from "@webcrypto-local/core";
 import * as proto from "@webcrypto-local/proto";
-import { EventEmitter } from "events";
 import { RemoteIdentity, Server, ServerOptions, Session } from "./connection";
 import { WebCryptoLocalError } from "./error";
 import { PCSCCard } from "./pcsc";
@@ -23,7 +22,9 @@ export interface IServerOptions extends ServerOptions {
  * @class LocalServer
  * @extends {EventEmitter}
  */
-export class LocalServer extends EventEmitter {
+export class LocalServer extends core.EventLogEmitter {
+
+  public source = "server";
 
   /**
    * Server
@@ -44,8 +45,8 @@ export class LocalServer extends EventEmitter {
 
     if (!options.disablePCSC) {
       this.cardReader = new CardReaderService(this.server)
-        .on("info", (e) => {
-          this.emit("info", e);
+        .on("info", (level, source, message, data) => {
+          this.emit("info", level, source, message, data);
         })
         .on("error", (e) => {
           this.emit("error", e);
@@ -55,8 +56,8 @@ export class LocalServer extends EventEmitter {
       options.config.disablePCSC = true;
     }
     this.provider = new ProviderService(this.server, options.config)
-      .on("info", (e) => {
-        this.emit("info", e);
+      .on("info", (level, source, message, data) => {
+        this.emit("info", level, source, message, data);
       })
       .on("error", (e) => {
         this.emit("error", e);
@@ -91,19 +92,28 @@ export class LocalServer extends EventEmitter {
         this.provider.open();
       })
       .on("connect", (session) => {
-        this.emit("info", `Server: New session connect ${session.origin}`);
+        this.log("info", "Create a new connection", {
+          origin: session.origin,
+        });
         // check connection in stack
         if (!(this.sessions.length && this.sessions.some((item) => item === session))) {
-          this.emit("info", `Server: Push session to stack`);
+          this.log("info", "Push session to stack", {
+            origin: session.origin,
+          });
           this.sessions.push(session);
         }
       })
       .on("disconnect", (e) => {
         // TODO: Remove closed session from `this.sessions`
-        this.emit("info", `Server: Close session ${e.description} origin:${e.remoteAddress} (code: ${e.reasonCode})`);
+        this.log("info", "Close session", {
+          event: e.event,
+          description: e.description,
+          reasonCode: e.reasonCode,
+          remoteAddress: e.remoteAddress,
+        });
       })
-      .on("info", (message) => {
-        this.emit("info", message);
+      .on("info", (level, source, message, data) => {
+        this.emit("info", level, source, message, data);
       })
       .on("error", (e) => {
         this.emit("error", e.error);
@@ -137,7 +147,7 @@ export class LocalServer extends EventEmitter {
     return this;
   }
 
-  public on(event: "info", cb: (message: string) => void): this;
+  public on(event: "info", cb: core.LogHandler): this;
   public on(event: "token_new", cb: (info: PCSCCard) => void): this;
   public on(event: "listening", cb: (address: string) => void): this;
   public on(event: "error", cb: (err: Error) => void): this;

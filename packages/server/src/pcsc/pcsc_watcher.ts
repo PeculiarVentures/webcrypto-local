@@ -1,4 +1,4 @@
-import { EventEmitter } from "events";
+import * as core from "@webcrypto-local/core";
 import { WebCryptoLocalError } from "../error";
 import * as PCSCLite from "../types/pcsclite";
 const pcsc: () => PCSCLite.PCSCLite = require("pcsclite");
@@ -8,7 +8,9 @@ export interface PCSCWatcherEvent {
   atr?: Buffer;
 }
 
-export class PCSCWatcher extends EventEmitter {
+export class PCSCWatcher extends core.EventLogEmitter {
+
+  public source = "pcsc";
 
   public readers: PCSCLite.CardReader[] = [];
   protected pcsc: PCSCLite.PCSCLite | null = null;
@@ -18,13 +20,17 @@ export class PCSCWatcher extends EventEmitter {
   }
 
   public start(): this {
+    this.log("info", "Start PCSC listening");
+
     try {
       this.pcsc = pcsc();
       this.pcsc.on("error", (err) => {
         this.emit("error", err);
       });
       this.pcsc.on("reader", (reader) => {
-        this.emit("info", `PCSCWatcher: New reader detected ${reader.name}`);
+        this.log("info", "Initialize new reader", {
+          reader: reader.name,
+        });
         this.readers.push(reader);
         let atr: Buffer | null;
         reader.state = 0;
@@ -56,7 +62,10 @@ export class PCSCWatcher extends EventEmitter {
                 atr = status.atr;
                 event.atr = atr;
               }
-              this.emit("info", `PCSCWatcher:Insert reader:'${reader.name}' ATR:${atr && atr.toString("hex")}`);
+              this.log("info", "New token was added to the reader", {
+                reader: reader.name,
+                atr: atr?.toString("hex") || "unknown",
+              });
               // Delay for lib loading
               setTimeout(() => {
                 this.emit("insert", event);
@@ -69,6 +78,12 @@ export class PCSCWatcher extends EventEmitter {
           // console.log("Reader", this.name, "removed");
           if (atr) {
             // don't fire event if 'atr' wasn't set
+
+            this.log("info", "Token was removed from the reader", {
+              reader: reader.name,
+              atr: atr?.toString("hex") || "unknown",
+            });
+
             const event: PCSCWatcherEvent = {
               reader,
               atr,
@@ -83,19 +98,30 @@ export class PCSCWatcher extends EventEmitter {
     }
     return this;
   }
+
   public stop() {
     if (this.pcsc) {
+      this.log("info", "Stop PCSC listening");
+
       this.pcsc.close();
       this.pcsc = null;
     }
   }
 
-  public on(event: "info", cb: (message: string) => void): this;
+  public on(event: "info", cb: core.LogHandler): this;
   public on(event: "insert", cb: (e: PCSCWatcherEvent) => void): this;
   public on(event: "remove", cb: (e: PCSCWatcherEvent) => void): this;
   public on(event: "error", cb: (err: Error) => void): this;
   public on(event: string, cb: (...args: any[]) => void): this {
     return super.on(event, cb);
+  }
+
+  public emit(event: "info", level: core.LogLevel, source: string, message: string, data?: core.LogData): boolean;
+  public emit(event: "insert", e: PCSCWatcherEvent): boolean;
+  public emit(event: "remove", e: PCSCWatcherEvent): boolean;
+  public emit(event: "error", err: Error): boolean;
+  public emit(event: string, ...args: any[]) {
+    return super.emit(event, ...args);
   }
 
 }
