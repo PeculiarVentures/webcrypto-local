@@ -52,7 +52,7 @@
     "pvtsutils": "^1.0.14",
     "pvutils": "^1.0.17",
     "request": "^2.88.0",
-    "tslib": "2.0.2",
+    "tslib": "2.0.3",
     "webcrypto-core": "^1.1.8",
     "ws": "^7.3.1"
   }
