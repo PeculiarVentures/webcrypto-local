@@ -1,3 +1,4 @@
+import * as core from "@webcrypto-local/core";
 import * as proto from "@webcrypto-local/proto";
 import * as graphene from "graphene-pk11";
 
@@ -41,21 +42,21 @@ export class CryptoService extends Service<ProviderService> {
 
   public emit(event: "notify", e: CryptoNotifyEvent): boolean;
   public emit(event: "error", error: Error): boolean;
-  public emit(event: "info", message: string): boolean;
+  public emit(event: "info", level: core.LogLevel, source: string, message: string, data?: core.LogData): boolean;
   public emit(event: string, ...args: any[]): boolean {
     return super.emit(event, ...args);
   }
 
   public on(event: "notify", e: CryptoNotifyEventHandler): this;
   public on(event: "error", cb: (error: Error) => void): this;
-  public on(event: "info", cb: (message: string) => void): this;
+  public on(event: "info", cb: core.LogHandler): this;
   public on(event: string, cb: (...args: any[]) => void): this {
     return super.on(event, cb);
   }
 
   public once(event: "notify", e: CryptoNotifyEventHandler): this;
   public once(event: "error", cb: (error: Error) => void): this;
-  public once(event: "info", cb: (message: string) => void): this;
+  public once(event: "info", cb: core.LogHandler): this;
   public once(event: string, cb: (...args: any[]) => void): this {
     return super.once(event, cb);
   }
@@ -73,6 +74,11 @@ export class CryptoService extends Service<ProviderService> {
         const params = await proto.IsLoggedInActionProto.importProto(action);
 
         const crypto = await this.getCrypto(params.providerID);
+
+        this.log("info", "crypto/isLoggedIn", {
+          crypto: this.logCrypto(crypto),
+        });
+
         result.data = new Uint8Array([crypto.isLoggedIn ? 1 : 0]).buffer;
         break;
       }
@@ -80,6 +86,11 @@ export class CryptoService extends Service<ProviderService> {
         const params = await proto.LoginActionProto.importProto(action);
 
         const crypto = await this.getCrypto(params.providerID);
+
+        this.log("info", "crypto/login", {
+          crypto: this.logCrypto(crypto),
+        });
+
         const slot: graphene.Slot = (crypto as any).slot;
 
         if (crypto.login) {
@@ -110,6 +121,10 @@ export class CryptoService extends Service<ProviderService> {
 
         const crypto = await this.getCrypto(params.providerID);
 
+        this.log("info", "crypto/logout", {
+          crypto: this.logCrypto(crypto),
+        });
+
         if (crypto.logout) {
           crypto.logout();
         }
@@ -118,6 +133,10 @@ export class CryptoService extends Service<ProviderService> {
       case proto.ResetActionProto.ACTION: {
         const params = await proto.ResetActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
+
+        this.log("info", "crypto/reset", {
+          crypto: this.logCrypto(crypto),
+        });
 
         if ("reset" in crypto) {
           // node-webcrypto-p11 has reset method

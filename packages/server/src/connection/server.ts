@@ -1,7 +1,6 @@
 import * as ratchet from "2key-ratchet";
 import * as core from "@webcrypto-local/core";
 import * as proto from "@webcrypto-local/proto";
-import { EventEmitter } from "events";
 import * as http from "http";
 import * as https from "https";
 import { ServerOptions as HttpsServerOptions } from "https";
@@ -58,7 +57,9 @@ export interface Session {
  * @class Server
  * @extends {EventEmitter}
  */
-export class Server extends EventEmitter {
+export class Server extends core.EventLogEmitter {
+
+  public source = "server";
 
   public info: ServerInfo = {
     version: require(`@webcrypto-local/server/package.json`).version,
@@ -110,7 +111,7 @@ export class Server extends EventEmitter {
   public emit(event: "disconnect", e: events.ServerDisconnectEvent): boolean;
   public emit(event: "error", e: events.ServerErrorEvent): boolean;
   public emit(event: "message", e: events.ServerMessageEvent): boolean;
-  public emit(event: "info", message: string): boolean;
+  public emit(event: "info", level: core.LogLevel, source: string, message: string, data?: core.LogData): boolean;
   public emit(event: string | symbol, ...args: any[]): boolean {
     return super.emit(event, ...args);
   }
@@ -121,7 +122,7 @@ export class Server extends EventEmitter {
   public on(event: "disconnect", listener: (e: events.ServerDisconnectEvent) => void): this;
   public on(event: "error", listener: (e: events.ServerErrorEvent) => void): this;
   public on(event: "message", listener: (e: events.ServerMessageEvent) => void): this;
-  public on(event: "info", listener: (message: string) => void): this;
+  public on(event: "info", listener: core.LogHandler): this;
   public on(event: string | symbol, listener: (...args: any[]) => void): this {
     return super.on(event, listener);
   }
@@ -132,7 +133,7 @@ export class Server extends EventEmitter {
   public once(event: "disconnect", listener: (e: events.ServerDisconnectEvent) => void): this;
   public once(event: "error", listener: (e: events.ServerErrorEvent) => void): this;
   public once(event: "message", listener: (e: events.ServerMessageEvent) => void): this;
-  public once(event: "info", listener: (message: string) => void): this;
+  public once(event: "info", listener: core.LogHandler): this;
   public once(event: string | symbol, listener: (...args: any[]) => void): this {
     return super.once(event, listener);
   }
@@ -196,6 +197,7 @@ export class Server extends EventEmitter {
 
     this.socketServer.on("connection", (ws: WebSocket, request) => {
       const session: Session = {
+        // TODO agent: request.headers
         origin: getOrigin(request),
         headers: request.headers,
         connection: ws,
@@ -209,10 +211,10 @@ export class Server extends EventEmitter {
             const buffer = new Uint8Array(message).buffer;
             let messageProto: ratchet.MessageSignedProtocol;
             try {
-              messageProto = await ratchet.MessageSignedProtocol.importProto(buffer);
+              messageProto = await ratchet.MessageSignedProtocol.importProto( buffer);
             } catch (err) {
               try {
-                this.emit("info", `Server: Cannot parse MessageSignedProtocol`);
+                this.log("warn", "Cannot parse MessageSignedProtocol");
                 const preKeyProto = await ratchet.PreKeyMessageProtocol.importProto(buffer);
                 messageProto = preKeyProto.signedMessage;
                 session.identity = await this.storage.getIdentity(session.origin);
@@ -229,7 +231,11 @@ export class Server extends EventEmitter {
                 }
 
                 const sessionIdentitySHA256 = await session.cipher.remoteIdentity.signingKey.thumbprint();
-                this.emit("info", `Server: Initialize secure session origin:${session.origin} id:${sessionIdentitySHA256} authorized:${session.authorized}`);
+                this.log("info", "Initialize secure session", {
+                  origin: session.origin,
+                  session: sessionIdentitySHA256,
+                  authorized: session.authorized,
+                });
               } catch (err) {
                 throw err;
               }
@@ -256,9 +262,16 @@ export class Server extends EventEmitter {
                   const sessionIdentitySHA256 = await session.cipher.remoteIdentity.signingKey.thumbprint();
                   if (new RegExp("^crypto\/").test(actionProto.action)) {
                     const cryptoActionProto = await proto.CryptoActionProto.importProto(actionProto);
-                    this.emit("info", `Server: session:${sessionIdentitySHA256} provider:${cryptoActionProto.providerID} ${actionProto.action}`);
+                    this.log("info", "Run action", {
+                      session: sessionIdentitySHA256,
+                      action: actionProto.action,
+                      provider: cryptoActionProto.providerID,
+                    });
                   } else {
-                    this.emit("info", `Server: session:${sessionIdentitySHA256} ${actionProto.action}`);
+                    this.log("info", "Run action", {
+                      session: sessionIdentitySHA256,
+                      action: actionProto.action,
+                    });
                   }
                   this.emit("message", new events.ServerMessageEvent(this, session, actionProto, resolve, reject));
                 })()

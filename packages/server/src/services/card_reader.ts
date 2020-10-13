@@ -27,22 +27,15 @@ export class CardReaderService extends Service<PCSCWatcher> {
     this.object.stop();
   }
 
-  public on(event: "error", cb: (error: Error) => void): this;
-  public on(event: "info", cb: (message: string) => void): this;
-  public on(event: string, cb: (...args: any[]) => void): this {
-    return super.on(event, cb);
-  }
-
-  public once(event: "error", cb: (error: Error) => void): this;
-  public once(event: "info", cb: (message: string) => void): this;
-  public once(event: string, cb: (...args: any[]) => void): this {
-    return super.once(event, cb);
-  }
-
   protected onInsert(e: PCSCWatcherEvent) {
     this.server.sessions.forEach((session) => {
       if (session.authorized) {
         const eventProto = this.createProto(proto.CardReaderInsertEventProto, e);
+
+        this.log("info", "cardReader/insert", {
+          atr: e.atr?.toString("hex") || "empty",
+          reader: e.reader.name,
+        });
 
         this.server.send(session, eventProto);
       }
@@ -54,6 +47,11 @@ export class CardReaderService extends Service<PCSCWatcher> {
       if (session.authorized) {
         const eventProto = this.createProto(proto.CardReaderRemoveEventProto, e);
 
+        this.log("info", "cardReader/remove", {
+          atr: e.atr?.toString("hex") || "empty",
+          reader: e.reader.name,
+        });
+
         this.server.send(session, eventProto);
       }
     });
@@ -63,6 +61,8 @@ export class CardReaderService extends Service<PCSCWatcher> {
     const result = new proto.ResultProto(action);
     switch (action.action) {
       case proto.CardReaderGetReadersActionProto.ACTION: {
+        this.log("info", "cardReader/getReaders");
+
         result.data = Convert.FromString(JSON.stringify(this.object.readers));
         break;
       }

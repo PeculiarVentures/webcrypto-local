@@ -11,6 +11,10 @@
   "contributors": [
     "Miroshin Stepan<microshine@mail.ru>"
   ],
+  "files": [
+    "build/**/*.{ts,js}",
+    "README.md"
+  ],
   "homepage": "https://github.com/PeculiarVentures/webcrypto-local/tree/master/packages/server#readme",
   "license": "MIT",
   "main": "build/index.js",
@@ -48,7 +52,7 @@
     "pvtsutils": "^1.0.14",
     "pvutils": "^1.0.17",
     "request": "^2.88.0",
-    "tslib": "2.0.1",
+    "tslib": "2.0.2",
     "webcrypto-core": "^1.1.8",
     "ws": "^7.3.1"
   }

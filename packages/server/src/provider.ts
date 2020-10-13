@@ -1,6 +1,5 @@
 import * as core from "@webcrypto-local/core";
 import * as proto from "@webcrypto-local/proto";
-import { EventEmitter } from "events";
 import * as fs from "fs";
 import * as graphene from "graphene-pk11";
 import { Crypto } from "node-webcrypto-p11";
@@ -68,7 +67,9 @@ function pauseAsync(ms: number = 1000) {
   });
 }
 
-export class LocalProvider extends EventEmitter {
+export class LocalProvider extends core.EventLogEmitter {
+
+  public source = "provider";
 
   public info!: proto.ProviderInfoProto;
   public crypto: CryptoMap;
@@ -101,7 +102,7 @@ export class LocalProvider extends EventEmitter {
   public on(event: "token", listener: LocalProviderTokenHandler): this;
   public on(event: "token_new", listener: LocalProviderTokenNewHandler): this;
   public on(event: "error", listener: LocalProviderErrorHandler): this;
-  public on(event: "info", listener: (message: string) => void): this;
+  public on(event: "info", listener: core.LogHandler): this;
   // public on(event: string | symbol, listener: Function): this;
   public on(event: string | symbol, listener: (...args: any[]) => void) {
     return super.on(event, listener);
@@ -112,7 +113,7 @@ export class LocalProvider extends EventEmitter {
   public once(event: "token", listener: LocalProviderTokenHandler): this;
   public once(event: "token_new", listener: LocalProviderTokenNewHandler): this;
   public once(event: "error", listener: LocalProviderErrorHandler): this;
-  public once(event: "info", listener: (message: string) => void): this;
+  public once(event: "info", listener: core.LogHandler): this;
   // public once(event: string | symbol, listener: Function): this;
   public once(event: string | symbol, listener: (...args: any[]) => void) {
     return super.once(event, listener);
@@ -120,15 +121,14 @@ export class LocalProvider extends EventEmitter {
 
   public emit(event: "token", info: core.TokenInfo): boolean;
   public emit(event: "token_new", info: PCSCCard): boolean;
-  public emit(event: "info", message: string): boolean;
   public emit(event: "error", error: Error | string): boolean;
   public emit(event: "listening", info: proto.ProviderInfoProto): boolean;
+  public emit(event: "info", level: core.LogLevel, source: string, message: string, data?: core.LogData): boolean;
   public emit(event: string | symbol, ...args: any[]) {
     return super.emit(event, ...args);
   }
 
   public async open() {
-    const EVENT_LOG = "Provider:Open";
     this.info = new proto.ProviderInfoProto();
     this.info.name = "WebcryptoLocal";
     this.info.providers = [];
@@ -147,10 +147,10 @@ export class LocalProvider extends EventEmitter {
             crypto.isLoggedIn = true;
             this.addProvider(crypto);
           } catch (e) {
-            this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot load library by path ${pvpkcs11}. ${e.message}`));
+            this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `Provider:open Cannot load library by path ${pvpkcs11}. ${e.message}`));
           }
         } else {
-          this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot find pvpkcs11 by path ${pvpkcs11}`));
+          this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `Provider:open Cannot find pvpkcs11 by path ${pvpkcs11}`));
         }
       }
     }
@@ -173,10 +173,10 @@ export class LocalProvider extends EventEmitter {
               name: prov.name,
             });
           } catch (err) {
-            this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `${EVENT_LOG} Cannot load PKCS#11 library by path ${prov.lib}. ${err.message}`));
+            this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `Provider:open Cannot load PKCS#11 library by path ${prov.lib}. ${err.message}`));
           }
         } else {
-          this.emit("info", `${EVENT_LOG} File ${prov.lib} does not exist`);
+          this.log("info", `File ${prov.lib} does not exist`, { action: "open" });
         }
       }
     }
@@ -193,8 +193,8 @@ export class LocalProvider extends EventEmitter {
             error: err,
           });
         })
-        .on("info", (message) => {
-          this.emit("info", message);
+        .on("info", (level, source, message, data) => {
+          this.emit("info", level, source, message, data);
         })
         .on("new", (card) => {
           return this.emit("token_new", card);
@@ -210,7 +210,6 @@ export class LocalProvider extends EventEmitter {
 
   public addProvider(crypto: Crypto, params?: IAddProviderParams) {
     const info = getSlotInfo(crypto);
-    this.emit("info", `Provider: Add crypto '${info.name}' ${info.id}`);
     if (params?.name) {
       info.name = info.name;
       info.card = params.name;
@@ -249,16 +248,22 @@ export class LocalProvider extends EventEmitter {
   }
 
   protected async onTokenInsert(card: Card) {
-    const EVENT_LOG = "Provider:Token:Insert:";
-    this.emit("info", `${EVENT_LOG} reader:'${card.reader}' name:'${card.name}' atr:${card.atr ? card.atr.toString("hex") : "unknown"}`);
+    this.log("info", "Token was added to the reader", {
+      reader: card.reader,
+      name: card.name,
+      atr: card.atr?.toString("hex") || "unknown",
+    });
+
     let lastError: Error | null = null;
     for (const library of card.libraries) {
       try {
-        this.emit("info", `${EVENT_LOG} Loading PKCS#11 library from ${library}`);
+        this.log("info", "Loading PKCS#11 library", {
+          library,
+        });
         lastError = null; // remove last error
         if (!fs.existsSync(library)) {
           lastError = new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_NOT_FOUND, library);
-          this.emit("error", `${EVENT_LOG} File ${library} does not exist`);
+          this.emit("error", `Cannot load PKCS#11 library. File '${library}' does not exist`);
           continue;
         }
 
@@ -284,12 +289,14 @@ export class LocalProvider extends EventEmitter {
 
         const slots = mod.getSlots(true);
         if (!slots.length) {
-          this.emit("error", `${EVENT_LOG} No slots found. It's possible token ${card.atr ? card.atr.toString("hex") : "unknown"} uses wrong PKCS#11 lib ${card.libraries}`);
+          this.emit("error", `No slots found. It's possible token ${card.atr ? card.atr.toString("hex") : "unknown"} uses wrong PKCS#11 lib ${card.libraries}`);
           lastError = new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_WRONG, library);
           continue;
         }
         const slotIndexes: number[] = [];
-        this.emit("info", `${EVENT_LOG} Looking for ${card.reader} into ${slots.length} slot(s)`);
+        this.log("info", "Looking for slot", {
+          slots: slots.length,
+        });
         for (let i = 0; i < slots.length; i++) {
           const slot = slots.items(i);
           if (!slot || this.hasProvider(slot)) {
@@ -352,8 +359,12 @@ export class LocalProvider extends EventEmitter {
 
   protected async onTokenRemove(card: Card) {
     try {
-      const EVENT_LOG = "Provider:Token:Remove";
-      this.emit("info", `${EVENT_LOG} reader:'${card.reader}' name:'${card.name}' atr:${card.atr ? card.atr.toString("hex") : "unknown"}`);
+      this.log("info", "Token was removed from the reader", {
+        reader: card.reader,
+        name: card.name,
+        atr: card.atr?.toString("hex") || "unknown",
+      });
+
       const info: any = {
         added: [],
         removed: [],
@@ -390,7 +401,7 @@ export class LocalProvider extends EventEmitter {
         } catch (err) {
           this.emit("error", new WebCryptoLocalError(
             WebCryptoLocalError.CODE.TOKEN_REMOVE_TOKEN_READING,
-            `${EVENT_LOG} PKCS#11 lib ${library}. ${err.message}`,
+            `Cannot find removed slot in PKCS#11 library ${library}. ${err.message}`,
           ));
         }
       }
@@ -405,7 +416,6 @@ export class LocalProvider extends EventEmitter {
 
         this.info.providers = this.info.providers.filter((provider) => {
           if (provider.id === provId) {
-            this.emit("info", `${EVENT_LOG} Crypto removed '${provider.name}' ${provider.id}`);
             // remove crypto
             info.removed.push(provider);
             return false;
@@ -427,16 +437,24 @@ export class LocalProvider extends EventEmitter {
   }
 
   protected onCryptoAdd(e: MapChangeEvent<Pkcs11Crypto>) {
-    this.emit("info", `Provider:AddCrypto: PKCS#11 '${e.item.module.libFile}' '${e.item.module.libName}'`);
+    this.log("info", "Crypto provider was added to the list", {
+      id: e.key,
+      library: e.item.module.libFile,
+      name: e.item.info.name,
+      reader: e.item.info.reader,
+    });
   }
 
   protected onCryptoRemove(e: MapChangeEvent<Pkcs11Crypto>) {
-    const LOG = "Provider:RemoveCrypto";
     const cryptoModule = e.item.module;
-    this.emit("info", `${LOG} PKCS#11 '${cryptoModule.libFile}' '${cryptoModule.libName}'`);
+    this.log("info", "Crypto provider was removed from the list", {
+      id: e.key
+    });
 
     if (!this.crypto.some((crypto: any) => crypto.slot && crypto.slot.module.libFile === cryptoModule.libFile)) {
-      this.emit("info", `${LOG} PKCS#11 finalize '${cryptoModule.libFile}'`);
+      this.log("info", "Finalize crypto provider", {
+        id: e.key
+      });
       try {
         cryptoModule.finalize();
       } catch (err) {

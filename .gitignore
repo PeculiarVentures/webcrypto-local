@@ -13,3 +13,4 @@ dist/*.map.js
 .npmrc
 modules_list.js
 modules.json
+tsconfig.tsbuildinfo

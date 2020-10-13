@@ -7,6 +7,10 @@
   "contributors": [
     "Miroshin Stepan<microshine@mail.ru>"
   ],
+  "files": [
+    "build/**/*.{ts,js}",
+    "README.md"
+  ],
   "homepage": "https://github.com/PeculiarVentures/webcrypto-local/tree/master/packages/core#readme",
   "license": "MIT",
   "main": "build/index.js",
@@ -33,6 +37,6 @@
   "dependencies": {
     "2key-ratchet": "1.0.18",
     "pvtsutils": "^1.0.14",
-    "tslib": "2.0.1"
+    "tslib": "2.0.2"
   }
 }

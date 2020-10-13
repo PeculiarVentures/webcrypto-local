@@ -1,5 +1,5 @@
-import { Assoc } from "@webcrypto-local/core";
-import { EventEmitter } from "events";
+import * as core from "@webcrypto-local/core";
+import { LogHandler } from "@webcrypto-local/core";
 
 export interface MapChangeEvent<T> {
   key: string;
@@ -7,8 +7,9 @@ export interface MapChangeEvent<T> {
 }
 export type MapChangeHandle<T> = (e: MapChangeEvent<T>) => void;
 
-export class Map<T> extends EventEmitter {
-  protected items: Assoc<T> = {};
+export abstract class Map<T> extends core.EventLogEmitter {
+
+  protected items: core.Assoc<T> = {};
 
   public get length() {
     return Object.keys(this.items).length;
@@ -28,13 +29,16 @@ export class Map<T> extends EventEmitter {
 
   public on(event: "add", callback: MapChangeHandle<T>): this;
   public on(event: "remove", callback: MapChangeHandle<T>): this;
+  public on(event: "info", listener: LogHandler): this;
   public on(event: string, callback: (...args: any[]) => void): this;
   public on(event: string, callback: (...args: any[]) => void): this {
     return super.on(event, callback);
   }
 
   public once(event: "add", callback: MapChangeHandle<T>): this;
+  public once(event: "info", listener: () => void): this;
   public once(event: "remove", callback: MapChangeHandle<T>): this;
+  public once(event: "info", listener: LogHandler): this;
   public once(event: string, callback: (...args: any[]) => void): this;
   public once(event: string, callback: (...args: any[]) => void): this {
     return super.once(event, callback);
@@ -42,6 +46,7 @@ export class Map<T> extends EventEmitter {
 
   public emit(event: "add", e: MapChangeEvent<T>): boolean;
   public emit(event: "remove", e: MapChangeEvent<T>): boolean;
+  public emit(event: "info", level: core.LogLevel, source: string, message: string, data?: core.LogData): boolean;
   public emit(event: string, ...args: any[]): boolean;
   public emit(event: string, ...args: any[]): boolean {
     return super.emit(event, ...args);

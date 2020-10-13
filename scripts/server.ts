@@ -12,7 +12,7 @@ async function main() {
   // Set crypto engine for 2key-ratchet
   setEngine("WebCrypto NodeJS", new Crypto());
 
-  const platform = os.platform()
+  const platform = os.platform();
   const FORTIFY_DATA_DIR = path.join(os.homedir(), ".fortify");
   const APP_DATA_DIR = platform === "win32"
     ? path.join(process.env.ProgramData!, "Fortify")
@@ -62,8 +62,12 @@ async function main() {
     .on("listening", (e: any) => {
       console.log("Started at 127.0.0.1:31337");
     })
-    .on("info", (msg) => {
-      console.log(msg);
+    .on("info", (level, source, message, data) => {
+      if (data) {
+        console.log(`${level.padEnd(7)}[${source}] ${message}`, data);
+      } else {
+        console.log(`${level.padEnd(7)}[${source}] ${message}`);
+      }
     })
     .on("token_new", (card) => {
       console.log("New token:", card);

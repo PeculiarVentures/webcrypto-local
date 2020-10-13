@@ -1,7 +1,7 @@
 import * as proto from "@webcrypto-local/proto";
 import * as asn1js from "asn1js";
 import * as graphene from "graphene-pk11";
-import { IGetValue, CryptoCertificate } from "node-webcrypto-p11";
+import { IGetValue, CryptoX509CertificateRequest, CryptoX509Certificate, CryptoCertificate } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
 import { isEqualBuffer } from "pvutils";
 import request from "request";
@@ -54,11 +54,17 @@ export class CertificateStorageService extends Service<CryptoService> {
   protected async onMessage(session: Session, action: proto.ActionProto) {
     const result = new proto.ResultProto(action);
     switch (action.action) {
-      // getItem
+      // getValue
       case proto.CertificateStorageGetValueActionProto.ACTION: {
         // prepare incoming data
         const params = await proto.CertificateStorageGetValueActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
+
+        this.log("info", "certStorage/getValue", {
+          crypto: this.logCrypto(crypto as any),
+          index: params.key
+        });
+
         // do operation
         const item = await crypto.certStorage.getValue(params.key);
 
@@ -72,12 +78,25 @@ export class CertificateStorageService extends Service<CryptoService> {
         // prepare incoming data
         const params = await proto.CertificateStorageGetItemActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
+
+        this.log("info", "certStorage/getItem", {
+          crypto: this.logCrypto(crypto as any),
+          index: params.key
+        });
+
         // do operation
         const item = await crypto.certStorage.getItem(
           params.key,
           (params.algorithm.isEmpty() ? undefined : params.algorithm.toAlgorithm())!,
           (!params.keyUsages ? undefined : params.keyUsages)!,
         );
+
+        this.log("info", "certStorage/getItem", {
+          crypto: this.logCrypto(crypto as any),
+          cert: item
+            ? this.logCert(item as CryptoCertificate)
+            : null,
+        });
 
         if (item) {
           // add key to memory storage
@@ -99,7 +118,13 @@ export class CertificateStorageService extends Service<CryptoService> {
         // prepare incoming data
         const params = await proto.CertificateStorageSetItemActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
-        const cert = this.getMemoryStorage().item(params.item.id).item as CryptoCertificate;
+        const cert = this.getMemoryStorage().item(params.item.id).item as CryptoX509Certificate;
+
+        this.log("info", "certStorage/setItem", {
+          crypto: this.logCrypto(crypto as any),
+          cert: this.logCert(cert),
+        });
+
         // do operation
         const index = await crypto.certStorage.setItem(cert as any);
         result.data = Convert.FromUtf8String(index);
@@ -111,6 +136,12 @@ export class CertificateStorageService extends Service<CryptoService> {
         // prepare incoming data
         const params = await proto.CertificateStorageRemoveItemActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
+
+        this.log("info", "certStorage/removeItem", {
+          crypto: this.logCrypto(crypto as any),
+          index: params.key,
+        });
+
         // do operation
         await crypto.certStorage.removeItem(params.key);
         // result
@@ -122,6 +153,13 @@ export class CertificateStorageService extends Service<CryptoService> {
         const params = await proto.CertificateStorageImportActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
         const data = params.format === "pem" ? Convert.ToUtf8String(params.data) : params.data;
+
+        this.log("info", "certStorage/importCert", {
+          crypto: this.logCrypto(crypto as any),
+          format: params.format,
+          algorithm: this.logAlgorithm(params.algorithm.toAlgorithm()),
+          keyUsages: params.keyUsages,
+        });
 
         // do operation
         const item = await crypto.certStorage.importCert(params.format, data, params.algorithm.toAlgorithm(), params.keyUsages);
@@ -144,7 +182,12 @@ export class CertificateStorageService extends Service<CryptoService> {
         const params = await proto.CertificateStorageExportActionProto.importProto(action);
 
         const crypto = await this.getCrypto(params.providerID);
-        const cert = this.getMemoryStorage().item(params.item.id).item as CryptoCertificate;
+        const cert = this.getMemoryStorage().item(params.item.id).item as CryptoX509Certificate;
+
+        this.log("info", "certStorage/exportCert", {
+          crypto: this.logCrypto(crypto as any),
+          cert: this.logCert(cert),
+        });
         //#endregion
         //#region do operation
         const exportedData = await crypto.certStorage.exportCert(params.format, cert as any);
@@ -164,6 +207,10 @@ export class CertificateStorageService extends Service<CryptoService> {
         const params = await proto.CertificateStorageKeysActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
 
+        this.log("info", "certStorage/keys", {
+          crypto: this.logCrypto(crypto as any),
+        });
+
         // do operation
         const keys = await crypto.certStorage.keys();
         // result
@@ -176,6 +223,10 @@ export class CertificateStorageService extends Service<CryptoService> {
         const params = await proto.CertificateStorageKeysActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
 
+        this.log("info", "certStorage/clear", {
+          crypto: this.logCrypto(crypto as any),
+        });
+
         // do operation
         await crypto.certStorage.clear();
         // result
@@ -186,10 +237,15 @@ export class CertificateStorageService extends Service<CryptoService> {
         // load cert storage
         const params = await proto.CertificateStorageIndexOfActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
-        const cert = this.getMemoryStorage().item(params.item.id);
+        const cert = this.getMemoryStorage().item(params.item.id).item as CryptoX509Certificate;
+
+        this.log("info", "certStorage/indexOf", {
+          crypto: this.logCrypto(crypto as any),
+          cert: this.logCert(cert),
+        });
 
         // do operation
-        const index = await crypto.certStorage.indexOf(cert.item as CryptoCertificate);
+        const index = await crypto.certStorage.indexOf(cert);
         // result
         if (index) {
           result.data = Convert.FromUtf8String(index);
@@ -201,7 +257,13 @@ export class CertificateStorageService extends Service<CryptoService> {
         // load cert storage
         const params = await proto.CertificateStorageGetChainActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
-        const cert = this.getMemoryStorage().item(params.item.id).item as CryptoCertificate;
+        const cert = this.getMemoryStorage().item(params.item.id).item as CryptoX509Certificate;
+
+        this.log("info", "certStorage/chain", {
+          crypto: this.logCrypto(crypto as any),
+          cert: this.logCert(cert),
+        });
+
         // Get chain works only for x509 item type
         if (cert.type !== "x509") {
           throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_COMMON, "Wrong item type, must be 'x509'");
@@ -226,7 +288,7 @@ export class CertificateStorageService extends Service<CryptoService> {
           }
 
           if (buffer) {
-            this.emit("info", "Service:CertificateStorage:GetChain: CKA_X509_CHAIN is supported");
+            this.log("info", "CKA_X509_CHAIN is supported");
             const ulongSize = (cert as any).p11Object.handle.length;
             let i = 0;
             while (i < buffer.length) {
@@ -251,7 +313,7 @@ export class CertificateStorageService extends Service<CryptoService> {
               i += ulongSize + itemSize;
             }
           } else {
-            this.emit("info", "Service:CertificateStorage:GetChain: CKA_X509_CHAIN is not supported");
+            this.log("info", "CKA_X509_CHAIN is not supported");
             // Get all certificates from token
             const indexes = await crypto.certStorage.keys();
             const trustedCerts = [];
@@ -322,7 +384,10 @@ export class CertificateStorageService extends Service<CryptoService> {
         if (resultProto.items) {
           const items = resultProto.items
             .map((item) => item.type);
-          this.emit("info", `Service:CertificateStorage:GetChain: ${items.join(",")} items:${items.length}`);
+          this.log("debug", "CKA_X509_CHAIN", {
+            items: items.join(","),
+            size: items.length
+          });
         }
 
         // result
@@ -333,6 +398,11 @@ export class CertificateStorageService extends Service<CryptoService> {
       // getCRL
       case proto.CertificateStorageGetCRLActionProto.ACTION: {
         const params = await proto.CertificateStorageGetCRLActionProto.importProto(action);
+
+        this.log("info", "certStorage/crl", {
+          crypto: this.logCrypto(crypto as any),
+          url: params.url,
+        });
 
         // do operation
         const crlArray = await new Promise<ArrayBuffer>((resolve, reject) => {
@@ -385,6 +455,11 @@ export class CertificateStorageService extends Service<CryptoService> {
       // getOCSP
       case pkijs.CertificateStorageGetOCSPActionProto.ACTION: {
         const params = await pkijs.CertificateStorageGetOCSPActionProto.importProto(action);
+
+        this.log("info", "certStorage/ocsp", {
+          crypto: this.logCrypto(crypto as any),
+          url: params.url,
+        });
 
         // do operation
         const ocspArray = await new Promise<ArrayBuffer>((resolve, reject) => {
@@ -451,6 +526,20 @@ export class CertificateStorageService extends Service<CryptoService> {
         throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_NOT_IMPLEMENTED, `Action '${action.action}' is not implemented`);
     }
     return result;
+  }
+
+  protected logCert(cert: CryptoCertificate | CryptoX509Certificate | CryptoX509CertificateRequest): any {
+    const res: any = {
+      type: cert.type,
+      token: cert.token,
+      publicKey: this.logCryptoKey(cert.publicKey),
+    };
+
+    if ("subjectName" in cert) {
+      res.subjectName = cert.subjectName;
+    }
+
+    return res;
   }
 
 }
