@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "2key-ratchet": "1.0.18",
-    "pvtsutils": "^1.0.14",
+    "pvtsutils": "^1.1.1",
     "tslib": "2.0.3"
   }
 }

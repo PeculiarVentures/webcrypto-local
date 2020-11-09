@@ -1,4 +1,5 @@
 import { JsonProp, JsonPropTypes } from "@peculiar/json-schema";
+import { Config } from "./config";
 
 export class Card {
 
@@ -22,5 +23,11 @@ export class Card {
     defaultValue: false,
   })
   public readOnly: boolean = false;
+
+  @JsonProp({
+    type: Config,
+    optional: true,
+  })
+  public config?: Config;
 
 }

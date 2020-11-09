@@ -1,7 +1,7 @@
 import * as core from "@webcrypto-local/core";
 import * as os from "os";
 import { OpenSC } from "../opensc";
-import { Card, CardConfig, CardOptions } from "./card_config";
+import { Card, CardConfig, CardLibrary, CardOptions } from "./card_config";
 import { PCSCWatcher, PCSCWatcherEvent } from "./pcsc_watcher";
 
 export interface PCSCCard {
@@ -142,13 +142,17 @@ export class CardWatcher extends core.EventLogEmitter {
         const slotIndex = opensc.indexOf(e.reader.name);
         if (slotIndex !== -1) {
           if (card) {
-            card.libraries.push(opensc.library);
+            card.libraries.push({ type: "extra", path: opensc.library });
           } else {
+            this.log("info", "Card is not in card.json, but supported by opensc", {
+              atr: e.atr?.toString("hex") || "empty",
+              reader: e.reader.name,
+            });
             const slot = opensc.module.getSlots(slotIndex);
             card = {
               atr: e.atr,
               reader: e.reader.name,
-              libraries: [opensc.library],
+              libraries: [{ type: "extra", path: opensc.library }],
               name: slot.getToken().label,
               readOnly: false,
             };
@@ -162,19 +166,21 @@ export class CardWatcher extends core.EventLogEmitter {
     if (os.platform() === "win32" && this.options.pvpkcs11) {
       if (card) {
         for (const lib of this.options.pvpkcs11) {
-          card.libraries.push(lib);
+          card.libraries.push({ type: "extra", path: lib });
         }
       } else {
         this.log("info", `Cannot get Card config. Use pvpkcs11 SmartCard slot`, {
           reader: e.reader,
-          atr: e.atr,
+          atr: e.atr?.toString("hex") || "empty",
         });
         card = {
           atr: e.atr,
           reader: e.reader.name,
-          libraries: this.options.pvpkcs11,
+          libraries: this.options.pvpkcs11.map(o => {
+            return { type: "extra", path: o };
+          }),
           name: "SCard Windows API",
-          readOnly: false,
+          readOnly: true,
         };
       }
     }
@@ -197,13 +203,21 @@ export class CardWatcher extends core.EventLogEmitter {
     if (customCard) {
       // merge custom card with system card
       // NOTE: custom libraries MUST be first in list
-      const libraries: string[] = [];
+      const libraries: CardLibrary[] = [];
       for (const item of customCard.libraries) {
-        libraries.push(item);
+        if (typeof item === "string" ) {
+          libraries.push({ type: "config", path: item });
+        } else {
+          libraries.push(item);
+        }
       }
       if (res) {
         for (const item of res.libraries) {
-          libraries.push(item);
+          if (typeof item === "string" ) {
+            libraries.push({ type: "config", path: item });
+          } else {
+            libraries.push(item);
+          }
         }
       } else {
         res = {

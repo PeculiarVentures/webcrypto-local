@@ -49,7 +49,7 @@
     "@webcrypto-local/proto": "^1.3.0",
     "idb": "^2",
     "node-fetch": "^2.6.1",
-    "pvtsutils": "^1.0.14",
+    "pvtsutils": "^1.1.1",
     "tslib": "2.0.3",
     "webcrypto-core": "^1.1.8",
     "ws": "^7.3.1"

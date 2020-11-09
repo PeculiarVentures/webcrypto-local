@@ -1,4 +1,5 @@
 import { JsonProp, JsonPropTypes } from "@peculiar/json-schema";
+import { Config } from "./config";
 import { JsonFileConverter } from "./converters/file";
 import { File } from "./file";
 
@@ -20,5 +21,11 @@ export class Driver {
     name: "file",
   })
   public files: File[] = [];
+
+  @JsonProp({
+    type: Config,
+    optional: true,
+  })
+  public config?: Config;
 
 }
