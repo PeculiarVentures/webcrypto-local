@@ -25,8 +25,8 @@ async function main() {
   const providers: any[] = require(path.join(FORTIFY_DATA_DIR, "config.json")).providers;
   switch (platform) {
     case "win32":
-      pvpkcs11.push(path.join(__dirname, "../../fortify/pvpkcs11.dll"));
-      opensc = path.join(__dirname, "../../fortify/node_modules/electron/dist/opensc-pkcs11.dll");
+      pvpkcs11.push(path.join(__dirname, "../utils/pvpkcs11.dll"));
+      opensc = path.join(__dirname, "../utils/opensc/opensc-pkcs11.dll");
       break;
     case "darwin":
       pvpkcs11.push(path.join(__dirname, "../utils/libpvpkcs11.dylib"));
