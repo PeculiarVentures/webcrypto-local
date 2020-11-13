@@ -206,7 +206,11 @@ export class ConfigTemplateBuilder implements p11.ITemplateBuilder {
         if (params.action === "generate") {
           template.token = true;
         } else {
-          template.token = !!attributes.token;
+          if (params.type === "x509" || params.type === "request") {
+            template.token = true;
+          } else {
+            template.token = !!attributes.token;
+          }
         }
         break;
       case "required":
