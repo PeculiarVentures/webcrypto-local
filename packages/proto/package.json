@@ -1,6 +1,6 @@
 {
   "name": "@webcrypto-local/proto",
-  "version": "1.3.0",
+  "version": "1.5.0",
   "description": "A package of `webcrypto-local` framework. Google protobuf schemas for client/server messages",
   "keywords": [
     "protobuf",
@@ -39,7 +39,7 @@
     "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
   },
   "dependencies": {
-    "@webcrypto-local/core": "^1.3.0",
+    "@webcrypto-local/core": "^1.5.0",
     "pvtsutils": "^1.1.1",
     "tslib": "2.0.3",
     "tsprotobuf": "^1.0.15"
