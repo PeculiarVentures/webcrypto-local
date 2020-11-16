@@ -109,3 +109,11 @@ export async function download(url: string, dest: string) {
 export async function extract(zipFile: string, absolutePath: string) {
   await zip(zipFile, { dir: absolutePath });
 }
+
+export function exec(command: string, args: string[] = []): string {
+  const commandLine = `${command} ${args.join(" ")}`;
+  Logger.debug(`> ${commandLine}`);
+
+  const res = childProcess.execSync(commandLine);
+  return res.toString();
+}

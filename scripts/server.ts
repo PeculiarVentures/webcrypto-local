@@ -3,6 +3,7 @@ import { Crypto } from "@peculiar/webcrypto";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import { inspect } from "util";
 import * as server from "../packages/server/src";
 
 async function main() {
@@ -64,7 +65,7 @@ async function main() {
     })
     .on("info", (level, source, message, data) => {
       if (data) {
-        console.log(`${level.padEnd(7)}[${source}] ${message}`, data);
+        console.log(`${level.padEnd(7)}[${source}] ${message}`, inspect(data, false, 5, true));
       } else {
         console.log(`${level.padEnd(7)}[${source}] ${message}`);
       }
