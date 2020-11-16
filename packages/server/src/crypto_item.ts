@@ -27,7 +27,7 @@ export class ServiceCryptoItem {
     const itemProto = new proto.CryptoKeyProto();
     itemProto.providerID = this.providerID;
     itemProto.id = this.id;
-    itemProto.algorithm.fromAlgorithm(item.algorithm);
+    itemProto.algorithm = item.algorithm;
     itemProto.extractable = item.extractable;
     itemProto.type = item.type;
     itemProto.usages = item.usages;

@@ -25,12 +25,12 @@ async function main() {
   const providers: any[] = require(path.join(FORTIFY_DATA_DIR, "config.json")).providers;
   switch (platform) {
     case "win32":
-      pvpkcs11.push(path.join(__dirname, "../../fortify/pvpkcs11.dll"));
-      opensc = path.join(__dirname, "../../fortify/node_modules/electron/dist/opensc-pkcs11.dll");
+      pvpkcs11.push(path.join(__dirname, "../utils/pvpkcs11.dll"));
+      opensc = path.join(__dirname, "../utils/opensc/opensc-pkcs11.dll");
       break;
     case "darwin":
-      pvpkcs11.push(path.join(__dirname, "../../fortify/libpvpkcs11.dylib"));
-      opensc = path.join(__dirname, "../../fortify/node_modules/electron/dist/Electron.app/Contents/MacOS/opensc-pkcs11.so");
+      pvpkcs11.push(path.join(__dirname, "../utils/libpvpkcs11.dylib"));
+      opensc = path.join(__dirname, "../utils/opensc/opensc-pkcs11.so");
       break;
     case "linux":
     default:
@@ -42,7 +42,7 @@ async function main() {
     key: fs.readFileSync(KEY_FILE),
     storage: new server.MemoryStorage(),
     config: {
-      cardConfigPath: path.join(FORTIFY_DATA_DIR, "card.json"),
+      cardConfigPath: path.join(__dirname, "..", "packages", "cards", "lib", "card.json"),
       pvpkcs11,
       opensc,
       providers,

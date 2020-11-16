@@ -1,22 +1,31 @@
 // @ts-ignore
 import { JsonParser } from "@peculiar/json-schema";
-import { Cards, Variables } from "@webcrypto-local/cards";
+import { Cards, Config, Variables } from "@webcrypto-local/cards";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as core from "webcrypto-core";
 import { WebCryptoLocalError } from "../error";
 
+export type CardLibraryType = "config" | "extra";
+
+export interface CardLibrary {
+  path: string;
+  type: CardLibraryType;
+}
+
 export interface Card {
+  config?: Config;
   reader?: string;
   name: string;
   atr?: Buffer;
   mask?: Buffer;
   readOnly: boolean;
-  libraries: string[];
+  libraries: (string | CardLibrary)[];
 }
 
 interface Driver {
+  config: Config;
   id?: core.HexString;
   name?: string;
   libraries: string[];
@@ -36,7 +45,7 @@ export class CardConfig {
     return res;
   }
 
-  public cards: { [atr: string]: Card } = {};
+  public cards: { [atr: string]: Card; } = {};
   public options: CardOptions;
 
   constructor(options: Partial<CardOptions> = {}) {
@@ -55,7 +64,7 @@ export class CardConfig {
     try {
       json = JsonParser.parse(data.toString(), { targetSchema: Cards });
     } catch (err) {
-      throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, "Cannot parse JSON file");
+      throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, `Cannot parse JSON file. ${err.message}`);
     }
     this.fromJSON(json);
   }
@@ -65,14 +74,15 @@ export class CardConfig {
   }
 
   protected fromJSON(json: Cards) {
-    const cards: { [atr: string]: Card } = {};
+    const cards: { [atr: string]: Card; } = {};
     // create map of drives
-    const drivers: { [guid: string]: Driver } = {};
+    const drivers: { [guid: string]: Driver; } = {};
     json.drivers.forEach((jsonDriver) => {
       const driver: Driver = {
         id: jsonDriver.id,
         name: jsonDriver.name,
         libraries: [],
+        config: jsonDriver.config || new Config(),
       };
       drivers[jsonDriver.id] = driver;
 
@@ -122,7 +132,7 @@ export class CardConfig {
 
     // link card with driver and fill object's cards
     json.cards.forEach((item) => {
-      const card: Card = {} as any;
+      const card = {} as Card;
       card.atr = Buffer.from(item.atr, "hex");
       card.name = item.name;
       card.readOnly = !!item.readOnly;
@@ -131,10 +141,17 @@ export class CardConfig {
       if (!driver) {
         throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, `Cannot find driver for card ${item.name} (${item.atr})`);
       }
+      // Assign config (default, driver, cards)
+      card.config = Object.assign(new Config(), driver.config, item.config || {});
 
       // Don't add cards without libraries
       if (driver.libraries.length) {
-        card.libraries = driver.libraries;
+        card.libraries = driver.libraries.map(o => {
+          return {
+            type: "config",
+            path: o,
+          };
+        });
         cards[card.atr.toString("hex")] = card;
       }
     });

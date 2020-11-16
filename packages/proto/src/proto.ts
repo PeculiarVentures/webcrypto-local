@@ -109,7 +109,7 @@ export class AlgorithmProto extends BaseAlgorithmProto {
   public labelStr?: string;
 
   public toAlgorithm() {
-    const res: { [key: string]: any } = {};
+    const res: { [key: string]: any; } = {};
     const thisStatic = this.constructor as any;
     for (const key in thisStatic.items) {
       // ignore 'version'
@@ -183,6 +183,22 @@ export class CryptoItemProto extends BaseProto {
 
 }
 
+export class AlgorithmConverter {
+  public static async set(value: Algorithm): Promise<Uint8Array> {
+    const proto = new AlgorithmProto();
+    proto.fromAlgorithm(value);
+    const raw = await proto.exportProto();
+    return new Uint8Array(raw);
+  }
+  public static async get(value: Uint8Array): Promise<Algorithm> {
+    const proto = new AlgorithmProto();
+    await proto.importProto(value);
+
+    const res = proto.toAlgorithm();
+    return res;
+  }
+}
+
 @ProtobufElement({ name: "CryptoKey" })
 export class CryptoKeyProto extends CryptoItemProto implements CryptoKey {
 
@@ -190,8 +206,8 @@ export class CryptoKeyProto extends CryptoItemProto implements CryptoKey {
 
   public type: KeyType = "secret";
 
-  @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bytes", required: true, parser: AlgorithmProto })
-  public algorithm: AlgorithmProto = new AlgorithmProto();
+  @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bytes", required: true, converter: AlgorithmConverter })
+  public algorithm: Algorithm = { name: "" };
 
   @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bool" })
   public extractable: boolean = false;

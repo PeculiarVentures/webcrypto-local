@@ -8,6 +8,28 @@
             "type": "string",
             "pattern": "^([0-9a-fA-F]{2})+$"
         },
+        "config": {
+            "type": "object",
+            "properties": {
+                "keyUsages": {
+                    "enum": [
+                        "required",
+                        "optional"
+                    ],
+                    "description": "Key usages",
+                    "type": "string"
+                },
+                "token": {
+                    "enum": [
+                        "required",
+                        "optional",
+                        "static"
+                    ],
+                    "description": "Token",
+                    "type": "string"
+                }
+            }
+        },
         "card": {
             "type": "object",
             "properties": {
@@ -29,6 +51,10 @@
                 "driver": {
                     "$ref": "#/definitions/hexString",
                     "description": "GUID of driver"
+                },
+                "config": {
+                    "description": "Configuration",
+                    "$ref": "#/definitions/config"
                 }
             },
             "required": [
@@ -112,6 +138,10 @@
                         }
                     },
                     "minProperties": 1
+                },
+                "config": {
+                    "description": "Configuration",
+                    "$ref": "#/definitions/config"
                 }
             },
             "required": [

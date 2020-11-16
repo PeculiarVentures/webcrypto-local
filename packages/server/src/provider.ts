@@ -1,3 +1,4 @@
+import { Config } from "@webcrypto-local/cards";
 import * as core from "@webcrypto-local/core";
 import * as proto from "@webcrypto-local/proto";
 import * as fs from "fs";
@@ -12,7 +13,8 @@ import { CryptoMap } from "./crypto_map";
 import { WebCryptoLocalError } from "./error";
 import { digest } from "./helper";
 import { MapChangeEvent } from "./map";
-import { Card, CardWatcher, PCSCCard } from "./pcsc";
+import { Card, CardLibraryType, CardWatcher, PCSCCard } from "./pcsc";
+import { ConfigTemplateBuilder } from "./template_builder";
 
 export interface IServerProvider {
   /**
@@ -255,7 +257,11 @@ export class LocalProvider extends core.EventLogEmitter {
     });
 
     let lastError: Error | null = null;
-    for (const library of card.libraries) {
+    for (const lib of card.libraries) {
+      const library = typeof lib === "string"
+        ? lib
+        : lib.path;
+      const type: CardLibraryType =  typeof lib === "string" ? "config" : lib.type;
       try {
         this.log("info", "Loading PKCS#11 library", {
           library,
@@ -325,6 +331,12 @@ export class LocalProvider extends core.EventLogEmitter {
               slot: slotIndex,
               readWrite: !card.readOnly,
             });
+            if (type === "config") {
+              this.log("info", "Use ConfigTemplateBuilder", card.config);
+              crypto.templateBuilder = new ConfigTemplateBuilder(card.config || new Config());
+            } else {
+              this.log("info", "Use default TemplateBuilder");
+            }
             const info = getSlotInfo(crypto);
             info.atr = Convert.ToHex(card.atr || Buffer.alloc(0));
             info.library = library;
@@ -372,7 +384,10 @@ export class LocalProvider extends core.EventLogEmitter {
 
       //#region Find slots from removed token
       const cryptoIDs: string[] = [];
-      for (const library of card.libraries) {
+      for (const lib of card.libraries) {
+        const library = typeof lib === "string"
+          ? lib
+          : lib.path;
         try {
 
           const mod = graphene.Module.load(library, card.name);

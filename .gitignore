@@ -14,3 +14,4 @@ dist/*.map.js
 modules_list.js
 modules.json
 tsconfig.tsbuildinfo
+utils/
