@@ -568,7 +568,10 @@
       "file": {
         "windows": {
           "x86": "%PROGRAMFILES(X86)/Gemalto/IDGo 800 PKCS#11/IDPrimePKCS11.dll",
-          "x64": "%PROGRAMFILES/Gemalto/IDGo 800 PKCS#11/IDPrimePKCS1164.dll"
+          "x64": [
+            "%PROGRAMFILES(x86)/Gemalto/IDGo 800 PKCS#11/IDPrimePKCS1164.dll",
+            "%PROGRAMFILES/Gemalto/IDGo 800 PKCS#11/IDPrimePKCS1164.dll"
+          ]
         },
         "linux": [
           "/usr/lib/libIDPrimePKCS11.so",
