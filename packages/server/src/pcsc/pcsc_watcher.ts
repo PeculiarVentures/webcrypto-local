@@ -1,7 +1,7 @@
 import * as core from "@webcrypto-local/core";
 import { WebCryptoLocalError } from "../error";
 import * as PCSCLite from "../types/pcsclite";
-const pcsc: () => PCSCLite.PCSCLite = require("@pokusew/pcsclite");
+const pcsc: () => PCSCLite.PCSCLite = require("pcsclite");
 
 export interface PCSCWatcherEvent {
   reader: PCSCLite.CardReader;
