@@ -61,16 +61,23 @@ async function macOS() {
     for (const dependency of dependencies) {
       if (dependency.name !== fileName) {
         await updateDependencies(cwd, dependency.name);
+
+        await spawn("install_name_tool", [
+          "-change",
+          dependency.type === "exec"
+            ? `@executable_path/${dependency.name}`
+            : dependency.name,
+          path.join(cwd, dependency.name),
+          path.join(cwd, fileName),
+        ]);
+      } else {
+        await spawn("install_name_tool", [
+          "-id",
+          path.join(cwd, dependency.name),
+          path.join(cwd, fileName),
+        ]);
       }
 
-      await spawn("install_name_tool", [
-        "-change",
-        dependency.type === "exec"
-          ? `@executable_path/${dependency.name}`
-          : dependency.name,
-        path.join(cwd, dependency.name),
-        path.join(cwd, fileName),
-      ]);
     }
   }
 
