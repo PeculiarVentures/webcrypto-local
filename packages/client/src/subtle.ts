@@ -23,8 +23,8 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     return this.encryptData(algorithm, key, data, "decrypt");
   }
 
-  public async deriveBits(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfCtrParams | Pbkdf2Params, baseKey: CryptoKey, length: number): Promise<ArrayBuffer>;
-  public async deriveBits(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfCtrParams | Pbkdf2Params, baseKey: Proto.CryptoKeyProto, length: number) {
+  public async deriveBits(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfParams | Pbkdf2Params, baseKey: CryptoKey, length: number): Promise<ArrayBuffer>;
+  public async deriveBits(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfParams | Pbkdf2Params, baseKey: Proto.CryptoKeyProto, length: number) {
     // check
     utils.checkAlgorithm(algorithm, "algorithm");
     utils.checkCryptoKey(baseKey, "baseKey");
@@ -47,7 +47,7 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     return result;
   }
 
-  public async deriveKey(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfCtrParams | Pbkdf2Params, baseKey: Proto.CryptoKeyProto, derivedKeyType: string | AesDerivedKeyParams | HmacImportParams | ConcatParams | HkdfCtrParams | Pbkdf2Params, extractable: boolean, keyUsages: string[]) {
+  public async deriveKey(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfParams | Pbkdf2Params, baseKey: Proto.CryptoKeyProto, derivedKeyType: string | AesDerivedKeyParams | HmacImportParams | ConcatParams | HkdfParams | Pbkdf2Params, extractable: boolean, keyUsages: string[]) {
     // check incoming data
     utils.checkAlgorithm(algorithm, "algorithm");
     utils.checkCryptoKey(baseKey, "baseKey");

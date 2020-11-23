@@ -88,7 +88,7 @@ export abstract class Service<T extends core.EventLogEmitter> extends core.Event
     return super.once(event, cb);
   }
 
-  protected abstract async onMessage(session: Session, action: proto.ActionProto): Promise<proto.ResultProto>;
+  protected abstract onMessage(session: Session, action: proto.ActionProto): Promise<proto.ResultProto>;
 
   protected logKeyAlgorithm(algorithm: Algorithm | RsaHashedKeyGenParams | EcKeyGenParams | Pkcs11KeyAlgorithm) {
     const alg: any = {};

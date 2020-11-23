@@ -273,7 +273,7 @@ export class Server extends core.EventLogEmitter {
                       action: actionProto.action,
                     });
                   }
-                  this.emit("message", new events.ServerMessageEvent(this, session, actionProto, resolve, reject));
+                  this.emit("message", new events.ServerMessageEvent(this, session, actionProto, resolve as any, reject));
                 })()
                   .catch((err) => {
                     this.emit("error", err);

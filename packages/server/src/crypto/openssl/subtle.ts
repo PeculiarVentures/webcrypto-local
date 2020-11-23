@@ -13,11 +13,11 @@ export class OpenSSLSubtleCrypto implements wcp11.SubtleCrypto {
     return this.crypto.crypto.subtle.decrypt(algorithm, key, data);
   }
 
-  public async deriveBits(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfCtrParams | Pbkdf2Params, baseKey: wcp11.CryptoKey, length: number): Promise<ArrayBuffer> {
+  public async deriveBits(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfParams | Pbkdf2Params, baseKey: wcp11.CryptoKey, length: number): Promise<ArrayBuffer> {
     return this.crypto.crypto.subtle.deriveBits(algorithm, baseKey, length);
   }
 
-  public async deriveKey(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfCtrParams | Pbkdf2Params, baseKey: wcp11.CryptoKey, derivedKeyType: string | ConcatParams | HkdfCtrParams | Pbkdf2Params | AesDerivedKeyParams | HmacImportParams, extractable: boolean, keyUsages: KeyUsage[]): Promise<wcp11.CryptoKey> {
+  public async deriveKey(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfParams | Pbkdf2Params, baseKey: wcp11.CryptoKey, derivedKeyType: string | ConcatParams | HkdfParams | Pbkdf2Params | AesDerivedKeyParams | HmacImportParams, extractable: boolean, keyUsages: KeyUsage[]): Promise<wcp11.CryptoKey> {
     const key = await this.crypto.crypto.subtle.deriveKey(algorithm, baseKey, derivedKeyType, extractable, keyUsages);
     return this.processKey(key, derivedKeyType);
   }
