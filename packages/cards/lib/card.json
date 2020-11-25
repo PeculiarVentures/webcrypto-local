@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "cards": [
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
@@ -374,6 +374,11 @@
       "atr": "3B9F968131FE45806755454B41451293318073B3A1806B",
       "name": "AKIS",
       "driver": "F4460DEC1A2DB75426614475E0C814C3CA849845"
+    },
+    {
+      "atr": "3BFD1800008131FE4553434536302D43433038312D46C2",
+      "name": "Giesecke & Devrient StarSign USB Token",
+      "driver": "4485A4DCDF92D361F7418D0C447FEC810C609F12"
     }
   ],
   "drivers": [
@@ -622,6 +627,18 @@
         },
         "linux": "/usr/lib/bit4id/libbit4opki.so",
         "osx": "/usr/lib/bit4id/libbit4opki.dylib"
+      }
+    },
+    {
+      "id": "4485A4DCDF92D361F7418D0C447FEC810C609F12",
+      "name": "aetpkss",
+      "file": {
+        "windows": "%WINDIR/System32/aetpkss1.dll",
+        "osx": [
+          "/usr/local/lib/libaetpkss.dylib",
+          "/Applications/tokenadmin.app/Contents/Frameworks/libaetpkss.dylib"
+        ],
+        "linux": "/usr/lib/libaetpkss.so"
       }
     }
   ]
