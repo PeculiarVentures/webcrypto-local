@@ -40,8 +40,8 @@
   },
   "dependencies": {
     "@webcrypto-local/core": "^1.5.0",
-    "pvtsutils": "^1.1.1",
-    "tslib": "2.0.3",
-    "tsprotobuf": "^1.0.15"
+    "pvtsutils": "^1.1.2",
+    "tslib": "2.1.0",
+    "tsprotobuf": "^1.0.17"
   }
 }

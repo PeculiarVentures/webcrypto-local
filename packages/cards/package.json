@@ -35,6 +35,6 @@
   },
   "dependencies": {
     "@peculiar/json-schema": "1.1.12",
-    "tslib": "2.0.3"
+    "tslib": "2.1.0"
   }
 }
