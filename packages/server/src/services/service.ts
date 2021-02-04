@@ -12,7 +12,7 @@ export abstract class Service<T extends core.EventLogEmitter> extends core.Event
 
   public object: T;
   public server: Server;
-  public services: Array<Service<any>> = [];
+  public services: Service<any>[] = [];
   public source = "server-api";
 
   /**
@@ -21,7 +21,7 @@ export abstract class Service<T extends core.EventLogEmitter> extends core.Event
    * @param object Wrapped object
    * @param filter List of actions which must be implemented
    */
-  constructor(server: Server, object: T, filter: Array<typeof proto.ActionProto> = []) {
+  constructor(server: Server, object: T, filter: typeof proto.ActionProto[] = []) {
     super();
 
     this.server = server;
