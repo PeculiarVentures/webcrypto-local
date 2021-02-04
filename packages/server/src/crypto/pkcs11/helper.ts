@@ -1,9 +1,10 @@
+import * as graphene from "graphene-pk11";
 export interface OsslCryptoKey extends CryptoKey {
   __ossl: boolean;
   __index?: string;
   p11Object: {
     handle: Buffer;
-    session: GraphenePkcs11.Session;
+    session: graphene.Session;
   };
 }
 

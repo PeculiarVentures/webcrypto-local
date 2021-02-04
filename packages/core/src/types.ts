@@ -45,6 +45,88 @@ export interface ServerInfo {
   preKey: string;
 }
 
+export interface Version {
+  major: number;
+  minor: number;
+}
+
+export interface TokenInfo {
+  /**
+   * application-defined label, assigned during token initialization.
+   */
+  label: string;
+
+  /**
+   * ID of the device manufacturer.
+   */
+  manufacturerID: string;
+
+  /**
+   * model of the device.
+   */
+  model: string;
+
+  /**
+   * character-string serial number of the device
+   */
+  serialNumber: string;
+
+  /**
+   * bit flags indicating capabilities and status of the device
+   */
+  flags: number;
+
+  /**
+   * maximum number of sessions that can be opened with the token at one time by a single application
+   */
+  maxSessionCount: number;
+
+  /**
+   * number of sessions that this application currently has open with the token
+   */
+  sessionCount: number;
+  /**
+   * maximum number of read/write sessions that can be opened
+   * with the token at one time by a single application
+   */
+  maxRwSessionCount: number;
+  /**
+   * number of read/write sessions that this application currently has open with the token
+   */
+  rwSessionCount: number;
+  /**
+   * maximum length in bytes of the PIN
+   */
+  maxPinLen: number;
+  /**
+   * minimum length in bytes of the PIN
+   */
+  minPinLen: number;
+  /**
+   * the total amount of memory on the token in bytes in which objects may be stored
+   */
+  totalPublicMemory: number;
+  /**
+   * the amount of free (unused) memory on the token in bytes for objects
+   */
+  freePublicMemory: number;
+  /**
+   * the total amount of memory on the token in bytes in which private objects may be stored
+   */
+  totalPrivateMemory: number;
+  /**
+   * the amount of free (unused) memory on the token in bytes for private objects
+   */
+  freePrivateMemory: number;
+  /**
+   * version number of hardware
+   */
+
+  hardwareVersion: Version;
+
+  firmwareVersion: Version;
+}
+
 export interface ProviderCrypto {
   name: string;
   card: string;
@@ -55,6 +137,7 @@ export interface ProviderCrypto {
   algorithms: string[];
   isHardware: boolean;
   isRemovable: boolean;
+  token?: TokenInfo;
 }
 
 export interface IModule {
@@ -66,7 +149,7 @@ export interface Assoc<T> {
   [key: string]: T;
 }
 
-export interface TokenInfo {
+export interface TokenInfoEvent {
   removed: ProviderCrypto[];
   added: ProviderCrypto[];
   error?: Error;

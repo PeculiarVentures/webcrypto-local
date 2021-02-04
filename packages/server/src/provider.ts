@@ -57,7 +57,7 @@ interface IAddProviderParams {
   name?: string;
 }
 
-type LocalProviderTokenHandler = (info: core.TokenInfo) => void;
+type LocalProviderTokenHandler = (info: core.TokenInfoEvent) => void;
 type LocalProviderTokenNewHandler = (info: PCSCCard) => void;
 type LocalProviderListeningHandler = (info: core.IModule[]) => void;
 type LocalProviderErrorHandler = (e: Error) => void;
@@ -121,7 +121,7 @@ export class LocalProvider extends core.EventLogEmitter {
     return super.once(event, listener);
   }
 
-  public emit(event: "token", info: core.TokenInfo): boolean;
+  public emit(event: "token", info: core.TokenInfoEvent): boolean;
   public emit(event: "token_new", info: PCSCCard): boolean;
   public emit(event: "error", error: Error | string): boolean;
   public emit(event: "listening", info: proto.ProviderInfoProto): boolean;
@@ -482,7 +482,9 @@ export class LocalProvider extends core.EventLogEmitter {
 
 function getSlotInfo(p11Crypto: Crypto) {
   const session: graphene.Session = (p11Crypto as any).session;
+  const slot = session.slot;
   const info: core.ProviderCrypto = p11Crypto.info as any;
+  info.token = slot.getToken();
   info.readOnly = !(session.flags & graphene.SessionFlag.RW_SESSION);
   return info;
 }

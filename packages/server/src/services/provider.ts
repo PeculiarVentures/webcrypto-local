@@ -88,7 +88,7 @@ export class ProviderService extends Service<LocalProvider> {
     this.emit("token_new", e);
   }
 
-  protected onToken(info: core.TokenInfo) {
+  protected onToken(info: core.TokenInfoEvent) {
     if (info.error) {
       this.emit("error", info.error);
     } else {
