@@ -39,22 +39,22 @@
     "url": "https://github.com/PeculiarVentures/webcrypto-local/issues"
   },
   "dependencies": {
-    "2key-ratchet": "1.0.18",
-    "@peculiar/json-schema": "1.1.12",
+    "2key-ratchet": "^1.0.18",
+    "@peculiar/json-schema": "^1.1.12",
     "@types/pvutils": "^1.0.0",
     "@webcrypto-local/cards": "^1.6.0",
     "@webcrypto-local/core": "^1.6.0",
     "@webcrypto-local/proto": "^1.6.0",
-    "asn1js": "2.0.26",
-    "graphene-pk11": "^2.1.13",
-    "node-webcrypto-p11": "2.3.3",
+    "asn1js": "^2.1.1",
+    "graphene-pk11": "^2.2.3",
+    "node-webcrypto-p11": "^2.3.5",
     "pcsclite": "^1.0.0",
-    "pkijs": "^2.1.91",
-    "pvtsutils": "^1.1.1",
+    "pkijs": "^2.1.95",
+    "pvtsutils": "^1.1.7",
     "pvutils": "^1.0.17",
     "request": "^2.88.0",
-    "tslib": "2.0.3",
+    "tslib": "^2.2.0",
     "webcrypto-core": "^1.1.8",
-    "ws": "^7.3.1"
+    "ws": "^7.4.5"
   }
 }
