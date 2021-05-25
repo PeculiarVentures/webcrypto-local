@@ -8,6 +8,106 @@
             "type": "string",
             "pattern": "^([0-9a-fA-F]{2})+$"
         },
+        "configBooleanAttr": {
+            "anyOf": [
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "string",
+                    "enum": [
+                        "required",
+                        "optional"
+                    ]
+                }
+            ]
+        },
+        "configAttr": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "description": "CKA_TOKEN",
+                    "$ref": "#/definitions/configBooleanAttr"
+                }
+            }
+        },
+        "configKeyAttr": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/configAttr"
+                },
+                {
+                    "properties": {
+                        "keyUsages": {
+                            "description": "Key usages. Default value is 'optional'",
+                            "type": "string",
+                            "enum": [
+                                "required",
+                                "optional"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "configPrivateAttr": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/configKeyAttr"
+                },
+                {
+                    "properties": {
+                        "extractable": {
+                            "description": "CKA_EXTRACTABLE",
+                            "$ref": "#/definitions/configBooleanAttr"
+                        },
+                        "sensitive": {
+                            "description": "CKA_SENSITIVE",
+                            "$ref": "#/definitions/configBooleanAttr"
+                        }
+                    }
+                }
+            ]
+        },
+        "configType": {
+            "type": "object",
+            "properties": {
+                "private": {
+                    "$ref": "#/definitions/configPrivateAttr"
+                },
+                "public": {
+                    "$ref": "#/definitions/configKeyAttr"
+                },
+                "secret": {
+                    "$ref": "#/definitions/configPrivateAttr"
+                },
+                "x509": {
+                    "$ref": "#/definitions/configAttr"
+                },
+                "request": {
+                    "$ref": "#/definitions/configAttr"
+                }
+            }
+        },
+        "configTemplate": {
+            "type": "object",
+            "properties": {
+                "generate": {
+                    "description": "Generation action. Creates template on CK_GenerateKey or CK_GenerateKeyPair (crypto.subtle.generateKey)",
+                    "$ref": "#/definitions/configType"
+                },
+                "import": {
+                    "description": "Import action. Creates template on CK_CreateObject (crypto.subtle.importKey or crypto.certStorage.importCert)",
+                    "$ref": "#/definitions/configType"
+                },
+                "copy": {
+                    "description": "Copy action. Creates template on CK_CopyObject (crypto.keyStorage.setItem or crypto.certStorage.setItem)",
+                    "$ref": "#/definitions/configType"
+                }
+            }
+        },
         "config": {
             "type": "object",
             "properties": {
@@ -27,6 +127,10 @@
                     ],
                     "description": "Token",
                     "type": "string"
+                },
+                "template": {
+                    "description": "Template",
+                    "$ref": "#/definitions/configTemplate"
                 }
             }
         },
@@ -34,7 +138,7 @@
             "type": "object",
             "properties": {
                 "atr": {
-                    "description": "ATR ",
+                    "description": "ATR",
                     "$ref": "#/definitions/hexString"
                 },
                 "mask": {

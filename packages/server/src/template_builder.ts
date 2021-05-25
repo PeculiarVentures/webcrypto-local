@@ -1,4 +1,5 @@
 import * as cards from "@webcrypto-local/cards";
+import { ConfigAttrEnum } from "@webcrypto-local/cards";
 import * as graphene from "graphene-pk11";
 import * as p11 from "node-webcrypto-p11";
 import * as utils from "pvtsutils";
@@ -16,44 +17,49 @@ export class ConfigTemplateBuilder implements p11.ITemplateBuilder {
     this.setId(template, params);
     this.setToken(template, params);
     this.setSensitive(template, params);
+    this.setExtractable(template, params);
     this.setLabel(template, params);
     this.setKeyUsages(template, params);
 
-
-    switch (params.type) {
-      case "private":
-        Object.assign<p11.ITemplate, p11.ITemplate>(template, {
-          class: graphene.ObjectClass.PRIVATE_KEY,
-          private: true,
-          extractable: !!params.attributes.extractable,
-        });
-        break;
-      case "public":
-        Object.assign<p11.ITemplate, p11.ITemplate>(template, {
-          class: graphene.ObjectClass.PUBLIC_KEY,
-          private: false,
-        });
-        break;
-      case "secret":
-        Object.assign<p11.ITemplate, p11.ITemplate>(template, {
-          class: graphene.ObjectClass.SECRET_KEY,
-          extractable: !!params.attributes.extractable,
-        });
-        break;
-      case "request":
-        Object.assign<p11.ITemplate, p11.ITemplate>(template, {
-          class: graphene.ObjectClass.DATA,
-          application: "webcrypto-p11",
-          private: false,
-        });
-        break;
-      case "x509":
-        Object.assign<p11.ITemplate, p11.ITemplate>(template, {
-          class: graphene.ObjectClass.CERTIFICATE,
-          certType: graphene.CertificateType.X_509,
-          private: false,
-        });
-        break;
+    if (["generate", "import"].includes(params.action)) {
+      switch (params.type) {
+        case "private":
+          Object.assign<p11.ITemplate, p11.ITemplate>(template, {
+            class: graphene.ObjectClass.PRIVATE_KEY,
+            private: true,
+          });
+          break;
+        case "public":
+          Object.assign<p11.ITemplate, p11.ITemplate>(template, {
+            class: graphene.ObjectClass.PUBLIC_KEY,
+            private: false,
+          });
+          break;
+        case "secret":
+          Object.assign<p11.ITemplate, p11.ITemplate>(template, {
+            class: graphene.ObjectClass.SECRET_KEY,
+          });
+          break;
+        case "request":
+          Object.assign<p11.ITemplate, p11.ITemplate>(template, {
+            class: graphene.ObjectClass.DATA,
+            application: "webcrypto-p11",
+            private: false,
+          });
+          break;
+        case "x509":
+          Object.assign<p11.ITemplate, p11.ITemplate>(template, {
+            class: graphene.ObjectClass.CERTIFICATE,
+            certType: graphene.CertificateType.X_509,
+            private: false,
+          });
+          break;
+      }
+    } else {
+      // copy
+      Object.assign<p11.ITemplate, p11.ITemplate>(template, {
+        token: true,
+      });
     }
 
     return template;
@@ -95,7 +101,7 @@ export class ConfigTemplateBuilder implements p11.ITemplateBuilder {
    * @param params
    */
   private setKeyUsages(template: p11.ITemplate, params: p11.ITemplateBuildParameters) {
-    const { attributes, type } = params;
+    const { attributes, type, action } = params;
     const sign = attributes.usages?.includes("sign");
     const verify = attributes.usages?.includes("verify");
     const wrap = attributes.usages?.includes("wrapKey");
@@ -107,52 +113,84 @@ export class ConfigTemplateBuilder implements p11.ITemplateBuilder {
     const privateSecret = type === "private" || type === "secret";
     const publicSecret = type === "public" || type === "secret";
 
-    switch (this.config.keyUsages) {
-      case "optional":
-        if (privateSecret) {
-          if (derive) {
+    if (["private", "public", "secret"].includes(type) &&
+      ["generate", "import"].includes(action)) {
+      const typeConfig = this.config.template?.[action]?.[type];;
+      if (typeConfig && "keyUsages" in typeConfig) {
+        if (typeConfig.keyUsages === ConfigAttrEnum.required) {
+          if (privateSecret) {
             template.derive = derive;
-          }
-          if (sign) {
             template.sign = sign;
-          }
-          if (decrypt) {
             template.decrypt = decrypt;
-          }
-          if (wrap) {
             template.unwrap = unwrap;
           }
-        }
-        if (publicSecret) {
-          if (derive) {
+          if (publicSecret) {
             template.derive = derive;
-          }
-          if (verify) {
             template.verify = verify;
-          }
-          if (encrypt) {
             template.encrypt = encrypt;
-          }
-          if (wrap) {
             template.wrap = wrap;
           }
+          return;
         }
-        break;
-      case "required":
-      default:
-        if (privateSecret) {
+      }
+
+      if (privateSecret) {
+        if (derive) {
           template.derive = derive;
+        }
+        if (sign) {
           template.sign = sign;
+        }
+        if (decrypt) {
           template.decrypt = decrypt;
+        }
+        if (wrap) {
           template.unwrap = unwrap;
         }
-        if (publicSecret) {
+      }
+      if (publicSecret) {
+        if (derive) {
           template.derive = derive;
+        }
+        if (verify) {
           template.verify = verify;
+        }
+        if (encrypt) {
           template.encrypt = encrypt;
+        }
+        if (wrap) {
           template.wrap = wrap;
         }
+      }
     }
+  }
+
+  /**
+   * Sets CKA_EXTRACTABLE attribute
+   * @param template
+   * @param params
+   */
+  private setExtractable(template: p11.ITemplate, params: p11.ITemplateBuildParameters) {
+    if (["private", "secret"].includes(params.type)) {
+      this.setBoolean(params, template, "extractable");
+    }
+  }
+
+  private static getBoolean(value?: boolean, config?: boolean | cards.ConfigAttrEnum): boolean | null {
+    if (typeof config === "string") {
+      if (config === ConfigAttrEnum.optional) {
+        if (value) {
+          return true;
+        }
+        return null;
+      } else {
+        return !!value;
+      }
+    } else if (typeof config === "boolean") {
+      return config;
+    }
+
+    return value ?? null;
   }
 
   /**
@@ -161,31 +199,22 @@ export class ConfigTemplateBuilder implements p11.ITemplateBuilder {
    * @param params
    */
   private setSensitive(template: p11.ITemplate, params: p11.ITemplateBuildParameters) {
-    const { attributes, type } = params;
-    switch (type) {
-      case "private":
-      case "secret":
-        switch (this.config.token) {
-          case "optional":
-            if (attributes.token) {
-              template.sensitive = attributes.token;
-            }
-            break;
-          case "static":
-            if (params.action === "generate") {
-              template.sensitive = true;
-            } else {
-              template.sensitive = !!attributes.token;
-            }
-            break;
-          case "required":
-          default:
-            template.sensitive = !!attributes.token;
-            break;
-        }
-        break;
-      default:
-      // nothing
+    if (["private", "secret"].includes(params.type)) {
+      this.setBoolean(params, template, "sensitive");
+    }
+  }
+
+  private setBoolean(params: p11.ITemplateBuildParameters, template: graphene.ITemplate, attrName: string) {
+    const { attributes, type, action } = params;
+
+    const typeConfig = this.config.template?.[action]?.[type];
+    if (typeConfig && attrName in typeConfig) {
+      const value = ConfigTemplateBuilder.getBoolean((attributes as any)[attrName], (typeConfig as any)[attrName]);
+      if (value !== null) {
+        template[attrName] = value;
+      }
+    } else if ((attributes as any)[attrName] !== undefined) {
+      template[attrName] = (attributes as any)[attrName];
     }
   }
 
@@ -195,28 +224,6 @@ export class ConfigTemplateBuilder implements p11.ITemplateBuilder {
    * @param params
    */
   private setToken(template: p11.ITemplate, params: p11.ITemplateBuildParameters) {
-    const { attributes, type } = params;
-    switch (this.config.token) {
-      case "optional":
-        if (attributes.token) {
-          template.token = attributes.token;
-        }
-        break;
-      case "static":
-        if (params.action === "generate") {
-          template.token = true;
-        } else {
-          if (params.type === "x509" || params.type === "request") {
-            template.token = true;
-          } else {
-            template.token = !!attributes.token;
-          }
-        }
-        break;
-      case "required":
-      default:
-        template.token = !!attributes.token;
-        break;
-    }
+    this.setBoolean(params, template, "token");
   }
 }

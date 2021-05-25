@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "cards": [
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
@@ -443,6 +443,17 @@
     {
       "id": "39b3d7a3662c4b48bb120d008dd18648",
       "name": "SafeNet Authentication Client",
+      "config": {
+        "template": {
+          "copy": {
+            "private": {
+              "token": true,
+              "sensitive": true,
+              "extractable": false
+            }
+          }
+        }
+      },
       "file": {
         "windows": "%WINDIR/System32/eTPKCS11.dll",
         "osx": "/usr/local/lib/libeTPkcs11.dylib",
@@ -568,7 +579,31 @@
       "name": "Gemalto ID Go",
       "config": {
         "keyUsages": "optional",
-        "token": "static"
+        "token": "static",
+        "template": {
+          "generate": {
+            "private": {
+              "token": true,
+              "sensitive": true,
+              "keyUsages": "optional"
+            },
+            "public": {
+              "token": true,
+              "keyUsages": "optional"
+            }
+          },
+          "import": {
+            "private": {
+              "token": true,
+              "sensitive": true,
+              "keyUsages": "optional"
+            },
+            "public": {
+              "token": true,
+              "keyUsages": "optional"
+            }
+          }
+        }
       },
       "file": {
         "windows": {

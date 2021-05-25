@@ -1809,7 +1809,7 @@
     asn1js "^2.1.1"
     tslib "^2.2.0"
 
-"@peculiar/asn1-schema@^2.0.26", "@peculiar/asn1-schema@^2.0.27", "@peculiar/asn1-schema@^2.0.32":
+"@peculiar/asn1-schema@^2.0.27", "@peculiar/asn1-schema@^2.0.32":
   version "2.0.32"
   resolved "https://registry.yarnpkg.com/@peculiar/asn1-schema/-/asn1-schema-2.0.32.tgz#8711214df06859dbea5491ca0b400602adfbfc45"
   integrity sha512-JzGUVxOFN+RKslJrGAxcq4l6tEmmLY1XuALHINVxc8BJsB4bXOdZzTvxbN9dCPk65Vbulno0B6DmImZ7I6SO8w==
@@ -1829,7 +1829,7 @@
     asn1js "^2.1.1"
     tslib "^2.2.0"
 
-"@peculiar/asn1-x509@^2.0.26", "@peculiar/asn1-x509@^2.0.32":
+"@peculiar/asn1-x509@^2.0.32":
   version "2.0.32"
   resolved "https://registry.yarnpkg.com/@peculiar/asn1-x509/-/asn1-x509-2.0.32.tgz#5af5fa3230a45a45e18dae277f873996238daff9"
   integrity sha512-8lbtm2nSWOE2M91kC2UAZOw3FnS6D0EROlT09/jhHVXvrtiLO58zhUG/6xHCe/0Not0Y5NGi++fsRv8pGxXc4Q==
@@ -1858,7 +1858,7 @@
     tslib "^2.2.0"
     webcrypto-core "^1.2.0"
 
-"@peculiar/x509@^1.0.9":
+"@peculiar/x509@^1.3.0":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@peculiar/x509/-/x509-1.3.0.tgz#d0de66f8453dd6db94143db8a60e7f8663e3eb9e"
   integrity sha512-lX5LGRVAm2HkyS6fZiEHxLABCN9JvSsqdjitZxpd2HklS0KOMYT0YhwhhvaZ2SLpZtMtwy1nt47JXRAr6hDk1g==
@@ -1970,6 +1970,26 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
+"@tsconfig/node10@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@tsconfig/node10/-/node10-1.0.7.tgz#1eb1de36c73478a2479cc661ef5af1c16d86d606"
+  integrity sha512-aBvUmXLQbayM4w3A8TrjwrXs4DZ8iduJnuJLLRGdkWlyakCf1q6uHZJBzXoRA/huAEknG5tcUyQxN3A+In5euQ==
+
+"@tsconfig/node12@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@tsconfig/node12/-/node12-1.0.7.tgz#677bd9117e8164dc319987dd6ff5fc1ba6fbf18b"
+  integrity sha512-dgasobK/Y0wVMswcipr3k0HpevxFJLijN03A8mYfEPvWvOs14v0ZlYTR4kIgMx8g4+fTyTFv8/jLCIfRqLDJ4A==
+
+"@tsconfig/node14@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@tsconfig/node14/-/node14-1.0.0.tgz#5bd046e508b1ee90bc091766758838741fdefd6e"
+  integrity sha512-RKkL8eTdPv6t5EHgFKIVQgsDapugbuOptNd9OOunN/HAkzmmTnZELx1kNCK0rSdUYGmiFMM3rRQMAWiyp023LQ==
+
+"@tsconfig/node16@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.1.tgz#a6ca6a9a0ff366af433f42f5f0e124794ff6b8f1"
+  integrity sha512-FTgBI767POY/lKNDNbIzgAX6miIDBs6NTCbdlDb8TrWovHsSvaVIZDlTqym29C6UqhzwcJx4CYr+AlrMywA0cA==
+
 "@types/asn1js@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/asn1js/-/asn1js-2.0.0.tgz#10ca75692575744d0117098148a8dc84cbee6682"
@@ -2023,10 +2043,10 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@^15.3.1":
-  version "15.3.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.3.1.tgz#23a06b87eedb524016616e886b116b8fdcb180af"
-  integrity sha512-weaeiP4UF4XgF++3rpQhpIJWsCTS4QJw5gvBhQu6cFIxTwyxWIe3xbnrY/o2lTCQ0lsdb8YIUDUvLR4Vuz5rbw==
+"@types/node@*", "@types/node@^15.6.1":
+  version "15.6.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.6.1.tgz#32d43390d5c62c5b6ec486a9bc9c59544de39a08"
+  integrity sha512-7EIraBEyRHEe7CH+Fm1XvgqU6uwZN8Q7jppJGcqjROMT29qhAuuOxYB1uEY5UMYQKEmA5D+5tBnhdaPXSsLONA==
 
 "@types/node@^13.7.0":
   version "13.13.41"
@@ -3701,10 +3721,10 @@ getpass@^0.1.1:
   dependencies:
     assert-plus "^1.0.0"
 
-gh-pages@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/gh-pages/-/gh-pages-3.1.0.tgz#ec3ed0f6a6e3fc3d888758fa018f08191c96bd55"
-  integrity sha512-3b1rly9kuf3/dXsT8+ZxP0UhNLOo1CItj+3e31yUVcaph/yDsJ9RzD7JOw5o5zpBTJVQLlJAASNkUfepi9fe2w==
+gh-pages@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/gh-pages/-/gh-pages-3.2.0.tgz#ac5f9f03dae7622740ff39613ee2cfeacabc680b"
+  integrity sha512-VQTwyRtxoaId0YmDXdC/G854dojpwTuOdpZUL3PGG6WQZvSoGVD8ggedKARZltixIREMezoDywE+g3g2paLxPw==
   dependencies:
     async "^2.6.1"
     commander "^2.18.0"
@@ -3827,7 +3847,7 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
   integrity sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
 
-graphene-pk11@^2.2.1, graphene-pk11@^2.2.3:
+graphene-pk11@^2.2.2, graphene-pk11@^2.2.3:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/graphene-pk11/-/graphene-pk11-2.2.3.tgz#6a0511f99844fc630e61af4ef889044f212520fe"
   integrity sha512-fQ/a20eNk9Afmk/fDLbxGqPKh6DFDMkaRJgvxhUly7G1T3s+PNWmSvLvYbYwTkoStyDIJngQG2LmvaJ+bvSt8w==
@@ -5139,18 +5159,18 @@ node-releases@^1.1.71:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.72.tgz#14802ab6b1039a79a0c7d662b610a5bbd76eacbe"
   integrity sha512-LLUo+PpH3dU6XizX3iVoubUNheF/owjXCZZ5yACDxNnPtgFuludV1ZL3ayK1kVep42Rmm0+R9/Y60NQbZ2bifw==
 
-node-webcrypto-p11@^2.3.5:
-  version "2.3.5"
-  resolved "https://registry.yarnpkg.com/node-webcrypto-p11/-/node-webcrypto-p11-2.3.5.tgz#b7d311725c947c561a32e0af03bf948057845078"
-  integrity sha512-gE7ak0kvUwNf6zlWvgjoEFTGFMk1yjsMW/i+0AWw5zMXnRnOTfnABu8Q6hONphd7HupSjsab66Hk7kT/1+SZkw==
+node-webcrypto-p11@^2.3.6:
+  version "2.3.6"
+  resolved "https://registry.yarnpkg.com/node-webcrypto-p11/-/node-webcrypto-p11-2.3.6.tgz#ee510d0b367429b53d818a1d71bed4344a85d10d"
+  integrity sha512-Rq9RRa2zAarj3gsCtfkBLU9nKD4C9+qCr0nRy6V9uj9OOIfQ6FCv9tleAtXsKOEYTbmLKekNs3r8JTSyTiVKhw==
   dependencies:
-    "@peculiar/asn1-schema" "^2.0.26"
-    "@peculiar/asn1-x509" "^2.0.26"
+    "@peculiar/asn1-schema" "^2.0.32"
+    "@peculiar/asn1-x509" "^2.0.32"
     "@peculiar/json-schema" "^1.1.12"
-    "@peculiar/x509" "^1.0.9"
-    graphene-pk11 "^2.2.1"
-    tslib "^2.0.3"
-    webcrypto-core "^1.1.8"
+    "@peculiar/x509" "^1.3.0"
+    graphene-pk11 "^2.2.2"
+    tslib "^2.2.0"
+    webcrypto-core "^1.2.0"
 
 nopt@^4.0.1:
   version "4.0.3"
@@ -6338,10 +6358,10 @@ rollup-pluginutils@^2.8.1, rollup-pluginutils@^2.8.2:
   dependencies:
     estree-walker "^0.6.1"
 
-rollup@^2.48.0:
-  version "2.48.0"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-2.48.0.tgz#fceb01ed771f991f29f7bd2ff7838146e55acb74"
-  integrity sha512-wl9ZSSSsi5579oscSDYSzGn092tCS076YB+TQrzsGuSfYyJeep8eEWj0eaRjuC5McuMNmcnR8icBqiE/FWNB1A==
+rollup@^2.50.0:
+  version "2.50.0"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-2.50.0.tgz#e5a77820c2230c66ef9ea26cbc9d7a3c1a18a439"
+  integrity sha512-wO+F2MqWPGUCZx0549oqY8dsQqHVjuSxoyBWWnxKoQE+1UGcDKjtL7wHq/8jnnLJEeoGDQLf3ztrpgRwlbGJ0A==
   optionalDependencies:
     fsevents "~2.3.1"
 
@@ -6943,11 +6963,15 @@ trim-repeated@^1.0.0:
   dependencies:
     escape-string-regexp "^1.0.2"
 
-ts-node@^9.0.0:
-  version "9.1.1"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-9.1.1.tgz#51a9a450a3e959401bda5f004a72d54b936d376d"
-  integrity sha512-hPlt7ZACERQGf03M253ytLY3dHbGNGrAq9qIHWUY9XHYl1z7wYngSr3OQ5xmui8o2AaxsONxIzjafLUiWBo1Fg==
+ts-node@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-10.0.0.tgz#05f10b9a716b0b624129ad44f0ea05dac84ba3be"
+  integrity sha512-ROWeOIUvfFbPZkoDis0L/55Fk+6gFQNZwwKPLinacRl6tsxstTF1DbAcLKkovwnpKMVvOMHP1TIbnwXwtLg1gg==
   dependencies:
+    "@tsconfig/node10" "^1.0.7"
+    "@tsconfig/node12" "^1.0.7"
+    "@tsconfig/node14" "^1.0.0"
+    "@tsconfig/node16" "^1.0.1"
     arg "^4.1.0"
     create-require "^1.1.0"
     diff "^4.0.1"
@@ -6975,7 +6999,7 @@ tslib@^1.13.0, tslib@^1.9.0, tslib@^1.9.3:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.0, tslib@^2.0.3, tslib@^2.1.0, tslib@^2.2.0:
+tslib@^2.0.0, tslib@^2.1.0, tslib@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.2.0.tgz#fb2c475977e35e241311ede2693cee1ec6698f5c"
   integrity sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w==
