@@ -10,8 +10,7 @@ const pkg = require("./package.json");
 
 const banner = [].join("\n");
 const input = "src/index.ts";
-const external = Object.keys(pkg.dependencies)
-  .concat(["events"]);
+const external = Object.keys(pkg.dependencies);
 
 // main
 const main = {
@@ -75,14 +74,12 @@ const browser = [
   {
     input,
     plugins: [
+      builtins(),
       resolve({
         mainFields: ["jsnext", "module", "main"],
         preferBuiltins: true,
       }),
       commonjs(),
-      builtins({
-        events: true,
-      }),
       cleanup(),
       typescript({
         typescript: require("typescript"),
