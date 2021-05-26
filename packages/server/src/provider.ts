@@ -212,6 +212,15 @@ export class LocalProvider extends core.EventLogEmitter {
 
   public addProvider(crypto: Crypto, params?: IAddProviderParams) {
     const info = getSlotInfo(crypto);
+
+    this.log("info", "PKCS#11 library information", {
+      library: crypto.session.slot.module.libFile,
+      manufacturerId: crypto.session.slot.module.manufacturerID,
+      cryptokiVersion: crypto.session.slot.module.cryptokiVersion,
+      libraryVersion: crypto.session.slot.module.libraryVersion,
+      firmwareVersion: crypto.session.slot.firmwareVersion,
+    });
+
     if (params?.name) {
       info.name = info.name;
       info.card = params.name;
