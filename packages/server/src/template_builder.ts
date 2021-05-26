@@ -132,6 +132,21 @@ export class ConfigTemplateBuilder implements p11.ITemplateBuilder {
           }
           return;
         }
+      } else if (this.config.keyUsages === ConfigAttrEnum.required) {
+        // TODO Remove this block in the next release
+        if (privateSecret) {
+          template.derive = derive;
+          template.sign = sign;
+          template.decrypt = decrypt;
+          template.unwrap = unwrap;
+        }
+        if (publicSecret) {
+          template.derive = derive;
+          template.verify = verify;
+          template.encrypt = encrypt;
+          template.wrap = wrap;
+        }
+        return;
       }
 
       if (privateSecret) {
@@ -213,7 +228,7 @@ export class ConfigTemplateBuilder implements p11.ITemplateBuilder {
       if (value !== null) {
         template[attrName] = value;
       }
-    } else if ((attributes as any)[attrName] !== undefined) {
+    } else if (template[attrName] === undefined && (attributes as any)[attrName] !== undefined) {
       template[attrName] = (attributes as any)[attrName];
     }
   }
@@ -224,6 +239,14 @@ export class ConfigTemplateBuilder implements p11.ITemplateBuilder {
    * @param params
    */
   private setToken(template: p11.ITemplate, params: p11.ITemplateBuildParameters) {
+    if (this.config.token === "static") {
+      // TODO Remove in the next release
+      template.sensitive = true;
+      template.token = true;
+    } else if (this.config.token === "optional" && params.attributes.token) {
+      template.sensitive = true;
+      template.token = true;
+    }
     this.setBoolean(params, template, "token");
   }
 }
