@@ -241,11 +241,15 @@ export class ConfigTemplateBuilder implements p11.ITemplateBuilder {
   private setToken(template: p11.ITemplate, params: p11.ITemplateBuildParameters) {
     if (this.config.token === "static") {
       // TODO Remove in the next release
-      template.sensitive = true;
       template.token = true;
+      if (["private", "secret"].includes(params.type)) {
+        template.sensitive = true;
+      }
     } else if (this.config.token === "optional" && params.attributes.token) {
-      template.sensitive = true;
       template.token = true;
+      if (["private", "secret"].includes(params.type)) {
+        template.sensitive = true;
+      }
     }
     this.setBoolean(params, template, "token");
   }
