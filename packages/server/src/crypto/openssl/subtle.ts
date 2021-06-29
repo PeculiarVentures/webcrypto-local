@@ -41,7 +41,7 @@ export class OpenSSLSubtleCrypto implements wcp11.SubtleCrypto {
   public generateKey(algorithm: (RsaHashedKeyGenParams & wcp11.Pkcs11KeyGenParams) | (EcKeyGenParams & wcp11.Pkcs11KeyGenParams) | (DhKeyGenParams & wcp11.Pkcs11KeyGenParams), extractable: boolean, keyUsages: string[]): Promise<wcp11.CryptoKeyPair>;
   public generateKey(algorithm: (Pbkdf2Params & wcp11.Pkcs11KeyGenParams) | (AesKeyGenParams & wcp11.Pkcs11KeyGenParams) | (HmacKeyGenParams & wcp11.Pkcs11KeyGenParams), extractable: boolean, keyUsages: string[]): Promise<wcp11.CryptoKey>;
   public async generateKey(algorithm: any, extractable: any, keyUsages: any): Promise<wcp11.CryptoKey | wcp11.CryptoKeyPair> {
-    const keys = await this.crypto.crypto.subtle.generateKey(algorithm, extractable, keyUsages);
+    const keys = await this.crypto.crypto.subtle.generateKey(algorithm, extractable, keyUsages) as CryptoKeyPair | CryptoKey;
     if ("publicKey" in keys) {
       return {
         privateKey: await this.processKey(keys.privateKey, algorithm),
