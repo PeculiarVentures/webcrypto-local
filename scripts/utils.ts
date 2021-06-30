@@ -38,7 +38,7 @@ export class Logger {
  * @param message
  */
 export function spawn(command: string, args: string[] = []) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     Logger.debug(`> ${command} ${args.join(" ")}`);
 
     let item: childProcess.ChildProcess;
@@ -83,7 +83,7 @@ export async function run(cb: () => Promise<void>) {
  * @param dest
  */
 export async function download(url: string, dest: string) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     Logger.debug(`Downloading ${url}`);
 
     progress(request(url)
