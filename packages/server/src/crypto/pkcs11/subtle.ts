@@ -8,10 +8,12 @@ import { fixObject, isOsslObject } from "./helper";
 
 export class Pkcs11SubtleCrypto extends SubtleCrypto {
 
-  protected crypto!: Pkcs11Crypto;
+  protected crypto: Pkcs11Crypto;
 
   constructor(crypto: Pkcs11Crypto) {
     super(crypto);
+
+    this.crypto = crypto;
   }
 
   public async importKey(format: any, keyData: any, algorithm: any, extractable: any, keyUsages: any) {
