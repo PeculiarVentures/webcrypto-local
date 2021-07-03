@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "cards": [
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
@@ -308,7 +308,7 @@
     {
       "atr": "3BDF18008131FE7D006B020C0182011101434E53103180FC",
       "name": "Italian healtcare card (TS) National Service Card (CNS) (HealthCare)",
-      "driver": "993988460d8f49a2ac519a2935f11533"
+      "driver": "29a2bd60c4b841c686be68d2874c0c02"
     },
     {
       "atr": "3B7D96000080318065B0A31101F383009000",
