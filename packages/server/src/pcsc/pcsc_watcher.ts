@@ -26,6 +26,11 @@ export class PCSCWatcher extends core.EventLogEmitter {
       this.pcsc = pcsc();
       this.pcsc.on("error", (err) => {
         this.emit("error", err);
+        this.pcsc?.removeAllListeners();
+
+        // PCSCLite closes session on PCSC error. For that case we need to restart it.
+        // See https://github.com/PeculiarVentures/fortify/issues/421
+        this.start();
       });
       this.pcsc.on("reader", (reader) => {
         this.log("info", "Initialize new reader", {
