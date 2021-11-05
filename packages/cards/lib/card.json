@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "cards": [
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
@@ -685,7 +685,10 @@
       "id": "5B9AC33100924D9D86B6109147DE08C3",
       "name": "MCARD",
       "file": {
-        "windows": "%PROGRAMFILES/ONECI/mcard/mcard-pkcs11.dll"
+        "windows": {
+          "x64": "%PROGRAMFILES/ONECI/mcard/mcard-pkcs11.dll",
+          "x86": "%PROGRAMFILES(x86)/ONECI/mcard/mcard-pkcs11.dll"
+        }
       }
     }
   ]
