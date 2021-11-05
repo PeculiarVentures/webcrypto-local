@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "cards": [
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
@@ -379,6 +379,11 @@
       "atr": "3BFD1800008131FE4553434536302D43433038312D46C2",
       "name": "Giesecke & Devrient StarSign USB Token",
       "driver": "4485A4DCDF92D361F7418D0C447FEC810C609F12"
+    },
+    {
+      "atr": "3B9D188131FC358031C0694D54434F5373020505D3",
+      "name": "MCARD",
+      "driver": "5B9AC33100924D9D86B6109147DE08C3"
     }
   ],
   "drivers": [
@@ -674,6 +679,13 @@
           "/Applications/tokenadmin.app/Contents/Frameworks/libaetpkss.dylib"
         ],
         "linux": "/usr/lib/libaetpkss.so"
+      }
+    },
+    {
+      "id": "5B9AC33100924D9D86B6109147DE08C3",
+      "name": "MCARD",
+      "file": {
+        "windows": "%PROGRAMFILES/ONECI/mcard/mcard-pkcs11.dll"
       }
     }
   ]
