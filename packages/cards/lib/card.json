@@ -389,7 +389,12 @@
       "atr": "3B9D188131FC358031C0694D54434F5373020505D3",
       "name": "MCARD",
       "driver": "5B9AC33100924D9D86B6109147DE08C3"
-    }
+    },
+    {
+      "atr": "3bfd1800008031fe45736674652d63643038302d6e66dc",
+      "name": "Brazilian Medical Identity Card",
+      "driver": "4485A4DCDF92D361F7418D0C447FEC810C609F12"
+    },
   ],
   "drivers": [
     {
