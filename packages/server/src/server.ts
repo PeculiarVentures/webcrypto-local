@@ -104,6 +104,12 @@ export class LocalServer extends core.EventLogEmitter {
         }
       })
       .on("disconnect", (e) => {
+        // @ts-ignore
+        this.emit("error", {
+            code: WebCryptoLocalError.CODE.WEBSOCKET_VANISHED,
+            origin: e.remoteAddress,
+            type: "ok"
+        });
         // TODO: Remove closed session from `this.sessions`
         this.log("info", "Close session", {
           event: e.event,
@@ -181,7 +187,7 @@ export class LocalServer extends core.EventLogEmitter {
           const promise = new Promise<boolean>((resolve, reject) => {
             this.emit("notify", {
               type: "2key",
-              origin: session.origin,
+              origin: session.origin + ":" + session.port,
               pin,
               resolve,
               reject,

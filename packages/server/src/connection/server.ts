@@ -40,6 +40,7 @@ export interface ServerInfo {
 
 export interface Session {
   origin: string;
+  port: number;
   headers: any;
   connection: WebSocket;
   identity?: ratchet.Identity;
@@ -199,6 +200,7 @@ export class Server extends core.EventLogEmitter {
       const session: Session = {
         // TODO agent: request.headers
         origin: getOrigin(request),
+        port: request.connection.remotePort,
         headers: request.headers,
         connection: ws,
         authorized: false,
@@ -325,7 +327,7 @@ export class Server extends core.EventLogEmitter {
 
         this.emit("disconnect", new events.ServerDisconnectEvent(
           this,
-          session.origin,
+          session.origin + ":" + session.port,
           reasonCode,
           description,
         ));

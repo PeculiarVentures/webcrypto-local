@@ -24,6 +24,7 @@ enum WebCryptoLocalErrorEnum {
   SERVER_NOT_LOGGED_IN = 602,
   PCSC_COMMON = 700,
   PCSC_CANNOT_START = 701,
+  WEBSOCKET_VANISHED = 800,
 }
 
 export class WebCryptoLocalError extends Error {
