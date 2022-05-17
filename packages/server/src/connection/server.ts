@@ -200,7 +200,7 @@ export class Server extends core.EventLogEmitter {
       const session: Session = {
         // TODO agent: request.headers
         origin: getOrigin(request),
-        port: request.connection.remotePort,
+        port: request.socket.remotePort || 443,
         headers: request.headers,
         connection: ws,
         authorized: false,
