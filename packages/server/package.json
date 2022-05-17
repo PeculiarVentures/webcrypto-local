@@ -41,6 +41,8 @@
   "dependencies": {
     "2key-ratchet": "^1.0.18",
     "@peculiar/json-schema": "^1.1.12",
+    "@peculiar/webcrypto": "1.0.22",
+    "@peculiar/x509": "^1.6.1",
     "@types/pvutils": "^1.0.1",
     "@webcrypto-local/cards": "^1.6.11",
     "@webcrypto-local/core": "^1.6.5",

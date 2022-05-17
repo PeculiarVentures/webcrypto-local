@@ -26,7 +26,8 @@
     "docs": "typedoc && touch ./docs/.nojekyll",
     "docs:deploy": "gh-pages -d docs -t",
     "upgrade": "yarn upgrade-interactive --latest",
-    "setup": "ts-node scripts/postinstall.ts"
+    "setup": "ts-node scripts/postinstall.ts",
+    "coverage": "nyc npm test"
   },
   "repository": {
     "type": "git",
@@ -57,6 +58,7 @@
     "@types/request": "^2.48.8",
     "@types/ws": "^8.5.3",
     "colors": "^1.4.0",
+    "coveralls": "^3.1.1",
     "extract-zip": "^2.0.1",
     "gh-pages": "^4.0.0",
     "lerna": "^4.0.0",
@@ -76,23 +78,13 @@
     "typedoc-plugin-lerna-packages": "^0.3.1",
     "typescript": "^4.6.4"
   },
-  "mocha": {
-    "require": "ts-node/register",
-    "extension": [
-      "ts"
-    ],
-    "file": "test/bootstrap.ts",
-    "spec": [
-      "test/**/*.ts"
-    ],
-    "timeout": 10000,
-    "exit": true
-  },
   "resolutions": {
     "**/**/trim-newlines": "^4.0.2",
     "**/**/bl": "^5.0.0",
     "**/**/hosted-git-info": "^4.0.2",
     "**/**/semver": "^7.3.5",
-    "asn1js": "^3.0.3"
-  }
+    "asn1js": "^3.0.3",
+    "@peculiar/asn1-schema": "^2.1.7"
+  },
+  "dependencies": {}
 }
