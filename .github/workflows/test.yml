@@ -1,0 +1,50 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: macos-10.15
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x]
+
+    steps:
+      - name: Install SoftHSM
+        run: |
+          brew install softhsm
+          softhsm2-util --init-token --so-pin "12345" --pin "12345" --slot 0 --label "My slot 0"
+
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run test with coverage
+        run: npm run coverage
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
