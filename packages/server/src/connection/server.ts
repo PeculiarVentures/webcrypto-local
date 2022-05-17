@@ -142,9 +142,11 @@ export class Server extends core.EventLogEmitter {
   }
 
   public close(callback?: () => void) {
-    this.socketServer.close(() => {
-      this.httpServer.close(callback);
-    });
+    this.socketServer.close();
+    this.httpServer.close();
+    if (callback) {
+      callback();
+    }
     return this;
   }
 
