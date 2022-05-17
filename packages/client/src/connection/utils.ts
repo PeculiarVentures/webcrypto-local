@@ -5,16 +5,28 @@ import { Convert } from "pvtsutils";
  * These functions are needed to fix problems in browsers which cannot keep EC keys in IndexedDB or EC keys are not native
  */
 
+/**
+ * Checks that the browser is Firefox
+ * @returns Returns `true` if the browser is Firefox, otherwise `false`
+ */
 export function isFirefox() {
-  return /firefox\/([\w\.-]+)$/i.test(self.navigator.userAgent);
+  return typeof self !== "undefined" && /firefox\/([\w\.-]+)$/i.test(self.navigator.userAgent);
 }
 
+/**
+ * Checks that the browser is Edge
+ * @returns Returns `true` if the browser is Edge, otherwise `false`
+ */
 export function isEdge() {
-  return /(edge|edgios|edga|edg)\/((\d+)?[\w\.]+)/i.test(self.navigator.userAgent);
+  return typeof self !== "undefined" && /(edge|edgios|edga|edg)\/((\d+)?[\w\.]+)/i.test(self.navigator.userAgent);
 }
 
+/**
+ * Checks that the browser is Internet Explorer
+ * @returns Returns `true` if the browser is Internet Explorer, otherwise `false`
+ */
 export function isIE() {
-  return /(trident).+rv[:\s]([\w\.]+).+like\sgecko/i.test(self.navigator.userAgent);
+  return typeof self !== "undefined" && /(trident).+rv[:\s]([\w\.]+).+like\sgecko/i.test(self.navigator.userAgent);
 }
 
 export const ECDH = { name: "ECDH", namedCurve: "P-256" };
