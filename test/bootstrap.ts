@@ -33,8 +33,9 @@ before(async () => {
   await new Promise<void>((resolve, reject) => {
     localServer
       .listen(SERVER_ADDRESS)
-      .on("listening", (e: any) => {
+      .on("listening", (e) => {
         resolve();
+        console.info("info:", `WebSocket Server started`);
       })
       .on("info", (msg) => {
         // console.log(msg);

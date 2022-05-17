@@ -13,7 +13,7 @@ context("WebCrypto Socket", () => {
     const CERT_ROOT_RAW = Convert.FromBase64Url("MIIDljCCAn6gAwIBAgIOSETcxtRwD_qzf0FjVvEwDQYJKoZIhvcNAQELBQAwZjELMAkGA1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExGjAYBgNVBAsTEUZvciBEZW1vIFVzZSBPbmx5MSAwHgYDVQQDExdHbG9iYWxTaWduIERlbW8gUm9vdCBDQTAeFw0xNjA3MjAwMDAwMDBaFw0zNjA3MjAwMDAwMDBaMGYxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMRowGAYDVQQLExFGb3IgRGVtbyBVc2UgT25seTEgMB4GA1UEAxMXR2xvYmFsU2lnbiBEZW1vIFJvb3QgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC1i9RNgrJ4YAATN0J4KVGZjFGQVGFdcbKvfxrt0Bfusq2g81iVrZZjqTJnPSx4g6TdVcsEXU9GWlkFXKEtZzYM4ycbwLAeJQxQDEqkV03GV8ks2Jq_6jIm2DbByPiS5fvRQFQJLYuQHqXpjpOpmPiostUsg9ydMEqcacYV22a6A6Nrb1c1B6OL-X0u9bo30K-YYSw2Ngp3Tuuj9PDk6JS_0CPLcLo8JIFFc8t78lPDquNAOqTDwY_HTw4751iqLVem9q3EDKEeUS-x4gqsCD2pENA7PlQBza55BGOi_A-UAsmfee1oq2Glo9buXBgX-oJ3HnyelzJU9Ej4-yfH7rcvAgMBAAGjQjBAMA4GA1UdDwEB_wQEAwIBBjAPBgNVHRMBAf8EBTADAQH_MB0GA1UdDgQWBBTqD8ID9OxgG83HZJVtOQMmftrrLzANBgkqhkiG9w0BAQsFAAOCAQEAAECKKpL0A2I-hsY881tIz7WqkLDuLh_ISzRVdsALYAxLhVDUHPckh5XyVRkpbTmirn-b5MpuwAI2R8A7Ld6aWWiibc7zGEZNvEKsUEYoJoYR0fuQs2cF7egiYjhFwFMX75w-kuI0Yelm3_3-BiJVtAXqmnQ4yRpGXqNJ4mQC8yWgQbZCLUpH_nqeQANeoaDr5Yg8IOuHRQzG6YNt_Cl9CetDd8WPrAkGm3T2iG0dXQ48VgkkXcNDtY-55nYjIO-N7i-WTh1fe3ArGxHBR3E44-WoA8ntfI1g65-GR0s6G8M7oS-kAFXIwugUGYEnTWp0m5bAn5NlD314IEOg4mnS8Q");
     const REQ_RAW = Convert.FromBase64("MIICZzCCAU8CAQAwIjEgMB4GA1UEAwwXbWFjLW1pbmkuYWVnZG9tYWluMS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCyiZeRY2Zi6Xnu+asuL85d29Km+WXIQYOk5oo0IsDH7S2KjR4VyulDfNAx6cH9TQydg4LBzve3adBB9hAxpqJOy1ooaLENlml07uXj758C7La5NioBqTjoohbERnzjSpZqiH+08INPtZDDpPH6pRU3MmmtFSywE0R9KOUGNcLXhFHP3jAbiJo5dQDxWUYpjf4ZUlLwE3k6yjtM7y2UlWFb1pB/207FkV/DY+YUTx0PToylGDHLYWdKUXBgAU/htN1VN5tezRd6wwznIP8OiZ8Ebtctq3loA9PfTYblLirYBvuKMPXYbNjw5Fp5XmMFFX83+zLsND3cn4Susdfu7L0hAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAQEAHpbQ+KTx98neqGtJ6QpmfRuUoHI0tRuCLzmdnCLblqso0bSLDgRgK+bEHVjnIpPpmfu/ZBbK4Hn73nZZPPqpaKE33Ef8A4fKjRrx+5pVSPjt783xrI8uUnn5fmip5pZL07tP8J/RQN30SIRBnCSKUnIgurA5tDPwayxmpnAoh8D5Jl0vvmNAnbHBKvTBAoJDrHLLMyJlbQh2Ip7GPfvfic8yGvaHYKtLfNR52y77aNEc90g3CymtxdImJRYYCjZuAYbfYk31DeKBNTFl1OM+VOqEAUOv/meRxGsEELHHykbYcOOef610LzbR/D10p9e/zaeXyaXlr/GBHQKPUvenTg==");
 
-    const ws = new client.SocketProvider({ storage: new client.MemoryStorage() });
+    let ws: client.SocketProvider;
     let crypto: client.SocketCrypto;
 
     async function addCertificate(certRaw: ArrayBuffer) {
@@ -23,6 +23,7 @@ context("WebCrypto Socket", () => {
     }
 
     before((done) => {
+      ws = new client.SocketProvider({ storage: new client.MemoryStorage() });
       ws.connect(SERVER_ADDRESS, { rejectUnauthorized: false })
         .on("listening", () => {
           done();
@@ -39,8 +40,7 @@ context("WebCrypto Socket", () => {
       }
       const info = await ws.info();
       const providers = info.providers.filter((provider) => provider.name === PROVIDER_NAME);
-      assert.equal(providers.length, 1, `Cannot get provider by name ${PROVIDER_NAME}`);
-
+      assert.strictEqual(providers.length, 1, `Cannot get provider by name ${PROVIDER_NAME}`);
       crypto = await ws.getCrypto(providers[0].id);
       if (!(await crypto.isLoggedIn())) {
         await crypto.login();
@@ -68,7 +68,7 @@ context("WebCrypto Socket", () => {
           const item = await crypto.certStorage.importCert("pem", pem, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" } as RsaHashedImportParams, ["verify"]) as CryptoX509Certificate;
           assert.equal(item.type, "x509");
           assert.equal(item.issuerName, "C=BE, O=GlobalSign nv-sa, OU=For Demo Use Only, CN=GlobalSign Demo Issuing CA");
-          assert.equal(item.subjectName, "C=US, ST=New Hampshire, L=Portsmouth, O=GMO GlobalSign, Inc., OU=Test Profile 2, CN=aegadmin");
+          assert.equal(item.subjectName, "C=US, ST=New Hampshire, L=Portsmouth, O=GMO GlobalSign\\, Inc., OU=Test Profile 2, CN=aegadmin");
           assert.equal(item.serialNumber, "59b32a13fb900d9b09a8986e");
           assert.equal(!!item.publicKey, true);
 
