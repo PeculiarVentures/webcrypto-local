@@ -1,9 +1,10 @@
+import { Crypto } from "@peculiar/webcrypto";
+import { X509Certificate, X509ChainBuilder } from "@peculiar/x509";
 import * as proto from "@webcrypto-local/proto";
 import * as asn1js from "asn1js";
 import * as graphene from "graphene-pk11";
 import { IGetValue, CryptoX509CertificateRequest, CryptoX509Certificate, CryptoCertificate } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
-import { isEqualBuffer } from "pvutils";
 import request from "request";
 import { CryptoCertificateStorage, CryptoStorages } from "webcrypto-core";
 const pkijs = require("pkijs");
@@ -314,9 +315,19 @@ export class CertificateStorageService extends Service<CryptoService> {
             }
           } else {
             this.log("info", "CKA_X509_CHAIN is not supported");
+
+            const leafCertId = await crypto.certStorage.indexOf(cert);
+            if (!leafCertId) {
+              throw new Error(`Cannot get index for X509 Certificate`);
+            }
+            const leafCertRaw = await crypto.certStorage.getValue(leafCertId);
+            if (!leafCertRaw) {
+              throw new Error(`Cannot get X509 Certificate by id '${leafCertId}'`);
+            }
+            const leafCert = new X509Certificate(leafCertRaw);
+
             // Get all certificates from token
             const indexes = await crypto.certStorage.keys();
-            const trustedCerts = [];
             const certs = [];
             for (const index of indexes) {
               // only certs
@@ -325,53 +336,29 @@ export class CertificateStorageService extends Service<CryptoService> {
                 continue;
               }
 
-              const cryptoCert = await crypto.certStorage.getItem(index);
-              const pkiCert = await certC2P(crypto, cryptoCert);
-              // don't add entry cert
-              // TODO: https://github.com/PeculiarVentures/PKI.js/issues/114
-              if (isEqualBuffer(pkiEntryCert.tbs, pkiCert.tbs)) {
+              // Parse and add cert to certs
+              const certRaw = await crypto.certStorage.getValue(index);
+              if (!certRaw) {
                 continue;
               }
-              if (pkiCert.subject.isEqual(pkiCert.issuer)) { // Self-signed cert
-                trustedCerts.push(pkiCert);
-              } else {
-                certs.push(pkiCert);
+              try {
+                const x509Cert = new X509Certificate(certRaw);
+                certs.push(x509Cert);
+              } catch {
+                continue;
               }
             }
-            // Add entry certificate to the end of array
-            // NOTE: PKIjs builds chain for the last certificate in list
-            if (pkiEntryCert.subject.isEqual(pkiEntryCert.issuer)) { // Self-signed cert
-              trustedCerts.push(pkiEntryCert);
-            }
-            certs.push(pkiEntryCert);
-            // Build chain for certs
-            pkijs.setEngine("PKCS#11 provider", crypto, new pkijs.CryptoEngine({ name: "", crypto, subtle: crypto.subtle }));
-            // console.log("Print incoming certificates");
-            // console.log("Trusted:");
-            // console.log("=================================");
-            // await printCertificates(crypto, trustedCerts);
-            // console.log("Certificates:");
-            // console.log("=================================");
-            // await printCertificates(crypto, certs);
-            const chainBuilder = new pkijs.CertificateChainValidationEngine({
-              trustedCerts,
-              certs,
+            const nodeCrypto = new Crypto();
+            const chainBuilder = new X509ChainBuilder({
+              certificates: certs,
             });
 
-            const chain = await chainBuilder.verify();
-            let resultChain = [];
-            if (chain.result) {
-              // Chain was created
-              resultChain = chainBuilder.certs;
-            } else {
-              // cannot build chain. Return only entry certificate
-              resultChain = [pkiEntryCert];
-            }
+            const certChain = await chainBuilder.build(leafCert, nodeCrypto as globalThis.Crypto);
             // Put certs to result
-            for (const item of resultChain) {
+            for (const item of certChain) {
               const itemProto = new proto.ChainItemProto();
               itemProto.type = "x509";
-              itemProto.value = item.toSchema(true).toBER(false);
+              itemProto.value = item.rawData;
 
               resultProto.items.push(itemProto);
             }
@@ -400,7 +387,6 @@ export class CertificateStorageService extends Service<CryptoService> {
         const params = await proto.CertificateStorageGetCRLActionProto.importProto(action);
 
         this.log("info", "certStorage/crl", {
-          crypto: this.logCrypto(crypto as any),
           url: params.url,
         });
 
@@ -453,11 +439,10 @@ export class CertificateStorageService extends Service<CryptoService> {
         break;
       }
       // getOCSP
-      case pkijs.CertificateStorageGetOCSPActionProto.ACTION: {
+      case proto.CertificateStorageGetOCSPActionProto.ACTION: {
         const params = await pkijs.CertificateStorageGetOCSPActionProto.importProto(action);
 
         this.log("info", "certStorage/ocsp", {
-          crypto: this.logCrypto(crypto as any),
           url: params.url,
         });
 
