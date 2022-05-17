@@ -1,4 +1,3 @@
-// @ts-ignore
 import { JsonParser } from "@peculiar/json-schema";
 import { Cards, Config, Variables } from "@webcrypto-local/cards";
 import * as fs from "fs";
