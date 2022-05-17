@@ -1,30 +1,32 @@
 import { getEngine } from "2key-ratchet";
 import * as Proto from "@webcrypto-local/proto";
-import { Convert } from "pvtsutils";
-import { BufferSourceConverter, NativeSubtleCrypto } from "webcrypto-core";
+import { Convert, BufferSourceConverter } from "pvtsutils";
+import { NativeSubtleCrypto, SubtleCrypto as CoreSubtleCrypto } from "webcrypto-core";
 import { SocketCrypto } from "./crypto";
 import * as utils from "./utils";
 
-export class SubtleCrypto implements NativeSubtleCrypto {
+export class SubtleCrypto extends CoreSubtleCrypto implements NativeSubtleCrypto {
 
   protected readonly service: SocketCrypto;
 
   constructor(crypto: SocketCrypto) {
+    super();
+
     this.service = crypto;
   }
 
-  public async encrypt(algorithm: Algorithm, key: CryptoKey, data: BufferSource): Promise<ArrayBuffer>;
+  public async encrypt(algorithm: AlgorithmIdentifier | RsaOaepParams | AesCtrParams | AesCbcParams | AesGcmParams, key: CryptoKey, data: BufferSource): Promise<ArrayBuffer>;
   public async encrypt(algorithm: Algorithm, key: Proto.CryptoKeyProto, data: BufferSource) {
     return this.encryptData(algorithm, key, data, "encrypt");
   }
 
-  public async decrypt(algorithm: Algorithm, key: CryptoKey, data: BufferSource): Promise<ArrayBuffer>;
+  public async decrypt(algorithm: AlgorithmIdentifier | RsaOaepParams | AesCtrParams | AesCbcParams | AesGcmParams, key: CryptoKey, data: BufferSource): Promise<ArrayBuffer>;
   public async decrypt(algorithm: Algorithm, key: Proto.CryptoKeyProto, data: BufferSource) {
     return this.encryptData(algorithm, key, data, "decrypt");
   }
 
-  public async deriveBits(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfParams | Pbkdf2Params, baseKey: CryptoKey, length: number): Promise<ArrayBuffer>;
-  public async deriveBits(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfParams | Pbkdf2Params, baseKey: Proto.CryptoKeyProto, length: number) {
+  public async deriveBits(algorithm: AlgorithmIdentifier | EcdhKeyDeriveParams | HkdfParams | Pbkdf2Params, baseKey: CryptoKey, length: number): Promise<ArrayBuffer>;
+  public async deriveBits(algorithm: AlgorithmIdentifier | EcdhKeyDeriveParams | HkdfParams | Pbkdf2Params, baseKey: Proto.CryptoKeyProto, length: number): Promise<ArrayBuffer> {
     // check
     utils.checkAlgorithm(algorithm, "algorithm");
     utils.checkCryptoKey(baseKey, "baseKey");
@@ -47,7 +49,8 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     return result;
   }
 
-  public async deriveKey(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfParams | Pbkdf2Params, baseKey: Proto.CryptoKeyProto, derivedKeyType: string | AesDerivedKeyParams | HmacImportParams | ConcatParams | HkdfParams | Pbkdf2Params, extractable: boolean, keyUsages: string[]) {
+  public async deriveKey(algorithm: AlgorithmIdentifier | EcdhKeyDeriveParams | HkdfParams | Pbkdf2Params, baseKey: CryptoKey, derivedKeyType: AlgorithmIdentifier | AesDerivedKeyParams | HmacImportParams | HkdfParams | Pbkdf2Params, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
+  public async deriveKey(algorithm: AlgorithmIdentifier | EcdhKeyDeriveParams | HkdfParams | Pbkdf2Params, baseKey: Proto.CryptoKeyProto, derivedKeyType: AlgorithmIdentifier | AesDerivedKeyParams | HmacImportParams | HkdfParams | Pbkdf2Params, extractable: boolean, keyUsages: KeyUsage[]): Promise<Proto.CryptoKeyProto> {
     // check incoming data
     utils.checkAlgorithm(algorithm, "algorithm");
     utils.checkCryptoKey(baseKey, "baseKey");
@@ -80,10 +83,10 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     return getEngine().crypto.subtle.digest(algorithm, data as ArrayBuffer);
   }
 
-  public generateKey(algorithm: string, extractable: boolean, keyUsages: string[]): Promise<CryptoKeyPair | CryptoKey>;
-  public generateKey(algorithm: RsaHashedKeyGenParams | EcKeyGenParams | DhKeyGenParams, extractable: boolean, keyUsages: string[]): Promise<CryptoKeyPair>;
-  public generateKey(algorithm: AesKeyGenParams | HmacKeyGenParams | Pbkdf2Params, extractable: boolean, keyUsages: string[]): Promise<CryptoKey>;
-  public async generateKey(algorithm: AlgorithmIdentifier, extractable: boolean, keyUsages: string[]): Promise<CryptoKey | CryptoKeyPair> {
+  public async generateKey(algorithm: RsaHashedKeyGenParams | EcKeyGenParams, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKeyPair>;
+  public async generateKey(algorithm: AesKeyGenParams | HmacKeyGenParams | Pbkdf2Params, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
+  public async generateKey(algorithm: AlgorithmIdentifier, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKeyPair | CryptoKey>;
+  public async generateKey(algorithm: AlgorithmIdentifier, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey | CryptoKeyPair> {
     // check
     utils.checkAlgorithm(algorithm, "algorithm");
     utils.checkPrimitive(extractable, "boolean", "extractable");
@@ -112,8 +115,7 @@ export class SubtleCrypto implements NativeSubtleCrypto {
   }
 
   public async exportKey(format: "jwk", key: CryptoKey): Promise<JsonWebKey>;
-  public async exportKey(format: "raw" | "spki" | "pkcs8", key: CryptoKey): Promise<ArrayBuffer>;
-  public async exportKey(format: KeyFormat, key: CryptoKey): Promise<JsonWebKey | ArrayBuffer>;
+  public async exportKey(format: Exclude<KeyFormat, "jwk">, key: CryptoKey): Promise<ArrayBuffer>;
   public async exportKey(format: KeyFormat, key: Proto.CryptoKeyProto) {
     // check
     utils.checkPrimitive(format, "string", "format");
@@ -134,7 +136,9 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     }
   }
 
-  public async importKey(format: KeyFormat, keyData: JsonWebKey | BufferSource, algorithm: string | RsaHashedImportParams | EcKeyImportParams | HmacImportParams | DhImportKeyParams, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey> {
+  public async importKey(format: "jwk", keyData: JsonWebKey, algorithm: AlgorithmIdentifier | RsaHashedImportParams | EcKeyImportParams | HmacImportParams | AesKeyAlgorithm, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
+  public async importKey(format: Exclude<KeyFormat, "jwk">, keyData: BufferSource, algorithm: AlgorithmIdentifier | RsaHashedImportParams | EcKeyImportParams | HmacImportParams | AesKeyAlgorithm, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
+  public async importKey(format: KeyFormat, keyData: JsonWebKey | BufferSource, algorithm: string | RsaHashedImportParams | EcKeyImportParams | HmacImportParams | AesKeyAlgorithm, extractable: boolean, keyUsages: KeyUsage[]): Promise<Proto.CryptoKeyProto> {
     // check
     utils.checkPrimitive(format, "string", "format");
     utils.checkAlgorithm(algorithm, "algorithm");
@@ -165,8 +169,8 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     return await Proto.CryptoKeyProto.importProto(result);
   }
 
-  public async sign(algorithm: string | RsaPssParams | EcdsaParams | AesCmacParams, key: CryptoKey, data: BufferSource): Promise<ArrayBuffer>;
-  public async sign(algorithm: string | RsaPssParams | EcdsaParams | AesCmacParams, key: Proto.CryptoKeyProto, data: BufferSource) {
+  public async sign(algorithm: AlgorithmIdentifier | RsaPssParams | EcdsaParams, key: CryptoKey, data: BufferSource): Promise<ArrayBuffer>;
+  public async sign(algorithm: AlgorithmIdentifier | RsaPssParams | EcdsaParams, key: Proto.CryptoKeyProto, data: BufferSource) {
     // check
     utils.checkAlgorithm(algorithm, "algorithm");
     utils.checkCryptoKey(key, "key");
@@ -188,8 +192,8 @@ export class SubtleCrypto implements NativeSubtleCrypto {
     return result;
   }
 
-  public async verify(algorithm: string | RsaPssParams | EcdsaParams | AesCmacParams, key: CryptoKey, signature: BufferSource, data: BufferSource): Promise<boolean>;
-  public async verify(algorithm: string | RsaPssParams | EcdsaParams | AesCmacParams, key: Proto.CryptoKeyProto, signature: BufferSource, data: BufferSource) {
+  public async verify(algorithm: AlgorithmIdentifier | RsaPssParams | EcdsaParams, key: CryptoKey, signature: BufferSource, data: BufferSource): Promise<boolean>;
+  public async verify(algorithm: AlgorithmIdentifier | RsaPssParams | EcdsaParams, key: Proto.CryptoKeyProto, signature: BufferSource, data: BufferSource) {
     // check
     utils.checkAlgorithm(algorithm, "algorithm");
     utils.checkCryptoKey(key, "key");

@@ -1,12 +1,12 @@
 import { getEngine } from "2key-ratchet";
 import * as Proto from "@webcrypto-local/proto";
-import { CryptoStorages } from "webcrypto-core";
+import { CryptoStorages, Crypto } from "webcrypto-core";
 import { CertificateStorage } from "./cert_storage";
 import { Client } from "./connection";
 import { KeyStorage } from "./key_storage";
 import { SubtleCrypto } from "./subtle";
 
-export class SocketCrypto implements Crypto, CryptoStorages {
+export class SocketCrypto extends Crypto implements CryptoStorages {
 
   public id: string;
   public subtle: SubtleCrypto;
@@ -16,6 +16,8 @@ export class SocketCrypto implements Crypto, CryptoStorages {
   public client: Client;
 
   constructor(client: Client, id: string) {
+    super();
+
     this.client = client;
     this.id = id;
 
@@ -24,7 +26,7 @@ export class SocketCrypto implements Crypto, CryptoStorages {
     this.certStorage = new CertificateStorage(this);
   }
 
-  public getRandomValues<T extends Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | null>(array: T): T {
+  public getRandomValues<T extends ArrayBufferView | null>(array: T): T {
     return getEngine().crypto.getRandomValues(array);
   }
 

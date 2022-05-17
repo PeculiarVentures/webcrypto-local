@@ -6,6 +6,7 @@ import * as os from "os";
 import * as path from "path";
 import * as core from "webcrypto-core";
 import { WebCryptoLocalError } from "../error";
+import { stringifyError } from "../helper";
 
 export type CardLibraryType = "config" | "extra";
 
@@ -64,7 +65,7 @@ export class CardConfig {
     try {
       json = JsonParser.parse(data.toString(), { targetSchema: Cards });
     } catch (err) {
-      throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, `Cannot parse JSON file. ${err.message}`);
+      throw new WebCryptoLocalError(WebCryptoLocalError.CODE.CARD_CONFIG_COMMON, `Cannot parse JSON file. ${stringifyError(err)}`);
     }
     this.fromJSON(json);
   }

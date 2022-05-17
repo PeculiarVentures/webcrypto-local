@@ -27,7 +27,7 @@ export class PvKeyStorage extends KeyStorage {
     const _key: any = key;
 
     // don't copy object from token
-    if (!(this.hasItem(_key) && _key.key.token)) {
+    if (!(await this.hasItem(_key) && _key.key.token)) {
       const template: ITemplate = {
         token: true,
       };

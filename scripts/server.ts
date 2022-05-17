@@ -11,7 +11,8 @@ async function main() {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
   // Set crypto engine for 2key-ratchet
-  setEngine("WebCrypto NodeJS", new Crypto());
+  // App uses old version of @peculiar/webcrypto, because that version allows to save keys for 2key-ratchet
+  setEngine("WebCrypto NodeJS", new Crypto() as unknown as globalThis.Crypto);
 
   const platform = os.platform();
   const FORTIFY_DATA_DIR = path.join(os.homedir(), ".fortify");

@@ -1,12 +1,13 @@
 import { getEngine } from "2key-ratchet";
 import * as graphene from "graphene-pk11";
 import * as wcp11 from "node-webcrypto-p11";
+import * as core from "webcrypto-core";
 import { OPENSSL_CERT_STORAGE_DIR, OPENSSL_KEY_STORAGE_DIR } from "../../const";
 import { OpenSSLCertificateStorage } from "./cert_storage";
 import { OpenSSLKeyStorage } from "./key_storage";
 import { OpenSSLSubtleCrypto } from "./subtle";
 
-export class OpenSSLCrypto implements wcp11.Crypto {
+export class OpenSSLCrypto extends core.Crypto implements wcp11.Crypto {
 
   public isReadWrite = true;
   public isLoginRequired = false;
@@ -43,6 +44,8 @@ export class OpenSSLCrypto implements wcp11.Crypto {
   public isLoggedIn = true;
 
   constructor() {
+    super();
+
     this.keyStorage = new OpenSSLKeyStorage(`${OPENSSL_KEY_STORAGE_DIR}/store.json`, this);
     this.certStorage = new OpenSSLCertificateStorage(`${OPENSSL_CERT_STORAGE_DIR}/store.json`, this);
     this.subtle = new OpenSSLSubtleCrypto(this);
@@ -50,7 +53,7 @@ export class OpenSSLCrypto implements wcp11.Crypto {
   public templateBuilder: wcp11.ITemplateBuilder = null as any;
   public session: graphene.Session = null as any;
 
-  public getRandomValues<T extends Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | null>(array: T): T {
+  public getRandomValues<T extends ArrayBufferView | null>(array: T): T {
     return this.crypto.getRandomValues(array);
   }
 

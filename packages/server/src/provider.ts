@@ -11,7 +11,7 @@ import { DEFAULT_HASH_ALG } from "./const";
 import { Pkcs11Crypto, PvCrypto } from "./crypto";
 import { CryptoMap } from "./crypto_map";
 import { WebCryptoLocalError } from "./error";
-import { digest } from "./helper";
+import { digest, prepareError, stringifyError } from "./helper";
 import { MapChangeEvent } from "./map";
 import { Card, CardLibraryType, CardWatcher, PCSCCard } from "./pcsc";
 import { ConfigTemplateBuilder } from "./template_builder";
@@ -149,7 +149,7 @@ export class LocalProvider extends core.EventLogEmitter {
             crypto.isLoggedIn = true;
             this.addProvider(crypto);
           } catch (e) {
-            this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `Provider:open Cannot load library by path ${pvpkcs11}. ${e.message}`));
+            this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `Provider:open Cannot load library by path ${pvpkcs11}. ${stringifyError(e)}`));
           }
         } else {
           this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `Provider:open Cannot find pvpkcs11 by path ${pvpkcs11}`));
@@ -175,7 +175,7 @@ export class LocalProvider extends core.EventLogEmitter {
               name: prov.name,
             });
           } catch (err) {
-            this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `Provider:open Cannot load PKCS#11 library by path ${prov.lib}. ${err.message}`));
+            this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `Provider:open Cannot load PKCS#11 library by path ${prov.lib}. ${stringifyError(err)}`));
           }
         } else {
           this.log("info", `File ${prov.lib} does not exist`, { action: "open" });
@@ -270,7 +270,7 @@ export class LocalProvider extends core.EventLogEmitter {
       const library = typeof lib === "string"
         ? lib
         : lib.path;
-      const type: CardLibraryType =  typeof lib === "string" ? "config" : lib.type;
+      const type: CardLibraryType = typeof lib === "string" ? "config" : lib.type;
       try {
         this.log("info", "Loading PKCS#11 library", {
           library,
@@ -286,7 +286,7 @@ export class LocalProvider extends core.EventLogEmitter {
         try {
           mod = graphene.Module.load(library, card.name);
         } catch (err) {
-          this.emit("error", err);
+          this.emit("error", prepareError(err));
           lastError = new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_WRONG, library);
           continue;
         }
@@ -295,8 +295,8 @@ export class LocalProvider extends core.EventLogEmitter {
           await pauseAsync();
           mod.initialize();
         } catch (err) {
-          if (!/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
-            this.emit("error", err);
+          if (!(err instanceof Error) || !/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
+            this.emit("error", prepareError(err));
             lastError = new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_WRONG, library);
             continue;
           }
@@ -354,7 +354,7 @@ export class LocalProvider extends core.EventLogEmitter {
             addInfos.push(info);
             this.addProvider(crypto);
           } catch (err) {
-            this.emit("error", err);
+            this.emit("error", prepareError(err));
           }
         });
 
@@ -365,7 +365,7 @@ export class LocalProvider extends core.EventLogEmitter {
         });
         break;
       } catch (err) {
-        lastError = err;
+        lastError = prepareError(err);
         continue;
       }
     }
@@ -403,8 +403,9 @@ export class LocalProvider extends core.EventLogEmitter {
           await pauseAsync();
           try {
             mod.initialize();
-          } catch (err) {
-            if (!/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
+          } catch (e) {
+            const err = prepareError(e);
+            if (/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
               throw err;
             }
           }
@@ -425,7 +426,7 @@ export class LocalProvider extends core.EventLogEmitter {
         } catch (err) {
           this.emit("error", new WebCryptoLocalError(
             WebCryptoLocalError.CODE.TOKEN_REMOVE_TOKEN_READING,
-            `Cannot find removed slot in PKCS#11 library ${library}. ${err.message}`,
+            `Cannot find removed slot in PKCS#11 library ${library}. ${stringifyError(err)}`,
           ));
         }
       }
@@ -452,11 +453,15 @@ export class LocalProvider extends core.EventLogEmitter {
         this.emit("token", info);
       }
     } catch (error) {
-      this.emit("token", {
+      const event: core.TokenInfoEvent = {
         added: [],
         removed: [],
-        error,
-      });
+      };
+
+      if (error) {
+        event.error = prepareError(error);
+      }
+      this.emit("token", event);
     }
   }
 
@@ -482,7 +487,7 @@ export class LocalProvider extends core.EventLogEmitter {
       try {
         cryptoModule.finalize();
       } catch (err) {
-        this.emit("error", err);
+        this.emit("error", prepareError(err));
       }
     }
   }

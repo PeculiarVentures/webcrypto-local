@@ -44,14 +44,14 @@
   },
   "dependencies": {
     "2key-ratchet": "^1.0.18",
-    "@types/node-fetch": "^2.5.10",
+    "@types/node-fetch": "^2.6.1",
     "@webcrypto-local/core": "^1.6.5",
     "@webcrypto-local/proto": "^1.6.5",
     "idb": "^2",
     "node-fetch": "^2.6.1",
-    "pvtsutils": "^1.1.7",
-    "tslib": "^2.3.0",
-    "webcrypto-core": "^1.2.0",
-    "ws": "^7.5.1"
+    "pvtsutils": "^1.3.2",
+    "tslib": "^2.4.0",
+    "webcrypto-core": "^1.7.5",
+    "ws": "^8.6.0"
   }
 }

@@ -1,5 +1,6 @@
 import * as core from "@webcrypto-local/core";
 import * as os from "os";
+import { prepareError } from "../helper";
 import { OpenSC } from "../opensc";
 import { Card, CardConfig, CardLibrary, CardOptions } from "./card_config";
 import { PCSCWatcher, PCSCWatcherEvent } from "./pcsc_watcher";
@@ -68,7 +69,7 @@ export class CardWatcher extends core.EventLogEmitter {
             });
           }
         } catch (e) {
-          this.emit("error", e);
+          this.emit("error", prepareError(e));
         }
       })
       .on("remove", (e) => {
@@ -81,7 +82,7 @@ export class CardWatcher extends core.EventLogEmitter {
             }
           }
         } catch (e) {
-          this.emit("error", e);
+          this.emit("error", prepareError(e));
         }
       });
   }
@@ -113,7 +114,7 @@ export class CardWatcher extends core.EventLogEmitter {
     try {
       this.config = CardConfig.readFile(path);
     } catch (e) {
-      this.emit("error", e.message);
+      this.emit("error", prepareError(e));
     }
     this.watcher.start();
   }
@@ -159,7 +160,7 @@ export class CardWatcher extends core.EventLogEmitter {
           }
         }
       } catch (e) {
-        this.emit("error", e);
+        this.emit("error", prepareError(e));
       }
     }
 
@@ -205,7 +206,7 @@ export class CardWatcher extends core.EventLogEmitter {
       // NOTE: custom libraries MUST be first in list
       const libraries: CardLibrary[] = [];
       for (const item of customCard.libraries) {
-        if (typeof item === "string" ) {
+        if (typeof item === "string") {
           libraries.push({ type: "config", path: item });
         } else {
           libraries.push(item);
@@ -213,7 +214,7 @@ export class CardWatcher extends core.EventLogEmitter {
       }
       if (res) {
         for (const item of res.libraries) {
-          if (typeof item === "string" ) {
+          if (typeof item === "string") {
             libraries.push({ type: "config", path: item });
           } else {
             libraries.push(item);
