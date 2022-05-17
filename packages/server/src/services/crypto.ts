@@ -104,7 +104,7 @@ export class CryptoService extends Service<ProviderService> {
                 // @ts-ignore
                 this.emit("notify", {
                   type: "pin",
-                  origin: session.origin,
+                  origin: session.origin + ":" + session.port,
                   label: slot.getToken().label,
                   resolve,
                   reject,
