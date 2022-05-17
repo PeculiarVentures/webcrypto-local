@@ -1,5 +1,7 @@
 # `@webcrypto-local/client`
 
+[![Test](https://github.com/PeculiarVentures/webcrypto-local/actions/workflows/test.yml/badge.svg)](https://github.com/PeculiarVentures/webcrypto-local/actions/workflows/test.yml)
+
 A package of `webcrypto-local` framework. WebSocket client
 
 ## Installation
