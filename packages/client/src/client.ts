@@ -92,7 +92,6 @@ export class SocketProvider extends EventEmitter {
   }
 
   public on(event: string | symbol, listener: (...args: any[]) => void) {
-    console.log("SocketProvider:on", event);
     return super.on(event, listener);
   }
 

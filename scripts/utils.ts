@@ -5,6 +5,7 @@ import { stdout } from "process";
 import request from "request";
 import zip from "extract-zip";
 import "colors";
+import { prepareError } from "../packages/server/src/helper";
 
 const progress = require("request-progress");
 
@@ -72,7 +73,7 @@ export async function run(cb: () => Promise<void>) {
 
     process.exit(0);
   } catch (e) {
-    Logger.error(e);
+    Logger.error(prepareError(e));
     process.exit(1);
   }
 }

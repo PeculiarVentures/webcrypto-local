@@ -5,3 +5,20 @@ export function digest(alg: string, data: string) {
   hash.update(data);
   return hash.digest();
 }
+
+export function stringifyError(e: unknown): string {
+  if (e instanceof Error) {
+    return e.message;
+  }
+
+  return `${e}`;
+}
+
+
+export function prepareError(e: unknown): Error {
+  if (e instanceof Error) {
+    return e;
+  }
+
+  return new Error(`Unknown error. ${e}`);
+}

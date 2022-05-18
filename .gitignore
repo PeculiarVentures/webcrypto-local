@@ -15,3 +15,5 @@ modules_list.js
 modules.json
 tsconfig.tsbuildinfo
 utils/
+coverage
+.nyc_output

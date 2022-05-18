@@ -15,7 +15,7 @@ export interface CryptoNotifyEvent {
   type: "pin";
   origin: string;
   label: string;
-  resolve: () => void;
+  resolve: (...args: any[]) => void;
   reject: (error: Error) => void;
 }
 
@@ -101,7 +101,6 @@ export class CryptoService extends Service<ProviderService> {
             } else {
               // show prompt
               const promise = new Promise<string>((resolve, reject) => {
-                // @ts-ignore
                 this.emit("notify", {
                   type: "pin",
                   origin: session.origin + ":" + session.port,

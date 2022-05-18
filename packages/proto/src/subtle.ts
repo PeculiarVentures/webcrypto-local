@@ -29,7 +29,7 @@ export class GenerateKeyActionProto extends CryptoActionProto {
   public extractable: boolean = false;
 
   @ProtobufProperty({ id: GenerateKeyActionProto.INDEX++, type: "string", repeated: true })
-  public usage: string[] = [];
+  public usage: KeyUsage[] = [];
 
 }
 
@@ -113,7 +113,7 @@ export class DeriveKeyActionProto extends CryptoActionProto {
   public extractable: boolean = false;
 
   @ProtobufProperty({ id: DeriveKeyActionProto.INDEX++, type: "string", repeated: true })
-  public usage: string[] = [];
+  public usage: KeyUsage[] = [];
 
 }
 
@@ -124,7 +124,7 @@ export class UnwrapKeyActionProto extends CryptoActionProto {
   public static ACTION = "crypto/subtle/unwrapKey";
 
   @ProtobufProperty({ id: UnwrapKeyActionProto.INDEX++, required: true, type: "string" })
-  public format: string = "";
+  public format: KeyFormat = "raw";
 
   @ProtobufProperty({ id: UnwrapKeyActionProto.INDEX++, required: true, converter: ArrayBufferConverter })
   public wrappedKey: ArrayBuffer = new ArrayBuffer(0);
@@ -142,7 +142,7 @@ export class UnwrapKeyActionProto extends CryptoActionProto {
   public extractable: boolean = false;
 
   @ProtobufProperty({ id: UnwrapKeyActionProto.INDEX++, type: "string", repeated: true })
-  public keyUsage: string[] = [];
+  public keyUsage: KeyUsage[] = [];
 
 }
 
@@ -153,7 +153,7 @@ export class WrapKeyActionProto extends CryptoActionProto {
   public static ACTION = "crypto/subtle/wrapKey";
 
   @ProtobufProperty({ id: WrapKeyActionProto.INDEX++, required: true, type: "string" })
-  public format: string = "";
+  public format: KeyFormat = "raw";
 
   @ProtobufProperty({ id: WrapKeyActionProto.INDEX++, required: true, parser: CryptoKeyProto })
   public key: CryptoKeyProto = new CryptoKeyProto();
@@ -173,7 +173,7 @@ export class ExportKeyActionProto extends CryptoActionProto {
   public static ACTION = "crypto/subtle/exportKey";
 
   @ProtobufProperty({ id: ExportKeyActionProto.INDEX++, type: "string", required: true })
-  public format: string = "";
+  public format: KeyFormat = "raw";
 
   @ProtobufProperty({ id: ExportKeyActionProto.INDEX++, required: true, parser: CryptoKeyProto })
   public key: CryptoKeyProto = new CryptoKeyProto();
@@ -187,7 +187,7 @@ export class ImportKeyActionProto extends CryptoActionProto {
   public static ACTION = "crypto/subtle/importKey";
 
   @ProtobufProperty({ id: ImportKeyActionProto.INDEX++, type: "string", required: true })
-  public format: string = "";
+  public format: KeyFormat = "raw";
 
   @ProtobufProperty({ id: ImportKeyActionProto.INDEX++, required: true, converter: ArrayBufferConverter })
   public keyData: ArrayBuffer = new ArrayBuffer(0);
@@ -199,6 +199,6 @@ export class ImportKeyActionProto extends CryptoActionProto {
   public extractable: boolean = false;
 
   @ProtobufProperty({ id: ImportKeyActionProto.INDEX++, type: "string", repeated: true })
-  public keyUsages: string[] = [];
+  public keyUsages: KeyUsage[] = [];
 
 }

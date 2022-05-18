@@ -1,24 +1,26 @@
 {
-    "extends": "./tsconfig.compile.json",
-    "compilerOptions": {
-      "baseUrl": ".",
-      "paths": {
-        "@webcrypto-local/cards": [
-          "./packages/cards/src"
-        ],
-        "@webcrypto-local/core": [
-          "./packages/core/src"
-        ],
-        "@webcrypto-local/proto": [
-          "./packages/proto/src"
-        ],
-        "@webcrypto-local/server": [
-          "./packages/server/src"
-        ],
-      }
-    },
-    "exclude": [
-      "packages/*/build"
-    ]
-  }
-  
+  "extends": "./tsconfig.compile.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@webcrypto-local/cards": [
+        "./packages/cards/src"
+      ],
+      "@webcrypto-local/core": [
+        "./packages/core/src"
+      ],
+      "@webcrypto-local/client": [
+        "./packages/client/src"
+      ],
+      "@webcrypto-local/proto": [
+        "./packages/proto/src"
+      ],
+      "@webcrypto-local/server": [
+        "./packages/server/src"
+      ],
+    }
+  },
+  "exclude": [
+    "packages/*/build"
+  ]
+}

@@ -1,7 +1,5 @@
 //@ts-check
 import typescript from 'rollup-plugin-typescript2';
-
-//@ts-ignore
 const pkg = require("./package.json");
 
 const banner = [].join("\n");

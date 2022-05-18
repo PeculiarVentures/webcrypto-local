@@ -1,32 +1,35 @@
 import * as wcp11 from "node-webcrypto-p11";
+import { SubtleCrypto } from "webcrypto-core";
 import { OpenSSLCrypto } from "./crypto";
 
-export class OpenSSLSubtleCrypto implements wcp11.SubtleCrypto {
+export class OpenSSLSubtleCrypto extends SubtleCrypto implements wcp11.SubtleCrypto {
 
   private crypto: OpenSSLCrypto;
 
   constructor(crypto: OpenSSLCrypto) {
+    super();
+
     this.crypto = crypto;
   }
 
-  public async decrypt(algorithm: string | RsaOaepParams | AesCtrParams | AesCbcParams | AesCmacParams | AesGcmParams | AesCfbParams, key: wcp11.CryptoKey, data: Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer): Promise<ArrayBuffer> {
+  public async decrypt(algorithm: AlgorithmIdentifier | RsaOaepParams | AesCtrParams | AesCbcParams | AesGcmParams, key: wcp11.CryptoKey, data: BufferSource): Promise<ArrayBuffer> {
     return this.crypto.crypto.subtle.decrypt(algorithm, key, data);
   }
 
-  public async deriveBits(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfParams | Pbkdf2Params, baseKey: wcp11.CryptoKey, length: number): Promise<ArrayBuffer> {
+  public async deriveBits(algorithm: AlgorithmIdentifier | EcdhKeyDeriveParams | HkdfParams | Pbkdf2Params, baseKey: wcp11.CryptoKey, length: number): Promise<ArrayBuffer> {
     return this.crypto.crypto.subtle.deriveBits(algorithm, baseKey, length);
   }
 
-  public async deriveKey(algorithm: string | EcdhKeyDeriveParams | DhKeyDeriveParams | ConcatParams | HkdfParams | Pbkdf2Params, baseKey: wcp11.CryptoKey, derivedKeyType: string | ConcatParams | HkdfParams | Pbkdf2Params | AesDerivedKeyParams | HmacImportParams, extractable: boolean, keyUsages: KeyUsage[]): Promise<wcp11.CryptoKey> {
+  public async deriveKey(algorithm: AlgorithmIdentifier | EcdhKeyDeriveParams | HkdfParams | Pbkdf2Params, baseKey: wcp11.CryptoKey, derivedKeyType: AlgorithmIdentifier | AesDerivedKeyParams | HmacImportParams | HkdfParams | Pbkdf2Params, extractable: boolean, keyUsages: KeyUsage[]): Promise<wcp11.CryptoKey> {
     const key = await this.crypto.crypto.subtle.deriveKey(algorithm, baseKey, derivedKeyType, extractable, keyUsages);
     return this.processKey(key, derivedKeyType);
   }
 
-  public async digest(algorithm: string | Algorithm, data: Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer): Promise<ArrayBuffer> {
+  public async digest(algorithm: string | Algorithm, data: BufferSource): Promise<ArrayBuffer> {
     return this.crypto.crypto.subtle.digest(algorithm, data);
   }
 
-  public async encrypt(algorithm: string | RsaOaepParams | AesCtrParams | AesCbcParams | AesCmacParams | AesGcmParams | AesCfbParams, key: wcp11.CryptoKey, data: Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer): Promise<ArrayBuffer> {
+  public async encrypt(algorithm: AlgorithmIdentifier | RsaOaepParams | AesCtrParams | AesCbcParams | AesGcmParams, key: wcp11.CryptoKey, data: BufferSource): Promise<ArrayBuffer> {
     return this.encrypt(algorithm, key, data);
   }
 
@@ -37,9 +40,9 @@ export class OpenSSLSubtleCrypto implements wcp11.SubtleCrypto {
     return this.crypto.crypto.subtle.exportKey(format, key);
   }
 
-  public generateKey(algorithm: string, extractable: boolean, keyUsages: string[]): Promise<wcp11.CryptoKey | wcp11.CryptoKeyPair>;
-  public generateKey(algorithm: (RsaHashedKeyGenParams & wcp11.Pkcs11KeyGenParams) | (EcKeyGenParams & wcp11.Pkcs11KeyGenParams) | (DhKeyGenParams & wcp11.Pkcs11KeyGenParams), extractable: boolean, keyUsages: string[]): Promise<wcp11.CryptoKeyPair>;
-  public generateKey(algorithm: (Pbkdf2Params & wcp11.Pkcs11KeyGenParams) | (AesKeyGenParams & wcp11.Pkcs11KeyGenParams) | (HmacKeyGenParams & wcp11.Pkcs11KeyGenParams), extractable: boolean, keyUsages: string[]): Promise<wcp11.CryptoKey>;
+  public async generateKey(algorithm: RsaHashedKeyGenParams | EcKeyGenParams, extractable: boolean, keyUsages: KeyUsage[], ...args: any[]): Promise<wcp11.CryptoKeyPair>;
+  public async generateKey(algorithm: AesKeyGenParams | HmacKeyGenParams | Pbkdf2Params, extractable: boolean, keyUsages: KeyUsage[], ...args: any[]): Promise<wcp11.CryptoKey>;
+  public async generateKey(algorithm: AlgorithmIdentifier, extractable: boolean, keyUsages: Iterable<KeyUsage>, ...args: any[]): Promise<wcp11.CryptoKeyPair | wcp11.CryptoKey>;
   public async generateKey(algorithm: any, extractable: any, keyUsages: any): Promise<wcp11.CryptoKey | wcp11.CryptoKeyPair> {
     const keys = await this.crypto.crypto.subtle.generateKey(algorithm, extractable, keyUsages) as CryptoKeyPair | CryptoKey;
     if ("publicKey" in keys) {
@@ -52,28 +55,27 @@ export class OpenSSLSubtleCrypto implements wcp11.SubtleCrypto {
     }
   }
 
-  public importKey(format: "jwk", keyData: JsonWebKey, algorithm: string | (Algorithm & wcp11.Pkcs11Params) | (RsaHashedImportParams & wcp11.Pkcs11Params) | (EcKeyImportParams & wcp11.Pkcs11Params), extractable: boolean, keyUsages: string[]): Promise<wcp11.CryptoKey>;
-  public importKey(format: "raw" | "pkcs8" | "spki", keyData: Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer, algorithm: string | (Algorithm & wcp11.Pkcs11Params) | (RsaHashedImportParams & wcp11.Pkcs11Params) | (EcKeyImportParams & wcp11.Pkcs11Params), extractable: boolean, keyUsages: string[]): Promise<wcp11.CryptoKey>;
-  public importKey(format: string, keyData: Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer | JsonWebKey, algorithm: string | (Algorithm & wcp11.Pkcs11Params) | (RsaHashedImportParams & wcp11.Pkcs11Params) | (EcKeyImportParams & wcp11.Pkcs11Params), extractable: boolean, keyUsages: string[]): Promise<wcp11.CryptoKey>;
+  public async importKey(format: "jwk", keyData: JsonWebKey, algorithm: AlgorithmIdentifier | RsaHashedImportParams | EcKeyImportParams | HmacImportParams | AesKeyAlgorithm, extractable: boolean, keyUsages: KeyUsage[]): Promise<wcp11.CryptoKey>;
+  public async importKey(format: Exclude<KeyFormat, "jwk">, keyData: BufferSource, algorithm: AlgorithmIdentifier | RsaHashedImportParams | EcKeyImportParams | HmacImportParams | AesKeyAlgorithm, extractable: boolean, keyUsages: KeyUsage[]): Promise<wcp11.CryptoKey>;
   public async importKey(format: any, keyData: any, algorithm: any, extractable: any, keyUsages: any): Promise<wcp11.CryptoKey> {
     const key = await this.crypto.crypto.subtle.importKey(format, keyData, algorithm, extractable, keyUsages);
     return this.processKey(key, algorithm);
   }
 
-  public async sign(algorithm: string | AesCmacParams | RsaPssParams | EcdsaParams, key: wcp11.CryptoKey, data: Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer): Promise<ArrayBuffer> {
+  public async sign(algorithm: AlgorithmIdentifier | RsaPssParams | EcdsaParams, key: wcp11.CryptoKey, data: BufferSource): Promise<ArrayBuffer> {
     return this.crypto.crypto.subtle.sign(algorithm, key, data);
   }
 
-  public async unwrapKey(format: string, wrappedKey: Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer, unwrappingKey: wcp11.CryptoKey, unwrapAlgorithm: string | Algorithm, unwrappedKeyAlgorithm: string | Algorithm, extractable: boolean, keyUsages: KeyUsage[]): Promise<wcp11.CryptoKey> {
+  public async unwrapKey(format: KeyFormat, wrappedKey: BufferSource, unwrappingKey: wcp11.CryptoKey, unwrapAlgorithm: AlgorithmIdentifier | RsaOaepParams | AesCtrParams | AesCbcParams | AesGcmParams, unwrappedKeyAlgorithm: AlgorithmIdentifier | RsaHashedImportParams | EcKeyImportParams | HmacImportParams | AesKeyAlgorithm, extractable: boolean, keyUsages: KeyUsage[]): Promise<wcp11.CryptoKey> {
     const key = await this.crypto.crypto.subtle.unwrapKey(format, wrappedKey, unwrappingKey, unwrapAlgorithm, unwrappedKeyAlgorithm, extractable, keyUsages);
     return this.processKey(key, unwrappedKeyAlgorithm);
   }
 
-  public async verify(algorithm: string | AesCmacParams | RsaPssParams | EcdsaParams, key: wcp11.CryptoKey, signature: Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer, data: Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array | DataView | ArrayBuffer): Promise<boolean> {
+  public async verify(algorithm: AlgorithmIdentifier | RsaPssParams | EcdsaParams, key: wcp11.CryptoKey, signature: BufferSource, data: BufferSource): Promise<boolean> {
     return this.crypto.crypto.subtle.verify(algorithm, key, signature, data);
   }
 
-  public async wrapKey(format: string, key: wcp11.CryptoKey, wrappingKey: wcp11.CryptoKey, wrapAlgorithm: string | Algorithm): Promise<ArrayBuffer> {
+  public async wrapKey(format: KeyFormat, key: wcp11.CryptoKey, wrappingKey: wcp11.CryptoKey, wrapAlgorithm: AlgorithmIdentifier | RsaOaepParams | AesCtrParams | AesCbcParams | AesGcmParams): Promise<ArrayBuffer> {
     return this.crypto.crypto.subtle.wrapKey(format, key, wrappingKey, wrapAlgorithm);
   }
 

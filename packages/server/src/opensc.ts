@@ -20,7 +20,7 @@ export class OpenSC {
       try {
         this.module.initialize();
       } catch (err) {
-        if (!/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
+        if (!(err instanceof Error) || !/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
           throw new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_WRONG, this.library);
         }
       }

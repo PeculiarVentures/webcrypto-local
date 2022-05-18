@@ -178,7 +178,7 @@ export class OpenSSLKeyStorage implements wcp11.KeyStorage {
   protected keyFromJson(obj: IJsonOpenSSLKey): Promise<wcp11.CryptoKey>;
   protected keyFromJson(obj: IJsonOpenSSLKey, algorithm?: core.ImportAlgorithms, extractable?: boolean, keyUsages?: KeyUsage[]): Promise<wcp11.CryptoKey>;
   protected async keyFromJson(obj: IJsonOpenSSLKey, algorithm?: core.ImportAlgorithms, extractable?: boolean, keyUsages?: KeyUsage[]) {
-    let format: string;
+    let format: KeyFormat;
     switch (obj.type) {
       case "secret":
         format = "raw";

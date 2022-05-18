@@ -1,0 +1,11 @@
+require:
+  - tsconfig-paths/register
+  - ts-node/register
+extension:
+  - ts
+file:
+  - "test/bootstrap.ts"
+spec:
+  - "test/**/*.ts"
+timeout: 15000
+exit: true

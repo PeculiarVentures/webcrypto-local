@@ -9,7 +9,9 @@ import { ObjectProto } from "tsprotobuf";
 import * as url from "url";
 import * as WebSocket from "ws";
 import { WebCryptoLocalError } from "../error";
+import { prepareError } from "../helper";
 import * as events from "./events";
+import { ServerErrorEvent } from "./events";
 import { RatchetStorage } from "./storages";
 
 export interface ServerOptions extends HttpsServerOptions {
@@ -140,9 +142,11 @@ export class Server extends core.EventLogEmitter {
   }
 
   public close(callback?: () => void) {
-    this.socketServer.close(() => {
-      this.httpServer.close(callback);
-    });
+    this.socketServer.close();
+    this.httpServer.close();
+    if (callback) {
+      callback();
+    }
     return this;
   }
 
@@ -213,7 +217,7 @@ export class Server extends core.EventLogEmitter {
             const buffer = new Uint8Array(message).buffer;
             let messageProto: ratchet.MessageSignedProtocol;
             try {
-              messageProto = await ratchet.MessageSignedProtocol.importProto( buffer);
+              messageProto = await ratchet.MessageSignedProtocol.importProto(buffer);
             } catch (err) {
               try {
                 this.log("warn", "Cannot parse MessageSignedProtocol");
@@ -329,7 +333,7 @@ export class Server extends core.EventLogEmitter {
           this,
           session.origin + ":" + session.port,
           reasonCode,
-          description,
+          description.toString(),
         ));
       });
     });
@@ -353,7 +357,7 @@ export class Server extends core.EventLogEmitter {
       buf = await encryptedData.exportProto();
       session.connection.send(Buffer.from(buf));
     } catch (e) {
-      this.emit("error", e);
+      this.emit("error", new ServerErrorEvent(this, prepareError(e)));
     }
   }
 

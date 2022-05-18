@@ -41,20 +41,22 @@
   "dependencies": {
     "2key-ratchet": "^1.0.18",
     "@peculiar/json-schema": "^1.1.12",
-    "@types/pvutils": "^1.0.0",
+    "@peculiar/webcrypto": "1.0.22",
+    "@peculiar/x509": "^1.6.1",
+    "@types/pvutils": "^1.0.1",
     "@webcrypto-local/cards": "^1.6.11",
     "@webcrypto-local/core": "^1.6.5",
     "@webcrypto-local/proto": "^1.6.5",
-    "asn1js": "^2.1.1",
-    "graphene-pk11": "^2.2.3",
-    "node-webcrypto-p11": "^2.3.6",
+    "asn1js": "^3.0.3",
+    "graphene-pk11": "^2.3.0",
+    "node-webcrypto-p11": "^2.4.2",
     "pcsclite": "^1.0.0",
-    "pkijs": "^2.1.95",
-    "pvtsutils": "^1.1.7",
-    "pvutils": "^1.0.17",
+    "pkijs": "^2.3.1",
+    "pvtsutils": "^1.3.2",
+    "pvutils": "^1.1.3",
     "request": "^2.88.0",
-    "tslib": "^2.3.0",
-    "webcrypto-core": "^1.1.8",
-    "ws": "^7.5.1"
+    "tslib": "^2.4.0",
+    "webcrypto-core": "^1.7.5",
+    "ws": "^8.6.0"
   }
 }
