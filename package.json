@@ -85,6 +85,13 @@
     "**/**/bl": "^5.0.0",
     "**/**/hosted-git-info": "^4.0.2",
     "**/**/semver": "^7.3.5",
+    "async": "^3.2.3",
+    "ansi-regex": "^5.0.0",
+    "path-parse": "^1.0.7",
+    "json-schema": "^0.4.0",
+    "tar": "^6.1.11",
+    "trim-off-newlines": "^1.0.3",
+    "shelljs": "^0.8.5",
     "asn1js": "^3.0.3",
     "@peculiar/asn1-schema": "^2.1.7"
   },
