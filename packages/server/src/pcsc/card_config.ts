@@ -18,7 +18,7 @@ export interface Card {
   config?: Config;
   reader?: string;
   name: string;
-  atr?: Buffer;
+  atr: Buffer;
   mask?: Buffer;
   readOnly: boolean;
   libraries: (string | CardLibrary)[];
@@ -39,8 +39,8 @@ export interface CardOptions {
 
 export class CardConfig {
 
-  public static readFile(fPath: string) {
-    const res = new this();
+  public static readFile(fPath: string, params?: Partial<CardOptions>) {
+    const res = new this(params);
     res.readFile(fPath);
     return res;
   }
@@ -75,6 +75,12 @@ export class CardConfig {
 
   protected fromJSON(json: Cards) {
     const cards: { [atr: string]: Card; } = {};
+
+    // copy cards from options
+    for (const card of this.options.cards) {
+      cards[card.atr.toString("hex")] = card;
+    }
+
     // create map of drives
     const drivers: { [guid: string]: Driver; } = {};
     json.drivers.forEach((jsonDriver) => {
@@ -131,7 +137,12 @@ export class CardConfig {
     });
 
     // link card with driver and fill object's cards
-    json.cards.forEach((item) => {
+    for (const item of json.cards) {
+      if (cards[item.atr.toLowerCase()]) {
+        // If card already in list of cards, skip it
+        continue;
+      }
+
       const card = {} as Card;
       card.atr = Buffer.from(item.atr, "hex");
       card.name = item.name;
@@ -154,7 +165,7 @@ export class CardConfig {
         });
         cards[card.atr.toString("hex")] = card;
       }
-    });
+    };
 
     this.cards = cards;
   }
