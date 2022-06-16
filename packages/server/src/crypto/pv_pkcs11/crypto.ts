@@ -7,7 +7,6 @@ export class PvCrypto extends Crypto {
   public module: graphene.Module;
   public slot!: graphene.Slot;
   public token!: graphene.Token;
-  public session!: graphene.Session;
 
   constructor(props: CryptoParams) {
     super(props);

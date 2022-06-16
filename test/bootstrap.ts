@@ -22,7 +22,20 @@ const options: server.IServerOptions = {
   config: {
     cardConfigPath: "card.json",
     providers: [
-      { lib: "/usr/local/lib/softhsm/libsofthsm2.so", slots: [0], name: PROVIDER_NAME },
+      {
+        lib: "/usr/local/lib/softhsm/libsofthsm2.so",
+        slots: [0],
+        name: PROVIDER_NAME,
+        config: {
+          template: {
+            import: {
+              x509: {
+                token: true,
+              }
+            }
+          }
+        }
+      },
     ],
     cards: [],
   },

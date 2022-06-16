@@ -1,10 +1,10 @@
 import * as core from "@webcrypto-local/core";
+import pcsc from "pcsclite";
+import type { CardReader, PCSCLite } from "../types/pcsclite";
 import { WebCryptoLocalError } from "../error";
-import * as PCSCLite from "../types/pcsclite";
-const pcsc: () => PCSCLite.PCSCLite = require("pcsclite");
 
 export interface PCSCWatcherEvent {
-  reader: PCSCLite.CardReader;
+  reader: CardReader;
   atr?: Buffer;
 }
 
@@ -12,8 +12,8 @@ export class PCSCWatcher extends core.EventLogEmitter {
 
   public source = "pcsc";
 
-  public readers: PCSCLite.CardReader[] = [];
-  protected pcsc: PCSCLite.PCSCLite | null = null;
+  public readers: CardReader[] = [];
+  protected pcsc: PCSCLite | null = null;
 
   constructor() {
     super();

@@ -1,71 +1,91 @@
+// tslint:disable: adjacent-overload-signatures
+// tslint:disable: variable-name
+
 import { EventEmitter } from "events";
 
-export interface Status {
-  state: number;
-  atr?: Buffer;
-}
-
-export declare class PCSCLite extends EventEmitter {
-  public start(err: Error, data: any): void;
-  public close(): void;
-
-  public on(event: "error", cb: (err: Error) => void): this;
-  public on(event: "reader", cb: (reader: CardReader) => void): this;
-  public on(event: "status", cb: (status: Status) => void): this;
-}
-
-export interface CardReaderConnectOptions {
+type ConnectOptions = {
   share_mode?: number;
   protocol?: number;
+};
+
+type Status = {
+  atr?: Buffer;
+  state: number;
+};
+
+type AnyOrNothing = any | undefined | null;
+
+export interface PCSCLite extends EventEmitter {
+  on(type: "error", listener: (error: any) => void): this;
+  once(type: "error", listener: (error: any) => void): this;
+  on(type: "reader", listener: (reader: CardReader) => void): this;
+  once(type: "reader", listener: (reader: CardReader) => void): this;
+  close(): void;
 }
 
-export declare class CardReader extends EventEmitter {
-
-  public name: string;
-  public connected: boolean;
-  public state?: number;
-
+export interface CardReader extends EventEmitter {
   // Share Mode
-  public SCARD_SHARE_SHARED: number;
-  public SCARD_SHARE_EXCLUSIVE: number;
-  public SCARD_SHARE_DIRECT: number;
-
+  SCARD_SHARE_SHARED: number;
+  SCARD_SHARE_EXCLUSIVE: number;
+  SCARD_SHARE_DIRECT: number;
   // Protocol
-  public SCARD_PROTOCOL_T0: number;
-  public SCARD_PROTOCOL_T1: number;
-  public SCARD_PROTOCOL_RAW: number;
-
-  // State
-  public SCARD_STATE_UNAWARE: number;
-  public SCARD_STATE_IGNORE: number;
-  public SCARD_STATE_CHANGED: number;
-  public SCARD_STATE_UNKNOWN: number;
-  public SCARD_STATE_UNAVAILABLE: number;
-  public SCARD_STATE_EMPTY: number;
-  public SCARD_STATE_PRESENT: number;
-  public SCARD_STATE_ATRMATCH: number;
-  public SCARD_STATE_EXCLUSIVE: number;
-  public SCARD_STATE_INUSE: number;
-  public SCARD_STATE_MUTE: number;
-
+  SCARD_PROTOCOL_T0: number;
+  SCARD_PROTOCOL_T1: number;
+  SCARD_PROTOCOL_RAW: number;
+  //  State
+  SCARD_STATE_UNAWARE: number;
+  SCARD_STATE_IGNORE: number;
+  SCARD_STATE_CHANGED: number;
+  SCARD_STATE_UNKNOWN: number;
+  SCARD_STATE_UNAVAILABLE: number;
+  SCARD_STATE_EMPTY: number;
+  SCARD_STATE_PRESENT: number;
+  SCARD_STATE_ATRMATCH: number;
+  SCARD_STATE_EXCLUSIVE: number;
+  SCARD_STATE_INUSE: number;
+  SCARD_STATE_MUTE: number;
   // Disconnect disposition
-  public SCARD_LEAVE_CARD: number;
-  public SCARD_RESET_CARD: number;
-  public SCARD_UNPOWER_CARD: number;
-  public SCARD_EJECT_CARD: number;
-
-  constructor(readerName: string);
-
-  public connect(cb: (err: Error, protocol: number) => void): void;
-  public connect(options: CardReaderConnectOptions, cb: (err: Error, protocol: number) => void): void;
-  public disconnect(cb: (err: Error) => void): void;
-  public disconnect(disposition: number, cb: (err: Error) => void): void;
-  public transmit(data: Buffer, resLength: number, protocol: number, cb: (err: Error, data: Buffer) => void): void;
-  public close(): void;
-
-  public on(event: "error", cb: (err: Error) => void): this;
-  public on(event: "status", cb: (status: Status) => void): this;
-  public on(event: "end", cb: () => void): this;
-
-  protected get_status(cb: (err: Error, state: number, atr: Buffer) => void): void;
+  SCARD_LEAVE_CARD: number;
+  SCARD_RESET_CARD: number;
+  SCARD_UNPOWER_CARD: number;
+  SCARD_EJECT_CARD: number;
+  name: string;
+  state: number;
+  connected: boolean;
+  on(type: "error", listener: (this: CardReader, error: any) => void): this;
+  once(type: "error", listener: (this: CardReader, error: any) => void): this;
+  on(type: "end", listener: (this: CardReader) => void): this;
+  once(type: "end", listener: (this: CardReader) => void): this;
+  on(
+    type: "status",
+    listener: (this: CardReader, status: Status) => void
+  ): this;
+  once(
+    type: "status",
+    listener: (this: CardReader, status: Status) => void
+  ): this;
+  SCARD_CTL_CODE(code: number): number;
+  get_status(
+    cb: (err: AnyOrNothing, state: number, atr?: Buffer) => void
+  ): void;
+  connect(callback: (err: AnyOrNothing, protocol: number) => void): void;
+  connect(
+    options: ConnectOptions,
+    callback: (err: AnyOrNothing, protocol: number) => void
+  ): void;
+  disconnect(callback: (err: AnyOrNothing) => void): void;
+  disconnect(disposition: number, callback: (err: AnyOrNothing) => void): void;
+  transmit(
+    data: Buffer,
+    res_len: number,
+    protocol: number,
+    cb: (err: AnyOrNothing, response: Buffer) => void
+  ): void;
+  control(
+    data: Buffer,
+    control_code: number,
+    res_len: number,
+    cb: (err: AnyOrNothing, response: Buffer) => void
+  ): void;
+  close(): void;
 }

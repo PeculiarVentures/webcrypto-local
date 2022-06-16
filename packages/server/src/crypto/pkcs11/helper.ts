@@ -8,8 +8,8 @@ export interface OsslCryptoKey extends CryptoKey {
   };
 }
 
-export function isOsslObject(obj: any): obj is OsslCryptoKey {
-  return !!(obj && obj.__ossl);
+export function isOsslObject(obj: unknown): obj is OsslCryptoKey {
+  return !!(obj && typeof obj === "object" && "_oosl" in obj);
 }
 
 interface FixOptions {
@@ -17,7 +17,7 @@ interface FixOptions {
   handle?: Buffer;
 }
 
-export function fixObject(crypto: Crypto, key: { type: string }, options?: FixOptions) {
+export function fixObject(crypto: Crypto, key: { type: string; }, options?: FixOptions) {
   const osslKey = key as OsslCryptoKey;
   let handle: Buffer;
   if (options && options.handle) {

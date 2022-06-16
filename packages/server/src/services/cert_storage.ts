@@ -3,11 +3,11 @@ import { X509Certificate, X509ChainBuilder } from "@peculiar/x509";
 import * as proto from "@webcrypto-local/proto";
 import * as asn1js from "asn1js";
 import * as graphene from "graphene-pk11";
-import { IGetValue, CryptoX509CertificateRequest, CryptoX509Certificate, CryptoCertificate } from "node-webcrypto-p11";
+import * as wcp11 from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
 import request from "request";
 import { CryptoCertificateStorage, CryptoStorages } from "webcrypto-core";
-const pkijs = require("pkijs");
+import * as pkijs from "pkijs";
 
 import { Server, Session } from "../connection";
 import { PvCrypto } from "../crypto";
@@ -20,7 +20,7 @@ import { Service } from "./service";
 graphene.registerAttribute("x509Chain", 2147483905, "buffer");
 
 export interface CryptoStoragesEx extends CryptoStorages {
-  certStorage: CryptoCertificateStorage & IGetValue;
+  certStorage: CryptoCertificateStorage & wcp11.IGetValue;
 }
 
 export class CertificateStorageService extends Service<CryptoService> {
@@ -44,7 +44,7 @@ export class CertificateStorageService extends Service<CryptoService> {
     ]);
   }
 
-  public async getCrypto(id: string): Promise<(globalThis.Crypto & CryptoStoragesEx) | PvCrypto> {
+  public async getCrypto(id: string): Promise<wcp11.Crypto> {
     return await this.object.getCrypto(id);
   }
 
@@ -95,7 +95,7 @@ export class CertificateStorageService extends Service<CryptoService> {
         this.log("info", "certStorage/getItem", {
           crypto: this.logCrypto(crypto as any),
           cert: item
-            ? this.logCert(item as CryptoCertificate)
+            ? this.logCert(item as wcp11.CryptoCertificate)
             : null,
         });
 
@@ -119,7 +119,7 @@ export class CertificateStorageService extends Service<CryptoService> {
         // prepare incoming data
         const params = await proto.CertificateStorageSetItemActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
-        const cert = this.getMemoryStorage().item(params.item.id).item as CryptoX509Certificate;
+        const cert = this.getMemoryStorage().item(params.item.id).item as wcp11.CryptoCertificate;
 
         this.log("info", "certStorage/setItem", {
           crypto: this.logCrypto(crypto as any),
@@ -183,7 +183,7 @@ export class CertificateStorageService extends Service<CryptoService> {
         const params = await proto.CertificateStorageExportActionProto.importProto(action);
 
         const crypto = await this.getCrypto(params.providerID);
-        const cert = this.getMemoryStorage().item(params.item.id).item as CryptoX509Certificate;
+        const cert = this.getMemoryStorage().item(params.item.id).item as wcp11.CryptoCertificate;
 
         this.log("info", "certStorage/exportCert", {
           crypto: this.logCrypto(crypto as any),
@@ -238,10 +238,10 @@ export class CertificateStorageService extends Service<CryptoService> {
         // load cert storage
         const params = await proto.CertificateStorageIndexOfActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
-        const cert = this.getMemoryStorage().item(params.item.id).item as CryptoX509Certificate;
+        const cert = this.getMemoryStorage().item(params.item.id).item as wcp11.CryptoCertificate;
 
         this.log("info", "certStorage/indexOf", {
-          crypto: this.logCrypto(crypto as any),
+          crypto: this.logCrypto(crypto),
           cert: this.logCert(cert),
         });
 
@@ -258,7 +258,7 @@ export class CertificateStorageService extends Service<CryptoService> {
         // load cert storage
         const params = await proto.CertificateStorageGetChainActionProto.importProto(action);
         const crypto = await this.getCrypto(params.providerID);
-        const cert = this.getMemoryStorage().item(params.item.id).item as CryptoX509Certificate;
+        const cert = this.getMemoryStorage().item(params.item.id).item as wcp11.CryptoCertificate;
 
         this.log("info", "certStorage/chain", {
           crypto: this.logCrypto(crypto as any),
@@ -440,7 +440,7 @@ export class CertificateStorageService extends Service<CryptoService> {
       }
       // getOCSP
       case proto.CertificateStorageGetOCSPActionProto.ACTION: {
-        const params = await pkijs.CertificateStorageGetOCSPActionProto.importProto(action);
+        const params = await proto.CertificateStorageGetOCSPActionProto.importProto(action);
 
         this.log("info", "certStorage/ocsp", {
           url: params.url,
@@ -513,7 +513,7 @@ export class CertificateStorageService extends Service<CryptoService> {
     return result;
   }
 
-  protected logCert(cert: CryptoCertificate | CryptoX509Certificate | CryptoX509CertificateRequest): any {
+  protected logCert(cert: wcp11.CryptoCertificate | wcp11.X509Certificate | wcp11.X509CertificateRequest): any {
     const res: any = {
       type: cert.type,
       token: cert.token,
@@ -550,7 +550,7 @@ function prepareData(data: string) {
  * @param crypto      Crypto provider
  * @param cert        Crypto certificate
  */
-async function certC2P(provider: CryptoStorages, cert: CryptoCertificate) {
+async function certC2P(provider: CryptoStorages, cert: wcp11.CryptoCertificate) {
   const certDer = await provider.certStorage.exportCert("raw", cert as any);
   const asn1 = asn1js.fromBER(certDer);
   const pkiCert = new pkijs.Certificate({ schema: asn1.result });

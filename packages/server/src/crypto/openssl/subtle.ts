@@ -2,7 +2,7 @@ import * as wcp11 from "node-webcrypto-p11";
 import { SubtleCrypto } from "webcrypto-core";
 import { OpenSSLCrypto } from "./crypto";
 
-export class OpenSSLSubtleCrypto extends SubtleCrypto implements wcp11.SubtleCrypto {
+export class OpenSSLSubtleCrypto extends SubtleCrypto {
 
   private crypto: OpenSSLCrypto;
 
@@ -40,10 +40,10 @@ export class OpenSSLSubtleCrypto extends SubtleCrypto implements wcp11.SubtleCry
     return this.crypto.crypto.subtle.exportKey(format, key);
   }
 
-  public async generateKey(algorithm: RsaHashedKeyGenParams | EcKeyGenParams, extractable: boolean, keyUsages: KeyUsage[], ...args: any[]): Promise<wcp11.CryptoKeyPair>;
-  public async generateKey(algorithm: AesKeyGenParams | HmacKeyGenParams | Pbkdf2Params, extractable: boolean, keyUsages: KeyUsage[], ...args: any[]): Promise<wcp11.CryptoKey>;
-  public async generateKey(algorithm: AlgorithmIdentifier, extractable: boolean, keyUsages: Iterable<KeyUsage>, ...args: any[]): Promise<wcp11.CryptoKeyPair | wcp11.CryptoKey>;
-  public async generateKey(algorithm: any, extractable: any, keyUsages: any): Promise<wcp11.CryptoKey | wcp11.CryptoKeyPair> {
+  public async generateKey(algorithm: RsaHashedKeyGenParams | EcKeyGenParams, extractable: boolean, keyUsages: KeyUsage[], ...args: any[]): Promise<CryptoKeyPair>;
+  public async generateKey(algorithm: AesKeyGenParams | HmacKeyGenParams | Pbkdf2Params, extractable: boolean, keyUsages: KeyUsage[], ...args: any[]): Promise<CryptoKey>;
+  public async generateKey(algorithm: AlgorithmIdentifier, extractable: boolean, keyUsages: Iterable<KeyUsage>, ...args: any[]): Promise<CryptoKeyPair | CryptoKey>;
+  public async generateKey(algorithm: any, extractable: any, keyUsages: any): Promise<CryptoKey | CryptoKeyPair> {
     const keys = await this.crypto.crypto.subtle.generateKey(algorithm, extractable, keyUsages) as CryptoKeyPair | CryptoKey;
     if ("publicKey" in keys) {
       return {

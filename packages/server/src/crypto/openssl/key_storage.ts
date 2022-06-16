@@ -10,16 +10,16 @@ interface IJsonOpenSSLKeyStorage {
   [key: string]: IJsonOpenSSLKey;
 }
 
-interface IJsonOpenSSLKey extends CryptoKey {
+interface IJsonOpenSSLKey extends wcp11.CryptoKeyJson {
   raw: string;
   createdAt: string;
   lastUsed: string;
 }
 
-export class OpenSSLKeyStorage implements wcp11.KeyStorage {
+export class OpenSSLKeyStorage implements core.CryptoKeyStorage {
 
   public file: string;
-  public crypto: wcp11.Crypto;
+  public crypto: Crypto;
 
   constructor(file: string, crypto: OpenSSLCrypto) {
     this.file = file;
@@ -109,7 +109,7 @@ export class OpenSSLKeyStorage implements wcp11.KeyStorage {
     let id: Uint8Array;
     switch (key.type) {
       case "secret": {
-        id = await this.crypto.getRandomValues(new Uint8Array(20)) as Uint8Array;
+        id = await this.crypto.getRandomValues(new Uint8Array(20));
         break;
       }
       case "private":
