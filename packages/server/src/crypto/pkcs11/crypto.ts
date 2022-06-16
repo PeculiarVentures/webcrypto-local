@@ -17,7 +17,6 @@ export class Pkcs11Crypto extends Crypto {
   public module: graphene.Module;
   public slot!: graphene.Slot;
   public token!: graphene.Token;
-  public session!: graphene.Session;
 
   public ossl: OpenSSLCrypto;
   protected osslID = 0;

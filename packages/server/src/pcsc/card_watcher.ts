@@ -112,7 +112,7 @@ export class CardWatcher extends core.EventLogEmitter {
    */
   public start(path: string) {
     try {
-      this.config = CardConfig.readFile(path);
+      this.config = CardConfig.readFile(path, this.options);
     } catch (e) {
       this.emit("error", prepareError(e));
     }
@@ -151,7 +151,7 @@ export class CardWatcher extends core.EventLogEmitter {
             });
             const slot = opensc.module.getSlots(slotIndex);
             card = {
-              atr: e.atr,
+              atr: e.atr || Buffer.alloc(0),
               reader: e.reader.name,
               libraries: [{ type: "extra", path: opensc.library }],
               name: slot.getToken().label,
@@ -175,7 +175,7 @@ export class CardWatcher extends core.EventLogEmitter {
           atr: e.atr?.toString("hex") || "empty",
         });
         card = {
-          atr: e.atr,
+          atr: e.atr || Buffer.alloc(0),
           reader: e.reader.name,
           libraries: this.options.pvpkcs11.map(o => {
             return { type: "extra", path: o };
@@ -198,6 +198,7 @@ export class CardWatcher extends core.EventLogEmitter {
     for (const card of this.options.cards) {
       if (card.atr && card.atr.equals(atr)) {
         customCard = card;
+        break;
       }
     }
 

@@ -30,6 +30,7 @@ export interface IServerProvider {
    * Custom name of provider
    */
   name?: string;
+  config?: Config;
 }
 
 export interface IProviderConfig {
@@ -171,6 +172,12 @@ export class LocalProvider extends core.EventLogEmitter {
               slot,
               readWrite: true,
             });
+            if (prov.config) {
+              this.log("info", "Use ConfigTemplateBuilder", prov.config);
+              crypto.templateBuilder = new ConfigTemplateBuilder(prov.config);
+            } else {
+              this.log("info", "Use default TemplateBuilder");
+            }
             this.addProvider(crypto, {
               name: prov.name,
             });
@@ -250,7 +257,7 @@ export class LocalProvider extends core.EventLogEmitter {
     return resProto;
   }
 
-  public async getCrypto(cryptoID: string) {
+  public async getCrypto(cryptoID: string): Promise<Crypto> {
     const crypto = this.crypto.item(cryptoID);
     if (!crypto) {
       throw new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_CRYPTO_NOT_FOUND, `Cannot get crypto by given ID '${cryptoID}'`);
@@ -469,8 +476,8 @@ export class LocalProvider extends core.EventLogEmitter {
     this.log("info", "Crypto provider was added to the list", {
       id: e.key,
       library: e.item.module.libFile,
-      name: e.item.info.name,
-      reader: e.item.info.reader,
+      name: e.item.info?.name || "unknown",
+      reader: e.item.info?.reader || "unknown",
     });
   }
 

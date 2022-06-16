@@ -141,8 +141,8 @@ export abstract class Service<T extends core.EventLogEmitter> extends core.Event
     return res;
   }
 
-  protected logCrypto(crypto: Crypto) {
-    const res = crypto.info.name;
+  protected logCrypto(crypto: Crypto): string {
+    const res = crypto.info?.name || "unknown";
 
     return res;
   }

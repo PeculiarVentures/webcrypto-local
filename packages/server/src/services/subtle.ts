@@ -49,7 +49,7 @@ export class SubtleService extends Service<CryptoService> {
         const crypto = await this.getCrypto(params.providerID);
 
         this.log("info", "digest", {
-          crypto: crypto.info.name,
+          crypto: crypto.info?.name || "unknown",
           algorithm: params.algorithm.name,
         });
         result.data = await crypto.subtle.digest(params.algorithm.toAlgorithm(), params.data);

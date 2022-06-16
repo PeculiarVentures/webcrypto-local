@@ -49,12 +49,33 @@ async function main() {
       opensc,
       providers,
       cards: [
-        // {
-        //   atr: Buffer.from("3b8b015275746f6b656e20445320c1", "hex"),
-        //   name: "custom",
-        //   libraries: ["/tmp/some/lib/pkcs11.dylib"],
-        //   readOnly: false,
-        // },
+        {
+          name: "SafeNet5110 custom",
+          atr: Buffer.from("3bd5180081313a7d8073c8211030", "hex"),
+          libraries: [
+            "/usr/local/lib/libeTPkcs11.dylib"
+          ],
+          readOnly: false,
+          config: {
+            template: {
+              generate: {
+                private: {
+                  token: true,
+                  sensitive: true,
+                  extractable: false
+                },
+                public: {
+                  token: false
+                }
+              },
+              import: {
+                x509: {
+                  token: true
+                }
+              }
+            }
+          }
+        },
       ],
     },
   };

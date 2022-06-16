@@ -77,7 +77,7 @@ context("WebCrypto Socket", () => {
         });
 
         it("x509", async () => {
-          const item = await crypto.certStorage.importCert("x509", CERT_RAW, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" } as RsaHashedImportParams, ["verify"]) as CryptoX509Certificate;
+          const item = await crypto.certStorage.importCert("x509", CERT_RAW, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" } as RsaHashedImportParams, ["verify"]);
           assert.equal(item.type, "x509");
 
           const raw = await crypto.certStorage.exportCert("raw", item);

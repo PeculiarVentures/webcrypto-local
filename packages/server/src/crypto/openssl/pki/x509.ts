@@ -1,14 +1,15 @@
 import * as Asn1Js from "asn1js";
-import { Crypto, CryptoKey, CryptoX509Certificate } from "node-webcrypto-p11";
+import { Crypto, CryptoKey } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
+import * as pkijs from "pkijs";
+import * as core from "webcrypto-core";
 import { Certificate } from "./cert";
 import { nameToString } from "./x500_name";
 
-const pkijs = require("pkijs");
 const { setEngine, CryptoEngine } = pkijs;
 const PKICertificate = pkijs.Certificate;
 
-export class X509Certificate extends Certificate implements CryptoX509Certificate {
+export class X509Certificate extends Certificate implements core.CryptoX509Certificate {
 
   public readonly type = "x509";
 

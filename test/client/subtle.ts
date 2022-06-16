@@ -71,11 +71,11 @@ context("WebCrypto Socket", () => {
       assert.equal(keys.privateKey.extractable, false);
       assert.equal(keys.privateKey.type, "private");
       assert.equal(keys.privateKey.algorithm.name, RSA_S256_ALG.name);
-      assert.deepEqual(keys.privateKey.usages, ["sign"]);
+      assert.deepEqual(keys.privateKey.usages, ["decrypt", "sign", "unwrapKey"]);
       assert.equal(keys.publicKey.extractable, true);
       assert.equal(keys.publicKey.type, "public");
       assert.equal(keys.publicKey.algorithm.name, RSA_S256_ALG.name);
-      assert.deepEqual(keys.publicKey.usages, ["verify"]);
+      assert.deepEqual(keys.publicKey.usages, ["encrypt", "verify", "wrapKey"]);
     });
 
     it("sign/verify", async () => {
@@ -165,7 +165,7 @@ context("WebCrypto Socket", () => {
     });
 
     it("derive bits", async () => {
-      const keys = (await subtle.generateKey(ECDH_P256_ALG, false, ["deriveBits", "deriveKey"])) as CryptoKeyPair ;
+      const keys = (await subtle.generateKey(ECDH_P256_ALG, false, ["deriveBits", "deriveKey"])) as CryptoKeyPair;
       const bits = await subtle.deriveBits({ ...ECDH_P256_ALG, public: keys.publicKey }, keys.privateKey, 128);
       assert.equal(bits.byteLength, 16);
     });

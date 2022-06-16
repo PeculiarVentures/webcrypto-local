@@ -7,7 +7,7 @@ import { OpenSSLCertificateStorage } from "./cert_storage";
 import { OpenSSLKeyStorage } from "./key_storage";
 import { OpenSSLSubtleCrypto } from "./subtle";
 
-export class OpenSSLCrypto extends core.Crypto implements wcp11.Crypto {
+export class OpenSSLCrypto extends core.Crypto {
 
   public isReadWrite = true;
   public isLoginRequired = false;

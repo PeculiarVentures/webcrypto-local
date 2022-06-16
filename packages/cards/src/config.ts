@@ -83,6 +83,6 @@ export class Config {
   public token?: keyof typeof ConfigTokenEnum;
 
   @JsonProp({ type: TemplateConfig, optional: true })
-  public template?: Record<keyof TemplateConfig, TemplateTypeConfig | undefined>;
+  public template?: Partial<Record<keyof TemplateConfig, TemplateTypeConfig>>;
 
 }

@@ -1,6 +1,7 @@
 import * as core from "@webcrypto-local/core";
 import * as proto from "@webcrypto-local/proto";
 import * as graphene from "graphene-pk11";
+import * as wcp11 from "node-webcrypto-p11";
 
 import { Server, Session } from "../connection";
 
@@ -63,7 +64,7 @@ export class CryptoService extends Service<ProviderService> {
 
   //#endregion
 
-  public async getCrypto(id: string) {
+  public async getCrypto(id: string): Promise<wcp11.Crypto> {
     return await this.object.getProvider().getCrypto(id);
   }
 

@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import * as core from "webcrypto-core";
 import * as wcp11 from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
 import {
@@ -26,7 +27,7 @@ interface IJsonOpenSSLCertificate {
   label: string;
 }
 
-export class OpenSSLCertificateStorage implements wcp11.CertificateStorage {
+export class OpenSSLCertificateStorage implements core.CryptoCertificateStorage {
 
   public file: string;
   public crypto: OpenSSLCrypto;
@@ -60,9 +61,9 @@ export class OpenSSLCertificateStorage implements wcp11.CertificateStorage {
     }
   }
 
-  public importCert(format: "raw", data: BufferSource, algorithm: wcp11.Pkcs11ImportAlgorithms, keyUsages: KeyUsage[]): Promise<wcp11.CryptoCertificate>;
-  public importCert(format: "pem", data: string, algorithm: wcp11.Pkcs11ImportAlgorithms, keyUsages: KeyUsage[]): Promise<wcp11.CryptoCertificate>;
-  public async importCert(format: any, data: string | BufferSource, algorithm: wcp11.Pkcs11ImportAlgorithms, keyUsages: KeyUsage[]): Promise<wcp11.CryptoCertificate> {
+  public importCert(format: "raw", data: BufferSource, algorithm: wcp11.Pkcs11ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
+  public importCert(format: "pem", data: string, algorithm: wcp11.Pkcs11ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate>;
+  public async importCert(format: any, data: string | BufferSource, algorithm: wcp11.Pkcs11ImportAlgorithms, keyUsages: KeyUsage[]): Promise<CryptoCertificate> {
     let rawData: ArrayBuffer;
     let rawType: CryptoCertificateType | null = null;
 
@@ -134,11 +135,11 @@ export class OpenSSLCertificateStorage implements wcp11.CertificateStorage {
     return Object.keys(items);
   }
 
-  public async hasItem(item: wcp11.CryptoCertificate) {
+  public async hasItem(item: CryptoCertificate) {
     return !!this.indexOf(item);
   }
 
-  public async setItem(item: wcp11.CryptoCertificate) {
+  public async setItem(item: CryptoCertificate) {
     if (!(item instanceof Certificate)) {
       throw new TypeError("item is not OpenSSL Certificate");
     }
@@ -149,7 +150,7 @@ export class OpenSSLCertificateStorage implements wcp11.CertificateStorage {
     return item.id;
   }
 
-  public async indexOf(item: wcp11.CryptoCertificate) {
+  public async indexOf(item: CryptoCertificate) {
     if (item instanceof Certificate) {
       const certs = this.readFile();
       for (const index in certs) {
@@ -190,7 +191,7 @@ export class OpenSSLCertificateStorage implements wcp11.CertificateStorage {
     this.writeFile({});
   }
 
-  protected async certToJson(cert: wcp11.CryptoCertificate) {
+  protected async certToJson(cert: CryptoCertificate) {
     if (!(cert instanceof Certificate)) {
       throw new TypeError("cert is not OpenSSL Certificate");
     }
