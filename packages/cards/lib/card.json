@@ -1,7 +1,12 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "cards": [
+    {
+      "atr": "3BD518FF8191FE1FC38073C821100A",
+      "name": "ePass2003",
+      "driver": "ECA050606FD48FAB340EA9F1FCB582A1E0F1B740"
+    },
     {
       "atr": "3BFF1800FF8131FE55006B0209030301010144534410318090",
       "name": "Bit4ID",
@@ -686,6 +691,45 @@
         "windows": {
           "x64": "%PROGRAMFILES/ONECI/mcard/mcard-pkcs11.dll",
           "x86": "%PROGRAMFILES(x86)/ONECI/mcard/mcard-pkcs11.dll"
+        }
+      }
+    },
+    {
+      "id": "ECA050606FD48FAB340EA9F1FCB582A1E0F1B740",
+      "name": "Feitian ePass2003 Client software",
+      "file": {
+        "windows": "%WINDIR/System32/eps2003csp11.dll",
+        "osx": "/usr/local/lib/libcastle.1.0.0.dylib",
+        "linux": "/usr/lib/libcastle.so.1.0.0"
+      },
+      "config": {
+        "template": {
+          "generate": {
+            "private": {
+              "token": true,
+              "sensitive": true,
+              "extractable": false
+            },
+            "public": {
+              "token": false
+            }
+          },
+          "import": {
+            "private": {
+              "token": true,
+              "sensitive": true,
+              "extractable": false
+            },
+            "public": {
+              "token": true
+            },
+            "x509": {
+              "token": true
+            },
+            "request": {
+              "token": true
+            }
+          }
         }
       }
     }
