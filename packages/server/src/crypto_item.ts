@@ -1,4 +1,5 @@
 import * as proto from "@webcrypto-local/proto";
+import * as webcryptoP11 from "node-webcrypto-p11";
 import * as core from "webcrypto-core";
 import { DEFAULT_HASH_ALG } from "./const";
 import { WebCryptoLocalError } from "./error";
@@ -31,6 +32,11 @@ export class ServiceCryptoItem {
     itemProto.extractable = item.extractable;
     itemProto.type = item.type;
     itemProto.usages = item.usages;
+
+    if (item instanceof webcryptoP11.CryptoKey && item.type === "private") {
+      itemProto.alwaysAuthenticate = item.alwaysAuthenticate;
+    }
+
     return itemProto;
   }
   public toX509Proto(item: core.CryptoX509Certificate) {

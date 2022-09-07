@@ -1,4 +1,5 @@
 import * as client from "@webcrypto-local/client";
+import { CryptoKey, Pkcs11RsaHashedImportParams, Pkcs11RsaHashedKeyGenParams } from "node-webcrypto-p11";
 import * as assert from "assert";
 import { Convert } from "pvtsutils";
 import { PROVIDER_NAME, SERVER_ADDRESS } from "../config";
@@ -174,6 +175,121 @@ context("WebCrypto Socket", () => {
       const keys = (await subtle.generateKey(ECDH_P256_ALG, false, ["deriveBits", "deriveKey"])) as CryptoKeyPair;
       const key = await subtle.deriveKey({ ...ECDH_P256_ALG, public: keys.publicKey }, keys.privateKey, AES_128_CBC, false, ["encrypt"]);
       assert.equal(key.algorithm.name, AES_128_CBC.name);
+    });
+
+    context("CKA_ALWAYS_AUTHENTICATE", () => {
+
+      type RsaSsaAlgorithm = RsaHashedKeyGenParams;
+      type RsaPssAlgorithm = RsaHashedKeyGenParams & RsaPssParams;
+      type RsaOaepAlgorithm = RsaHashedKeyGenParams & RsaOaepParams;
+      type EcdsaAlgorithm = EcKeyGenParams & EcdsaParams;
+      type VectorAlgorithms =
+        RsaSsaAlgorithm |
+        RsaPssAlgorithm |
+        RsaOaepAlgorithm |
+        EcdsaAlgorithm;
+
+      interface Vector {
+        algorithm: VectorAlgorithms,
+        keyUsage: "sign" | "encrypt",
+      }
+
+      const vectors: Vector[] = [
+        {
+          algorithm: {
+            name: "RSASSA-PKCS1-v1_5",
+            hash: "SHA-256",
+            publicExponent: new Uint8Array([1, 0, 1]),
+            modulusLength: 2048,
+          },
+          keyUsage: "sign",
+        },
+        {
+          algorithm: {
+            name: "RSA-PSS",
+            hash: "SHA-256",
+            publicExponent: new Uint8Array([1, 0, 1]),
+            modulusLength: 2048,
+            saltLength: 10,
+          },
+          keyUsage: "sign",
+        },
+        {
+          algorithm: {
+            name: "RSA-OAEP",
+            hash: "SHA-1",
+            publicExponent: new Uint8Array([1, 0, 1]),
+            modulusLength: 2048,
+          },
+          keyUsage: "encrypt",
+        },
+        {
+          algorithm: {
+            name: "ECDSA",
+            hash: "SHA-256",
+            namedCurve: "P-256",
+          },
+          keyUsage: "sign",
+        },
+      ];
+
+      vectors.forEach(v => {
+        context(v.algorithm.name, () => {
+
+          let keys: CryptoKeyPair;
+          const usages: KeyUsage[] = [];
+          switch (v.keyUsage) {
+            case "sign":
+              usages.push("sign", "verify");
+              break;
+            case "encrypt":
+              usages.push("encrypt", "decrypt");
+              break;
+          }
+
+          before(async () => {
+            keys = await subtle.generateKey({
+              ...v.algorithm,
+              alwaysAuthenticate: true,
+            } as Pkcs11RsaHashedKeyGenParams, true, usages);
+
+            assert.strictEqual((keys.privateKey as CryptoKey).alwaysAuthenticate, true);
+            assert.strictEqual((keys.publicKey as CryptoKey).alwaysAuthenticate, false);
+          });
+
+          it("importKey", async () => {
+            const pkcs8 = await subtle.exportKey("pkcs8", keys.privateKey);
+            const key = await subtle.importKey("pkcs8", pkcs8, {
+              ...v.algorithm,
+              alwaysAuthenticate: true,
+            } as Pkcs11RsaHashedImportParams, false, usages);
+            assert.strictEqual((key as CryptoKey).alwaysAuthenticate, true);
+          });
+
+          switch (v.keyUsage) {
+            case "sign":
+              it(v.keyUsage, async () => {
+                let i = 2;
+                while (i--) {
+                  await subtle.sign(v.algorithm, keys.privateKey, new Uint8Array(10));
+                }
+              });
+              break;
+            case "encrypt":
+              const data = new Uint8Array(10);
+
+              it(v.keyUsage, async () => {
+                let i = 2;
+                while (i--) {
+                  const enc = await subtle.encrypt(v.algorithm, keys.publicKey, data);
+                  const dec = await subtle.decrypt(v.algorithm, keys.privateKey, enc);
+                  assert.strictEqual(Convert.ToHex(dec), Convert.ToHex(data));
+                }
+              });
+              break;
+          }
+        });
+      });
     });
 
   });

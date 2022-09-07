@@ -28,6 +28,9 @@ export class ConfigTemplateBuilder implements p11.ITemplateBuilder {
             class: graphene.ObjectClass.PRIVATE_KEY,
             private: true,
           });
+          if (params.attributes.alwaysAuthenticate) {
+            template.alwaysAuth = true;
+          }
           break;
         case "public":
           Object.assign<p11.ITemplate, p11.ITemplate>(template, {

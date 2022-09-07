@@ -108,6 +108,9 @@ export class AlgorithmProto extends BaseAlgorithmProto {
   @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "string" })
   public labelStr?: string;
 
+  @ProtobufProperty({ id: AlgorithmProto.INDEX++, type: "bool" })
+  public alwaysAuthenticate?: boolean;
+
   public toAlgorithm() {
     const res: { [key: string]: any; } = {};
     const thisStatic = this.constructor as any;
@@ -214,6 +217,9 @@ export class CryptoKeyProto extends CryptoItemProto implements CryptoKey {
 
   @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "string", repeated: true })
   public usages: KeyUsage[] = [];
+
+  @ProtobufProperty({ id: CryptoKeyProto.INDEX++, type: "bool" })
+  public alwaysAuthenticate?: boolean;
 
 }
 

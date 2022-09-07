@@ -1,4 +1,3 @@
-import * as core from "@webcrypto-local/core";
 import * as proto from "@webcrypto-local/proto";
 import * as graphene from "graphene-pk11";
 import * as wcp11 from "node-webcrypto-p11";
@@ -11,16 +10,6 @@ import { KeyStorageService } from "./key_storage";
 import { ProviderService } from "./provider";
 import { Service } from "./service";
 import { SubtleService } from "./subtle";
-
-export interface CryptoNotifyEvent {
-  type: "pin";
-  origin: string;
-  label: string;
-  resolve: (...args: any[]) => void;
-  reject: (error: Error) => void;
-}
-
-export type CryptoNotifyEventHandler = (e: CryptoNotifyEvent) => void;
 
 export class CryptoService extends Service<ProviderService> {
 
@@ -38,31 +27,6 @@ export class CryptoService extends Service<ProviderService> {
     this.addService(new CertificateStorageService(server, this));
     this.addService(new KeyStorageService(server, this));
   }
-
-  //#region Events
-
-  public emit(event: "notify", e: CryptoNotifyEvent): boolean;
-  public emit(event: "error", error: Error): boolean;
-  public emit(event: "info", level: core.LogLevel, source: string, message: string, data?: core.LogData): boolean;
-  public emit(event: string, ...args: any[]): boolean {
-    return super.emit(event, ...args);
-  }
-
-  public on(event: "notify", e: CryptoNotifyEventHandler): this;
-  public on(event: "error", cb: (error: Error) => void): this;
-  public on(event: "info", cb: core.LogHandler): this;
-  public on(event: string, cb: (...args: any[]) => void): this {
-    return super.on(event, cb);
-  }
-
-  public once(event: "notify", e: CryptoNotifyEventHandler): this;
-  public once(event: "error", cb: (error: Error) => void): this;
-  public once(event: "info", cb: core.LogHandler): this;
-  public once(event: string, cb: (...args: any[]) => void): this {
-    return super.once(event, cb);
-  }
-
-  //#endregion
 
   public async getCrypto(id: string): Promise<wcp11.Crypto> {
     return await this.object.getProvider().getCrypto(id);

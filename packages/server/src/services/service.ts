@@ -4,6 +4,16 @@ import { Crypto, CryptoKey, Pkcs11KeyAlgorithm } from "node-webcrypto-p11";
 
 import { Server, Session } from "../connection";
 
+export interface NotifyEvent {
+  type: "pin";
+  origin: string;
+  label: string;
+  resolve: (...args: any[]) => void;
+  reject: (error: Error) => void;
+}
+
+export type NotifyEventHandler = (e: NotifyEvent) => void;
+
 /**
  * Base class for services
  * NOTE: Each object must have info, error events
@@ -55,10 +65,16 @@ export abstract class Service<T extends core.EventLogEmitter> extends core.Event
 
   }
 
+  /**
+   * @param service
+   */
   public addService(service: Service<any>) {
     this.services.push(service);
 
     service
+      .on("notify", (e: any) => {
+        this.emit("notify", e);
+      })
       .on("info", (level, source, message, data) => {
         this.emit("info", level, source, message, data);
       })
@@ -67,6 +83,7 @@ export abstract class Service<T extends core.EventLogEmitter> extends core.Event
       });
   }
 
+  public emit(event: "notify", e: NotifyEvent): boolean;
   public emit(event: "error", error: Error): boolean;
   public emit(event: "info", level: core.LogLevel, source: string, message: string, data?: core.LogData): boolean;
   public emit(event: string, ...args: any[]): boolean;
@@ -74,6 +91,7 @@ export abstract class Service<T extends core.EventLogEmitter> extends core.Event
     return super.emit(event, ...args);
   }
 
+  public on(event: "notify", e: NotifyEventHandler): this;
   public on(event: "error", cb: (error: Error) => void): this;
   public on(event: "info", cb: core.LogHandler): this;
   public on(event: string, cb: (...args: any[]) => void): this;
@@ -81,6 +99,7 @@ export abstract class Service<T extends core.EventLogEmitter> extends core.Event
     return super.on(event, cb);
   }
 
+  public once(event: "notify", e: NotifyEventHandler): this;
   public once(event: "error", cb: (error: Error) => void): this;
   public once(event: "info", cb: core.LogHandler): this;
   public once(event: string, cb: (...args: any[]) => void): this;
