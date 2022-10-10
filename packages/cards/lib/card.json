@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "cards": [
     {
       "atr": "3BD518FF8191FE1FC38073C821100A",
@@ -499,6 +499,36 @@
         "windows": "%WINDIR/System32/rtPKCS11ECP.dll",
         "osx": "/usr/local/lib/librtpkcs11ecp.dylib",
         "linux": "/usr/local/lib/librtpkcs11ecp.so"
+      },
+      "config": {
+        "template": {
+          "generate": {
+            "private": {
+              "token": true,
+              "sensitive": true,
+              "extractable": false
+            },
+            "public": {
+              "token": true
+            }
+          },
+          "import": {
+            "private": {
+              "token": true,
+              "sensitive": true,
+              "extractable": false
+            },
+            "public": {
+              "token": true
+            },
+            "x509": {
+              "token": true
+            },
+            "request": {
+              "token": true
+            }
+          }
+        }
       }
     },
     {
