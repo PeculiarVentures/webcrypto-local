@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "cards": [
     {
       "atr": "3BD518FF8191FE1FC38073C821100A",
@@ -345,8 +345,8 @@
     },
     {
       "atr": "3B7F96000080318065B0855956FB120FFE829000",
-      "name": "MD840",
-      "driver": "FB52636E98F44EBE837DB93C46721463"
+      "name": "ID Prime 940",
+      "driver": "39b3d7a3662c4b48bb120d008dd18648"
     },
     {
       "atr": "3b7f96000080318065b084565110120ffe829000",
