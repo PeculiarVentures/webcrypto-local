@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.10",
+  "version": "1.1.11",
   "cards": [
     {
       "atr": "3BD518FF8191FE1FC38073C821100A",
@@ -326,6 +326,11 @@
     {
       "atr": "3BFF1800008131FE55006B02090403010101434E5310318065",
       "name": "Incard J-Sign 2048",
+      "driver": "DBADF7126B4E3656FA5E8CF2AE8D712DE953BC98"
+    },
+    {
+      "atr": "3BFF1800008131FE45006B0505912001F101434E5310318038",
+      "name": "IDEMIA ID-One CNS V2 on Cosmo V9.1",
       "driver": "DBADF7126B4E3656FA5E8CF2AE8D712DE953BC98"
     },
     {
