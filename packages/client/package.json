@@ -19,7 +19,7 @@
   "license": "MIT",
   "main": "build/index.js",
   "module": "build/index.es.js",
-  "types": "build/types/index.d.ts",
+  "types": "build/index.d.ts",
   "browser": "build/webcrypto-socket.mjs",
   "browser:min": "build/webcrypto-socket.min.mjs",
   "browser:es5": "build/webcrypto-socket.js",

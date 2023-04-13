@@ -1,16 +1,22 @@
+import path from "node:path";
+import url from "node:url";
 import resolve from "@rollup/plugin-node-resolve";
 import { getBabelOutputPlugin } from "@rollup/plugin-babel";
 import builtins from "rollup-plugin-node-builtins";
 import cleanup from "rollup-plugin-cleanup";
 import commonjs from "rollup-plugin-commonjs";
 import typescript from "rollup-plugin-typescript2";
+import typescript2 from "typescript";
 import { terser } from "rollup-plugin-terser";
+import dts from "rollup-plugin-dts";
+import pkg from "./package.json" assert { type: "json" };
 
-const pkg = require("./package.json");
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const banner = [].join("\n");
 const input = "src/index.ts";
-const external = Object.keys(pkg.dependencies);
+const external = Object.keys(pkg.dependencies || {});
 
 // main
 const main = {
@@ -81,7 +87,7 @@ const browser = [
       commonjs(),
       cleanup(),
       typescript({
-        typescript: require("typescript"),
+        typescript: typescript2,
         check: true,
         clean: true,
         tsconfigOverride: {
@@ -196,7 +202,27 @@ const browser = [
   },
 ]
 
+const types = {
+  input,
+  external,
+  plugins: [
+    dts({
+      tsconfig: path.resolve(__dirname, "./tsconfig.compile.json"),
+      compilerOptions: {
+        removeComments: false,
+      }
+    })
+  ],
+  output: [
+    {
+      banner,
+      file: pkg.types,
+    }
+  ]
+};
+
 export default [
   main,
   ...browser,
+  types,
 ];
