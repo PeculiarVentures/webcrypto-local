@@ -49,14 +49,14 @@
     "@webcrypto-local/proto": "^1.7.0",
     "asn1js": "^3.0.5",
     "graphene-pk11": "^2.3.0",
-    "node-webcrypto-p11": "^2.6.1",
+    "node-webcrypto-p11": "^2.6.3",
     "pcsclite": "^1.0.0",
     "pkijs": "^3.0.5",
     "pvtsutils": "^1.3.2",
     "pvutils": "^1.1.3",
     "request": "^2.88.0",
     "tslib": "^2.4.0",
-    "webcrypto-core": "^1.7.5",
-    "ws": "^8.8.0"
+    "webcrypto-core": "^1.7.7",
+    "ws": "^8.13.0"
   }
 }
