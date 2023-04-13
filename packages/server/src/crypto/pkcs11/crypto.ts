@@ -15,8 +15,8 @@ export class Pkcs11Crypto extends Crypto {
 
   // NOTE: private methods from node-webcrypto-p11
   public module: graphene.Module;
-  public slot!: graphene.Slot;
-  public token!: graphene.Token;
+  public declare slot: graphene.Slot;
+  public declare token: graphene.Token;
 
   public ossl: OpenSSLCrypto;
   protected osslID = 0;
