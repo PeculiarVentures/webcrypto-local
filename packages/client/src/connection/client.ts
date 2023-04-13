@@ -2,7 +2,6 @@ import * as ratchet from "2key-ratchet";
 import * as core from "@webcrypto-local/core";
 import * as proto from "@webcrypto-local/proto";
 import { EventEmitter } from "events";
-import fetch from "node-fetch";
 import { Convert } from "pvtsutils";
 import WebSocket from "ws";
 import { CryptoServerError } from "../errors";
@@ -31,7 +30,7 @@ export enum SocketCryptoState {
 export class Client extends EventEmitter {
 
   public serviceInfo?: core.ServerInfo;
-  public stack: { [key: string]: PromiseStackItem } = {};
+  public stack: { [key: string]: PromiseStackItem; } = {};
 
   public get state(): SocketCryptoState {
     if (this.socket) {
