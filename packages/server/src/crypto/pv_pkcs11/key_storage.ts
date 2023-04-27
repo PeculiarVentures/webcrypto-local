@@ -13,7 +13,7 @@ export interface ISetItemOptions {
 
 export class PvKeyStorage extends KeyStorage {
 
-  protected crypto!: PvCrypto;
+  protected declare crypto: PvCrypto;
 
   constructor(crypto: PvCrypto) {
     super(crypto);

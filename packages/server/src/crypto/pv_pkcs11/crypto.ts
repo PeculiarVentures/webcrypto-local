@@ -5,8 +5,8 @@ import { PvKeyStorage } from "./key_storage";
 export class PvCrypto extends Crypto {
   public keyStorage: PvKeyStorage;
   public module: graphene.Module;
-  public slot!: graphene.Slot;
-  public token!: graphene.Token;
+  public declare slot: graphene.Slot;
+  public declare token: graphene.Token;
 
   constructor(props: CryptoParams) {
     super(props);

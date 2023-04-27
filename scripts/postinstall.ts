@@ -5,7 +5,6 @@ import * as os from "os";
 import {
   run, spawn, Logger, download, extract, exec,
 } from "./utils";
-import { match } from "assert";
 
 const solutionFolder = path.join(__dirname, "..");
 const utilsFolder = path.join(solutionFolder, "utils");

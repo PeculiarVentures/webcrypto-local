@@ -1,6 +1,11 @@
+import path from "node:path";
+import url from "node:url";
 import typescript from "rollup-plugin-typescript2";
+import dts from "rollup-plugin-dts";
+import pkg from "./package.json" assert { type: "json" };
 
-const pkg = require("./package.json");
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const banner = [].join("\n");
 const input = "src/index.ts";
@@ -36,4 +41,22 @@ export default [
       },
     ],
   },
+  {
+    input,
+    external,
+    plugins: [
+      dts({
+        tsconfig: path.resolve(__dirname, "./tsconfig.compile.json"),
+        compilerOptions: {
+          removeComments: false,
+        }
+      })
+    ],
+    output: [
+      {
+        banner,
+        file: pkg.types,
+      }
+    ]
+  }
 ];
