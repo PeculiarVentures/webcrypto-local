@@ -15,7 +15,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup environment
-        run: apt-get install libpcsclite1 libpcsclite-dev
+        run: sudo apt-get install libpcsclite1 libpcsclite-dev
 
       - name: Use Node.js 18.x
         uses: actions/setup-node@v3
