@@ -1,10 +1,15 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.12",
+  "version": "1.1.13",
   "cards": [
     {
       "atr": "3BD518FF8191FE1FC38073C821100A",
       "name": "ePass2003",
+      "driver": "ECA050606FD48FAB340EA9F1FCB582A1E0F1B740"
+    },
+    {
+      "atr": "3b9f958131fe9f006646530510323871df000000000019",
+      "name": "FT ePass2003Auto",
       "driver": "ECA050606FD48FAB340EA9F1FCB582A1E0F1B740"
     },
     {
