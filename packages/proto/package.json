@@ -1,6 +1,6 @@
 {
   "name": "@webcrypto-local/proto",
-  "version": "1.7.7",
+  "version": "1.7.9",
   "description": "A package of `webcrypto-local` framework. Google protobuf schemas for client/server messages",
   "keywords": [
     "protobuf",

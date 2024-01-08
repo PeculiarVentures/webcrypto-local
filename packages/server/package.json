@@ -1,6 +1,6 @@
 {
   "name": "@webcrypto-local/server",
-  "version": "1.7.8",
+  "version": "1.7.9",
   "description": "A package of `webcrypto-local` framework. WebSocket server",
   "keywords": [
     "webcrypto",
@@ -43,9 +43,9 @@
     "@peculiar/webcrypto": "1.0.22",
     "@peculiar/x509": "^1.7.0",
     "@types/pvutils": "^1.0.1",
-    "@webcrypto-local/cards": "^1.7.8",
+    "@webcrypto-local/cards": "^1.7.9",
     "@webcrypto-local/core": "^1.7.7",
-    "@webcrypto-local/proto": "^1.7.7",
+    "@webcrypto-local/proto": "^1.7.9",
     "asn1js": "^3.0.5",
     "graphene-pk11": "^2.3.0",
     "node-webcrypto-p11": "^2.6.3",
