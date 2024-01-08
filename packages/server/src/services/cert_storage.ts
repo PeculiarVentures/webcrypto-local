@@ -163,7 +163,8 @@ export class CertificateStorageService extends Service<CryptoService> {
         });
 
         // do operation
-        const item = await crypto.certStorage.importCert(params.format, data, params.algorithm.toAlgorithm(), params.keyUsages);
+        const alg = params.algorithm.toAlgorithm();
+        const item = await crypto.certStorage.importCert(params.format, data, alg, params.keyUsages);
 
         // add key to memory storage
         const cryptoKey = new ServiceCryptoItem(item.publicKey, params.providerID);
