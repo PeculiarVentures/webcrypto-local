@@ -13,6 +13,10 @@ export interface IServerOptions extends ServerOptions {
    * Disables using of PCSC. No emit CardReader and Provider token events
    */
   disablePCSC?: boolean;
+  /**
+   * Prepares server for message handling (auth, validation, setup, etc.).
+   */
+  onMessage?: (session: Session, action: proto.ActionProto) => Promise<unknown>;
 }
 
 /**
@@ -38,10 +42,13 @@ export class LocalServer extends core.EventLogEmitter {
   public provider: ProviderService;
   public cardReader?: CardReaderService;
 
+  private onMessageHandler?: IServerOptions['onMessage']
+
   constructor(options: IServerOptions) {
     super();
 
     this.server = new Server(options);
+    this.onMessageHandler = options.onMessage;
 
     if (!options.disablePCSC) {
       this.cardReader = new CardReaderService(this.server)
@@ -125,6 +132,10 @@ export class LocalServer extends core.EventLogEmitter {
       })
       .on("message", (e) => {
         (async () => {
+          if (this.onMessageHandler) {
+            await this.onMessageHandler(e.session, e.message);
+          }
+
           if (e.message.action === proto.ServerIsLoggedInActionProto.ACTION ||
             e.message.action === proto.ServerLoginActionProto.ACTION) {
             this.onMessage(e.session, e.message)
