@@ -16,7 +16,7 @@ export interface IServerOptions extends ServerOptions {
   /**
    * Prepares server for message handling (auth, validation, setup, etc.).
    */
-  onMessage?: (session: Session, action: proto.ActionProto) => Promise<unknown>;
+  onMessage?: (session: Session, action: proto.ActionProto) => Promise<(error: Error) => unknown>;
 }
 
 /**
@@ -132,14 +132,24 @@ export class LocalServer extends core.EventLogEmitter {
       })
       .on("message", (e) => {
         (async () => {
+          let onReject = (reason: Error) => {
+            e.reject(reason);
+          };
+
           if (this.onMessageHandler) {
-            await this.onMessageHandler(e.session, e.message);
+            const onError = await this.onMessageHandler(e.session, e.message);
+
+            onReject = (reason) => {
+              onError(reason);
+
+              e.reject(reason);
+            };
           }
 
           if (e.message.action === proto.ServerIsLoggedInActionProto.ACTION ||
             e.message.action === proto.ServerLoginActionProto.ACTION) {
             this.onMessage(e.session, e.message)
-              .then(e.resolve, e.reject);
+              .then(e.resolve, onReject)
           }
         })()
           .catch((error) => {
