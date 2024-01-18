@@ -16,7 +16,11 @@ export interface IServerOptions extends ServerOptions {
   /**
    * Prepares server for message handling (auth, validation, setup, etc.).
    */
-  onMessage?: (session: Session, action: proto.ActionProto) => Promise<(error: Error) => unknown>;
+  onMessagePrepare?: (session: Session, action: proto.ActionProto) => Promise<unknown>;
+  /**
+   * Performs post-processing tasks after server message handling.
+   */
+  onMessageResult?: (resolved: boolean, error?: Error) => unknown
 }
 
 /**
@@ -42,13 +46,15 @@ export class LocalServer extends core.EventLogEmitter {
   public provider: ProviderService;
   public cardReader?: CardReaderService;
 
-  private onMessageHandler?: IServerOptions['onMessage']
+  private onMessagePrepareHandler: NonNullable<IServerOptions['onMessagePrepare']>;
+  private onMessageResultHandler: NonNullable<IServerOptions['onMessageResult']>;
 
   constructor(options: IServerOptions) {
     super();
 
     this.server = new Server(options);
-    this.onMessageHandler = options.onMessage;
+    this.onMessagePrepareHandler = options.onMessagePrepare || Promise.resolve;
+    this.onMessageResultHandler = options.onMessageResult || function () { };
 
     if (!options.disablePCSC) {
       this.cardReader = new CardReaderService(this.server)
@@ -132,27 +138,26 @@ export class LocalServer extends core.EventLogEmitter {
       })
       .on("message", (e) => {
         (async () => {
-          let onReject = (reason: Error) => {
-            e.reject(reason);
-          };
-
-          if (this.onMessageHandler) {
-            const onError = await this.onMessageHandler(e.session, e.message);
-
-            onReject = (reason) => {
-              onError(reason);
-
-              e.reject(reason);
-            };
-          }
+          await this.onMessagePrepareHandler(e.session, e.message);
 
           if (e.message.action === proto.ServerIsLoggedInActionProto.ACTION ||
             e.message.action === proto.ServerLoginActionProto.ACTION) {
+            const onReject = (reason: Error) => {
+              this.onMessageResultHandler(false, reason);
+              e.reject(reason);
+            };
+            const onResolve = (reason: proto.ResultProto) => {
+              this.onMessageResultHandler(true);
+              e.resolve(reason);
+            };
+
             this.onMessage(e.session, e.message)
-              .then(e.resolve, onReject)
+              .then(onResolve, onReject)
           }
         })()
           .catch((error) => {
+            e.reject(error);
+            this.onMessageResultHandler(false, error);
             this.emit("error", error);
           });
       })
