@@ -46,8 +46,8 @@ export class LocalServer extends core.EventLogEmitter {
   public provider: ProviderService;
   public cardReader?: CardReaderService;
 
-  private onMessagePrepareHandler: NonNullable<IServerOptions['onMessagePrepare']>;
-  private onMessageResultHandler: NonNullable<IServerOptions['onMessageResult']>;
+  private onMessagePrepareHandler: IServerOptions['onMessagePrepare'];
+  private onMessageResultHandler: IServerOptions['onMessageResult'];
 
   constructor(options: IServerOptions) {
     super();
@@ -138,17 +138,23 @@ export class LocalServer extends core.EventLogEmitter {
       })
       .on("message", (e) => {
         (async () => {
-          await this.onMessagePrepareHandler(e.session, e.message);
+          if (this.onMessagePrepareHandler) {
+            await this.onMessagePrepareHandler(e.session, e.message);
+          }
 
           if (e.message.action === proto.ServerIsLoggedInActionProto.ACTION ||
             e.message.action === proto.ServerLoginActionProto.ACTION) {
             const onReject = (reason: Error) => {
-              this.onMessageResultHandler(false, reason);
-              e.reject(reason);
+              if (this.onMessageResultHandler) {
+                this.onMessageResultHandler(false, reason);
+                e.reject(reason);
+              }
             };
             const onResolve = (reason: proto.ResultProto) => {
-              this.onMessageResultHandler(true);
-              e.resolve(reason);
+              if (this.onMessageResultHandler) {
+                this.onMessageResultHandler(true);
+                e.resolve(reason);
+              }
             };
 
             this.onMessage(e.session, e.message)
@@ -157,7 +163,9 @@ export class LocalServer extends core.EventLogEmitter {
         })()
           .catch((error) => {
             e.reject(error);
-            this.onMessageResultHandler(false, error);
+            if (this.onMessageResultHandler) {
+              this.onMessageResultHandler(false, error);
+            }
             this.emit("error", error);
           });
       })
