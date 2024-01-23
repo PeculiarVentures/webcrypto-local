@@ -144,17 +144,17 @@ export class LocalServer extends core.EventLogEmitter {
 
           if (e.message.action === proto.ServerIsLoggedInActionProto.ACTION ||
             e.message.action === proto.ServerLoginActionProto.ACTION) {
-            const onReject = (reason: Error) => {
-              if (this.onMessageResultHandler) {
-                this.onMessageResultHandler(false, reason);
-                e.reject(reason);
-              }
-            };
             const onResolve = (reason: proto.ResultProto) => {
               if (this.onMessageResultHandler) {
                 this.onMessageResultHandler(true);
-                e.resolve(reason);
               }
+              e.resolve(reason);
+            };
+            const onReject = (reason: Error) => {
+              if (this.onMessageResultHandler) {
+                this.onMessageResultHandler(false, reason);
+              }
+              e.reject(reason);
             };
 
             this.onMessage(e.session, e.message)
@@ -162,10 +162,10 @@ export class LocalServer extends core.EventLogEmitter {
           }
         })()
           .catch((error) => {
-            e.reject(error);
             if (this.onMessageResultHandler) {
               this.onMessageResultHandler(false, error);
             }
+            e.reject(error);
             this.emit("error", error);
           });
       })
