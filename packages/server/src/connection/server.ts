@@ -16,6 +16,14 @@ import { RatchetStorage } from "./storages";
 
 export interface ServerOptions extends HttpsServerOptions {
   storage: RatchetStorage;
+  /**
+   * Prepares server for message handling (auth, validation, setup, etc.).
+   */
+  onMessagePrepare?: (session: Session, action: proto.ActionProto) => Promise<unknown>;
+  /**
+   * Performs post-processing tasks after server message handling.
+   */
+  onMessageResult?: (resolved: boolean, error?: Error) => unknown
 }
 
 type AlgorithmUsageType = "generateKey" | "importKey" | "exportKey" | "sign" | "verify" | "deriveKey" | "deriveBits" | "encrypt" | "decrypt" | "wrapKey" | "unwrapKey" | "digest";
@@ -98,7 +106,7 @@ export class Server extends core.EventLogEmitter {
 
   protected httpServer!: https.Server;
   protected socketServer!: WebSocket.Server;
-  protected options: HttpsServerOptions;
+  protected options: ServerOptions;
 
   constructor(options: ServerOptions) {
     super();
@@ -256,6 +264,18 @@ export class Server extends core.EventLogEmitter {
             const actionProto = await proto.ActionProto.importProto(decryptedMessage);
 
             return new Promise<proto.ResultProto>((resolve, reject) => {
+              const handleResolve = (reason: proto.ResultProto) => {
+                if (this.options.onMessageResult) {
+                  this.options.onMessageResult(true);
+                }
+                resolve(reason);
+              };
+              const handleReject = (reason: Error) => {
+                if (this.options.onMessageResult) {
+                  this.options.onMessageResult(false, reason);
+                }
+                reject(reason);
+              };
               if (
                 session.authorized ||
                 actionProto.action === proto.ServerIsLoggedInActionProto.ACTION ||
@@ -264,6 +284,9 @@ export class Server extends core.EventLogEmitter {
                 (async () => {
                   if (!session.cipher) {
                     throw new Error("Session cipher was not initialized yet");
+                  }
+                  if (this.options.onMessagePrepare) {
+                    await this.options.onMessagePrepare(session, actionProto);
                   }
                   const sessionIdentitySHA256 = await session.cipher.remoteIdentity.signingKey.thumbprint();
                   if (new RegExp("^crypto\/").test(actionProto.action)) {
@@ -279,10 +302,11 @@ export class Server extends core.EventLogEmitter {
                       action: actionProto.action,
                     });
                   }
-                  this.emit("message", new events.ServerMessageEvent(this, session, actionProto, resolve as any, reject));
+                  this.emit("message", new events.ServerMessageEvent(this, session, actionProto, handleResolve, handleReject));
                 })()
                   .catch((err) => {
-                    this.emit("error", err);
+                    this.emit("error", new events.ServerErrorEvent(this, err));
+                    handleReject(err);
                   });
               } else {
                 // If session is not authorized throw error

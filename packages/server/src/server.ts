@@ -13,14 +13,6 @@ export interface IServerOptions extends ServerOptions {
    * Disables using of PCSC. No emit CardReader and Provider token events
    */
   disablePCSC?: boolean;
-  /**
-   * Prepares server for message handling (auth, validation, setup, etc.).
-   */
-  onMessagePrepare?: (session: Session, action: proto.ActionProto) => Promise<unknown>;
-  /**
-   * Performs post-processing tasks after server message handling.
-   */
-  onMessageResult?: (resolved: boolean, error?: Error) => unknown
 }
 
 /**
@@ -46,15 +38,10 @@ export class LocalServer extends core.EventLogEmitter {
   public provider: ProviderService;
   public cardReader?: CardReaderService;
 
-  private onMessagePrepareHandler: IServerOptions['onMessagePrepare'];
-  private onMessageResultHandler: IServerOptions['onMessageResult'];
-
   constructor(options: IServerOptions) {
     super();
 
     this.server = new Server(options);
-    this.onMessagePrepareHandler = options.onMessagePrepare || Promise.resolve;
-    this.onMessageResultHandler = options.onMessageResult || function () { };
 
     if (!options.disablePCSC) {
       this.cardReader = new CardReaderService(this.server)
@@ -138,34 +125,13 @@ export class LocalServer extends core.EventLogEmitter {
       })
       .on("message", (e) => {
         (async () => {
-          if (this.onMessagePrepareHandler) {
-            await this.onMessagePrepareHandler(e.session, e.message);
-          }
-
           if (e.message.action === proto.ServerIsLoggedInActionProto.ACTION ||
             e.message.action === proto.ServerLoginActionProto.ACTION) {
-            const onResolve = (reason: proto.ResultProto) => {
-              if (this.onMessageResultHandler) {
-                this.onMessageResultHandler(true);
-              }
-              e.resolve(reason);
-            };
-            const onReject = (reason: Error) => {
-              if (this.onMessageResultHandler) {
-                this.onMessageResultHandler(false, reason);
-              }
-              e.reject(reason);
-            };
-
             this.onMessage(e.session, e.message)
-              .then(onResolve, onReject)
+              .then(e.resolve, e.reject);
           }
         })()
           .catch((error) => {
-            if (this.onMessageResultHandler) {
-              this.onMessageResultHandler(false, error);
-            }
-            e.reject(error);
             this.emit("error", error);
           });
       })

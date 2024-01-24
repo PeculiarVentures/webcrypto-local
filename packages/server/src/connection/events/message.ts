@@ -9,7 +9,13 @@ export class ServerMessageEvent extends ServerEvent {
   public resolve: (result: proto.ResultProto) => void;
   public reject: (error: Error) => void;
 
-  constructor(target: Server, session: Session, message: proto.ActionProto, resolve: () => void, reject: (error: Error) => void) {
+  constructor(
+    target: Server,
+    session: Session,
+    message: proto.ActionProto,
+    resolve: (result: proto.ResultProto) => void,
+    reject: (error: Error) => void,
+  ) {
     super(target, "message");
     this.message = message;
     this.session = session;
