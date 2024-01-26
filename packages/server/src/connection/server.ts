@@ -23,7 +23,7 @@ export interface ServerOptions extends HttpsServerOptions {
   /**
    * Performs post-processing tasks after server message handling.
    */
-  onMessageResult?: (resolved: boolean, error?: Error) => unknown
+  onMessageResult?: (resolved: boolean, error?: Error) => Promise<unknown>;
 }
 
 type AlgorithmUsageType = "generateKey" | "importKey" | "exportKey" | "sign" | "verify" | "deriveKey" | "deriveBits" | "encrypt" | "decrypt" | "wrapKey" | "unwrapKey" | "digest";
@@ -266,13 +266,15 @@ export class Server extends core.EventLogEmitter {
             return new Promise<proto.ResultProto>((resolve, reject) => {
               const handleResolve = (reason: proto.ResultProto) => {
                 if (this.options.onMessageResult) {
-                  this.options.onMessageResult(true);
+                  this.options.onMessageResult(true)
+                    .catch((err) => this.emit("error", new events.ServerErrorEvent(this, err)));
                 }
                 resolve(reason);
               };
               const handleReject = (reason: Error) => {
                 if (this.options.onMessageResult) {
-                  this.options.onMessageResult(false, reason);
+                  this.options.onMessageResult(false, reason)
+                    .catch((err) => this.emit("error", new events.ServerErrorEvent(this, err)));;
                 }
                 reject(reason);
               };
