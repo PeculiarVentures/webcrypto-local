@@ -4,34 +4,53 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [18.x]
 
+    env:
+      SOFTHSM2_CONF: /etc/softhsm2.conf
+
     steps:
       - name: Install SoftHSM
         run: |
-          brew install softhsm
+          sudo apt-get update
+          sudo apt-get install -y softhsm2
+          # check if softhsm2.conf exists
+          if [ ! -f /etc/softhsm2.conf ]; then
+            # if not, create it
+            sudo touch /etc/softhsm2.conf
+            # and add the content
+            echo "directories.tokendir = /var/lib/softhsm/slots/" | sudo tee -a /etc/softhsm2.conf
+            echo "objectstore.backend = file" | sudo tee -a /etc/softhsm2.conf
+            echo "log.level = DEBUG" | sudo tee -a /etc/softhsm2.conf
+          fi
+          # ensure the directory exists
+          sudo mkdir -p /var/lib/softhsm/slots/
+          # ensure the file has the correct permissions
+          sudo chmod 644 /etc/softhsm2.conf
           softhsm2-util --init-token --so-pin "12345" --pin "12345" --slot 0 --label "My slot 0"
 
-      - uses: actions/checkout@v3
+      - name: Install PCSC
+        run: sudo apt-get install libpcsclite1 libpcsclite-dev
+
+      - uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Install Yarn
+        run: npm install -g yarn
 
-      - uses: actions/cache@v3
-        id: yarn-cache
+      - name: restore lerna
+        uses: actions/cache@v3
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
         run: yarn
@@ -41,12 +60,6 @@ jobs:
 
       - name: Run test with coverage
         run: npm run coverage
-
-      # Fixes problem with incorrect SF paths. See https://github.com/coverallsapp/github-action/issues/125
-      - name: Update lcov.info
-        run: |
-          sed -E "s/SF:(.+file:(.+))/SF:\2/g" ./coverage/lcov.info > coverage/lcov.new.info
-          mv ./coverage/lcov.new.info ./coverage/lcov.info
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
