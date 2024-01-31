@@ -1,6 +1,6 @@
 name: Test
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   build:
@@ -14,24 +14,24 @@ jobs:
       SOFTHSM2_CONF: /etc/softhsm2.conf
 
     steps:
-      - name: Install SoftHSM
+      - name: Setup Soft HSM
         run: |
-          sudo apt-get update
+          sudo apt-get update -y
           sudo apt-get install -y softhsm2
-          # check if softhsm2.conf exists
-          if [ ! -f /etc/softhsm2.conf ]; then
-            # if not, create it
-            sudo touch /etc/softhsm2.conf
-            # and add the content
-            echo "directories.tokendir = /var/lib/softhsm/slots/" | sudo tee -a /etc/softhsm2.conf
-            echo "objectstore.backend = file" | sudo tee -a /etc/softhsm2.conf
-            echo "log.level = DEBUG" | sudo tee -a /etc/softhsm2.conf
-          fi
-          # ensure the directory exists
-          sudo mkdir -p /var/lib/softhsm/slots/
-          # ensure the file has the correct permissions
-          sudo chmod 644 /etc/softhsm2.conf
+          echo "SoftHSM2 is installed"
+          # Create a configuration file
+          echo "directories.tokendir = ${{ github.workspace }}/token" > softhsm2.conf
+          echo "objectstore.backend = file" >> softhsm2.conf
+          echo "log.level = ERROR" >> softhsm2.conf
+          echo "slots.removable = false" >> softhsm2.conf
+          echo "slots.mechanisms = ALL" >> softhsm2.conf
+          echo "library.reset_on_fork = false" >> softhsm2.conf
+          # Create a directory for the token
+          mkdir -p ${{ github.workspace }}/token
+          # Create a symlink to the SoftHSM library
           softhsm2-util --init-token --so-pin "12345" --pin "12345" --slot 0 --label "My slot 0"
+        env:
+          SOFTHSM2_CONF: ${{ github.workspace }}/softhsm2.conf
 
       - name: Install PCSC
         run: sudo apt-get install libpcsclite1 libpcsclite-dev
@@ -60,6 +60,9 @@ jobs:
 
       - name: Run test with coverage
         run: npm run coverage
+        env:
+          SOFT_HSM_LIBRARY: "/usr/lib/softhsm/libsofthsm2.so"
+          SOFTHSM2_CONF: ${{ github.workspace }}/softhsm2.conf
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
