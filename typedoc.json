@@ -1,0 +1,22 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "out": "./docs",
+  "entryPoints": [
+    "packages/cards/src/index.ts",
+    "packages/client/src/index.ts",
+    "packages/core/src/index.ts",
+    "packages/proto/src/index.ts",
+    "packages/server/src/index.ts"
+  ],
+  "exclude": [
+    "**/node_modules/**",
+    "**/*.spec.ts",
+    "**/scripts/**",
+    "**/test/**"
+  ],
+  "cleanOutputDir": true,
+  "excludeExternals": true,
+  "excludePrivate": false,
+  "name": "webcrypto-local",
+  "excludeInternal": true
+}
