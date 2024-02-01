@@ -47,7 +47,7 @@
     "@webcrypto-local/core": "^1.7.7",
     "@webcrypto-local/proto": "^1.7.9",
     "asn1js": "^3.0.5",
-    "graphene-pk11": "^2.3.0",
+    "graphene-pk11": "^2.3.2",
     "node-webcrypto-p11": "^2.6.3",
     "pcsclite": "^1.0.0",
     "pkijs": "^3.0.5",
