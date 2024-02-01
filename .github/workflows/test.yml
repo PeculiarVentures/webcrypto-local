@@ -10,9 +10,6 @@ jobs:
       matrix:
         node-version: [18.x]
 
-    env:
-      SOFTHSM2_CONF: /etc/softhsm2.conf
-
     steps:
       - name: Setup Soft HSM
         run: |
@@ -61,7 +58,7 @@ jobs:
       - name: Run test with coverage
         run: npm run coverage
         env:
-          SOFT_HSM_LIBRARY: "/usr/lib/softhsm/libsofthsm2.so"
+          SOFT_HSM_LIBRARY: /usr/lib/softhsm/libsofthsm2.so
           SOFTHSM2_CONF: ${{ github.workspace }}/softhsm2.conf
 
       - name: Coveralls
