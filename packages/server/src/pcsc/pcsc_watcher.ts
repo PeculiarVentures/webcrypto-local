@@ -15,22 +15,38 @@ export class PCSCWatcher extends core.EventLogEmitter {
   public readers: CardReader[] = [];
   protected pcsc: PCSCLite | null = null;
 
+  private startCalls = 0; // Track the number of start method calls
+
   constructor() {
     super();
   }
 
   public start(): this {
+    if (this.startCalls > 3) { // Adjust the maximum recursion limit as needed
+      this.log("info", "PCSC restart limit reached");
+      
+      this.startCalls = 0;
+      // Wait and restart pcsc again
+      setTimeout(this.start, 1e5);
+      return this;
+    }
+
     this.log("info", "Start PCSC listening");
+    this.startCalls += 1; // Increment the start call counter
 
     try {
       this.pcsc = pcsc();
       this.pcsc.on("error", (err) => {
         this.emit("error", err);
-        this.pcsc?.removeAllListeners();
 
-        // PCSCLite closes session on PCSC error. For that case we need to restart it.
-        // See https://github.com/PeculiarVentures/fortify/issues/421
-        this.start();
+        // Restart only if the start call counter is within the limit
+        // See https://github.com/PeculiarVentures/webcrypto-local/issues/284
+        if (this.startCalls <= 3) {
+          this.pcsc?.removeAllListeners();
+          // PCSCLite closes session on PCSC error. For that case we need to restart it.
+          // See https://github.com/PeculiarVentures/fortify/issues/421
+          this.start();
+        }
       });
       this.pcsc.on("reader", (reader) => {
         this.log("info", "Initialize new reader", {
