@@ -24,10 +24,12 @@ export class PCSCWatcher extends core.EventLogEmitter {
   public start(): this {
     if (this.startCalls > 3) { // Adjust the maximum recursion limit as needed
       this.log("info", "PCSC restart limit reached");
-      
       this.startCalls = 0;
       // Wait and restart pcsc again
-      setTimeout(this.start, 1e5);
+      setTimeout(() => {
+        this.pcsc?.removeAllListeners();
+        this.start();
+      }, 1e5);
       return this;
     }
 
@@ -43,9 +45,9 @@ export class PCSCWatcher extends core.EventLogEmitter {
         // See https://github.com/PeculiarVentures/webcrypto-local/issues/284
         if (this.startCalls <= 3) {
           this.pcsc?.removeAllListeners();
-          // PCSCLite closes session on PCSC error. For that case we need to restart it.
+          // PCSCLite closes session on PCSC error. For that case we need to restart it with small delay.
           // See https://github.com/PeculiarVentures/fortify/issues/421
-          this.start();
+          setTimeout(this.start, 1e3);
         }
       });
       this.pcsc.on("reader", (reader) => {
