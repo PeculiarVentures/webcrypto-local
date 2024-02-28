@@ -93,8 +93,7 @@ export class CryptoService extends Service<ProviderService> {
         });
 
         const slot: graphene.Slot = (crypto as any).slot;
-
-        if (crypto.login) {
+        if (crypto.login && !crypto.isLoggedIn) {
           const token = slot.getToken();
           if (token.flags & graphene.TokenFlag.LOGIN_REQUIRED) {
             if (token.flags & graphene.TokenFlag.PROTECTED_AUTHENTICATION_PATH) {
