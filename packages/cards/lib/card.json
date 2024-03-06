@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.14",
+  "version": "1.1.15",
   "cards": [
     {
       "atr": "3BD518FF8191FE1FC38073C821100A",
