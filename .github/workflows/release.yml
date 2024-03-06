@@ -1,13 +1,10 @@
 name: release
 
 on:
-  push:
+  pull_request:
     branches:
-      - ci-publish
-  # pull_request:
-  #   branches:
-  #     - master
-  #   types: [closed]
+      - master
+    types: [closed]
 
 env:
   CI: true
@@ -20,11 +17,11 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      # - name: Pull Request Merged
-      #   if: github.event.pull_request.merged == false
-      #   run: |
-      #     echo 'The pull request has not been merged'
-      #     exit 1
+      - name: Pull Request Merged
+        if: github.event.pull_request.merged == false
+        run: |
+          echo 'The pull request has not been merged'
+          exit 1
 
       - uses: actions/checkout@v4
         with:
@@ -84,15 +81,15 @@ jobs:
           CURRENT_VERSION=$(node -p 'require("./lerna.json").version')
           echo "::set-env name=CURRENT_VERSION::${CURRENT_VERSION}"
 
-      # - name: Create comment
-      #   uses: actions/github-script@v7
-      #   if: env.PREV_VERSION != env.CURRENT_VERSION
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     script: |
-      #       github.issues.createComment({
-      #         issue_number: context.issue.number,
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         body: 'NPM package v${{ env.CURRENT_VERSION }} has been published 🎉'
-      #       })
+      - name: Create comment
+        uses: actions/github-script@v7
+        if: env.PREV_VERSION != env.CURRENT_VERSION
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'NPM package v${{ env.CURRENT_VERSION }} has been published 🎉'
+            })
