@@ -52,7 +52,16 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Install
+      - name: Install dependencies
+        run: sudo apt-get install -y libpcsclite1 libpcsclite-dev
+
+      - name: restore lerna
+        uses: actions/cache@v4
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
         run: yarn
 
       - name: Build
