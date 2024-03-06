@@ -75,7 +75,7 @@ jobs:
 
       - name: Bump versions and publish packages
         run: |
-          npx lerna version --yes --create-release github --message 'chore(release): publish'
+          npx lerna version --yes --conventional-commits --create-release github --message 'chore(release): publish'
           npx lerna publish from-package --yes
 
       - name: Get Current Version
