@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.14",
+  "version": "1.1.15",
   "cards": [
     {
       "atr": "3BD518FF8191FE1FC38073C821100A",
@@ -188,6 +188,11 @@
     {
       "atr": "3bff9600008131fe4380318065b0855956fb120ffe82900000",
       "name": "SafeNet eToken 5110cc",
+      "driver": "39b3d7a3662c4b48bb120d008dd18648"
+    },
+    {
+      "atr": "3BFF9600008131FE4380318065B08505003912017882900040",
+      "name": "SafeNet 5110+ CC (940C)",
       "driver": "39b3d7a3662c4b48bb120d008dd18648"
     },
     {
