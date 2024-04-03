@@ -181,6 +181,11 @@
       "driver": "39b3d7a3662c4b48bb120d008dd18648"
     },
     {
+      "atr": "3BFF9600008131FE4380318065B0846566FB12017882900085",
+      "name": "SafeNet eToken 5110+ FIPS",
+      "driver": "39b3d7a3662c4b48bb120d008dd18648"
+    },
+    {
       "atr": "3bff1100008131fe4d8025a00000005657444b3333300600d0",
       "name": "Datakey 32K PKI Smart Card Model 330",
       "driver": "39b3d7a3662c4b48bb120d008dd18648"
