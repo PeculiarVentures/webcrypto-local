@@ -5,7 +5,7 @@ import * as asn1js from "asn1js";
 import * as graphene from "graphene-pk11";
 import * as wcp11 from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
-import request from "request";
+import axios, { AxiosRequestConfig } from "axios";
 import { CryptoCertificateStorage, CryptoStorages } from "webcrypto-core";
 import * as pkijs from "pkijs";
 
@@ -393,16 +393,14 @@ export class CertificateStorageService extends Service<CryptoService> {
 
         // do operation
         const crlArray = await new Promise<ArrayBuffer>((resolve, reject) => {
-          request(params.url, { encoding: null }, (err, response, body) => {
-            try {
+          axios.get(params.url, { responseType: "arraybuffer" })
+            .then((response) => {
               const message = `Cannot get CRL by URI '${params.url}'`;
-              if (err) {
-                throw new Error(`${message}. ${err.message}`);
-              }
-              if (response.statusCode !== 200) {
-                throw new Error(`${message}. Bad status ${response.statusCode}`);
+              if (response.status !== 200) {
+                throw new Error(`${message}. Bad status ${response.status}`);
               }
 
+              let body = response.data;
               if (Buffer.isBuffer(body)) {
                 body = body.toString("binary");
               }
@@ -420,7 +418,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                   schema: asn1.result,
                 });
                 if (!crl) {
-                  throw new Error(`variable crl is empty`);
+                  throw new Error("variable crl is empty");
                 }
               } catch (e) {
                 console.error(e);
@@ -428,10 +426,10 @@ export class CertificateStorageService extends Service<CryptoService> {
               }
 
               resolve(body);
-            } catch (e) {
+            })
+            .catch((e) => {
               reject(e);
-            }
-          });
+            });
         });
 
         // result
@@ -450,7 +448,7 @@ export class CertificateStorageService extends Service<CryptoService> {
         // do operation
         const ocspArray = await new Promise<ArrayBuffer>((resolve, reject) => {
           let url = params.url;
-          const options: request.CoreOptions = { encoding: null };
+          const options: AxiosRequestConfig = { responseType: "arraybuffer" };
           if (params.options.method === "get") {
             // GET
             const b64 = Buffer.from(params.url).toString("hex");
@@ -460,18 +458,17 @@ export class CertificateStorageService extends Service<CryptoService> {
             // POST
             options.method = "post";
             options.headers = { "Content-Type": "application/ocsp-request" };
-            options.body = Buffer.from(params.request);
+            options.data = Buffer.from(params.request);
           }
-          request(url, options, (err, response, body) => {
-            try {
+
+          axios(url, options)
+            .then((response) => {
               const message = `Cannot get OCSP by URI '${params.url}'`;
-              if (err) {
-                throw new Error(`${message}. ${err.message}`);
-              }
-              if (response.statusCode !== 200) {
-                throw new Error(`${message}. Bad status ${response.statusCode}`);
+              if (response.status !== 200) {
+                throw new Error(`${message}. Bad status ${response.status}`);
               }
 
+              let body = response.data;
               if (Buffer.isBuffer(body)) {
                 body = body.toString("binary");
               }
@@ -489,7 +486,7 @@ export class CertificateStorageService extends Service<CryptoService> {
                   schema: asn1.result,
                 });
                 if (!ocsp) {
-                  throw new Error(`variable ocsp is empty`);
+                  throw new Error("variable ocsp is empty");
                 }
               } catch (e) {
                 console.error(e);
@@ -497,10 +494,10 @@ export class CertificateStorageService extends Service<CryptoService> {
               }
 
               resolve(body);
-            } catch (e) {
+            })
+            .catch((e) => {
               reject(e);
-            }
-          });
+            });
         });
 
         // result
