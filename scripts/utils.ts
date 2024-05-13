@@ -2,12 +2,10 @@ import * as childProcess from "child_process";
 import * as os from "os";
 import * as fs from "fs";
 import { stdout } from "process";
-import request from "request";
+import axios from "axios";
 import zip from "extract-zip";
 import "colors";
 import { prepareError } from "../packages/server/src/helper";
-
-const progress = require("request-progress");
 
 export class Logger {
   public static info(message: string) {
@@ -84,26 +82,28 @@ export async function run(cb: () => Promise<void>) {
  * @param dest
  */
 export async function download(url: string, dest: string) {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<void>(async (resolve, reject) => {
     Logger.debug(`Downloading ${url}`);
 
-    progress(request(url)
-      .on("response", (resp) => {
-        if (resp.statusCode !== 200) {
-          fs.unlinkSync(dest);
-          reject(new Error(`${resp.statusMessage}(${resp.statusCode})`));
+    const response = await axios({
+      method: "get",
+      url,
+      responseType: "stream",
+      onDownloadProgress: (progressEvent) => {
+        if (progressEvent.progress) {
+          stdout.write(`Progress ${Math.floor(progressEvent.progress * 100)}%\r`.gray);
         }
-      }))
-      .on("progress", (state: any) => {
-        // write percentage
-        stdout.write(`Progress ${Math.floor(state.percent * 100)}%\r`.gray);
-      })
-      .on("error", reject)
-      .on("end", () => {
-        stdout.write("Progress 100%\n".gray);
-        resolve();
-      })
-      .pipe(fs.createWriteStream(dest));
+      },
+    });
+
+    response.data.pipe(fs.createWriteStream(dest));
+
+    response.data.on("end", () => {
+      stdout.write("Progress 100%\n".gray);
+      resolve();
+    });
+
+    response.data.on("error", reject);
   });
 }
 
