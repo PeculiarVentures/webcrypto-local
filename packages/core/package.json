@@ -1,6 +1,6 @@
 {
   "name": "@webcrypto-local/core",
-  "version": "1.7.7",
+  "version": "1.9.0",
   "description": "A package of `webcrypto-local` framework",
   "keywords": [],
   "author": "PeculiarVentures",
