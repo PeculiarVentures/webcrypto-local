@@ -121,7 +121,7 @@ async function main() {
               p.resolve("12345678");
               break;
             default:
-              p.resolve("12345678");
+              p.resolve("123456");
               break;
             // throw new Error("Unknown token");
           }
