@@ -83,10 +83,11 @@ export class SubtleCrypto extends CoreSubtleCrypto implements NativeSubtleCrypto
     return getEngine().crypto.subtle.digest(algorithm, data as ArrayBuffer);
   }
 
+  public async generateKey(algorithm: "Ed25519", extractable: boolean, keyUsages: ReadonlyArray<"sign" | "verify">): Promise<CryptoKeyPair>;
   public async generateKey(algorithm: RsaHashedKeyGenParams | EcKeyGenParams, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKeyPair>;
   public async generateKey(algorithm: AesKeyGenParams | HmacKeyGenParams | Pbkdf2Params, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
   public async generateKey(algorithm: AlgorithmIdentifier, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKeyPair | CryptoKey>;
-  public async generateKey(algorithm: AlgorithmIdentifier, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey | CryptoKeyPair> {
+  public async generateKey(algorithm: AlgorithmIdentifier, extractable: boolean, keyUsages: any): Promise<CryptoKey | CryptoKeyPair> {
     // check
     utils.checkAlgorithm(algorithm, "algorithm");
     utils.checkPrimitive(extractable, "boolean", "extractable");

@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.15",
+  "version": "1.1.16",
   "cards": [
     {
       "atr": "3BD518FF8191FE1FC38073C821100A",
@@ -514,7 +514,10 @@
       "file": {
         "osx": "/usr/local/lib/libykcs11.dylib",
         "linux": "/usr/local/lib/libykcs11.so",
-        "windows": "%WINDIR/System32/libykcs11-1.dll"
+        "windows": [
+          "%PROGRAMFILES/Yubico/Yubico PIV Tool/bin/libykcs11.dll",
+          "%WINDIR/System32/libykcs11-1.dll"
+        ]
       }
     },
     {

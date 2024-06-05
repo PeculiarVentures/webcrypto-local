@@ -51,8 +51,8 @@ before(async () => {
         resolve();
         console.info("info:", `WebSocket Server started`);
       })
-      .on("info", (msg) => {
-        // console.log(msg);
+      .on("info", (level, source, message, data) => {
+        // console.log(`${source} [${level}]:`, message, data);
       })
       .on("token_new", (card) => {
         console.log("New token:", card);
