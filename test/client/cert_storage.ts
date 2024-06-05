@@ -39,8 +39,9 @@ context("WebCrypto Socket", () => {
         await ws.login();
       }
       const info = await ws.info();
+      console.log("providers", info.providers);
       const providers = info.providers.filter((provider) => provider.name === PROVIDER_NAME);
-      assert.strictEqual(providers.length, 1, `Cannot get provider by name ${PROVIDER_NAME}`);
+      assert.strictEqual(providers.length, 1, `Cannot get provider by name '${PROVIDER_NAME}'`);
       crypto = await ws.getCrypto(providers[0].id);
       if (!(await crypto.isLoggedIn())) {
         await crypto.login();
