@@ -40,6 +40,8 @@ jobs:
 
       - name: Run test with coverage
         run: npm run coverage
+        env:
+          SOFT_HSM_LIBRARY: /usr/local/Cellar/softhsm/2.6.1/lib/softhsm/libsofthsm2.so
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
