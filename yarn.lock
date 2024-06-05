@@ -6402,10 +6402,10 @@ pinkie@^2.0.0:
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
   integrity sha512-MnUuEycAemtSaeFSjXKW/aroV7akBbY+Sv+RkyqFjgAe73F+MR0TBWKBRDkmfWq/HiFmdavfZ1G7h4SPZXaCSg==
 
-pkcs11js@^2.0.1, pkcs11js@^2.1.1:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/pkcs11js/-/pkcs11js-2.1.2.tgz#a193abc3ebbcb6454563559315788515d016b152"
-  integrity sha512-hm2vZpbvs9EL1E+dHV6L1W5bUH+DRuIwQvsNgVjZI1bV22gSAGe/wVJut5D+RiyuaZHXHy9ZVlPzGJ+qZH/LEQ==
+pkcs11js@^2.0.1, pkcs11js@^2.1.1, pkcs11js@^2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/pkcs11js/-/pkcs11js-2.1.4.tgz#1a9ff218c37c53cc0d06065e4e81df7308b7b5ff"
+  integrity sha512-whhfbpM2YCot9IScGu3Tdq9HQAbs8vUqK2TTaYVok4VFLI21gu5u238T6CeGxGUXG81ukpab864JljaoMSt+XA==
 
 pkg-dir@^4.1.0, pkg-dir@^4.2.0:
   version "4.2.0"

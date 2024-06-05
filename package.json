@@ -94,7 +94,7 @@
     "trim-off-newlines": "^1.0.3",
     "shelljs": "^0.8.5",
     "asn1js": "^3.0.3",
-    "pkcs11js": "^2.1.1",
+    "pkcs11js": "^2.1.4",
     "@peculiar/asn1-schema": "^2.1.7",
     "tsprotobuf": "^1.0.19"
   },
