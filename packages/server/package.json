@@ -54,12 +54,11 @@
     "pcsclite": "^1.0.1",
     "pvtsutils": "^1.3.5",
     "pvutils": "^1.1.3",
-    "request": "^2.88.2",
     "tslib": "^2.6.3",
     "webcrypto-core": "^1.8.0",
     "ws": "^8.17.0"
   },
   "resolutions": {
-    "pkcs11js": "^2.1.1"
+    "pkcs11js": "^2.1.4"
   }
 }
