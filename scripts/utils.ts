@@ -1,13 +1,9 @@
 import * as childProcess from "child_process";
 import * as os from "os";
 import * as fs from "fs";
-import { stdout } from "process";
-import request from "request";
 import zip from "extract-zip";
 import "colors";
 import { prepareError } from "../packages/server/src/helper";
-
-const progress = require("request-progress");
 
 export class Logger {
   public static info(message: string) {
@@ -78,33 +74,69 @@ export async function run(cb: () => Promise<void>) {
   }
 }
 
+export async function fetchWithProgress(url: string, onProgress: (receivedLength: number, contentLength: number) => void): Promise<Uint8Array> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Cannot download file from ${url} (${response.statusText})`);
+  }
+
+  const reader = response.body?.getReader();
+  if (!reader) {
+    throw new Error("Cannot read response body");
+  }
+
+  // get content length
+  const contentLengthHeader = response.headers.get("Content-Length");
+  if (!contentLengthHeader) {
+    throw new Error("Cannot get content length");
+  }
+  const contentLength = parseInt(contentLengthHeader, 10);
+
+  let receivedLength = 0; // received that many bytes at the moment
+  const chunks = []; // array of received binary chunks (comprises the body)
+  while (true) {
+    const { done, value } = await reader.read();
+
+    if (done) {
+      break;
+    }
+
+    chunks.push(value);
+    receivedLength += value.length;
+
+    onProgress(receivedLength, contentLength);
+  }
+
+  // concatenate chunks into single Uint8Array
+  const chunksAll = new Uint8Array(receivedLength);
+  let position = 0;
+  for (const chunk of chunks) {
+    chunksAll.set(chunk, position);
+    position += chunk.length;
+  }
+
+  return chunksAll;
+}
+
 /**
  * Downloads file
- * @param url
- * @param dest
+ * @param url URL to download
+ * @param dest Destination file
  */
 export async function download(url: string, dest: string) {
-  return new Promise<void>((resolve, reject) => {
-    Logger.debug(`Downloading ${url}`);
+  Logger.debug(`Downloading ${url}`);
 
-    progress(request(url)
-      .on("response", (resp) => {
-        if (resp.statusCode !== 200) {
-          fs.unlinkSync(dest);
-          reject(new Error(`${resp.statusMessage}(${resp.statusCode})`));
-        }
-      }))
-      .on("progress", (state: any) => {
-        // write percentage
-        stdout.write(`Progress ${Math.floor(state.percent * 100)}%\r`.gray);
-      })
-      .on("error", reject)
-      .on("end", () => {
-        stdout.write("Progress 100%\n".gray);
-        resolve();
-      })
-      .pipe(fs.createWriteStream(dest));
+  const data = await fetchWithProgress(url, (receivedLength, contentLength) => {
+    const percentage = (receivedLength / contentLength) * 100;
+    process.stdout.clearLine(0);
+    process.stdout.cursorTo(0);
+    process.stdout.write(`Download progress: ${percentage.toFixed(2)}%`);
   });
+  process.stdout.write("\n");
+
+  // write the data to the destination file
+  fs.writeFileSync(dest, data);
+  Logger.info(`Downloaded to ${dest}`);
 }
 
 export async function extract(zipFile: string, absolutePath: string) {

@@ -1,22 +1,20 @@
-import * as Asn1Js from "asn1js";
+import * as x509 from "@peculiar/x509";
 import { Crypto, CryptoKey } from "node-webcrypto-p11";
 import * as core from "webcrypto-core";
 import { Certificate } from "./cert";
-import { nameToString } from "./x500_name";
-import { CertificationRequest, setEngine, CryptoEngine } from "pkijs";
 
 
 export class X509CertificateRequest extends Certificate implements core.CryptoX509CertificateRequest {
 
   public type: "request" = "request";
 
-  protected asn1: any;
+  protected asn1!: x509.Pkcs10CertificateRequest;
 
   /**
    * Gets a subject name of the certificate
    */
   public get subjectName(): string {
-    return nameToString(this.asn1.subject);
+    return this.asn1.subject;
   }
 
   /**
@@ -30,8 +28,7 @@ export class X509CertificateRequest extends Certificate implements core.CryptoX5
       this.raw = new Uint8Array(rawData.buffer);
     }
     this.raw = new Uint8Array(rawData as ArrayBuffer);
-    const asn1 = Asn1Js.fromBER(this.raw.buffer);
-    this.asn1 = new CertificationRequest({ schema: asn1.result });
+    this.asn1 = new x509.Pkcs10CertificateRequest(rawData);
   }
 
   /**
@@ -42,11 +39,11 @@ export class X509CertificateRequest extends Certificate implements core.CryptoX5
   public exportKey(provider: Crypto): Promise<CryptoKey>;
   public exportKey(provider: Crypto, algorithm: Algorithm, usages: string[]): Promise<CryptoKey>;
   public async exportKey(provider: Crypto, algorithm?: Algorithm, usages?: string[]): Promise<CryptoKey> {
-    setEngine("unknown", provider, new CryptoEngine({ name: "unknown", crypto: provider, subtle: provider.subtle }));
-    return this.asn1.getPublicKey(algorithm ? { algorithm: { algorithm, usages } } : null)
-      .then((key: CryptoKey) => {
-        return key;
-      });
+    const key = (algorithm && usages)
+      ? await this.asn1.publicKey.export(algorithm, usages as KeyUsage[], provider)
+      : this.asn1.publicKey.export(provider);
+
+    return key as CryptoKey;
   }
 
 }

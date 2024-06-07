@@ -1,5 +1,4 @@
 import { setEngine } from "2key-ratchet";
-import { Crypto } from "@peculiar/webcrypto";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
@@ -11,8 +10,7 @@ async function main() {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
   // Set crypto engine for 2key-ratchet
-  // App uses old version of @peculiar/webcrypto, because that version allows to save keys for 2key-ratchet
-  setEngine("WebCrypto NodeJS", new Crypto() as unknown as globalThis.Crypto);
+  setEngine("WebCrypto NodeJS", crypto);
 
   const platform = os.platform();
   const FORTIFY_DATA_DIR = path.join(os.homedir(), ".fortify");
@@ -47,7 +45,17 @@ async function main() {
       cardConfigPath: path.join(__dirname, "..", "packages", "cards", "lib", "card.json"),
       pvpkcs11,
       opensc,
-      providers,
+      providers: [
+        ...providers,
+        {
+          name: "SoftHSM",
+          lib: "/usr/local/lib/softhsm/libsofthsm2.so",
+          slots: [
+            0,
+            1,
+          ],
+        },
+      ],
       cards: [
         {
           name: "SafeNet5110 custom",

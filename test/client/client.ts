@@ -2,8 +2,7 @@ import * as client from "@webcrypto-local/client";
 import * as assert from "assert";
 import { SERVER_ADDRESS } from "../config";
 
-context("WebCrypto Socket", () => {
-
+context("WebCrypto Socket: Client", () => {
   const ws = new client.SocketProvider({ storage: new client.MemoryStorage() });
 
   before((done) => {
