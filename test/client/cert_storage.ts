@@ -1,3 +1,6 @@
+import { sha1 } from "@peculiar/asn1-rsa";
+import { OCSPRequest, TBSRequest, Request, CertID, OCSPResponse, OCSPResponseStatus } from "@peculiar/asn1-ocsp";
+import { AsnConvert, OctetString } from "@peculiar/asn1-schema";
 import * as client from "@webcrypto-local/client";
 import * as assert from "assert";
 import { Convert } from "pvtsutils";
@@ -156,8 +159,52 @@ context("WebCrypto Socket", () => {
       assert.equal(crl.byteLength > 0, true);
     });
 
-    it.skip("getOCSP", async () => {
-      // No test implementation
+    context("getOCSP", () => {
+      const issuerNameHash = Buffer.from("ABF377B2272DE78E18D5A67E5B1297DCE8C5DAC1", "hex");
+      const issuerKeyHash = Buffer.from("3AE10986D4CF19C29676744976DCE035C663639A", "hex");
+      const serialNumber = new Uint8Array(Buffer.from("00F3644E6B6E0050237E0946BD7BE1F51D", "hex")).buffer;
+      const url = "http://ocsp.usertrust.com";
+      let ocspRequestRaw: ArrayBuffer;
+      before(() => {
+        const ocspRequest = new OCSPRequest({
+          tbsRequest: new TBSRequest({
+            version: 0,
+            requestList: [
+              new Request({
+                reqCert: new CertID({
+                  hashAlgorithm: sha1,
+                  serialNumber,
+                  issuerNameHash: new OctetString(issuerNameHash),
+                  issuerKeyHash: new OctetString(issuerKeyHash),
+                }),
+              }),
+            ],
+          }),
+        });
+        ocspRequestRaw = AsnConvert.serialize(ocspRequest);
+      });
+
+      it("default", async () => {
+        const ocspResponseRaw = await crypto.certStorage.getOCSP(url, ocspRequestRaw);
+        const ocspResponse = AsnConvert.parse(ocspResponseRaw, OCSPResponse);
+        assert.equal(ocspResponse.responseStatus, OCSPResponseStatus.successful);
+      });
+
+      it("GET", async () => {
+        const ocspResponseRaw = await crypto.certStorage.getOCSP(url, ocspRequestRaw, {
+          method: "get",
+        });
+        const ocspResponse = AsnConvert.parse(ocspResponseRaw, OCSPResponse);
+        assert.equal(ocspResponse.responseStatus, OCSPResponseStatus.successful);
+      });
+
+      it("POST", async () => {
+        const ocspResponseRaw = await crypto.certStorage.getOCSP(url, ocspRequestRaw, {
+          method: "post",
+        });
+        const ocspResponse = AsnConvert.parse(ocspResponseRaw, OCSPResponse);
+        assert.equal(ocspResponse.responseStatus, OCSPResponseStatus.successful);
+      });
     });
 
     it("getChain", async () => {

@@ -7,7 +7,6 @@ import * as proto from "@webcrypto-local/proto";
 import * as graphene from "graphene-pk11";
 import * as wcp11 from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
-import request from "request";
 import { CryptoCertificateStorage, CryptoStorages } from "webcrypto-core";
 
 import { Server, Session } from "../connection";
@@ -394,38 +393,27 @@ export class CertificateStorageService extends Service<CryptoService> {
         });
 
         // do operation
-        const crlArray = await new Promise<ArrayBuffer>((resolve, reject) => {
-          request(params.url, { encoding: null }, (err, response, body) => {
-            try {
-              const message = `Cannot get CRL by URI '${params.url}'`;
-              if (err) {
-                throw new Error(`${message}. ${err.message}`);
-              }
-              if (response.statusCode !== 200) {
-                throw new Error(`${message}. Bad status ${response.statusCode}`);
-              }
+        const response = await fetch(params.url);
+        const message = `Cannot get CRL by URI '${params.url}'`;
 
-              if (Buffer.isBuffer(body)) {
-                body = body.toString("binary");
-              }
-              body = prepareData(body);
-              // convert body to ArrayBuffer
-              body = new Uint8Array(body).buffer;
+        if (!response.ok) {
+          throw new Error(`${message}. Bad status ${response.status}`);
+        }
 
-              // try to parse CRL for checking
-              try {
-                AsnConvert.parse(body, CertificateList);
-              } catch (e) {
-                console.error(e);
-                throw new Error(`Cannot parse received CRL from URI '${params.url}'`);
-              }
+        let body = await response.arrayBuffer();
 
-              resolve(body);
-            } catch (e) {
-              reject(e);
-            }
+        // try to parse CRL for checking
+        try {
+          AsnConvert.parse(body, CertificateList);
+        } catch (e) {
+          this.log("error", "certStorage/crl", {
+            url: params.url,
+            error: `${e}`,
           });
-        });
+          throw new Error(`Cannot parse received CRL from URI '${params.url}'`);
+        }
+
+        const crlArray = body;
 
         // result
         result.data = crlArray;
@@ -438,57 +426,45 @@ export class CertificateStorageService extends Service<CryptoService> {
 
         this.log("info", "certStorage/ocsp", {
           url: params.url,
+          method: params.options.method,
         });
 
         // do operation
-        const ocspArray = await new Promise<ArrayBuffer>((resolve, reject) => {
-          let url = params.url;
-          const options: request.CoreOptions = { encoding: null };
-          if (params.options.method === "get") {
-            // GET
-            const b64 = Buffer.from(params.url).toString("hex");
-            url += "/" + b64;
-            options.method = "get";
-          } else {
-            // POST
-            options.method = "post";
-            options.headers = { "Content-Type": "application/ocsp-request" };
-            options.body = Buffer.from(params.request);
-          }
-          request(url, options, (err, response, body) => {
-            try {
-              const message = `Cannot get OCSP by URI '${params.url}'`;
-              if (err) {
-                throw new Error(`${message}. ${err.message}`);
-              }
-              if (response.statusCode !== 200) {
-                throw new Error(`${message}. Bad status ${response.statusCode}`);
-              }
+        let url = params.url;
+        let options: RequestInit = {};
+        let body: ArrayBuffer;
 
-              if (Buffer.isBuffer(body)) {
-                body = body.toString("binary");
-              }
-              body = prepareData(body);
-              // convert body to ArrayBuffer
-              body = new Uint8Array(body).buffer;
+        if (params.options.method === "get") {
+          // GET
+          const b64 = Buffer.from(params.request).toString("base64url");
+          url += "/" + b64;
+          options.method = "GET";
+        } else {
+          // POST
+          options.method = "POST";
+          options.headers = { "Content-Type": "application/ocsp-request" };
+          options.body = Buffer.from(params.request);
+        }
 
-              // try to parse OCSP for checking
-              try {
-                AsnConvert.parse(body, OCSPResponse);
-              } catch (e) {
-                console.error(e);
-                throw new Error(`Cannot parse received OCSP from URI '${params.url}'`);
-              }
+        const response = await fetch(url, options);
+        const message = `Cannot get OCSP by URI '${params.url}'`;
 
-              resolve(body);
-            } catch (e) {
-              reject(e);
-            }
-          });
-        });
+        if (!response.ok) {
+          throw new Error(`${message}. Bad status ${response.status}`);
+        }
+
+        body = await response.arrayBuffer();
+
+        // try to parse OCSP for checking
+        try {
+          AsnConvert.parse(body, OCSPResponse);
+        } catch (e) {
+          console.error(e);
+          throw new Error(`Cannot parse received OCSP from URI '${params.url}'`);
+        }
 
         // result
-        result.data = ocspArray;
+        result.data = body;
 
         break;
       }
@@ -512,19 +488,4 @@ export class CertificateStorageService extends Service<CryptoService> {
     return res;
   }
 
-}
-
-/**
- * Convert DER/PEM string to buffer
- *
- * @param data    Incoming DER/PEM string
- */
-function prepareData(data: string) {
-  if (data.indexOf("-----") === 0) {
-    // incoming data is PEM encoded string
-    data = data.replace(/-----[\w\s]+-----/gi, "").replace(/[\n\r]/g, "");
-    return Buffer.from(data, "base64");
-  } else {
-    return Buffer.from(data, "binary");
-  }
 }

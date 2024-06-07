@@ -10,6 +10,10 @@ import * as utils from "./utils";
 
 const IMPORT_CERT_FORMATS = ["raw", "pem", "x509", "request"];
 
+export interface OCSPRequestOptions {
+  method: "post" | "get";
+}
+
 export class CertificateStorage implements CryptoCertificateStorage {
 
   public static isX509Certificate(data: any): data is CryptoX509CertificateProto {
@@ -273,7 +277,7 @@ export class CertificateStorage implements CryptoCertificateStorage {
     return data;
   }
 
-  public async getOCSP(url: string, request: BufferSource, options?: Proto.OCSPRequestOptions) {
+  public async getOCSP(url: string, request: BufferSource, options?: OCSPRequestOptions) {
     // check
     utils.checkPrimitive(url, "string", "url");
     utils.checkBufferSource(request, "request");
