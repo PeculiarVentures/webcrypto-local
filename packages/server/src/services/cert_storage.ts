@@ -400,7 +400,7 @@ export class CertificateStorageService extends Service<CryptoService> {
           throw new Error(`${message}. Bad status ${response.status}`);
         }
 
-        let body = await response.arrayBuffer();
+        const body = await response.arrayBuffer();
 
         // try to parse CRL for checking
         try {
@@ -431,7 +431,7 @@ export class CertificateStorageService extends Service<CryptoService> {
 
         // do operation
         let url = params.url;
-        let options: RequestInit = {};
+        const options: RequestInit = {};
         let body: ArrayBuffer;
 
         if (params.options.method === "get") {

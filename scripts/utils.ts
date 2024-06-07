@@ -93,7 +93,7 @@ export async function fetchWithProgress(url: string, onProgress: (receivedLength
   const contentLength = parseInt(contentLengthHeader, 10);
 
   let receivedLength = 0; // received that many bytes at the moment
-  let chunks = []; // array of received binary chunks (comprises the body)
+  const chunks = []; // array of received binary chunks (comprises the body)
   while (true) {
     const { done, value } = await reader.read();
 
@@ -108,9 +108,9 @@ export async function fetchWithProgress(url: string, onProgress: (receivedLength
   }
 
   // concatenate chunks into single Uint8Array
-  let chunksAll = new Uint8Array(receivedLength);
+  const chunksAll = new Uint8Array(receivedLength);
   let position = 0;
-  for (let chunk of chunks) {
+  for (const chunk of chunks) {
     chunksAll.set(chunk, position);
     position += chunk.length;
   }

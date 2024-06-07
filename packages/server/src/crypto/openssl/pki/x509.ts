@@ -62,7 +62,7 @@ export class X509Certificate extends Certificate implements core.CryptoX509Certi
   public exportKey(provider: Crypto): Promise<CryptoKey>;
   public exportKey(provider: Crypto, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoKey>;
   public async exportKey(provider: Crypto, algorithm?: Algorithm, usages?: string[]): Promise<CryptoKey> {
-    let key = (algorithm && usages)
+    const key = (algorithm && usages)
       ? await this.asn1.publicKey.export(algorithm, usages as KeyUsage[], provider)
       : this.asn1.publicKey.export(provider);
 
