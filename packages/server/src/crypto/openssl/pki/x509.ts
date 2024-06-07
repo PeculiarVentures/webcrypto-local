@@ -1,32 +1,28 @@
-import * as Asn1Js from "asn1js";
+import * as x509 from "@peculiar/x509";
 import { Crypto, CryptoKey } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
-import * as pkijs from "pkijs";
 import * as core from "webcrypto-core";
 import { Certificate } from "./cert";
 import { nameToString } from "./x500_name";
-
-const { setEngine, CryptoEngine } = pkijs;
-const PKICertificate = pkijs.Certificate;
 
 export class X509Certificate extends Certificate implements core.CryptoX509Certificate {
 
   public readonly type = "x509";
 
-  protected asn1: any;
+  protected asn1!: x509.X509Certificate;
 
   /**
    * Gets a serial number of the certificate in HEX format
    */
   public get serialNumber(): string {
-    return Convert.ToHex(new Uint8Array(this.asn1.serialNumber.valueBlock.valueHex));
+    return this.asn1.serialNumber;
   }
 
   /**
    * Gets a issuer name of the certificate
    */
   public get issuerName(): string {
-    return nameToString(this.asn1.issuer);
+    return this.asn1.issuer;
   }
 
   /**
@@ -37,11 +33,11 @@ export class X509Certificate extends Certificate implements core.CryptoX509Certi
   }
 
   public get notBefore(): Date {
-    return this.asn1.notBefore.value;
+    return this.asn1.notBefore;
   }
 
   public get notAfter(): Date {
-    return this.asn1.notAfter.value;
+    return this.asn1.notAfter;
   }
 
   /**
@@ -55,8 +51,7 @@ export class X509Certificate extends Certificate implements core.CryptoX509Certi
       this.raw = new Uint8Array(rawData.buffer);
     }
     this.raw = new Uint8Array(rawData as ArrayBuffer);
-    const asn1 = Asn1Js.fromBER(this.raw.buffer);
-    this.asn1 = new PKICertificate({ schema: asn1.result });
+    this.asn1 = new x509.X509Certificate(this.raw);
   }
 
   /**
@@ -67,9 +62,11 @@ export class X509Certificate extends Certificate implements core.CryptoX509Certi
   public exportKey(provider: Crypto): Promise<CryptoKey>;
   public exportKey(provider: Crypto, algorithm: Algorithm, keyUsages: string[]): Promise<CryptoKey>;
   public async exportKey(provider: Crypto, algorithm?: Algorithm, usages?: string[]): Promise<CryptoKey> {
-    setEngine("unknown", provider, new CryptoEngine({ name: "unknown", crypto: provider, subtle: provider.subtle }));
-    const key = await this.asn1.getPublicKey(algorithm ? { algorithm: { algorithm, usages } } : null);
-    return key;
+    let key = (algorithm && usages)
+      ? await this.asn1.publicKey.export(algorithm, usages as KeyUsage[], provider)
+      : this.asn1.publicKey.export(provider);
+
+    return key as CryptoKey;
   }
 
 }

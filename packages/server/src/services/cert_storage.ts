@@ -1,16 +1,16 @@
+import { CertificateList } from "@peculiar/asn1-x509";
+import { OCSPResponse } from "@peculiar/asn1-ocsp";
+import { AsnConvert } from "@peculiar/asn1-schema";
 import { Crypto } from "@peculiar/webcrypto";
 import { X509Certificate, X509ChainBuilder } from "@peculiar/x509";
 import * as proto from "@webcrypto-local/proto";
-import * as asn1js from "asn1js";
 import * as graphene from "graphene-pk11";
 import * as wcp11 from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
 import request from "request";
 import { CryptoCertificateStorage, CryptoStorages } from "webcrypto-core";
-import * as pkijs from "pkijs";
 
 import { Server, Session } from "../connection";
-import { PvCrypto } from "../crypto";
 import { ServiceCryptoItem } from "../crypto_item";
 import { WebCryptoLocalError } from "../error";
 import { CryptoService } from "./crypto";
@@ -270,15 +270,17 @@ export class CertificateStorageService extends Service<CryptoService> {
         if (cert.type !== "x509") {
           throw new WebCryptoLocalError(WebCryptoLocalError.CODE.ACTION_COMMON, "Wrong item type, must be 'x509'");
         }
+        const x509Cert = cert as wcp11.X509Certificate;
 
         // do operation
         const resultProto = new proto.CertificateStorageGetChainResultProto();
-        const pkiEntryCert = await certC2P(crypto, cert);
-        if (pkiEntryCert.subject.isEqual(pkiEntryCert.issuer)) { // self-signed
+
+        if (x509Cert.subjectName === x509Cert.issuerName) { // Self-signed certificate
           // Don't build chain for self-signed certificates
+          const certDer = await crypto.certStorage.exportCert("raw", cert);
           const itemProto = new proto.ChainItemProto();
           itemProto.type = "x509";
-          itemProto.value = pkiEntryCert.toSchema(true).toBER(false);
+          itemProto.value = certDer;
 
           resultProto.items.push(itemProto);
         } else if ("session" in crypto) {
@@ -412,16 +414,7 @@ export class CertificateStorageService extends Service<CryptoService> {
 
               // try to parse CRL for checking
               try {
-                const asn1 = asn1js.fromBER(body);
-                if (asn1.result.error) {
-                  throw new Error(`ASN1: ${asn1.result.error}`);
-                }
-                const crl = new pkijs.CertificateRevocationList({
-                  schema: asn1.result,
-                });
-                if (!crl) {
-                  throw new Error(`variable crl is empty`);
-                }
+                AsnConvert.parse(body, CertificateList);
               } catch (e) {
                 console.error(e);
                 throw new Error(`Cannot parse received CRL from URI '${params.url}'`);
@@ -479,18 +472,9 @@ export class CertificateStorageService extends Service<CryptoService> {
               // convert body to ArrayBuffer
               body = new Uint8Array(body).buffer;
 
-              // try to parse CRL for checking
+              // try to parse OCSP for checking
               try {
-                const asn1 = asn1js.fromBER(body);
-                if (asn1.result.error) {
-                  throw new Error(`ASN1: ${asn1.result.error}`);
-                }
-                const ocsp = new pkijs.OCSPResponse({
-                  schema: asn1.result,
-                });
-                if (!ocsp) {
-                  throw new Error(`variable ocsp is empty`);
-                }
+                AsnConvert.parse(body, OCSPResponse);
               } catch (e) {
                 console.error(e);
                 throw new Error(`Cannot parse received OCSP from URI '${params.url}'`);
@@ -543,17 +527,4 @@ function prepareData(data: string) {
   } else {
     return Buffer.from(data, "binary");
   }
-}
-
-/**
- * Converts CryptoCertificate to PKIjs Certificate
- *
- * @param crypto      Crypto provider
- * @param cert        Crypto certificate
- */
-async function certC2P(provider: CryptoStorages, cert: wcp11.CryptoCertificate) {
-  const certDer = await provider.certStorage.exportCert("raw", cert as any);
-  const asn1 = asn1js.fromBER(certDer);
-  const pkiCert = new pkijs.Certificate({ schema: asn1.result });
-  return pkiCert;
 }
