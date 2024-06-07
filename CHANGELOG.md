@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.10.0](https://github.com/PeculiarVentures/webcrypto-local/compare/v1.9.0...v1.10.0) (2024-06-07)
+
+
+### Features
+
+* remove pkijs and asn1js from dependencies ([7ba592c](https://github.com/PeculiarVentures/webcrypto-local/commit/7ba592ccffda809e5e6c844f5d9dd53a6a21c92a))
+
+
+
+
+
 # [1.9.0](https://github.com/PeculiarVentures/webcrypto-local/compare/v1.8.2...v1.9.0) (2024-06-05)
 
 
