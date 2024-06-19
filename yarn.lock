@@ -1679,13 +1679,13 @@
     tslib "^2.6.2"
 
 "@peculiar/asn1-schema@^1.0.3", "@peculiar/asn1-schema@^2.1.7", "@peculiar/asn1-schema@^2.3.8":
-  version "2.3.6"
-  resolved "https://registry.yarnpkg.com/@peculiar/asn1-schema/-/asn1-schema-2.3.6.tgz#3dd3c2ade7f702a9a94dfb395c192f5fa5d6b922"
-  integrity sha512-izNRxPoaeJeg/AyH8hER6s+H7p4itk+03QCa4sbxI3lNdseQYCuxzgsuNK8bTXChtLTjpJz6NmXKA73qLa3rCA==
+  version "2.3.8"
+  resolved "https://registry.yarnpkg.com/@peculiar/asn1-schema/-/asn1-schema-2.3.8.tgz#04b38832a814e25731232dd5be883460a156da3b"
+  integrity sha512-ULB1XqHKx1WBU/tTFIA+uARuRoBVZ4pNdOA878RDrRbBfBGcSzi5HBkdScC6ZbHn8z7L8gmKCgPC1LHRrP46tA==
   dependencies:
     asn1js "^3.0.5"
-    pvtsutils "^1.3.2"
-    tslib "^2.4.0"
+    pvtsutils "^1.3.5"
+    tslib "^2.6.2"
 
 "@peculiar/asn1-x509-attr@^2.3.8":
   version "2.3.8"
@@ -6368,9 +6368,9 @@ pinkie@^2.0.0:
   integrity sha512-MnUuEycAemtSaeFSjXKW/aroV7akBbY+Sv+RkyqFjgAe73F+MR0TBWKBRDkmfWq/HiFmdavfZ1G7h4SPZXaCSg==
 
 pkcs11js@^2.0.1, pkcs11js@^2.1.1, pkcs11js@^2.1.4:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/pkcs11js/-/pkcs11js-2.1.4.tgz#1a9ff218c37c53cc0d06065e4e81df7308b7b5ff"
-  integrity sha512-whhfbpM2YCot9IScGu3Tdq9HQAbs8vUqK2TTaYVok4VFLI21gu5u238T6CeGxGUXG81ukpab864JljaoMSt+XA==
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/pkcs11js/-/pkcs11js-2.1.5.tgz#a430ceeae2e864a7414346f112f7978aa636a0c2"
+  integrity sha512-SPwgRyhcLRSeKt8fZ9zRhzRUPBUF2hIvyDRdiZyIv6r3oC4n8kDQ4bMLSpSLcmAzkoBT1ykskd8boXqPpEpzQw==
 
 pkg-dir@^4.1.0, pkg-dir@^4.2.0:
   version "4.2.0"
@@ -8080,9 +8080,9 @@ write-pkg@4.0.0:
     write-json-file "^3.2.0"
 
 ws@^8.17.0:
-  version "8.17.0"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-8.17.0.tgz#d145d18eca2ed25aaf791a183903f7be5e295fea"
-  integrity sha512-uJq6108EgZMAl20KagGkzCKfMEjxmKvZHG7Tlq0Z6nOky7YF7aq4mOx6xK8TJ/i1LeK4Qus7INktacctDgY8Ow==
+  version "8.17.1"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.17.1.tgz#9293da530bb548febc95371d90f9c878727d919b"
+  integrity sha512-6XQFvXTkbfUOZOKKILFG1PDK2NDQs4azKQl26T0YS5CxqWLgXajbPZ+h4gZekJyRqFU8pvnbAbbs/3TgRPy+GQ==
 
 xtend@^2.2.0:
   version "2.2.0"
