@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.17",
+  "version": "1.1.18",
   "cards": [
     {
       "atr": "3BD518FF8191FE1FC38073C821100A",
@@ -483,7 +483,7 @@
       "name": "SafeNet Authentication Client",
       "config": {
         "template": {
-          "copy": {
+          "generate": {
             "private": {
               "token": true,
               "sensitive": true,
