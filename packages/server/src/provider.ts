@@ -265,7 +265,7 @@ export class LocalProvider extends core.EventLogEmitter {
     return crypto;
   }
 
-  protected async onTokenInsert(card: Card) {
+    protected async onTokenInsert(card: Card) {
     this.log("info", "Token was added to the reader", {
       reader: card.reader,
       name: card.name,
@@ -274,10 +274,9 @@ export class LocalProvider extends core.EventLogEmitter {
 
     let lastError: Error | null = null;
     for (const lib of card.libraries) {
-      const library = typeof lib === "string"
-        ? lib
-        : lib.path;
+      const library = typeof lib === "string" ? lib : lib.path;
       const type: CardLibraryType = typeof lib === "string" ? "config" : lib.type;
+      let mod: graphene.Module | undefined;
       try {
         this.log("info", "Loading PKCS#11 library", {
           library,
@@ -289,7 +288,6 @@ export class LocalProvider extends core.EventLogEmitter {
           continue;
         }
 
-        let mod: graphene.Module | undefined;
         try {
           mod = graphene.Module.load(library, card.name);
         } catch (err) {
@@ -337,6 +335,9 @@ export class LocalProvider extends core.EventLogEmitter {
           // lastError = `Cannot find matching slot for '${card.reader}' reader`;
           continue;
         }
+
+        mod.finalize();
+        mod.close();
 
         const addInfos: core.ProviderCrypto[] = [];
         slotIndexes.forEach((slotIndex) => {
@@ -400,41 +401,13 @@ export class LocalProvider extends core.EventLogEmitter {
 
       //#region Find slots from removed token
       const cryptoIDs: string[] = [];
-      for (const lib of card.libraries) {
-        const library = typeof lib === "string"
-          ? lib
-          : lib.path;
-        try {
-
-          const mod = graphene.Module.load(library, card.name);
-          await pauseAsync();
-          try {
-            mod.initialize();
-          } catch (e) {
-            const err = prepareError(e);
-            if (/CRYPTOKI_ALREADY_INITIALIZED/.test(err.message)) {
-              throw err;
-            }
-          }
-
-          //#region Look for removed slots
-          const slots = mod.getSlots(true);
-          this.crypto.forEach((crypto, key) => {
-            const cryptoModule: graphene.Module = (crypto as any).module;
-            const cryptoSlot: graphene.Slot = (crypto as any).slot;
-            if (cryptoModule.libFile === mod.libFile) {
-              if (slots.indexOf(cryptoSlot) === -1) {
-                cryptoIDs.push(key);
-              }
-            }
-          });
-          //#endregion
-
-        } catch (err) {
-          this.emit("error", new WebCryptoLocalError(
-            WebCryptoLocalError.CODE.TOKEN_REMOVE_TOKEN_READING,
-            `Cannot find removed slot in PKCS#11 library ${library}. ${stringifyError(err)}`,
-          ));
+      for (const [id, provider] of this.crypto) {
+        // find provider with the same name and reader
+        if (
+          provider.info?.reader === card.reader &&
+          provider.info?.name === card.name
+        ) {
+          cryptoIDs.push(id);
         }
       }
 
@@ -493,6 +466,7 @@ export class LocalProvider extends core.EventLogEmitter {
       });
       try {
         cryptoModule.finalize();
+        cryptoModule.close();
       } catch (err) {
         this.emit("error", prepareError(err));
       }

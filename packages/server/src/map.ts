@@ -7,7 +7,31 @@ export interface MapChangeEvent<T> {
 }
 export type MapChangeHandle<T> = (e: MapChangeEvent<T>) => void;
 
-export abstract class Map<T> extends core.EventLogEmitter {
+export abstract class Map<T>
+  extends core.EventLogEmitter
+  implements Iterable<[string, T]>
+{
+  [Symbol.iterator](): Iterator<[string, T], any, undefined> {
+    const keys = Object.keys(this.items);
+    let index = 0;
+    return {
+      next: () => {
+        if (index < keys.length) {
+          const key = keys[index];
+          const item = this.items[key];
+          index++;
+          return {
+            value: [key, item],
+            done: false,
+          };
+        }
+        return {
+          value: undefined,
+          done: true,
+        };
+      },
+    };
+  }
 
   protected items: core.Assoc<T> = {};
 
@@ -46,7 +70,13 @@ export abstract class Map<T> extends core.EventLogEmitter {
 
   public emit(event: "add", e: MapChangeEvent<T>): boolean;
   public emit(event: "remove", e: MapChangeEvent<T>): boolean;
-  public emit(event: "info", level: core.LogLevel, source: string, message: string, data?: core.LogData): boolean;
+  public emit(
+    event: "info",
+    level: core.LogLevel,
+    source: string,
+    message: string,
+    data?: core.LogData
+  ): boolean;
   public emit(event: string, ...args: any[]): boolean;
   public emit(event: string, ...args: any[]): boolean {
     return super.emit(event, ...args);
@@ -54,20 +84,20 @@ export abstract class Map<T> extends core.EventLogEmitter {
 
   public add(key: string, item: T) {
     this.items[key] = item;
-    this.emit("add", ({
+    this.emit("add", {
       key,
       item,
-    }));
+    });
   }
 
   public remove(key: string) {
     const item = this.items[key];
     if (item) {
       delete this.items[key];
-      this.emit("remove", ({
+      this.emit("remove", {
         key,
         item,
-      }));
+      });
     }
   }
 
@@ -81,14 +111,18 @@ export abstract class Map<T> extends core.EventLogEmitter {
     return this.items[id];
   }
 
-  public forEach(callback: (item: T, index: string, array: this) => void): this {
+  public forEach(
+    callback: (item: T, index: string, array: this) => void
+  ): this {
     for (const index in this.items) {
       callback(this.items[index], index, this);
     }
     return this;
   }
 
-  public some(callback: (item: T, index: string, array: this) => boolean): boolean {
+  public some(
+    callback: (item: T, index: string, array: this) => boolean
+  ): boolean {
     for (const index in this.items) {
       if (callback(this.items[index], index, this)) {
         return true;
@@ -104,5 +138,4 @@ export abstract class Map<T> extends core.EventLogEmitter {
     }
     return res;
   }
-
 }

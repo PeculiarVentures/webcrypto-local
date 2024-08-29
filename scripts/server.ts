@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import { setEngine } from "2key-ratchet";
 import * as fs from "fs";
 import * as os from "os";
@@ -10,7 +11,7 @@ async function main() {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
   // Set crypto engine for 2key-ratchet
-  setEngine("WebCrypto NodeJS", crypto);
+  setEngine("WebCrypto NodeJS", crypto.webcrypto as Crypto);
 
   const platform = os.platform();
   const FORTIFY_DATA_DIR = path.join(os.homedir(), ".fortify");
