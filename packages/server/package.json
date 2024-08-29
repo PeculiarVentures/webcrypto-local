@@ -39,26 +39,26 @@
   },
   "dependencies": {
     "2key-ratchet": "^1.0.18",
-    "@peculiar/asn1-ocsp": "^2.3.8",
-    "@peculiar/asn1-schema": "^2.3.8",
-    "@peculiar/asn1-x509": "^2.3.8",
+    "@peculiar/asn1-ocsp": "^2.3.13",
+    "@peculiar/asn1-schema": "^2.3.13",
+    "@peculiar/asn1-x509": "^2.3.13",
     "@peculiar/json-schema": "^1.1.12",
     "@peculiar/webcrypto": "1.0.22",
-    "@peculiar/x509": "^1.11.0",
+    "@peculiar/x509": "^1.12.1",
     "@types/pvutils": "^1.0.4",
     "@webcrypto-local/cards": "^1.10.2",
     "@webcrypto-local/core": "^1.9.0",
     "@webcrypto-local/proto": "^1.9.0",
-    "graphene-pk11": "^2.3.5",
-    "node-webcrypto-p11": "^2.6.4",
+    "graphene-pk11": "^2.3.6",
+    "node-webcrypto-p11": "^2.6.5",
     "pcsclite": "^1.0.1",
     "pvtsutils": "^1.3.5",
     "pvutils": "^1.1.3",
-    "tslib": "^2.6.3",
+    "tslib": "^2.7.0",
     "webcrypto-core": "^1.8.0",
     "ws": "^8.17.0"
   },
   "resolutions": {
-    "pkcs11js": "^2.1.4"
+    "pkcs11js": "^2.1.6"
   }
 }
