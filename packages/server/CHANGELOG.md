@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.3](https://github.com/PeculiarVentures/webcrypto-local/compare/v1.10.2...v1.10.3) (2024-08-29)
+
+
+### Bug Fixes
+
+* changed the logic of deleting the provider when deleting the token from the device ([1d02029](https://github.com/PeculiarVentures/webcrypto-local/commit/1d020293477a25a4892e07e284d0d2f61c2af2ba))
+* Improve PCSC watcher to handle the PCSC service being stopped ([e71059e](https://github.com/PeculiarVentures/webcrypto-local/commit/e71059ef4290aaa39a38195fdae2113f0e904dcf))
+* Make Map iterable ([9e3d9ea](https://github.com/PeculiarVentures/webcrypto-local/commit/9e3d9ea8d86c4cf42959dca278844d06e2370c18))
+
+
+
+
+
 ## [1.10.2](https://github.com/PeculiarVentures/webcrypto-local/compare/v1.10.1...v1.10.2) (2024-07-30)
 
 **Note:** Version bump only for package @webcrypto-local/server
