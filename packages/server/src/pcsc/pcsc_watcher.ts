@@ -23,11 +23,10 @@ export class PCSCWatcher extends core.EventLogEmitter {
 
   public start(): this {
     if (this.startCalls > 3) { // Adjust the maximum recursion limit as needed
-      this.log("info", "PCSC restart limit reached");
+      this.log("warn", "PCSC start calls limit reached. Restarting PCSC");
       this.startCalls = 0;
       // Wait and restart pcsc again
       setTimeout(() => {
-        this.pcsc?.removeAllListeners();
         this.start();
       }, 1e5);
       return this;
@@ -35,6 +34,7 @@ export class PCSCWatcher extends core.EventLogEmitter {
 
     this.log("info", "Start PCSC listening");
     this.startCalls += 1; // Increment the start call counter
+    console.log(`PCSC startCalls: ${this.startCalls}`);
 
     try {
       this.pcsc = pcsc();
@@ -47,7 +47,9 @@ export class PCSCWatcher extends core.EventLogEmitter {
           this.pcsc?.removeAllListeners();
           // PCSCLite closes session on PCSC error. For that case we need to restart it with small delay.
           // See https://github.com/PeculiarVentures/fortify/issues/421
-          setTimeout(this.start, 1e3);
+          setTimeout(() => {
+            this.start()
+          }, 1e3);
         }
       });
       this.pcsc.on("reader", (reader) => {
@@ -115,9 +117,15 @@ export class PCSCWatcher extends core.EventLogEmitter {
             atr = null;
           }
         });
+
+        // Reset startCalls counter on successful connection
+        this.startCalls = 0;
       });
     } catch (err) {
       this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PCSC_CANNOT_START));
+      setTimeout(() => {
+        this.start();
+      }, 1e3);
     }
     return this;
   }
