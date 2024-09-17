@@ -90,7 +90,6 @@ async function main() {
   };
 
   new server.LocalServer(options)
-    .listen("127.0.0.1:31337")
     .on("listening", (e: any) => {
       console.log("Started at 127.0.0.1:31337");
     })
@@ -108,6 +107,7 @@ async function main() {
       console.log("Identity changed");
     })
     .on("error", (e: Error) => {
+      console.log("Error:");
       console.error(e);
     })
     .on("notify", (p: any) => {
@@ -143,7 +143,8 @@ async function main() {
     })
     .on("close", (e: any) => {
       console.log("Close:", e.remoteAddress);
-    });
+    })
+    .listen("127.0.0.1:31337");
 }
 
 main();
