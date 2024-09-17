@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.18",
+  "version": "1.1.20",
   "cards": [
     {
       "atr": "3BD518FF8191FE1FC38073C821100A",
@@ -379,6 +379,16 @@
       "driver": "39b3d7a3662c4b48bb120d008dd18648"
     },
     {
+      "atr": "3B7F96000080318065B085050039120FFE829000",
+      "name": "ID Prime 940C",
+      "driver": "39b3d7a3662c4b48bb120d008dd18648"
+    },
+    {
+      "atr": "3BFF9600008131FE4380318065B0855956FB120FFC82900002",
+      "name": "ID Prime 3940B FIDO",
+      "driver": "39b3d7a3662c4b48bb120d008dd18648"
+    },
+    {
       "atr": "3b7f96000080318065b084565110120ffe829000",
       "name": "Gemalto IDBridge CT30",
       "driver": "FB52636E98F44EBE837DB93C46721463"
@@ -493,7 +503,13 @@
         }
       },
       "file": {
-        "windows": "%WINDIR/System32/eTPKCS11.dll",
+        "windows": {
+          "x64": [
+            "%WINDIR/System32/eTPKCS11.dll",
+            "%PROGRAMFILES/SafeNet/Authentication/SAC/x64/IDPrimePKCS1164.dll"
+          ],
+          "x86": "%WINDIR/System32/eTPKCS11.dll"
+        },
         "osx": "/usr/local/lib/libeTPkcs11.dylib",
         "linux": "/usr/lib/libeTPkcs11.so"
       }
