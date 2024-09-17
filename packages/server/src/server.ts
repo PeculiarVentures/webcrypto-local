@@ -44,13 +44,16 @@ export class LocalServer extends core.EventLogEmitter {
     this.server = new Server(options);
 
     if (!options.disablePCSC) {
-      this.cardReader = new CardReaderService(this.server)
-        .on("info", (level, source, message, data) => {
-          this.emit("info", level, source, message, data);
-        })
-        .on("error", (e) => {
-          this.emit("error", e);
-        });
+        // The CardReaderService is disabled because it is not used on the client side,
+        // but it duplicates log entries for PCSCWatcher.
+
+        // this.cardReader = new CardReaderService(this.server)
+        //   .on("info", (level, source, message, data) => {
+        //     this.emit("info", level, source, message, data);
+        //   })
+        //   .on("error", (e) => {
+        //     this.emit("error", e);
+        //   });
     } else {
       // Disable PCSC for provider too
       options.config.disablePCSC = true;
