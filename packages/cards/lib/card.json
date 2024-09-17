@@ -1,7 +1,17 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.18",
+  "version": "1.1.19",
   "cards": [
+    {
+      "atr": "3B7F9600008031805843657274756D3031829000",
+      "name": "Certum ACR39U ICC Reader",
+      "driver": "1F2E6799FC1085ED55C36287433530D68689A7C0"
+    },
+    {
+      "atr": "3B9F9681B1FE451F070064051EB20031B0739621DB0590005C",
+      "name": "SCM Microsystems Inc. SCR3310 USB Smart Card Reader",
+      "driver": "1F2E6799FC1085ED55C36287433530D68689A7C0"
+    },
     {
       "atr": "3BD518FF8191FE1FC38073C821100A",
       "name": "ePass2003",
@@ -420,6 +430,13 @@
     }
   ],
   "drivers": [
+    {
+      "id": "1F2E6799FC1085ED55C36287433530D68689A7C0",
+      "name": "cryptoCertum 3",
+      "file": {
+        "windows": "%WINDIR/System32/cryptoCertum3PKCS.dll"
+      }
+    },
     {
       "id": "29a2bd60c4b841c686be68d2874c0c02",
       "name": "Athena IDProtect",
