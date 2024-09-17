@@ -33,11 +33,10 @@ export class PCSCWatcher extends core.EventLogEmitter {
   /**
    * Maximum number of restart attempts after warning
    */
-  private static readonly MAX_RESTART_ATTEMPTS = 10;
+  private static readonly MAX_RESTART_ATTEMPTS = 12;
 
   private static readonly START_DELAY = 1e3; // 1 second
-  private static readonly RESTART_DELAY = 1e4; // 10 seconds
-  // private static readonly RESTART_DELAY = 600000; // 10 minutes
+  private static readonly RESTART_DELAY = 300000; // 5 minutes
 
   private constructor() {
     super();
