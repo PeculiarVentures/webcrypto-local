@@ -107,7 +107,6 @@ async function main() {
       console.log("Identity changed");
     })
     .on("error", (e: Error) => {
-      console.log("Error:");
       console.error(e);
     })
     .on("notify", (p: any) => {
