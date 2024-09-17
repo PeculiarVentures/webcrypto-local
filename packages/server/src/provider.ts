@@ -162,31 +162,31 @@ export class LocalProvider extends core.EventLogEmitter {
     //#region Add providers from config list
     this.config.providers = this.config.providers || [];
     for (const prov of this.config.providers) {
-      prov.slots = prov.slots || [0];
-      for (const slot of prov.slots) {
-        if (fs.existsSync(prov.lib)) {
-          try {
-            const crypto = new Pkcs11Crypto({
-              library: prov.lib,
-              libraryParameters: prov.libraryParameters,
-              slot,
-              readWrite: true,
-            });
-            if (prov.config) {
-              this.log("info", "Use ConfigTemplateBuilder", prov.config);
-              crypto.templateBuilder = new ConfigTemplateBuilder(prov.config);
-            } else {
-              this.log("info", "Use default TemplateBuilder");
+      if (fs.existsSync(prov.lib)) {
+        prov.slots = prov.slots || [0];
+        for (const slot of prov.slots) {
+            try {
+              const crypto = new Pkcs11Crypto({
+                library: prov.lib,
+                libraryParameters: prov.libraryParameters,
+                slot,
+                readWrite: true,
+              });
+              if (prov.config) {
+                this.log("info", "Use ConfigTemplateBuilder", prov.config);
+                crypto.templateBuilder = new ConfigTemplateBuilder(prov.config);
+              } else {
+                this.log("info", "Use default TemplateBuilder");
+              }
+              this.addProvider(crypto, {
+                name: prov.name,
+              });
+            } catch (err) {
+              this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `Provider:open Cannot load PKCS#11 library by path ${prov.lib}. ${stringifyError(err)}`));
             }
-            this.addProvider(crypto, {
-              name: prov.name,
-            });
-          } catch (err) {
-            this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PROVIDER_INIT, `Provider:open Cannot load PKCS#11 library by path ${prov.lib}. ${stringifyError(err)}`));
-          }
-        } else {
-          this.log("info", `File ${prov.lib} does not exist`, { action: "open" });
         }
+      } else {
+        this.log("info", `File ${prov.lib} does not exist`, { action: "open" });
       }
     }
     //#endregion
@@ -195,7 +195,6 @@ export class LocalProvider extends core.EventLogEmitter {
     if (this.cards) {
       this.cards
         .on("error", (err) => {
-          this.emit("error", err);
           return this.emit("token", {
             added: [],
             removed: [],

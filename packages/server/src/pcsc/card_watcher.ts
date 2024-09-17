@@ -40,7 +40,7 @@ export class CardWatcher extends core.EventLogEmitter {
       this.options.opensc = options.opensc;
     }
     this.config = new CardConfig(options);
-    this.watcher = new PCSCWatcher();
+    this.watcher = PCSCWatcher.singleton;
     this.watcher
       .on("info", (level, source, message, data) => {
         this.emit("info", level, source, message, data);
