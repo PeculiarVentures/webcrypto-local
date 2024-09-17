@@ -50,7 +50,6 @@ export class PCSCWatcher extends core.EventLogEmitter {
   }
 
   private _start(): void {
-    console.log("Counters", this.startCalls, this.restartAttempts);
     if (this.startCalls >= PCSCWatcher.MAX_START_CALLS) {
       // Exceeded maximum start calls
       this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PCSC_CANNOT_START));
