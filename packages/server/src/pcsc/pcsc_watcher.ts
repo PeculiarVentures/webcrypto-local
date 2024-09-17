@@ -10,31 +10,70 @@ export interface PCSCWatcherEvent {
 
 export class PCSCWatcher extends core.EventLogEmitter {
 
+  public static singleton = new PCSCWatcher();
+
   public source = "pcsc";
 
   public readers: CardReader[] = [];
   protected pcsc: PCSCLite | null = null;
 
-  private startCalls = 0; // Track the number of start method calls
+  /**
+   * Track the number of start method calls
+   */
+  private startCalls = 0;
+  /**
+   * Track the number of restart attempts after warning
+   */
+  private restartAttempts = 0;
 
-  constructor() {
+  /**
+   * Maximum number of initial start attempts
+   */
+  private static readonly MAX_START_CALLS = 3;
+  /**
+   * Maximum number of restart attempts after warning
+   */
+  private static readonly MAX_RESTART_ATTEMPTS = 10;
+
+  private static readonly START_DELAY = 1e3; // 1 second
+  private static readonly RESTART_DELAY = 1e4; // 10 seconds
+  // private static readonly RESTART_DELAY = 600000; // 10 minutes
+
+  private constructor() {
     super();
   }
 
   public start(): this {
-    if (this.startCalls > 3) { // Adjust the maximum recursion limit as needed
+    this.log("info", "Start PCSC listening");
+    this._start();
+    return this;
+  }
+
+  private _start(): void {
+    console.log("Counters", this.startCalls, this.restartAttempts);
+    if (this.startCalls >= PCSCWatcher.MAX_START_CALLS) {
+      // Exceeded maximum start calls
+      this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PCSC_CANNOT_START));
       this.log("warn", "PCSC start calls limit reached. Restarting PCSC");
+
       this.startCalls = 0;
+      this.restartAttempts += 1;
+
+      if (this.restartAttempts >= PCSCWatcher.MAX_RESTART_ATTEMPTS) {
+        // Exceeded maximum restart attempts, stop trying
+        this.log("warn", "Maximum restart attempts reached. Stopping PCSC reconnection attempts.");
+        return;
+      }
+
       // Wait and restart pcsc again
       setTimeout(() => {
-        this.start();
-      }, 1e5);
-      return this;
+        this.log("info", "Retrying PCSC start");
+        this._start();
+      }, PCSCWatcher.RESTART_DELAY);
+      return;
     }
 
-    this.log("info", "Start PCSC listening");
     this.startCalls += 1; // Increment the start call counter
-    console.log(`PCSC startCalls: ${this.startCalls}`);
 
     try {
       this.pcsc = pcsc();
@@ -42,14 +81,12 @@ export class PCSCWatcher extends core.EventLogEmitter {
         this.emit("error", err);
 
         // Restart only if the start call counter is within the limit
-        // See https://github.com/PeculiarVentures/webcrypto-local/issues/284
-        if (this.startCalls <= 3) {
+        if (this.startCalls <= PCSCWatcher.MAX_START_CALLS) {
           this.pcsc?.removeAllListeners();
-          // PCSCLite closes session on PCSC error. For that case we need to restart it with small delay.
-          // See https://github.com/PeculiarVentures/fortify/issues/421
+          // PCSCLite closes session on PCSC error. Restart with a small delay.
           setTimeout(() => {
-            this.start()
-          }, 1e3);
+            this.start();
+          }, PCSCWatcher.START_DELAY);
         }
       });
       this.pcsc.on("reader", (reader) => {
@@ -63,14 +100,13 @@ export class PCSCWatcher extends core.EventLogEmitter {
           this.emit("error", err);
         });
         reader.on("status", (status) => {
-          // console.log("----name:'%s' atr:%s reader_state:%s state:%s", reader.name, status.atr.toString("hex"), reader.state, status.state);
-          // check what has changed
+          // Check what has changed
           const changes = (reader.state || 0) ^ status.state;
           if (changes) {
             if ((changes & reader.SCARD_STATE_EMPTY) && (status.state & reader.SCARD_STATE_EMPTY)) {
-              // card removed
+              // Card removed
               if (atr) {
-                // don't fire event if 'atr' wasn't set
+                // Don't fire event if 'atr' wasn't set
                 const event: PCSCWatcherEvent = {
                   reader,
                   atr,
@@ -79,7 +115,7 @@ export class PCSCWatcher extends core.EventLogEmitter {
                 atr = null;
               }
             } else if ((changes & reader.SCARD_STATE_PRESENT) && (status.state & reader.SCARD_STATE_PRESENT)) {
-              // card insert
+              // Card inserted
               const event: PCSCWatcherEvent = {
                 reader,
               };
@@ -91,7 +127,7 @@ export class PCSCWatcher extends core.EventLogEmitter {
                 reader: reader.name,
                 atr: atr?.toString("hex") || "unknown",
               });
-              // Delay for lib loading
+              // Delay for library loading
               setTimeout(() => {
                 this.emit("insert", event);
               }, 1e3);
@@ -100,10 +136,8 @@ export class PCSCWatcher extends core.EventLogEmitter {
         });
 
         reader.on("end", () => {
-          // console.log("Reader", this.name, "removed");
           if (atr) {
-            // don't fire event if 'atr' wasn't set
-
+            // Don't fire event if 'atr' wasn't set
             this.log("info", "Token was removed from the reader", {
               reader: reader.name,
               atr: atr?.toString("hex") || "unknown",
@@ -117,17 +151,17 @@ export class PCSCWatcher extends core.EventLogEmitter {
             atr = null;
           }
         });
-
-        // Reset startCalls counter on successful connection
-        this.startCalls = 0;
       });
+
+      // Reset startCalls counter and restartAttempts on successful connection
+      this.log("info", "PCSC connected successfully");
+      this.startCalls = 0;
+      this.restartAttempts = 0;
     } catch (err) {
-      this.emit("error", new WebCryptoLocalError(WebCryptoLocalError.CODE.PCSC_CANNOT_START));
       setTimeout(() => {
-        this.start();
+        this._start();
       }, 1e3);
     }
-    return this;
   }
 
   public stop() {

@@ -9,7 +9,7 @@ import { Service } from "./service";
 export class CardReaderService extends Service<PCSCWatcher> {
 
   constructor(server: Server) {
-    super(server, new PCSCWatcher(), [
+    super(server, PCSCWatcher.singleton, [
       proto.CardReaderGetReadersActionProto,
     ]);
 
