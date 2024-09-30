@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.6](https://github.com/PeculiarVentures/webcrypto-local/compare/v1.10.5...v1.10.6) (2024-09-30)
+
+**Note:** Version bump only for package webcrypto-local
+
+
+
+
+
 ## [1.10.5](https://github.com/PeculiarVentures/webcrypto-local/compare/v1.10.4...v1.10.5) (2024-09-17)
 
 **Note:** Version bump only for package webcrypto-local
