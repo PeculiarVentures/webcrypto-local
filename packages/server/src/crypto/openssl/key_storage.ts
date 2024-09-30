@@ -98,11 +98,8 @@ export class OpenSSLKeyStorage implements core.CryptoKeyStorage {
    * - public/private key's hex = SHA-256(spki)
    * - secret key's hex = SHA-256(RND(32))
    *
-   * @protected
-   * @param {CryptoKey} key
+   * @param key
    * @returns
-   *
-   * @memberOf OpenSSLKeyStorage
    */
   protected async getID(key: CryptoKey) {
     const nativeKey = (key as any).native;

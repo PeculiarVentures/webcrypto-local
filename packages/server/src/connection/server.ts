@@ -63,10 +63,6 @@ export interface Session {
  * - generates Identity
  * - store makes PreKey bundle
  * - Stores secure sessions
- *
- * @export
- * @class Server
- * @extends {EventEmitter}
  */
 export class Server extends core.EventLogEmitter {
 

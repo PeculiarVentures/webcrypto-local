@@ -4,6 +4,7 @@
     "target": "ES2019",
     "module": "CommonJS",
     "moduleResolution": "node",
+    "removeComments": true,
     "importHelpers": true,
     "strict": true,
     "skipLibCheck": true,

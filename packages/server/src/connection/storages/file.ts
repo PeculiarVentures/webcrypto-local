@@ -36,9 +36,6 @@ export interface IdentityList {
 
 /**
  * Identity key storage base on @peculiar/webcrypto
- *
- * @export
- * @class OpenSSLStorage
  */
 export class FileStorage extends RatchetStorage {
 
@@ -51,8 +48,8 @@ export class FileStorage extends RatchetStorage {
   /**
    * Associative array of remote identities
    */
-  public remoteIdentities: { [key: string]: RemoteIdentity } = {};
-  public sessions: { [key: string]: ratchet.AsymmetricRatchet } = {};
+  public remoteIdentities: { [key: string]: RemoteIdentity; } = {};
+  public sessions: { [key: string]: ratchet.AsymmetricRatchet; } = {};
 
   public async loadIdentities(): Promise<void> {
     const identityPath = FileStorage.STORAGE_NAME + "/identity.json";
@@ -146,7 +143,7 @@ export class FileStorage extends RatchetStorage {
     return identity;
   }
 
-  public async loadRemoteIdentity(key: string): Promise<RemoteIdentity| null> {
+  public async loadRemoteIdentity(key: string): Promise<RemoteIdentity | null> {
     await this.loadRemote();
     return this.remoteIdentities[key] || null;
   }
@@ -180,7 +177,7 @@ export class FileStorage extends RatchetStorage {
     return null;
   }
 
-  protected async  ecKeyToBase64(key: CryptoKey) {
+  protected async ecKeyToBase64(key: CryptoKey) {
     const oldValue = key.extractable;
     try {
       (key as any).extractable = true;
