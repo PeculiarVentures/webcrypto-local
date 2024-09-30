@@ -161,8 +161,6 @@ export class Client extends EventEmitter {
    * Return PIN for current session
    *
    * @returns
-   *
-   * @memberOf Client
    */
   public async challenge() {
     if (!this.cipher) {
@@ -173,9 +171,6 @@ export class Client extends EventEmitter {
 
   /**
    * Returns true if session is authorized
-   *
-   *
-   * @memberOf Client
    */
   public async isLoggedIn() {
     const action = new proto.ServerIsLoggedInActionProto();
@@ -186,9 +181,6 @@ export class Client extends EventEmitter {
 
   /**
    * Request session authentication
-   *
-   *
-   * @memberOf Client
    */
   public async login() {
     const action = new proto.ServerLoginActionProto();

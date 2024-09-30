@@ -17,10 +17,6 @@ export interface IServerOptions extends ServerOptions {
 
 /**
  * Local server
- *
- * @export
- * @class LocalServer
- * @extends {EventEmitter}
  */
 export class LocalServer extends core.EventLogEmitter {
 
@@ -30,7 +26,6 @@ export class LocalServer extends core.EventLogEmitter {
    * Server
    *
    * @type {Server}
-   * @memberof LocalServer
    */
   public server: Server;
   public sessions: Session[] = [];
@@ -44,16 +39,16 @@ export class LocalServer extends core.EventLogEmitter {
     this.server = new Server(options);
 
     if (!options.disablePCSC) {
-        // The CardReaderService is disabled because it is not used on the client side,
-        // but it duplicates log entries for PCSCWatcher.
+      // The CardReaderService is disabled because it is not used on the client side,
+      // but it duplicates log entries for PCSCWatcher.
 
-        // this.cardReader = new CardReaderService(this.server)
-        //   .on("info", (level, source, message, data) => {
-        //     this.emit("info", level, source, message, data);
-        //   })
-        //   .on("error", (e) => {
-        //     this.emit("error", e);
-        //   });
+      // this.cardReader = new CardReaderService(this.server)
+      //   .on("info", (level, source, message, data) => {
+      //     this.emit("info", level, source, message, data);
+      //   })
+      //   .on("error", (e) => {
+      //     this.emit("error", e);
+      //   });
     } else {
       // Disable PCSC for provider too
       options.config.disablePCSC = true;

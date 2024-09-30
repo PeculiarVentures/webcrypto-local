@@ -4,9 +4,8 @@ import { Convert } from "pvtsutils";
 /**
  * Generates 6 digit string from server's identity and client's identity keys.
  *
- * @export
- * @param {ECPublicKey} serverIdentity Server's identity public key
- * @param {ECPublicKey} clientIdentity Client's identity public key
+ * @param serverIdentity Server's identity public key
+ * @param clientIdentity Client's identity public key
  * @returns
  */
 export async function challenge(serverIdentity: ECPublicKey, clientIdentity: ECPublicKey) {
