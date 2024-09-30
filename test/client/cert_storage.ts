@@ -40,7 +40,7 @@ context("WebCrypto Socket: Certificate Storage", () => {
       await ws.login();
     }
     const info = await ws.info();
-    const providers = info.providers.filter((provider) => provider.name === PROVIDER_NAME);
+    const providers = info.providers.filter((o) => o.name === PROVIDER_NAME);
     assert.strictEqual(providers.length, 1, `Cannot get provider by name '${PROVIDER_NAME}'`);
     provider = await ws.getCrypto(providers[0].id);
     if (!(await provider.isLoggedIn())) {
@@ -113,10 +113,10 @@ context("WebCrypto Socket: Certificate Storage", () => {
       context("request", () => {
         const hashAlgorithms = "SHA-256";
 
-        const vectors: Array<{
+        const vectors: {
           name: string;
           algorithm: Algorithm;
-        }> = [
+        }[] = [
             { name: "RSASSA-PKCS1-v1_5", algorithm: { name: "RSASSA-PKCS1-v1_5", hash: hashAlgorithms, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), modulusLength: 2048 } as Algorithm },
             { name: "RSA-PSS", algorithm: { name: "RSA-PSS", hash: hashAlgorithms, publicExponent: new Uint8Array([0x01, 0x00, 0x01]), modulusLength: 2048, saltLength: 32 } as Algorithm },
             { name: "ECDSA P-256", algorithm: { name: "ECDSA", namedCurve: "P-256" } as Algorithm },
@@ -260,23 +260,23 @@ context("WebCrypto Socket: Certificate Storage", () => {
     async function createCert(params: ChainItemParams, issuer?: x509.X509Certificate, algorithm?: Algorithm): Promise<x509.X509Certificate> {
       const keys = await crypto.subtle.generateKey(params.algorithm, false, ["sign", "verify"]) as CryptoKeyPair;
       if (issuer && algorithm) {
-        const cert = await x509.X509CertificateGenerator.create({
+        const certificate = await x509.X509CertificateGenerator.create({
           subject: params.subject,
           issuer: issuer.subject,
           publicKey: keys.publicKey,
           signingKey: issuer.privateKey!,
           signingAlgorithm: algorithm,
         });
-        cert.privateKey = keys.privateKey;
-        return cert;
+        certificate.privateKey = keys.privateKey;
+        return certificate;
       }
-      const cert = await x509.X509CertificateGenerator.createSelfSigned({
+      const selfSignedCertificate = await x509.X509CertificateGenerator.createSelfSigned({
         name: params.subject,
         keys,
         signingAlgorithm: params.algorithm,
       });
-      cert.privateKey = keys.privateKey;
-      return cert;
+      selfSignedCertificate.privateKey = keys.privateKey;
+      return selfSignedCertificate;
     }
     /**
      * Creates a chain of X.509 certificates based on the given parameters.

@@ -344,8 +344,8 @@ export class CertificateStorageService extends Service<CryptoService> {
                 continue;
               }
               try {
-                const x509Cert = new X509Certificate(certRaw);
-                certs.push(x509Cert);
+                const x509Cert2 = new X509Certificate(certRaw);
+                certs.push(x509Cert2);
               } catch {
                 continue;
               }
