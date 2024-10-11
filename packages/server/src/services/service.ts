@@ -6,7 +6,7 @@ import { Server, Session } from "../connection";
 
 export interface ServiceNotifyEvent {
   type: string;
-  resolve: () => void;
+  resolve: (...args: any[]) => void;
   reject: (error: Error) => void;
 }
 

@@ -1,14 +1,24 @@
 import * as proto from "@webcrypto-local/proto";
-import { AlwaysAuthenticateHandle, CryptoKey } from "node-webcrypto-p11";
+import { AlwaysAuthenticateHandle, AlwaysAuthenticateHandleResult, CryptoKey } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
 import { ObjectProto } from "tsprotobuf";
 
 import { Server, Session } from "../connection";
 import { ServiceCryptoItem } from "../crypto_item";
 import { CryptoService } from "./crypto";
-import { Service } from "./service";
+import { Service, ServiceNotifyEvent } from "./service";
 
 import { WebCryptoLocalError } from "../error";
+
+export interface SubtleAlwaysAuthenticateEvent extends ServiceNotifyEvent {
+  type: "operation-pin";
+  origin: string;
+  label: string;
+  keyLabel: string;
+  operation: string;
+  resolve: (pin: AlwaysAuthenticateHandleResult) => void;
+  reject: (error: Error) => void;
+}
 
 export class SubtleService extends Service<CryptoService> {
 
@@ -41,18 +51,20 @@ export class SubtleService extends Service<CryptoService> {
 
   private handleAlwaysAuthenticate(session: Session): AlwaysAuthenticateHandle {
     return (key, crypto, operation) => {
-      const promise = new Promise<string>((resolve, reject) => {
+      const promise = new Promise<AlwaysAuthenticateHandleResult>((resolve, reject) => {
         const keyLabel = key instanceof CryptoKey ? key.algorithm.label : key.algorithm.name;
 
-        this.emit("notify", {
+        const event: SubtleAlwaysAuthenticateEvent = {
           type: "operation-pin",
-          origin: session.origin + ":" + session.port, // origin
-          label: crypto.session.slot.getToken().label, // token label
+          origin: session.origin + ":" + session.port,
+          label: crypto.session.slot.getToken().label,
           keyLabel,
           operation,
           resolve,
           reject,
-        });
+        };
+
+        this.emit("notify", event);
       });
       return promise;
     };
