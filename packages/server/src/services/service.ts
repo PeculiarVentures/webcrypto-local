@@ -4,6 +4,14 @@ import { Crypto, CryptoKey, Pkcs11KeyAlgorithm } from "node-webcrypto-p11";
 
 import { Server, Session } from "../connection";
 
+export interface ServiceNotifyEvent {
+  type: string;
+  resolve: () => void;
+  reject: (error: Error) => void;
+}
+
+export type ServiceNotifyEventHandler = (e: ServiceNotifyEvent) => void;
+
 /**
  * Base class for services
  * NOTE: Each object must have info, error events
@@ -47,6 +55,9 @@ export abstract class Service<T extends core.EventLogEmitter> extends core.Event
         })
         .on("error", (error: Error) => {
           this.emit("error", error);
+        })
+        .on("notify", (e: ServiceNotifyEvent) => {
+          this.emit("notify", e);
         });
     }
     //#endregion
@@ -64,9 +75,13 @@ export abstract class Service<T extends core.EventLogEmitter> extends core.Event
       })
       .on("error", (error: Error) => {
         this.emit("error", error);
+      })
+      .on("notify", (e: ServiceNotifyEvent) => {
+        this.emit("notify", e);
       });
   }
 
+  public emit(event: "notify", e: ServiceNotifyEvent): boolean;
   public emit(event: "error", error: Error): boolean;
   public emit(event: "info", level: core.LogLevel, source: string, message: string, data?: core.LogData): boolean;
   public emit(event: string, ...args: any[]): boolean;
@@ -74,6 +89,7 @@ export abstract class Service<T extends core.EventLogEmitter> extends core.Event
     return super.emit(event, ...args);
   }
 
+  public on(event: "notify", cb: ServiceNotifyEventHandler): this;
   public on(event: "error", cb: (error: Error) => void): this;
   public on(event: "info", cb: core.LogHandler): this;
   public on(event: string, cb: (...args: any[]) => void): this;
@@ -81,6 +97,7 @@ export abstract class Service<T extends core.EventLogEmitter> extends core.Event
     return super.on(event, cb);
   }
 
+  public once(event: "notify", cb: ServiceNotifyEventHandler): this;
   public once(event: "error", cb: (error: Error) => void): this;
   public once(event: "info", cb: core.LogHandler): this;
   public once(event: string, cb: (...args: any[]) => void): this;

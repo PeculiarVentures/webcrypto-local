@@ -5,17 +5,9 @@ import { MemoryStorage } from "../memory_storage";
 import { PCSCCard } from "../pcsc";
 import { IProviderConfig, LocalProvider } from "../provider";
 import { CryptoService } from "./crypto";
-import { Service } from "./service";
+import { Service, ServiceNotifyEvent, ServiceNotifyEventHandler } from "./service";
 
 import { WebCryptoLocalError } from "../error";
-
-export interface ProviderNotifyEvent {
-  type: string;
-  resolve: () => void;
-  reject: (error: Error) => void;
-}
-
-export type ProviderNotifyEventHandler = (e: ProviderNotifyEvent) => void;
 
 export class ProviderService extends Service<LocalProvider> {
 
@@ -37,13 +29,12 @@ export class ProviderService extends Service<LocalProvider> {
     //#region Connect events
     this.object.on("token_new", this.onTokenNew.bind(this));
     this.object.on("token", this.onToken.bind(this));
-    crypto.on("notify", this.onNotify.bind(this));
     //#endregion
   }
 
   //#region Events
 
-  public emit(event: "notify", e: ProviderNotifyEvent): boolean;
+  public emit(event: "notify", e: ServiceNotifyEvent): boolean;
   public emit(event: "token_new", e: PCSCCard): boolean;
   public emit(event: "error", error: Error): boolean;
   public emit(event: "info", level: core.LogLevel, source: string, message: string, data?: core.LogData): boolean;
@@ -51,7 +42,7 @@ export class ProviderService extends Service<LocalProvider> {
     return super.emit(event, ...args);
   }
 
-  public on(event: "notify", cb: ProviderNotifyEventHandler): this;
+  public on(event: "notify", cb: ServiceNotifyEventHandler): this;
   public on(event: "token_new", cb: (e: PCSCCard) => void): this;
   public on(event: "error", cb: (error: Error) => void): this;
   public on(event: "info", cb: core.LogHandler): this;
@@ -59,7 +50,7 @@ export class ProviderService extends Service<LocalProvider> {
     return super.on(event, cb);
   }
 
-  public once(event: "notify", cb: ProviderNotifyEventHandler): this;
+  public once(event: "notify", cb: ServiceNotifyEventHandler): this;
   public once(event: "token_new", cb: (e: PCSCCard) => void): this;
   public once(event: "error", cb: (error: Error) => void): this;
   public once(event: "info", cb: core.LogHandler): this;
@@ -110,10 +101,6 @@ export class ProviderService extends Service<LocalProvider> {
         }
       });
     }
-  }
-
-  protected onNotify(e: ProviderNotifyEvent) {
-    this.emit("notify", e);
   }
 
   protected async onMessage(session: Session, action: proto.ActionProto) {
