@@ -41,3 +41,30 @@ Get-Service -Name "SCardSvr"
 ```
 
 This command will display the current status of the service, including whether it is running, stopped, and its startup type.
+
+### Troubleshooting
+
+If the PC/SC service is running but you are encountering the following errors:
+
+- `The Smart Card Resource Manager is not running.`
+- `PCSC_CANNOT_START`
+
+Follow these steps to resolve the issue:
+
+1. Press `Win + R` to open the Run dialog.
+2. Type `services.msc` and press Enter.
+3. In the **Services** window, locate the `Smart Cards` service (`SCardSvr`).
+4. Check if the service is running:
+   - If it is **not** running:
+     - Right-click on the service and select **Start**.
+     - Verify if this resolves the issue.
+   
+   If the issue persists, proceed with the following steps:
+   
+5. Open the service's preferences:
+   - Right-click on the `Smart Cards` service and select **Properties**.
+6. Navigate to the **Log On** tab.
+7. Change the **Log on as** option to **This account**.
+8. Enter `Local Service` and use your OS logon credentials as the password.
+
+After making these changes, restart the service and check if the problem is resolved.
