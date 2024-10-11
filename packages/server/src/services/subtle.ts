@@ -1,5 +1,5 @@
 import * as proto from "@webcrypto-local/proto";
-import { CryptoKey } from "node-webcrypto-p11";
+import { AlwaysAuthenticateHandle, CryptoKey } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
 import { ObjectProto } from "tsprotobuf";
 
@@ -37,6 +37,25 @@ export class SubtleService extends Service<CryptoService> {
 
   public getMemoryStorage() {
     return this.object.object.memoryStorage;
+  }
+
+  private handleAlwaysAuthenticate(session: Session): AlwaysAuthenticateHandle {
+    return (key, crypto, operation) => {
+      const promise = new Promise<string>((resolve, reject) => {
+        const keyLabel = key instanceof CryptoKey ? key.algorithm.label : key.algorithm.name;
+
+        this.emit("notify", {
+          type: "operation-pin",
+          origin: session.origin + ":" + session.port, // origin
+          label: crypto.session.slot.getToken().label, // token label
+          keyLabel,
+          operation,
+          resolve,
+          reject,
+        });
+      });
+      return promise;
+    };
   }
 
   protected async onMessage(session: Session, action: proto.ActionProto) {
@@ -100,6 +119,7 @@ export class SubtleService extends Service<CryptoService> {
         const params = await proto.SignActionProto.importProto(action);
 
         const crypto = await this.getCrypto(params.providerID);
+        crypto.onAlwaysAuthenticate = this.handleAlwaysAuthenticate(session);
         const key = this.getMemoryStorage().item(params.key.id).item as CryptoKey;
         this.log("info", "sign", {
           crypto: this.logCrypto(crypto),
@@ -147,6 +167,7 @@ export class SubtleService extends Service<CryptoService> {
         const params = await proto.DecryptActionProto.importProto(action);
 
         const crypto = await this.getCrypto(params.providerID);
+        crypto.onAlwaysAuthenticate = this.handleAlwaysAuthenticate(session);
         const key = this.getMemoryStorage().item(params.key.id).item as CryptoKey;
         this.log("info", "decrypt", {
           crypto: this.logCrypto(crypto),
