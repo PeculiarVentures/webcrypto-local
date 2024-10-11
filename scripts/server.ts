@@ -116,12 +116,17 @@ async function main() {
           p.resolve(true);
           break;
         }
+        case "operation-pin":
         case "pin": {
+          const { origin, label } = p;
+          if (p.type === "pin") {
+            console.log("PIN:", { origin, label });
+          } else {
+            const { keyLabel, operation } = p;
+            console.log("Operation PIN:", { origin, label, keyLabel, operation });
+          }
           // auto PIN for all token's
           switch (p.label) {
-            case "SafeNet U:39sp85MY":
-              p.resolve("39sp85MY");
-              break;
             case "My slot 0":
               p.resolve("12345");
               break;
@@ -131,13 +136,11 @@ async function main() {
             default:
               p.resolve("123456");
               break;
-            // throw new Error("Unknown token");
           }
           throw new Error("Oops");
-          break;
         }
         default:
-          throw new Error("Unknown type of notify");
+          p.reject(new Error(`Unknown notification type: ${p.type}`));
       }
     })
     .on("close", (e: any) => {
