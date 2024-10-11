@@ -1,14 +1,24 @@
 import * as proto from "@webcrypto-local/proto";
-import { CryptoKey } from "node-webcrypto-p11";
+import { AlwaysAuthenticateHandle, AlwaysAuthenticateHandleResult, CryptoKey } from "node-webcrypto-p11";
 import { Convert } from "pvtsutils";
 import { ObjectProto } from "tsprotobuf";
 
 import { Server, Session } from "../connection";
 import { ServiceCryptoItem } from "../crypto_item";
 import { CryptoService } from "./crypto";
-import { Service } from "./service";
+import { Service, ServiceNotifyEvent } from "./service";
 
 import { WebCryptoLocalError } from "../error";
+
+export interface SubtleAlwaysAuthenticateEvent extends ServiceNotifyEvent {
+  type: "operation-pin";
+  origin: string;
+  label: string;
+  keyLabel: string;
+  operation: string;
+  resolve: (pin: AlwaysAuthenticateHandleResult) => void;
+  reject: (error: Error) => void;
+}
 
 export class SubtleService extends Service<CryptoService> {
 
@@ -37,6 +47,27 @@ export class SubtleService extends Service<CryptoService> {
 
   public getMemoryStorage() {
     return this.object.object.memoryStorage;
+  }
+
+  private handleAlwaysAuthenticate(session: Session): AlwaysAuthenticateHandle {
+    return (key, crypto, operation) => {
+      const promise = new Promise<AlwaysAuthenticateHandleResult>((resolve, reject) => {
+        const keyLabel = key instanceof CryptoKey ? key.algorithm.label : key.algorithm.name;
+
+        const event: SubtleAlwaysAuthenticateEvent = {
+          type: "operation-pin",
+          origin: session.origin + ":" + session.port,
+          label: crypto.session.slot.getToken().label,
+          keyLabel,
+          operation,
+          resolve,
+          reject,
+        };
+
+        this.emit("notify", event);
+      });
+      return promise;
+    };
   }
 
   protected async onMessage(session: Session, action: proto.ActionProto) {
@@ -100,6 +131,7 @@ export class SubtleService extends Service<CryptoService> {
         const params = await proto.SignActionProto.importProto(action);
 
         const crypto = await this.getCrypto(params.providerID);
+        crypto.onAlwaysAuthenticate = this.handleAlwaysAuthenticate(session);
         const key = this.getMemoryStorage().item(params.key.id).item as CryptoKey;
         this.log("info", "sign", {
           crypto: this.logCrypto(crypto),
@@ -147,6 +179,7 @@ export class SubtleService extends Service<CryptoService> {
         const params = await proto.DecryptActionProto.importProto(action);
 
         const crypto = await this.getCrypto(params.providerID);
+        crypto.onAlwaysAuthenticate = this.handleAlwaysAuthenticate(session);
         const key = this.getMemoryStorage().item(params.key.id).item as CryptoKey;
         this.log("info", "decrypt", {
           crypto: this.logCrypto(crypto),
