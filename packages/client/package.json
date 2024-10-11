@@ -1,6 +1,6 @@
 {
   "name": "@webcrypto-local/client",
-  "version": "1.10.6",
+  "version": "1.10.7",
   "description": "A package of `webcrypto-local` framework. WebSocket client",
   "keywords": [
     "webcrypto",
