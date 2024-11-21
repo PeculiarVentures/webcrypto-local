@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.20",
+  "version": "1.1.21",
   "cards": [
     {
       "atr": "3B7F9600008031805843657274756D3031829000",
@@ -437,6 +437,11 @@
       "atr": "3bfd1800008031fe45736674652d63643038302d6e66dc",
       "name": "Brazilian Medical Identity Card",
       "driver": "4485A4DCDF92D361F7418D0C447FEC810C609F12"
+    },
+    {
+      "atr": "3BDF18FF8191FE1FC3003138644790ECC273140150829000BA",
+      "name": "JCOP3 IAS ECC",
+      "driver": "9A935824C7841305E0CB0F77D66A28479F22994A"
     }
   ],
   "drivers": [
@@ -827,6 +832,18 @@
             }
           }
         }
+      }
+    },
+    {
+      "id": "9A935824C7841305E0CB0F77D66A28479F22994A",
+      "name": "Smart Card Middleware",
+      "file": {
+        "windows": {
+          "x64": "%PROGRAMFILES/Smart Card Middleware/bin/idoPKCS.dll",
+          "x86": "%PROGRAMFILES(x86)/Smart Card Middleware/bin/idoPKCS.dll"
+        },
+        "osx": "/Library/SCMiddleware/libidop11.dylib",
+        "linux": "/usr/lib/SCMiddleware/libidop11.so"
       }
     }
   ]
