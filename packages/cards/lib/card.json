@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.21",
+  "version": "1.1.22",
   "cards": [
     {
       "atr": "3B7F9600008031805843657274756D3031829000",
@@ -296,6 +296,11 @@
       "atr": "3B7F96000080318065B0850300EF120FFE829000",
       "name": "Gemalto IDPrime MD 840 (PKI)",
       "driver": "0ca280b5af17d6aa91af084f2d39d2a3"
+    },
+    {
+      "atr": "3BD218008131FE58C90316",
+      "name": "Gemalto USB Shell Token V2 (37AED46F) 00 00",
+      "driver": "993988460d8f49a2ac519a2935f11533"
     },
     {
       "atr": "3BD21802C10A31FE58C80D51",
