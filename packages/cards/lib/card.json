@@ -1,6 +1,6 @@
 {
   "$schema": "./card.schema.json",
-  "version": "1.1.22",
+  "version": "1.1.23",
   "cards": [
     {
       "atr": "3B7F9600008031805843657274756D3031829000",
@@ -11,6 +11,11 @@
       "atr": "3B9F9681B1FE451F070064051EB20031B0739621DB0590005C",
       "name": "SCM Microsystems Inc. SCR3310 USB Smart Card Reader",
       "driver": "1F2E6799FC1085ED55C36287433530D68689A7C0"
+    },
+    {
+      "atr": "3b9f958131fe9f006646530510063171df000000000024",
+      "name": "FT ePass2003Auto",
+      "driver": "ECA050606FD48FAB340EA9F1FCB582A1E0F1B740"
     },
     {
       "atr": "3BD518FF8191FE1FC38073C821100A",
