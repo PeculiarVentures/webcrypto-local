@@ -1,6 +1,6 @@
 {
   "name": "@webcrypto-local/server",
-  "version": "1.10.10",
+  "version": "1.10.11",
   "description": "A package of `webcrypto-local` framework. WebSocket server",
   "keywords": [
     "webcrypto",
@@ -46,7 +46,7 @@
     "@peculiar/webcrypto": "1.0.22",
     "@peculiar/x509": "^1.12.3",
     "@types/pvutils": "^1.0.4",
-    "@webcrypto-local/cards": "^1.10.10",
+    "@webcrypto-local/cards": "^1.10.11",
     "@webcrypto-local/core": "^1.10.6",
     "@webcrypto-local/proto": "^1.10.6",
     "graphene-pk11": "^2.3.6",
