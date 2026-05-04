@@ -16,21 +16,13 @@ jobs:
           brew install softhsm
           softhsm2-util --init-token --so-pin "12345" --pin "12345" --slot 0 --label "My slot 0"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Install Yarn
-        run: npm install -g yarn node-gyp@latest
-
-      - name: restore lerna
-        uses: actions/cache@v4
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          cache: 'yarn'
 
       - name: Install dependencies
         run: yarn
@@ -44,6 +36,6 @@ jobs:
           SOFT_HSM_LIBRARY: /opt/homebrew/Cellar/softhsm/2.6.1/lib/softhsm/libsofthsm2.so
 
       - name: Coveralls
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

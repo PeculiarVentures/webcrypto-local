@@ -23,14 +23,16 @@ jobs:
           echo 'The pull request has not been merged'
           exit 1
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Use Node.js 20.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20.x
+          cache: 'yarn'
+
       - name: Setup .npmrc
         shell: bash
         run: |
@@ -51,12 +53,6 @@ jobs:
 
       - name: Install dependencies
         run: sudo apt-get install -y libpcsclite1 libpcsclite-dev
-
-      - name: restore lerna
-        uses: actions/cache@v4
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
         run: yarn
@@ -82,7 +78,7 @@ jobs:
           echo "::set-env name=CURRENT_VERSION::${CURRENT_VERSION}"
 
       - name: Create comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         if: env.PREV_VERSION != env.CURRENT_VERSION
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
