@@ -1,7 +1,14 @@
-# webcrypto-local
+<h1 align="center">
+  webcrypto-local
+</h1>
 
-[![Coverage Status](https://coveralls.io/repos/github/PeculiarVentures/webcrypto-local/badge.svg?branch=master)](https://coveralls.io/github/PeculiarVentures/webcrypto-local?branch=update-deps)
-[![Test](https://github.com/PeculiarVentures/webcrypto-local/actions/workflows/test.yml/badge.svg)](https://github.com/PeculiarVentures/webcrypto-local/actions/workflows/test.yml)
+<div align="center">
+
+![GitHub License](https://img.shields.io/github/license/PeculiarVentures/webcrypto-local)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/PeculiarVentures/webcrypto-local/test.yml?label=test)
+![Coveralls](https://img.shields.io/coverallsCoverage/github/PeculiarVentures/webcrypto-local)
+
+</div>
 
 `webcrypto-local` is a cross platform service that provides access to PKCS#11
 implementations over a `ProtoBuf` based protocol we call `webcrypto-socket`. It
