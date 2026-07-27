@@ -35,6 +35,9 @@ jobs:
         env:
           SOFT_HSM_LIBRARY: /opt/homebrew/Cellar/softhsm/2.7.0/lib/softhsm/libsofthsm2.so
 
+      - name: Trust Coveralls Homebrew tap
+        run: brew trust coverallsapp/coveralls
+
       - name: Coveralls
         uses: coverallsapp/github-action@v2
         with:
